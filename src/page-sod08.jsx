@@ -135,7 +135,6 @@ const EmergencyAccessTable = () => {
               <Th align="right">Log Volume</Th>
               <Th>Approval Authority</Th>
               <Th>AI Status</Th>
-              <Th>Execution</Th>
             </tr>
           </thead>
           <tbody className="divide-y divide-ink-100">
@@ -160,9 +159,6 @@ const EmergencyAccessTable = () => {
                     </td>
                     <td className="px-4 py-3.5">
                        {r.anomalyFlag ? <span className="text-rose-600 font-bold uppercase text-[9px] tracking-widest ring-1 ring-rose-200 bg-rose-50 px-1.5 py-0.5 rounded">Anomaly</span> : <span className="text-ink-300 font-bold text-[9px] uppercase tracking-widest">Nominal</span>}
-                    </td>
-                    <td className="px-4 py-3.5" onClick={e => e.stopPropagation()}>
-                       <StatusBadge value={r.status} onChange={s => setStatus(r.id, s)} />
                     </td>
                   </tr>
                   {isOpen && (

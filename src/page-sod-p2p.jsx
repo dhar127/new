@@ -1,18 +1,35 @@
+const { useState, useMemo } = React;
 const {
-  BarChart: P2P_BarChart, Bar: P2P_Bar, XAxis: P2P_XAxis, YAxis: P2P_YAxis,
-  CartesianGrid: P2P_CartesianGrid, Tooltip: P2P_Tooltip, Cell: P2P_Cell,
-  ResponsiveContainer: P2P_ResponsiveContainer, LabelList: P2P_LabelList,
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Cell,
+  LabelList,
 } = Recharts;
-
-const { useState } = React;
 
 window.SodP2pPage = function() {
   const { P2P_KPIS, P2P_VIOLATIONS, VENDOR_RISK_HEATMAP, P2P_REMEDIATION } = window.MOCK;
+  const [searchTerm, setSearchTerm] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('All');
 
-  const filteredViolations = selectedStatus === 'All' 
-    ? P2P_VIOLATIONS 
-    : P2P_VIOLATIONS.filter(v => v.status === selectedStatus);
+  const filteredViolations = useMemo(() => {
+    let filtered = selectedStatus === 'All' 
+      ? P2P_VIOLATIONS 
+      : P2P_VIOLATIONS.filter(v => v.status === selectedStatus);
+    
+    if (searchTerm) {
+      filtered = filtered.filter(v => 
+        v.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        v.pair.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        v.desc.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+    return filtered;
+  }, [searchTerm, selectedStatus, P2P_VIOLATIONS]);
 
   return (
     <div data-screen-label="P2P Violations" className="space-y-6 px-4 md:px-7 py-6">
@@ -30,24 +47,43 @@ window.SodP2pPage = function() {
         <window.StatCard severity="Critical" label="Estimated Exposure" value={'$' + (P2P_KPIS.estimatedExposure / 1_000_000).toFixed(1) + 'M'} delta={P2P_KPIS.deltas.estimatedExposure / 1_000_000} deltaSuffix="M" deltaInvertGood icon="impact" />
       </div>
 
+      {/* Search & Filter */}
+      <div className="space-y-3">
+        <div className="relative">
+          <window.Icon name="search" className="absolute left-3 top-3 w-4 h-4 text-ink-400" />
+          <input
+            type="text"
+            placeholder="Search by ID, T-code pair, or description..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full pl-10 pr-4 py-2 rounded-lg border border-ink-200 text-ink-900 placeholder-ink-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
+          />
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-xs font-bold uppercase tracking-widest text-ink-400">Filter:</span>
+          {['All', 'Open', 'In Progress', 'Resolved'].map(status => (
+            <button
+              key={status}
+              onClick={() => setSelectedStatus(status)}
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                selectedStatus === status
+                  ? 'bg-brand-600 text-white'
+                  : 'bg-white text-ink-600 ring-1 ring-ink-200 hover:bg-ink-50'
+              }`}
+            >
+              {status}
+            </button>
+          ))}
+          <span className="ml-auto text-[11px] text-ink-400 font-medium">
+            {filteredViolations.length} violation{filteredViolations.length !== 1 ? 's' : ''} found
+          </span>
+        </div>
+      </div>
+
       {/* Violation Combo Table */}
       <window.Section 
         title="P2P Violation Combinations"
         subtitle="Detailed breakdown of authorization overlaps across the Procure-to-Pay cycle."
-        action={
-          <div className="flex items-center gap-2">
-            <select 
-              value={selectedStatus}
-              onChange={(e) => setSelectedStatus(e.target.value)}
-              className="px-3 py-1.5 text-xs rounded-lg border border-ink-200 bg-white text-ink-700 focus:outline-none focus:ring-2 focus:ring-brand-500"
-            >
-              <option>All</option>
-              <option>Open</option>
-              <option>In Progress</option>
-              <option>Resolved</option>
-            </select>
-          </div>
-        }
       >
         <div className="overflow-x-auto">
           <table className="w-full">
@@ -91,15 +127,15 @@ window.SodP2pPage = function() {
         subtitle="Top vendors with highest violation density across P2P processes."
       >
         <div className="h-[320px] p-6">
-          <P2P_ResponsiveContainer width="100%" height="100%">
-            <P2P_BarChart 
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart 
               data={VENDOR_RISK_HEATMAP.slice(0, 10)} 
               layout="vertical" 
               margin={{ top: 0, right: 60, bottom: 0, left: 140 }}
             >
-              <P2P_CartesianGrid stroke="#F1F5F9" horizontal={false} />
-              <P2P_XAxis type="number" hide />
-              <P2P_YAxis 
+              <CartesianGrid stroke="#F1F5F9" horizontal={false} />
+              <XAxis type="number" hide />
+              <YAxis 
                 type="category" 
                 dataKey="vendor" 
                 width={140}
@@ -107,7 +143,7 @@ window.SodP2pPage = function() {
                 axisLine={false} 
                 tickLine={false} 
               />
-              <P2P_Tooltip 
+              <Tooltip 
                 cursor={{ fill: '#F8FAFC' }} 
                 content={({ active, payload }) => {
                   if (!active || !payload) return null;
@@ -126,14 +162,14 @@ window.SodP2pPage = function() {
                   );
                 }}
               />
-              <P2P_Bar dataKey="violations" radius={[0, 4, 4, 0]} barSize={18} fill="#3B82F6">
+              <Bar dataKey="violations" radius={[0, 4, 4, 0]} barSize={18} fill="#3B82F6">
                 {VENDOR_RISK_HEATMAP.slice(0, 10).map((d, i) => (
-                  <P2P_Cell key={i} fill={d.violations > 8 ? '#EF4444' : d.violations > 5 ? '#F97316' : '#3B82F6'} />
+                  <Cell key={i} fill={d.violations > 8 ? '#EF4444' : d.violations > 5 ? '#F97316' : '#3B82F6'} />
                 ))}
-                <P2P_LabelList dataKey="violations" position="right" fill="#0F172A" style={{ fontSize: 11, fontWeight: 700, fontFamily: 'JetBrains Mono' }} />
-              </P2P_Bar>
-            </P2P_BarChart>
-          </P2P_ResponsiveContainer>
+                <LabelList dataKey="violations" position="right" fill="#0F172A" style={{ fontSize: 11, fontWeight: 700, fontFamily: 'JetBrains Mono' }} />
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
         </div>
       </window.Section>
 
@@ -162,41 +198,6 @@ window.SodP2pPage = function() {
         ))}
       </div>
 
-      {/* Related Findings */}
-      <window.Section 
-        title="Related Findings & Context"
-        subtitle="Cross-referenced violations from the broader SoD analysis."
-      >
-        <div className="p-6 space-y-4">
-          <div className="flex items-start gap-3 pb-4 border-b border-ink-100">
-            <span className="flex items-center justify-center h-6 w-6 rounded-full bg-rose-50 text-rose-700 text-[10px] font-bold shrink-0">1</span>
-            <div className="flex-1">
-              <div className="text-sm font-bold text-ink-900">Procurement-Finance Axis</div>
-              <p className="text-xs text-ink-500 mt-0.5">
-                P2P violations often manifest as dual-process conflicts between Procurement (vendor/PO) and Finance (payments). Refer to SOD-07 Dual Control Violations for cross-process view.
-              </p>
-            </div>
-          </div>
-          <div className="flex items-start gap-3 pb-4 border-b border-ink-100">
-            <span className="flex items-center justify-center h-6 w-6 rounded-full bg-amber-50 text-amber-700 text-[10px] font-bold shrink-0">2</span>
-            <div className="flex-1">
-              <div className="text-sm font-bold text-ink-900">Super-Admin Impact</div>
-              <p className="text-xs text-ink-500 mt-0.5">
-                Users BCARRIER, BGILL, and KPARK_LC (from SOD-06) hold super-admin or multi-process authority exacerbating P2P risks. Revoke/redesign strategies should address these users first.
-              </p>
-            </div>
-          </div>
-          <div className="flex items-start gap-3">
-            <span className="flex items-center justify-center h-6 w-6 rounded-full bg-blue-50 text-blue-700 text-[10px] font-bold shrink-0">3</span>
-            <div className="flex-1">
-              <div className="text-sm font-bold text-ink-900">Baseline Controls</div>
-              <p className="text-xs text-ink-500 mt-0.5">
-                Implement 3-way match (PO → GR → Invoice) enforced in MM/FI configuration. Requires MIRO control matrix to block over-invoicing and MIGO trace enforcement.
-              </p>
-            </div>
-          </div>
-        </div>
-      </window.Section>
     </div>
   );
 };

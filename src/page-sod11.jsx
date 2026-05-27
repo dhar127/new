@@ -140,17 +140,10 @@ const RemediationTable = () => {
   const [query, setQuery] = useState('');
   const [sort, setSort] = useState({ key: 'priority', dir: 'asc' });
   const [page, setPage] = useState(1);
-  const [expanded, setExpanded] = useState(new Set());
   const pageSize = 10;
   const prioOrder = { P1: 0, P2: 1, P3: 2, P4: 3 };
 
-  const toggle = id => setExpanded(s => {
-    const next = new Set(s);
-    if (next.has(id)) next.delete(id); else next.add(id);
-    return next;
-  });
-  const setStatus = (id, status) => setRows(rs => rs.map(r => r.id === id ? { ...r, status } : r));
-  const setAssignee = (id, assignee) => setRows(rs => rs.map(r => r.id === id ? { ...r, assignee } : r));
+
 
   const filtered = rows
     .filter(r => !typeFilter || r.type === typeFilter)
@@ -184,49 +177,29 @@ const RemediationTable = () => {
               <Th>Action Title</Th>
               <Th>Category</Th>
               <Th>Due Date</Th>
-              <Th>Status</Th>
-              <Th>Ownership</Th>
             </tr>
           </thead>
           <tbody className="divide-y divide-ink-100">
             {paged.map(r => {
-              const isOpen = expanded.has(r.id);
               const ts = TYPE_STYLE_11[r.type];
               return (
-                <React.Fragment key={r.id}>
-                  <tr onClick={() => toggle(r.id)} className="row-hover cursor-pointer group">
-                    <td className="pl-4">
-                      <Icon name="chevron" className={`w-3.5 h-3.5 text-ink-400 transition-transform ${isOpen ? 'rotate-90' : ''}`} />
-                    </td>
-                    <td className="px-4 py-3.5">
-                       <span className={`inline-flex items-center px-1.5 py-0.5 rounded font-bold text-[10px] ring-1 ring-inset ${PRIORITY_STYLE[r.priority]}`}>{r.priority}</span>
-                    </td>
-                    <td className="px-4 py-3.5 font-mono text-[11px] font-bold text-ink-900 group-hover:text-brand-600 transition-colors">{r.violationId}</td>
-                    <td className="px-4 py-3.5 font-semibold text-ink-800">{r.title}</td>
-                    <td className="px-4 py-3.5">
-                      <span className="inline-flex items-center gap-1.5 text-ink-600">
-                        <Icon name={ts.icon} className="w-3.5 h-3.5 opacity-60" />
-                        {r.type}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3.5 whitespace-nowrap">
-                       <span className={`font-mono text-[11px] ${r.overdue ? 'text-rose-600 font-bold' : 'text-ink-500'}`}>{r.due}</span>
-                    </td>
-                    <td className="px-4 py-3.5" onClick={e => e.stopPropagation()}>
-                      <StatusBadge value={r.status} onChange={s => setStatus(r.id, s)} />
-                    </td>
-                    <td className="px-4 py-3.5" onClick={e => e.stopPropagation()}>
-                      <AssignButton value={r.assignee} onChange={a => setAssignee(r.id, a)} />
-                    </td>
-                  </tr>
-                  {isOpen && (
-                    <tr className="bg-ink-50/30">
-                      <td colSpan={8} className="px-12 py-5">
-                        <ActionStepsPanel row={r} />
-                      </td>
-                    </tr>
-                  )}
-                </React.Fragment>
+                <tr key={r.id} className="row-hover group">
+                  <td className="pl-4"></td>
+                  <td className="px-4 py-3.5">
+                     <span className={`inline-flex items-center px-1.5 py-0.5 rounded font-bold text-[10px] ring-1 ring-inset ${PRIORITY_STYLE[r.priority]}`}>{r.priority}</span>
+                  </td>
+                  <td className="px-4 py-3.5 font-mono text-[11px] font-bold text-ink-900 group-hover:text-brand-600 transition-colors">{r.violationId}</td>
+                  <td className="px-4 py-3.5 font-semibold text-ink-800">{r.title}</td>
+                  <td className="px-4 py-3.5">
+                    <span className="inline-flex items-center gap-1.5 text-ink-600">
+                      <Icon name={ts.icon} className="w-3.5 h-3.5 opacity-60" />
+                      {r.type}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3.5 whitespace-nowrap">
+                     <span className={`font-mono text-[11px] ${r.overdue ? 'text-rose-600 font-bold' : 'text-ink-500'}`}>{r.due}</span>
+                  </td>
+                </tr>
               );
             })}
           </tbody>
@@ -236,7 +209,6 @@ const RemediationTable = () => {
     </Section>
   );
 };
-
 const ActionStepsPanel = ({ row }) => {
   const [completedSteps, setCompletedSteps] = useState(new Set());
   
@@ -279,8 +251,6 @@ const ActionStepsPanel = ({ row }) => {
   );
 };
 
-/* ------------------------------------------------------------ */
-/* Policy Suggestions — sleek shelf                             */
 /* ------------------------------------------------------------ */
 const PolicySuggestions = () => {
   const { POLICY_SUGGESTIONS } = window.MOCK;

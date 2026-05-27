@@ -32,7 +32,7 @@ const PAGE_TITLES = {
 };
 
 const App = () => {
-  const [active, setActive] = useState('home');
+  const [active, setActive] = useState('runs');
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const renderPage = () => {

@@ -16,9 +16,9 @@ function MetricBanner() {
   
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 gap-4">
         <window.StatCard label="Compliance Index" value={`${KPIS.complianceScore}`} sub="Maturity" delta={4} severity="Good" icon="shield" />
-        <window.StatCard label="Financial Exposure" value="$28.4M" sub="At Risk" delta={-15} deltaInvertGood severity="Critical" icon="impact" />
+       
         <window.StatCard label="Violation Inventory" value={KPIS.totalViolations.toLocaleString()} sub="Total Sets" delta={24} deltaInvertGood icon="table" />
         <window.StatCard label="Immediate Triage" value={KPIS.critical} sub="Actionable" delta={-3} deltaInvertGood severity="High" icon="flame" />
         <div className="hidden xl:block">
@@ -77,31 +77,7 @@ function SeverityCard({ label, count, color, bg, border }) {
 function ComplianceEngine() {
   const { RUN_TREND, COMPLIANCE } = window.MOCK;
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-      <div className="lg:col-span-8">
-        <window.Section title="Compliance Performance" subtitle="Systemic velocity and maturity tracking against enterprise baselines.">
-          <div className="h-[320px] p-6">
-            <ResponsiveContainer>
-              <AreaChart data={RUN_TREND} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                <defs>
-                  <linearGradient id="colorScore" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.15}/>
-                    <stop offset="95%" stopColor="#3B82F6" stopOpacity={0}/>
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F1F5F9" />
-                <XAxis dataKey="run" axisLine={false} tickLine={false} tick={{ fill: '#94A3B8', fontSize: 11, fontWeight: 600 }} dy={10} />
-                <YAxis axisLine={false} tickLine={false} tick={{ fill: '#94A3B8', fontSize: 11 }} domain={[40, 100]} />
-                <RcTooltip content={<DonutTooltip />} />
-                <Area type="monotone" dataKey="score" stroke="#3B82F6" strokeWidth={3} fillOpacity={1} fill="url(#colorScore)" />
-                <ReferenceLine y={COMPLIANCE.benchmarkSAPGRC} stroke="#10B981" strokeDasharray="5 5" label={{ position: 'right', value: 'SAP GRC Baseline', fill: '#10B981', fontSize: 10, fontWeight: 700 }} />
-              </AreaChart>
-            </ResponsiveContainer>
-          </div>
-        </window.Section>
-      </div>
-
-      <div className="lg:col-span-4 flex flex-col gap-6">
+    <div className="flex flex-col gap-6">
         <div className="rounded-2xl bg-white p-6 ring-1 ring-ink-200 shadow-sm flex items-center justify-between">
            <div>
              <div className="text-[10px] font-bold uppercase tracking-widest text-ink-400 mb-1">Current Score</div>
@@ -133,7 +109,6 @@ function ComplianceEngine() {
           </div>
           <button className="mt-8 w-full rounded-xl bg-brand-600 py-3 text-[11px] font-bold uppercase tracking-widest hover:bg-brand-500 transition-all shadow-lg shadow-brand-900/20">Execute Remediation Strategy</button>
         </div>
-      </div>
     </div>
   );
 }
@@ -283,7 +258,7 @@ window.LaunchPage = function({ onNavigate }) {
   const [showCreateRunModal, setShowCreateRunModal] = React.useState(false);
 
   return (
-    <div data-screen-label="01 Launch Dashboard" className="space-y-8 px-4 md:px-8 py-8 animate-in fade-in duration-500">
+    <div data-screen-label="01 Launch Dashboard" className="space-y-6 px-4 md:px-8 py-8 animate-in fade-in duration-500">
       
       {/* Header Context */}
       <div className="flex flex-wrap items-end justify-between gap-6 pb-2 border-b border-ink-100">
@@ -295,10 +270,7 @@ window.LaunchPage = function({ onNavigate }) {
                <span className="font-mono font-bold text-brand-600 tracking-tight">{window.MOCK.RUN.id}</span>
             </div>
          </div>
-         <div className="flex gap-3">
-            <button onClick={() => setShowCreateRunModal(true)} className="rounded-xl bg-[#0B0F19] px-6 py-2.5 text-[12px] font-bold text-white shadow-xl hover:bg-brand-700 transition-colors uppercase tracking-widest ring-1 ring-white/10">Start AI Run</button>
-            <button className="rounded-xl border border-ink-200 bg-white px-6 py-2.5 text-[12px] font-bold text-ink-800 hover:bg-ink-50 transition-colors uppercase tracking-widest shadow-sm">Config Policy</button>
-         </div>
+       
       </div>
 
       <MetricBanner />

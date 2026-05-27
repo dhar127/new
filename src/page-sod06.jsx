@@ -118,7 +118,6 @@ const SuperAdminTable = () => {
               <Th align="right">Role Count</Th>
               <Th>Recommendation</Th>
               <Th>Severity</Th>
-              <Th>Execution</Th>
             </tr>
           </thead>
           <tbody className="divide-y divide-ink-100">
@@ -140,9 +139,6 @@ const SuperAdminTable = () => {
                       <span className="font-bold text-[10px] tracking-tight uppercase text-ink-600 px-2 py-0.5 rounded bg-ink-100 ring-1 ring-inset ring-ink-200">{r.recommendation}</span>
                     </td>
                     <td className="px-4 py-3.5"><SeverityBadge value={r.severity} /></td>
-                    <td className="px-4 py-3.5" onClick={e => e.stopPropagation()}>
-                       <StatusBadge value={r.status} onChange={s => setStatus(r.user, s)} />
-                    </td>
                   </tr>
                   {isOpen && (
                     <tr className="bg-ink-50/30">

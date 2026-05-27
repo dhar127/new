@@ -3,12 +3,20 @@ const { useState, useMemo } = React;
 window.Sod04Page = function() {
   const { IMMEDIATE_ACTIONS } = window.MOCK;
   const [actions, setActions] = useState(IMMEDIATE_ACTIONS);
+  const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
   
   const filteredActions = useMemo(() => {
-    if (statusFilter === 'All') return actions;
-    return actions.filter(a => a.status === statusFilter);
-  }, [actions, statusFilter]);
+    let filtered = statusFilter === 'All' ? actions : actions.filter(a => a.status === statusFilter);
+    if (searchTerm) {
+      filtered = filtered.filter(a => 
+        a.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        a.desc.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        a.user.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+    return filtered;
+  }, [actions, searchTerm, statusFilter]);
 
   const updateStatus = (id, newStatus) => {
     setActions(actions.map(a => a.id === id ? { ...a, status: newStatus } : a));
@@ -42,21 +50,41 @@ window.Sod04Page = function() {
         <window.StatCard severity="Good" label="Resolved" value={actions.filter(a => a.status === 'Resolved').length} icon="check" />
       </div>
 
+      {/* Search & Filter */}
+      <div className="space-y-3">
+        <div className="relative">
+          <window.Icon name="search" className="absolute left-3 top-3 w-4 h-4 text-ink-400" />
+          <input
+            type="text"
+            placeholder="Search by ID, description, or user..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full pl-10 pr-4 py-2 rounded-lg border border-ink-200 text-ink-900 placeholder-ink-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
+          />
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-xs font-bold uppercase tracking-widest text-ink-400">Filter:</span>
+          {['All', 'Open', 'In Progress', 'Resolved'].map(status => (
+            <button
+              key={status}
+              onClick={() => setStatusFilter(status)}
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                statusFilter === status
+                  ? 'bg-brand-600 text-white'
+                  : 'bg-white text-ink-600 ring-1 ring-ink-200 hover:bg-ink-50'
+              }`}
+            >
+              {status}
+            </button>
+          ))}
+          <span className="ml-auto text-[11px] text-ink-400 font-medium">
+            {filteredActions.length} action{filteredActions.length !== 1 ? 's' : ''} found
+          </span>
+        </div>
+      </div>
+
       <window.Section 
-        title="Action Queue" 
-        action={
-          <div className="flex items-center gap-3">
-             <select 
-               value={statusFilter}
-               onChange={(e) => setStatusFilter(e.target.value)}
-               className="rounded border border-ink-200 text-[11px] font-bold uppercase text-ink-600 p-1.5 bg-ink-50 focus:ring-brand-500 focus:border-brand-500 outline-none"
-             >
-               <option value="All">All Statuses</option>
-               {statusOptions.map(s => <option key={s} value={s}>{s}</option>)}
-             </select>
-             <window.ExportButton label="Export Queue" size="sm" />
-          </div>
-        }
+        title="Action Queue"
       >
         <div className="overflow-x-auto scrollbar-hide">
           <table className="w-full text-[13px]">

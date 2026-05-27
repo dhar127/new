@@ -141,7 +141,6 @@ const OtcTable = () => {
               <Th>Auth Profile</Th>
               <Th align="right">Amount ($)</Th>
               <Th>Severity</Th>
-              <Th>Execution</Th>
             </tr>
           </thead>
           <tbody className="divide-y divide-ink-100">
@@ -162,13 +161,10 @@ const OtcTable = () => {
                     <td className="px-4 py-3.5 font-bold text-ink-600 uppercase text-[10px] tracking-tight">{r.steps.length} Steps Owned</td>
                     <td className="px-4 py-3.5 text-right font-mono font-bold text-ink-900">${(r.amount / 1_000).toLocaleString()}K</td>
                     <td className="px-4 py-3.5"><SeverityBadge value={r.severity} /></td>
-                    <td className="px-4 py-3.5" onClick={e => e.stopPropagation()}>
-                       <StatusBadge value={r.status} onChange={s => setStatus(r.id, s)} />
-                    </td>
                   </tr>
                   {isOpen && (
                     <tr className="bg-ink-50/30">
-                      <td colSpan={7} className="px-12 py-5">
+                      <td colSpan={6} className="px-12 py-5">
                         <OtcDrilldown row={r} />
                       </td>
                     </tr>

@@ -143,7 +143,6 @@ const ServiceAccountTable = () => {
               <Th>Last Activity</Th>
               <Th>Risk Classification</Th>
               <Th>Custodian</Th>
-              <Th>Status</Th>
             </tr>
           </thead>
           <tbody className="divide-y divide-ink-100">
@@ -165,9 +164,6 @@ const ServiceAccountTable = () => {
                     <td className="px-4 py-3.5 font-semibold text-ink-800 text-[11px] leading-tight max-w-[200px]">{r.risk}</td>
                     <td className="px-4 py-3.5">
                        {r.owner ? <span className="font-bold text-ink-800">{r.owner}</span> : <span className="text-rose-600 font-bold uppercase text-[9px] tracking-widest bg-rose-50 px-1.5 py-0.5 rounded ring-1 ring-rose-200">Unmanaged</span>}
-                    </td>
-                    <td className="px-4 py-3.5" onClick={e => e.stopPropagation()}>
-                       <StatusBadge value={r.status} onChange={s => setStatus(r.id, s)} />
                     </td>
                   </tr>
                   {isOpen && (

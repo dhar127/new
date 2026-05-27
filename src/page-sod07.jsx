@@ -136,7 +136,6 @@ const DualProcessTable = ({ matrixFilter, onClearMatrixFilter }) => {
               <Th>Control Axis 2</Th>
               <Th>Conflict Codes</Th>
               <Th>Severity</Th>
-              <Th>Status</Th>
             </tr>
           </thead>
           <tbody className="divide-y divide-ink-100">
@@ -164,9 +163,6 @@ const DualProcessTable = ({ matrixFilter, onClearMatrixFilter }) => {
                        </div>
                     </td>
                     <td className="px-4 py-3.5"><SeverityBadge value={r.severity} /></td>
-                    <td className="px-4 py-3.5" onClick={e => e.stopPropagation()}>
-                       <StatusBadge value={r.status} onChange={s => setStatus(r.id, s)} />
-                    </td>
                   </tr>
                   {isOpen && (
                     <tr className="bg-ink-50/30">
