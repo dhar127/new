@@ -1,0 +1,1119 @@
+KTern.AI | Product Requirements Document — License Optimization & SoD Analysis
+KTern.AI | Client: Lotte Chemical | Page 1
+KTern.AI
+Product Requirements Document
+Agentic AI Driven License Optimization & SoD Analysis
+Client Lotte Chemical
+Document Type Product Requirements Document (PRD)
+Version 2.0
+Date May 19, 2026
+Status Submitted for Review
+Modules License Optimization | SoD Analysis
+Any enhancement outside the Statement of Work (SoW) will be treated as a separate enhancement ticket and governed under the
+KTern.AI SLA Policy. Such items are clearly marked throughout this document.
+
+-- 1 of 35 --
+
+KTern.AI | Product Requirements Document — License Optimization & SoD Analysis
+KTern.AI | Client: Lotte Chemical | Page 2
+Table of Contents
+Table of Contents ................................................................................................................................................................... 2
+1. Document Overview .......................................................................................................................................................... 3
+2. Need Statement ................................................................................................................................................................. 3
+3. Scope of the Project .......................................................................................................................................................... 4
+3.1 In-Scope (Statement of Work)...................................................................................................................................... 4
+3.2 Enhancement Tickets .................................................................................................................................................... 5
+4. Key Stakeholders ............................................................................................................................................................... 8
+5. Enhancement Ticket & SLA Policy .................................................................................................................................... 9
+6. License Optimization — Features & Requirements .......................................................................................................... 9
+6.1 In-Scope Features (Statement of Work) .................................................................................................................... 10
+6.2 Enhancements (Enhancement Tickets — Governed by SLA) ................................................................................... 17
+7. SoD Analysis — Features & Requirements ..................................................................................................................... 23
+7.1 In-Scope Features (Statement of Work) .................................................................................................................... 23
+7.2 Enhancements — SoD Analysis ................................................................................................................................ 31
+8. Non-Functional Requirements ......................................................................................................................................... 31
+8.1 Performance ............................................................................................................................................................... 31
+8.2 Security & Compliance ............................................................................................................................................... 31
+8.3 Availability & SLA ....................................................................................................................................................... 32
+9. Requirements Traceability Matrix (RTM) ......................................................................................................................... 32
+10. Commercials Summary ................................................................................................................................................. 34
+11. Glossary ......................................................................................................................................................................... 35
+
+-- 2 of 35 --
+
+KTern.AI | Product Requirements Document — License Optimization & SoD Analysis
+KTern.AI | Client: Lotte Chemical | Page 3
+1. Document Overview
+This Product Requirements Document (PRD) defines the functional requirements, expected system behavior, and feature
+scope for KTern.AI's Agentic AI-driven License Optimization and Segregation of Duties (SoD) Analysis modules, as
+contracted with Lotte Chemical.
+The document is structured in two primary streams:
+o Stream 1: License Optimization — AI-driven analysis of SAP user licenses, roles, transactions, and
+authorization objects to identify optimization opportunities and reduce costs.
+◦ The proposed pricing is applicable for 12 runs per year for a duration of 3 years.
+o Stream 2: SoD (Segregation of Duties) Analysis — AI-powered detection of access conflicts, critical violations,
+and compliance gaps across SAP authorization landscapes.
+◦ The proposed pricing is applicable for 90 runs per year for a duration of 3 years.
+Each feature in this document is tagged as either:
+✓ IN SCOPE (SoW) Covered under the signed Statement of Work — delivered as part of the KTern.AI subscription.
+⚠ Enhancement Request Ticket Required
+[This requires a separate ticket processed under the KTern.AI SLA]
+2. Need Statement
+Lotte Chemical manages a large-scale, multi-geography SAP landscape. Maintaining SAP license compliance, cost
+efficiency, and access governance at this scale using manual methods is no longer sustainable. The key pain points
+driving this initiative include:
+o No single source of truth for SAP user license consumption across business units and geographies.
+o Manual license classification requiring significant effort from SAP BASIS and Security teams.
+o Lack of real-time visibility into role usage, authorization footprints, and SoD risk exposure.
+o Inability to proactively detect compliance violations prior to audits.
+o High cost of over-licensed users who do not consume the access they are assigned.
+o No repeatable, scalable governance model for ongoing license and SoD management.
+KTern.AI addresses these pain points through its Agentic AI-driven License Optimization and SoD Analysis agents,
+delivering automated, continuous, and audit-ready intelligence across the SAP landscape.
+
+-- 3 of 35 --
+
+KTern.AI | Product Requirements Document — License Optimization & SoD Analysis
+KTern.AI | Client: Lotte Chemical | Page 4
+3. Scope of the Project
+3.1 In-Scope (Statement of Work)
+Stream Capability Area Details
+License
+Optimization
+User Information Analysis Automated ingestion of user master data, validity, status, license
+assignments
+License
+Optimization
+License Analysis & Classification Mapping licenses to actual usage; identifying mismatches and over-licensed
+users [Recommendations]
+License
+Optimization
+Usage Statistics Login frequency, transaction execution trends, transaction dormancy
+detection, Trace should be turned on in the SAP System (Automated
+ingestion without manual data extraction from SAP)
+License
+Optimization
+Assigned Roles Analysis Redundancy, overlap, and relevance of composite and single roles -
+Recommendations
+License
+Optimization
+Authorization Objects Overview Consolidated view of all auth objects with frequency of use
+License
+Optimization
+Assigned Transactions Analysis T-Code mapping with execution history; unused transaction detection, Last
+Login Date and Login Frequency
+License
+Optimization
+License Breakdown Granular breakdown of license types per user mapped to actual usage
+License
+Optimization
+Role Utilization Analysis Unused + used, and redundant roles at scale
+License
+Optimization
+Role Activity & Auth Analysis Object-level, field-level, and activity-level role decoding
+License
+Optimization
+Dashboard & Export Home Page dashboard with analytics; downloadable Excel/PDF reports
+License
+Optimization
+Dashboard Target License Classification column with hierarchy logic (Productivity <
+Functional < Professional) – this we were showing earlier inside each users-
+Should be shown both inside and outside the home screen
+SoD
+Analysis
+Executive Summary AI-generated compliance summary with risk scoring
+
+-- 4 of 35 --
+
+KTern.AI | Product Requirements Document — License Optimization & SoD Analysis
+KTern.AI | Client: Lotte Chemical | Page 5
+SoD
+Analysis
+Overall Compliance Assessment Compliance posture benchmarked against SAP GRC best practices
+SoD
+Analysis
+Critical Findings Summary High-risk violation consolidation with severity scoring
+SoD
+Analysis
+Immediate Actions (24–48 hrs) Urgent remediation recommendations with step-by-step guidance
+SoD
+Analysis
+Super Administrators Detection Unrestricted access detection across SAP systems
+SoD
+Analysis
+Dual Process Control Violations Cross-role, cross-transaction SoD conflict identification
+SoD
+Analysis
+Emergency Access Analysis Firefighter access pattern detection and misuse flags
+SoD
+Analysis
+OTC Control Violations End-to-end Order-to-Cash control detection
+SoD
+Analysis
+High-Risk Service Accounts Unmanaged service and technical account privilege analysis
+SoD
+Analysis
+Remediation Recommendations AI-backed role redesign, access removal, and governance policies
+SoD
+Analysis
+Continuous Compliance Enablement Ongoing SoD monitoring via scans and dashboards
+3.2 Enhancement Tickets
+The following enhancements are outside the signed SoW and will be treated as enhancement tickets processed under
+the KTern.AI SLA. They are detailed in Sections 5 and 6 below.
+1. User-Based License Consumption card on Home Page dashboard
+Card1: User-Based License Consumption (need in landing page and home page)
+o Columns:
+o User Name
+o License Count by Type (Tree View)
+o Professional (count)
+o Functional (count)
+o Productive / Core (count)
+o Target License Classification
+
+-- 5 of 35 --
+
+KTern.AI | Product Requirements Document — License Optimization & SoD Analysis
+KTern.AI | Client: Lotte Chemical | Page 6
+o Expected Structure:
+o User Name
+└── License Type
+└── No. of Professional Licenses
+└── No. of Functional Licenses
+└── No. of Productive Licenses
+└── Target License Classification
+o Behaviour:
+o Expand user → view license types and counts [Have expand all - collapse all option]
+o Auto-Drill-down → list contributing roles / objects
+o Highlight final target classification per user
+o Ensure to have download icon & filters
+o Sample but few of the expectations mentioned is not below [other extract columns not mentioned aren't
+required]:
+2. Role-Based License Classification card on Home Page dashboard
+Card2: Role-Based License Classification (need in landing page and home page)
+• Columns:
+o Role Name
+o Role Description
+
+-- 6 of 35 --
+
+KTern.AI | Product Requirements Document — License Optimization & SoD Analysis
+KTern.AI | Client: Lotte Chemical | Page 7
+o Target License Classification
+• Behaviour:
+o Showcase the role and have the role description
+o Indicate the "target license classification" within each role
+• Ensure to have download icon & filters
+• Expectations [other extract columns not mentioned aren't required]:
+3. Recommendations – Object Level Cleaning & Role Based Cleaning
+Object-Level Cleaning (Focus: Professional License Objects)
+1. Eg: Filter “Professional License” objects only
+o Step 1: Object Traceability: Identify all roles containing the auth object (e.g., “ZX”) - (irrespective of
+used/unused)
+o Step 2: Role Assignment: For each role (e.g., F_LFA1) that contains the object:
+▪ State the number of users assigned & List the user names
+o Step 3: Usage & License Segregation: Based on trace:
+▪ Identify users who actually use the object
+▪ Classify users into:
+
+-- 7 of 35 --
+
+KTern.AI | Product Requirements Document — License Optimization & SoD Analysis
+KTern.AI | Client: Lotte Chemical | Page 8
+▪ High privilege (Professional required)
+▪ Lower privilege (Functional/Productive sufficient)
+o Step 4: Role Optimization:
+▪ Create a separate high-privilege role for the identified Professional users
+▪ Remove high-privilege objects from the old role (F_LFA1)
+▪ Retain only required objects for remaining users in the old role (F_LFA1)
+2. Role-Based Cleaning (Focus: Usage Efficiency)
+3. Step 1: Role Assignment Analysis: Identify all users assigned to the role
+4. Step 2: Usage Validation: Identify users who:
+o Did not use any objects in the role
+o Or have very low usage (specify it clearly)
+5. Step 3: Pattern Identification: Evaluate across users:
+o If majority unused (give count) → role is a cleanup candidate
+o If partially used (give count) → role requires optimization (object cleanup)
+6. Step 4: User-Level Cleanup: For users not using the role:
+o Identify other unused roles assigned
+o Recommend removal of unused role assignments
+4. Key Stakeholders
+Stakeholder / Role Responsibility Stream
+SAP License Manager (Lotte
+Chemical)
+Primary consumer of License Optimization dashboard; drives
+optimization decisions
+License Optimization
+SAP Basis / Security Team Data provisioning, role management, access trace activation Both
+IT Compliance & Audit Team Review SoD findings, validate remediation actions, audit readiness SoD Analysis
+Finance & Risk Leadership Approve remediation roadmap; quantify compliance risk exposure SoD Analysis
+CIO / IT Director Strategic oversight; license cost optimization and compliance
+governance
+Both
+
+-- 8 of 35 --
+
+KTern.AI | Product Requirements Document — License Optimization & SoD Analysis
+KTern.AI | Client: Lotte Chemical | Page 9
+KTern.AI Customer Success Onboarding, setup, enablement, ticket management, SLA
+governance
+Both
+KTern.AI Product Engineering Feature delivery, enhancement ticket resolution, SLA adherence Both
+5. Enhancement Ticket & SLA Policy
+Any feature or enhancement that falls outside the boundaries of the signed Statement of Work shall be submitted as an
+enhancement ticket and processed in accordance with the KTern.AI Service Level Agreement (SLA). The SLA governs all
+support and enhancement activities.
+Enhancement Ticket Process:
+o Customer raises an enhancement request via KTern.AI support portal or Customer Success team.
+o KTern.AI Product team reviews and classifies the ticket by priority (P1–P4).
+o Ticket is scheduled into the monthly product release cycle based on priority and common customer demand.
+o Customer is notified of the target release sprint and estimated delivery date.
+o Delivery is governed by the SLA timelines detailed below.
+Priority Response Time Resolution Target Example
+Critical (P1) 4 Business Hours 3 Business Day Bug Fixes
+High (P2) 8 Business Hours 5 Business Days Minor Enhancement
+Medium (P3) 1 Business Day 12 Business Days Enhancement ticket
+Low (P4) 1 Business Days 14 Business Days Any UI change, cosmetic, feature request
+STREAM 1
+License Optimization
+6. License Optimization — Features & Requirements
+The License Optimization stream delivers AI-driven analysis of SAP user licenses, role assignments, authorization
+objects, and transaction usage. It enables Lotte Chemical to identify optimization opportunities, right-size license
+consumption, and reduce recurring SAP costs.
+
+-- 9 of 35 --
+
+KTern.AI | Product Requirements Document — License Optimization & SoD Analysis
+KTern.AI | Client: Lotte Chemical | Page 10
+6.1 In-Scope Features (Statement of Work)
+LO-01 User Information Analysis
+✓ IN SCOPE (SoW) Covered under Statement of Work
+Description
+KTern.AI automatically ingests and analyzes SAP user master data including user types, validity dates, lock status, license
+assignments, and system usage patterns. The platform correlates this with authorization and activity data to build a unified user
+profile.
+Key Data Points
+◦ User Name, User Type, Validity Date (From / To)
+◦ Status
+◦ License Type Assignment
+◦ Last Login Date and Login Frequency
+Expected Behavior
+◦ Automated ingestion without manual data extraction from SAP
+◦ Single consolidated user profile view per user
+◦ Filtering and sorting by user type, license, status, and validity
+◦ Downloadable user data in Excel format
+◦ Consistent data across Home Page and Landing Page views
+Business Value
+Single source of truth for SAP user details. Enables Lotte Chemical to quickly identify inactive or incorrectly classified users,
+reducing compliance risk.
+LO-02 License Analysis & Classification
+✓ IN SCOPE (SoW) Covered under Statement of Work
+Description
+KTern.AI evaluates assigned SAP licenses against actual system usage by mapping user activities, transaction executions, and
+authorization footprints. The AI engine identifies license mismatches, over-licensed users, and under-utilized license categories.
+Key Data Points
+◦ Current License Type (Professional / Functional / Productivity / Self-Service)
+◦ Actual Usage Footprint (transactions executed, objects used)
+
+-- 10 of 35 --
+
+KTern.AI | Product Requirements Document — License Optimization & SoD Analysis
+KTern.AI | Client: Lotte Chemical | Page 11
+◦ License Match/Mismatch Indicator
+◦ Recommended License Type based on usage
+Expected Behavior
+◦ AI-driven license match/mismatch detection
+◦ Clear visualization of over-licensed vs. correctly licensed users
+◦ Summary KPI cards showing total licenses by type on Home Page
+◦ Drill-down to individual user license detail on Landing Page
+◦ Export functionality for license analysis data
+Business Value
+Enables significant SAP license cost optimization by highlighting opportunities to downgrade or reclassify licenses based on real
+usage.
+LO-03 Usage Statistics
+✓ IN SCOPE (SoW) Covered under Statement of Work
+Description
+KTern.AI analyzes historical usage data including login frequency, transaction execution counts, and activity recency to
+distinguish active users from dormant or infrequently used accounts. Trend detection is automated across time periods.
+Key Data Points
+◦ Login Count (Last 30 / 60 / 90 days)
+◦ Transaction Execution Count
+◦ Last Activity Date
+◦ Active / Dormant / Inactive Classification
+◦ Usage Trend (Trending Up / Flat / Declining)
+Expected Behavior
+◦ Automated dormancy and inactivity detection
+◦ Time-period based filtering (30/60/90/180/365 days)
+◦ Exportable usage summary report
+Business Value
+Improves governance by identifying users who no longer require access, supporting proactive cleanup of unused accounts.
+
+-- 11 of 35 --
+
+KTern.AI | Product Requirements Document — License Optimization & SoD Analysis
+KTern.AI | Client: Lotte Chemical | Page 12
+LO-04 Assigned Roles Analysis
+✓ IN SCOPE (SoW) Covered under Statement of Work
+Description
+KTern.AI analyzes all roles assigned to users — including composite and single roles — and evaluates redundancy, overlap,
+and relevance based on actual usage and authorization depth.
+Key Data Points
+◦ Role Name
+◦ Role Type (Single / Composite / Derived)
+◦ Assignment Source (Direct / Indirect)
+◦ Usage Status (Used / Unused / Partially Used)
+◦ Redundant Roles (Different Roles with same Auth Object/ Same Roles)
+Expected Behavior
+◦ Full role list per user with usage annotation
+◦ Composite role expansion to constituent single roles
+◦ Redundancy detection across user role assignments
+◦ Role assignment filterable by usage status
+◦ Export role assignment data per user or across all users
+Business Value
+Supports role rationalization and standardization, reducing role sprawl and making the authorization landscape easier to
+manage and migrate.
+LO-05 Authorization Objects Overview
+✓ IN SCOPE (SoW) Covered under Statement of Work
+Description
+Consolidated view of all authorization objects assigned to users, including frequency of use. Eliminates need for manual SUIM
+analysis.
+Key Data Points
+◦ Authorization Object Code & Description
+◦ Assigned via Role vs. Directly Assigned
+◦ Usage Count
+◦ Last Used Date
+
+-- 12 of 35 --
+
+KTern.AI | Product Requirements Document — License Optimization & SoD Analysis
+KTern.AI | Client: Lotte Chemical | Page 13
+Expected Behavior
+◦ Consolidated authorization object list per user
+◦ Distinction between role-based and directly assigned objects
+◦ Usage frequency and recency (when it was last used) data
+◦ Filterable and sortable by object, usage, and assignment type
+Business Value
+Improves authorization design transparency, helping IT and security teams eliminate obsolete or excessive authorizations.
+LO-06 Assigned Transactions Analysis
+✓ IN SCOPE (SoW) Covered under Statement of Work
+Description
+KTern.AI maps transaction codes (T-Codes) assigned via roles and directly to users, correlating them with execution history to
+identify unused or rarely used transactions.
+Key Data Points
+◦ T-Code
+◦ Assignment Source (Role / Direct)
+◦ Execution Count
+◦ Last Execution Date
+◦ Used / Unused Classification
+Expected Behavior
+◦ Full T-Code list per user with execution data
+◦ Clear Used vs. Unused classification
+◦ Cross-reference to assigning roles
+◦ Export T-Code analysis data
+Business Value
+Allows removal of unnecessary transactional access, lowering risk and supporting least-privilege principles.
+
+-- 13 of 35 --
+
+KTern.AI | Product Requirements Document — License Optimization & SoD Analysis
+KTern.AI | Client: Lotte Chemical | Page 14
+LO-07 Directly Assigned Authorization Objects
+✓ IN SCOPE (SoW) Covered under Statement of Work
+Description
+Identifies authorization objects directly assigned to users (outside role-based assignments), which are often overlooked in
+traditional audits.
+Key Data Points
+◦ Object Code & Description
+◦ Field Values
+◦ Assignment Date
+◦ Usage Status
+Expected Behavior
+◦ Isolated view of direct-assignment-only objects
+◦ Usage trace per directly assigned object
+◦ Highlight objects bypassing role governance
+◦ Export capability
+Business Value
+Eliminates undocumented and non-standard access paths, strengthening governance and ensuring consistent role-based
+security practices.
+LO-08 Used & Unused Authorization Objects
+✓ IN SCOPE (SoW) Covered under Statement of Work
+Description
+KTern.AI tracks which authorization objects are actually used during system execution, distinguishing them from merely
+assigned permissions. Also surfaces Unused Directly Assigned Authorization Objects that are assigned to users but never
+triggered at runtime.
+Key Data Points
+◦ Object Code
+◦ Used / Unused Flag
+◦ Execution Count
+◦ Last Used Date
+◦ Assignment Source
+
+-- 14 of 35 --
+
+KTern.AI | Product Requirements Document — License Optimization & SoD Analysis
+KTern.AI | Client: Lotte Chemical | Page 15
+Expected Behavior
+◦ Side-by-side view of assigned vs. used objects
+◦ Drill-down from used objects to specific transactions
+◦ Export both used and unused object lists
+Business Value
+Supports precise authorization cleanup by retaining only what is functionally required, reducing complexity.
+Note — Dependency
+Authorization Object Field Value based usage analysis requires Lotte Chemical to have activated the required trace
+mechanisms in the SAP System prior to each Assessment run.
+LO-09 License Breakdown
+✓ IN SCOPE (SoW) Covered under Statement of Work
+Description
+Granular breakdown of license types across all users, mapping each license category to actual usage behavior and access
+patterns.
+Key Data Points
+◦ License Type
+◦ User Count by License Type
+◦ Usage Match Rate by License Type
+Expected Behavior
+◦ Summary breakdown chart/table on Home Page dashboard
+◦ Drill-down to individual users per license type
+◦ Trend view across assessment runs
+◦ Export breakdown data
+Business Value
+Gives leadership clear visibility into where SAP license spend is concentrated, enabling informed reclassification decisions.
+
+-- 15 of 35 --
+
+KTern.AI | Product Requirements Document — License Optimization & SoD Analysis
+KTern.AI | Client: Lotte Chemical | Page 16
+LO-10 Top Transactions & Unused Transactions
+✓ IN SCOPE (SoW) Covered under Statement of Work
+Description
+KTern.AI analyzes execution logs to identify the most frequently used SAP transactions and those that are assigned but never
+executed.
+Key Data Points
+◦ T-Code
+◦ Execution Count
+◦ License Type Contribution
+Expected Behavior
+◦ Top N transactions by usage across all users
+◦ Unused transactions list per user and globally
+◦ Filterable by department, user type, license type
+◦ Export both views
+Business Value
+Distinguishes core business transactions from peripheral usage; enables tighter access control and accurate license entitlement
+alignment.
+LO-11 Complete Role Utilization Analysis
+✓ IN SCOPE (SoW) Covered under Statement of Work
+Description
+KTern.AI evaluates role utilization across all assigned roles, measuring actual usage of transactions and authorization objects
+within each role. Also extracts structural data from role, authorization object, field, and value levels.
+Key Data Points
+◦ Role Name
+◦ Assigned User Names
+◦ Used / Unused Classification
+◦ Object Count (Total / Used / Unused)
+◦ Authorization Object, Field, Value Structure
+
+-- 16 of 35 --
+
+KTern.AI | Product Requirements Document — License Optimization & SoD Analysis
+KTern.AI | Client: Lotte Chemical | Page 17
+Expected Behavior
+◦ Role utilization summary table
+◦ Drill-down from role to contributing users and objects
+◦ Export role utilization data with full structural breakdown
+◦ Filterable by utilization level and role type
+Business Value
+Supports role consolidation and standardization; critical for SAP scalability and S/4HANA readiness.
+LO-12 Role Activity & Authorization Analysis
+✓ IN SCOPE (SoW) Covered under Statement of Work
+Description
+KTern.AI analyzes SAP roles at a granular authorization-object and activity level by decoding role definitions, authorization
+objects, fields, and access types (Display, Post, Change, etc.).
+Key Data Points
+◦ Activity Type (01-Create, 02-Change, 03-Display, etc.)
+◦ Authorization Object per Activity
+Expected Behavior
+◦ Activity-level breakdown per role
+◦ Export role activity matrix
+Business Value
+Enables stronger governance; ensures minimum required access; helps reduce compliance risks and prevent unauthorized
+postings.
+6.2 Enhancements (Enhancement Tickets — Governed by SLA)
+The following enhancements are not covered in the signed SoW. Each will be raised as a separate enhancement ticket
+and delivered per the KTern.AI SLA. Priority classification and delivery timelines will be agreed with the Lotte Chemical
+project team upon ticket submission.
+
+-- 17 of 35 --
+
+KTern.AI | Product Requirements Document — License Optimization & SoD Analysis
+KTern.AI | Client: Lotte Chemical | Page 18
+LO-ENH-01 Target License Classification Column
+⚠ Enhancement Ticket Required Requires separate enhancement ticket per KTern.AI SLA
+Ticket Summary
+Introduce a new column "Target License Classification" after the Email column in the user table. This column represents the
+highest privileged license type assigned to each user.
+Classification Logic
+◦ Hierarchy: Productivity < Functional < Professional
+◦ If a user has multiple license types → assign the highest applicable
+◦ Professional always takes precedence → classify as Professional
+◦ Functional + Productivity → classify as Functional
+◦ Only Productivity → classify as Productivity
+Expected Behavior
+◦ Column appears after Email column in user table
+◦ Logic computed at backend level for consistency
+◦ Available in UI, included in export/download
+◦ Consistent across Home Page and Landing Page views
+◦ Filterable and sortable by Target License Classification
+Business Impact
+◦ Provides clear, standardized single-value license classification per user
+◦ Enables accurate license optimization and cost reduction decisions
+◦ Reduces manual consolidation effort — improves operational efficiency
+◦ Improves reporting clarity for stakeholders — better governance and audit readiness
+Priority Suggestion
+P2 — High (directly impacts License Optimization accuracy)
+LO-ENH-02 User-Based License Consumption Card (Home Page)
+⚠ Enhancement Ticket Required Requires separate enhancement ticket per KTern.AI SLA
+Ticket Summary
+Add a "User-Based License Consumption" card to the License Optimization Dashboard Home Page. This card provides a tree-
+view breakdown of license consumption per user.
+
+-- 18 of 35 --
+
+KTern.AI | Product Requirements Document — License Optimization & SoD Analysis
+KTern.AI | Client: Lotte Chemical | Page 19
+Required Columns / Data Points
+◦ User Name
+◦ Number of Professional Licenses
+◦ Number of Functional Licenses
+◦ Number of Productive / Core Licenses
+◦ Target License Classification (per LO-ENH-01 logic)
+Expected Behavior
+◦ Tree-view structure with expand/collapse at user level
+◦ Expand All and Collapse All controls
+◦ Auto drill-down to contributing roles or authorization objects
+◦ Highlight final Target License Classification per user
+◦ Filter capability (by user, license type, classification)
+◦ Download/export option (Excel)
+◦ Consistent with Landing Page data
+Business Impact
+◦ Single consolidated user-level view of license consumption
+◦ Faster and more accurate license optimization decisions
+◦ Reduced manual effort and improved transparency
+◦ Improves audit readiness and stakeholder reporting
+Reference
+See Image Reference 1 (uploaded reference screenshots — column structure to follow LO-ENH-01 logic).
+Priority Suggestion
+P2 — High
+LO-ENH-03 Role-Based License Classification Card (Home Page)
+⚠ Enhancement Ticket Required Requires separate enhancement ticket per KTern.AI SLA
+Ticket Summary
+Add a "Role-Based License Classification" card to the License Optimization Dashboard Home Page. This card shows the Target
+License Classification per role.
+Required Columns / Data Points
+◦ Role Name
+
+-- 19 of 35 --
+
+KTern.AI | Product Requirements Document — License Optimization & SoD Analysis
+KTern.AI | Client: Lotte Chemical | Page 20
+◦ Role Description
+◦ Target License Classification
+Expected Behavior
+◦ Role list with description and classification
+◦ Indicate target license classification per role clearly
+◦ Filter capability (by role name, classification)
+◦ Download/export option (Excel)
+◦ Consistent with Landing Page data
+Business Impact
+◦ Clear understanding of role-based license classification
+• Supports role optimization and cleanup efforts
+• Improves governance and compliance visibility
+• Reduces manual analysis effort
+Reference
+See Image Reference 2 (uploaded reference screenshots).
+Fallback Option
+If new cards are not immediately feasible: Add Target License Classification column and license count columns (in tree view) to
+the existing table. Allow users to hide/show columns. Ensure only selected columns / filtered data are downloaded.
+Priority Suggestion
+P2 — High
+LO-ENH-04 AI-Driven Recommendations on License Optimization Dashboard & Export
+⚠ Enhancement Ticket Required Requires separate enhancement ticket per KTern.AI SLA
+Ticket Summary
+Surface license optimization recommendations on both the Dashboard Home Page and Landing Page, and include them in the
+exported Excel/PDF report. At a minimum, basic recommendations must be visible.
+Recommendation Types
+◦ Object-Level Cleaning (Focus: Professional License Objects)
+◦ Role-Based Cleaning (Focus: Usage Efficiency)
+◦ Authorization-Based Role Optimization (Focus: Redundant Role Cleanup)
+
+-- 20 of 35 --
+
+KTern.AI | Product Requirements Document — License Optimization & SoD Analysis
+KTern.AI | Client: Lotte Chemical | Page 21
+Recommendation 1: Object-Level Cleaning
+◦ Identify all Professional license authorization objects
+◦ Trace actual object usage per user
+◦ Classify users: Professional Required vs. Functional/Productive Sufficient
+◦ Step 1 — Object Traceability: Identify all roles containing the auth object (irrespective of
+used/unused)
+◦ Step 2 — Role Assignment: For each role containing the object, state number of users
+assigned and list user names
+◦ Step 3 — Usage & License Segregation: Identify users who actually use the object;
+classify into High Privilege (Professional required) vs. Lower Privilege
+(Functional/Productive sufficient)
+◦ Step 4 — Role Optimization: Create a new high-privilege role for Professional users;
+remove high-privilege objects from old role; retain only required objects for remaining
+users in the old role
+Recommendation 2: Role-Based Cleaning
+◦ Identify all roles assigned to users
+◦ Step 1 — Role Assignment Analysis: Identify all users assigned to the role
+◦ Step 2 — Usage Validation: Identify users who did not use any objects in the role or have
+very low usage
+◦ Step 3 — Pattern Identification: If majority unused → role is cleanup candidate; if partially
+used → role requires optimization (object cleanup)
+◦ Step 4 — User-Level Cleanup: Recommend removal of unused role assignments for
+users not using the role
+Recommendation 3: Authorization-Based Role Optimization
+◦ Identify authorization objects present across multiple roles
+◦ Detect object overlap across roles
+◦ Logic: If object exists in multiple roles → do not mark all roles as used by that object
+alone
+◦ If role has only redundant objects OR only unused objects → recommend role removal
+◦ If role has at least one unique used object → retain role
+◦ Example: User has Role A (O1 + unused objects) and Role B (O1 only). O1 is used →
+Remove Role A as O1 is covered by Role B
+Dashboard Behavior
+◦ Recommendations panel/section on Home Page and Landing Page
+◦ Each recommendation includes: User/Role, Recommendation Type, Recommended
+Action, Justification
+◦ Filterable by recommendation type and severity
+
+-- 21 of 35 --
+
+KTern.AI | Product Requirements Document — License Optimization & SoD Analysis
+KTern.AI | Client: Lotte Chemical | Page 22
+◦ Recommendations included in Excel/PDF export
+Business Impact
+◦ Data without recommendation is not actionable — this closes the analysis-to-action gap
+◦ Faster decisions and higher adoption of KTern.AI platform
+◦ Better trust in system output for stakeholders and auditors
+Priority Suggestion
+P3 — Medium (foundational to License Optimization value; recommend prioritizing in next monthly release)
+Note: Any run with the result report having issues shouldn’t be counted part of the 12 run.
+
+-- 22 of 35 --
+
+KTern.AI | Product Requirements Document — License Optimization & SoD Analysis
+KTern.AI | Client: Lotte Chemical | Page 23
+STREAM 2
+Segregation of Duties (SoD) Analysis
+7. SoD Analysis — Features & Requirements
+The SoD Analysis stream delivers AI-powered detection and assessment of Segregation of Duties conflicts, critical
+access violations, and compliance gaps across Lotte Chemical's SAP authorization landscape. It enables proactive
+compliance governance aligned to SAP GRC best practices.
+Important Note:
+◦ SoD compliance analysis will be performed based on custom exception scenarios
+defined as part of Lotte Chemical's organization.
+◦ Custom Exception Scenarios must be shared with the KTern.AI team at least 10
+business days prior to each assessment run.
+7.1 In-Scope Features (Statement of Work)
+SOD-01 Executive Summary Dashboard
+✓ IN SCOPE (SoW) Covered under Statement of Work
+Description
+KTern.AI delivers an automated, data-driven SoD compliance assessment summary. The executive summary presents AI-
+powered risk classification, critical violation highlights, and a business-consumable compliance overview aligned to SAP GRC
+best practices.
+Key Data Points
+◦ Total Users Analyzed
+◦ Total SoD Violations Detected
+◦ Violations by Severity (Critical / High / Medium / Low)
+◦ Top Risk Categories
+◦ Overall Compliance Score
+Expected Behavior
+◦ Single-screen executive summary visible on SoD Dashboard Home Page
+◦ KPI cards for total violations, severity breakdown, and compliance score
+◦ Visual charts (pie/bar) for risk distribution
+
+-- 23 of 35 --
+
+KTern.AI | Product Requirements Document — License Optimization & SoD Analysis
+KTern.AI | Client: Lotte Chemical | Page 24
+◦ Drill-down to detailed violation list
+◦ Export executive summary as PDF/Excel
+Business Value
+Provides leadership with immediate enterprise-wide access risk visibility, enabling faster governance decisions.
+SOD-02 Overall Compliance Assessment
+✓ IN SCOPE (SoW) Covered under Statement of Work
+Description
+KTern.AI computes an overall compliance posture by correlating user access, role design, and transactional behavior against
+predefined SoD risk matrices, benchmarked against SAP and industry standards.
+Key Data Points
+◦ Compliance Maturity Score
+◦ Benchmark vs. SAP GRC Standard
+◦ Compliance Trend (Improvement / Deterioration across runs)
+◦ Systemic Weakness Identification
+Expected Behavior
+◦ Compliance posture scorecard with trend
+◦ Benchmark comparison panel
+◦ Historical run comparison across assessment runs
+◦ Export compliance assessment report
+Business Value
+Enables Lotte to clearly understand compliance maturity and define a roadmap toward audit readiness.
+SOD-03 Critical Findings Summary
+✓ IN SCOPE (SoW) Covered under Statement of Work
+Description
+Automatically consolidates all high-risk and critical violations across users, roles, and processes into a unified risk summary. AI-
+driven severity scoring ensures accurate prioritization.
+
+-- 24 of 35 --
+
+KTern.AI | Product Requirements Document — License Optimization & SoD Analysis
+KTern.AI | Client: Lotte Chemical | Page 25
+Key Data Points
+◦ Violation ID
+◦ Violation Description
+◦ Affected Users
+◦ Severity Score
+◦ Process Area (Finance / Procurement / OTC / HR / IT)
+◦ Recommended Action
+Expected Behavior
+◦ Consolidated critical findings list on Home Page
+◦ Severity-based sorting and filtering
+◦ Drill-down to individual violation detail
+◦ Export critical findings list
+Business Value
+Reduces dependency on manual audit interpretation; enables focused remediation on the highest-impact risks.
+SOD-04 Immediate Actions Required (24–48 Hours)
+✓ IN SCOPE (SoW) Covered under Statement of Work
+Description
+KTern.AI identifies violations requiring urgent remediation and provides specific actionable steps such as access revocation,
+role redesign, or emergency access governance.
+Key Data Points
+◦ Violation Description
+◦ Urgency Level
+◦ Affected User(s)
+◦ Recommended Immediate Action
+◦ Estimated Business Risk if Unaddressed
+Expected Behavior
+◦ Distinct "Immediate Actions" panel on SoD Dashboard
+◦ Clear call-to-action per violation
+◦ Assignable to responsible team/user
+◦ Track status of immediate action completion
+◦ Export immediate actions list
+
+-- 25 of 35 --
+
+KTern.AI | Product Requirements Document — License Optimization & SoD Analysis
+KTern.AI | Client: Lotte Chemical | Page 26
+Business Value
+Empowers Lotte to respond quickly to high-risk audit issues, protecting financial integrity.
+SOD-05 Compliance Impact Assessment
+✓ IN SCOPE (SoW) Covered under Statement of Work
+Description
+Maps identified SoD violations to their potential financial, operational, and regulatory impact using rule-based and AI-assisted
+analysis.
+Key Data Points
+◦ Impact Category (Financial / Operational / Regulatory)
+◦ Estimated Exposure Level
+◦ Linked Process Areas
+◦ Regulatory Framework Reference (SOX, GDPR, etc.)
+Expected Behavior
+◦ Impact matrix view linking violations to business impact
+◦ Risk quantification panel
+◦ Regulatory framework mapping
+◦ Export impact assessment
+Business Value
+Helps leadership quantify compliance risk exposure and justify remediation investments.
+SOD-06 Critical Violations — Category 1: Super Administrators
+✓ IN SCOPE (SoW) Covered under Statement of Work
+Description
+Detects users with unrestricted or near-unrestricted access across SAP systems, highlighting concentration-of-power risks and
+non-compliant access patterns.
+
+-- 26 of 35 --
+
+KTern.AI | Product Requirements Document — License Optimization & SoD Analysis
+KTern.AI | Client: Lotte Chemical | Page 27
+Key Data Points
+◦ User Name / ID
+◦ Super Admin Indicator
+◦ Roles Contributing to Super Admin Status
+◦ Recommendation (Revoke / Redesign / Monitor)
+Expected Behavior
+◦ Dedicated Super Administrator violations panel
+◦ User list with contributing role details
+◦ Severity flagging and recommended actions
+◦ Export super admin violation list
+Business Value
+Reduces risk of unauthorized system changes, fraud, and audit failure by enforcing least-privilege access.
+SOD-07 Critical Violations — Category 2: Dual Process Control
+✓ IN SCOPE (SoW) Covered under Statement of Work
+Description
+Identifies users controlling multiple end-to-end business processes through cross-role and transaction analysis based on SAP
+standard dual process control violations.
+Key Data Points
+◦ User Name
+◦ Process 1 (e.g., Create Vendor)
+◦ Process 2 (e.g., Approve Payment)
+◦ Conflicting Transactions
+◦ Severity (Critical / High)
+Expected Behavior
+◦ Dual process conflict matrix view
+◦ User-level violation detail with conflicting transactions
+◦ Process area drill-down
+◦ Export dual process violation list
+Business Value
+Mitigates financial fraud risk and ensures integrity across critical revenue and procurement cycles.
+
+-- 27 of 35 --
+
+KTern.AI | Product Requirements Document — License Optimization & SoD Analysis
+KTern.AI | Client: Lotte Chemical | Page 28
+SOD-08 Critical Violations — Category 3: Emergency Access
+✓ IN SCOPE (SoW) Covered under Statement of Work
+Description
+Analyzes firefighter and emergency access usage patterns, detecting excessive access, prolonged assignments, and missing
+approvals.
+Key Data Points
+◦ User Name
+◦ Firefighter ID / Emergency Role
+◦ Assignment Duration
+◦ Usage Frequency
+◦ Approval Status
+◦ Anomaly Flag
+Expected Behavior
+◦ Emergency access usage timeline per user
+◦ Approval gap detection
+◦ Prolonged assignment alerting
+◦ Export emergency access report
+Business Value
+Ensures emergency access is used only for justified scenarios, reducing audit exposure and preventing misuse of privileged
+access.
+SOD-09 Critical Violations — Category 4: Complete OTC Control
+✓ IN SCOPE (SoW) Covered under Statement of Work
+Description
+Flags users with end-to-end Order-to-Cash control, combining transactional authority and financial posting privileges across the
+OTC process cycle.
+Key Data Points
+◦ User Name
+◦ OTC Steps Controlled (Order Entry / Delivery / Billing / Collection)
+◦ Conflicting Transactions
+◦ Financial Impact Exposure
+
+-- 28 of 35 --
+
+KTern.AI | Product Requirements Document — License Optimization & SoD Analysis
+KTern.AI | Client: Lotte Chemical | Page 29
+Expected Behavior
+◦ OTC control violation panel
+◦ Process step coverage visualization
+◦ User drill-down with conflicting transaction list
+◦ Export OTC control violations
+Business Value
+Protects revenue integrity and prevents manipulation of sales, billing, and collections processes.
+SOD-10 High-Risk Violations — Service Accounts
+✓ IN SCOPE (SoW) Covered under Statement of Work
+Description
+Identifies service and technical accounts with excessive or unmanaged privileges, including background job and integration
+users.
+Key Data Points
+◦ Account Name / ID
+◦ Account Type (Service / Background / Integration)
+◦ Privilege Level
+◦ Last Activity
+◦ Risk Classification
+Expected Behavior
+◦ Service account violation list
+◦ Privilege level indicator
+◦ Inactivity and excessive access flags
+◦ Export service account violation report
+Business Value
+Reduces cyber and operational risk by tightening control over non-human access, a common blind spot in audits.
+
+-- 29 of 35 --
+
+KTern.AI | Product Requirements Document — License Optimization & SoD Analysis
+KTern.AI | Client: Lotte Chemical | Page 30
+SOD-11 Remediation & Governance Recommendations
+✓ IN SCOPE (SoW) Covered under Statement of Work
+Description
+Provides AI-backed remediation recommendations including role redesign, access removal, mitigating controls, and governance
+policy suggestions.
+Key Data Points
+◦ Violation ID
+◦ Recommendation Type (Role Redesign / Access Removal / Mitigating Control / Policy)
+◦ Action Steps
+◦ Priority
+◦ Assignee Suggestion
+Expected Behavior
+◦ Remediation recommendations panel on SoD Dashboard
+◦ Actionable steps per recommendation
+◦ Assignable to responsible team
+◦ Track recommendation status (Open / In Progress / Resolved)
+◦ Export remediation plan
+Business Value
+Accelerates remediation cycles and reduces reliance on external auditors; enables sustainable compliance operations.
+SOD-12 Continuous Compliance Enablement
+✓ IN SCOPE (SoW) Covered under Statement of Work
+Description
+Supports ongoing monitoring and re-assessment through periodic SoD scans and live dashboards, enabling continuous
+compliance monitoring.
+Key Data Points
+◦ Scan Run Date
+◦ Violations Trend (New / Resolved / Persisting)
+◦ Compliance Score Trend
+
+-- 30 of 35 --
+
+KTern.AI | Product Requirements Document — License Optimization & SoD Analysis
+KTern.AI | Client: Lotte Chemical | Page 31
+◦ Assessment Run History
+Expected Behavior
+◦ Multiple assessment run support (up to 90 runs/year as per SoW)
+◦ Trend comparison across runs
+◦ Compliance improvement tracking
+◦ Historical run archive with drill-down
+◦ Automated alerts for new critical violations (if configured)
+Business Value
+Moves Lotte from point-in-time audits to proactive, continuous compliance — reducing future audit cost and risk.
+7.2 Enhancements — SoD Analysis
+No enhancement tickets have been raised for the SoD Analysis stream at this time. Any enhancements identified during
+the engagement will be submitted as enhancement tickets per the SLA process described in Section 5.
+8. Non-Functional Requirements
+8.1 Performance
+Requirement Specification
+Dashboard Load Time Home Page dashboard must load within 5 seconds for up to 10,000 users
+Assessment Run Duration Full License Optimization run to complete within 4 hours for Lotte Chemical
+data volumes
+Export Generation Excel / PDF export to generate within 60 seconds for standard data volumes
+Concurrent Users Platform must support minimum 50 concurrent dashboard users without
+performance degradation
+API Response Time All internal API calls to return within 3 seconds under normal load
+8.2 Security & Compliance
+Requirement Specification
+Data Encryption All data at rest and in transit must be encrypted (AES-256 / TLS 1.2+)
+
+-- 31 of 35 --
+
+KTern.AI | Product Requirements Document — License Optimization & SoD Analysis
+KTern.AI | Client: Lotte Chemical | Page 32
+Authentication SSO and multi-factor authentication (MFA) support
+Role-Based Access Control Platform access governed by RBAC with tenant-level isolation
+Data Residency SAP data processed in compliance with Lotte Chemical data residency
+policies
+Audit Logging All user actions and data access events logged and auditable
+SAP Certification Platform maintains SAP AI Certified Platform status
+Architecture Require information on the architecture part, where and all it goes & access
+the data
+8.3 Availability & SLA
+Requirement Specification
+Platform Availability 99.9% uptime SLA (24x7), excluding planned maintenance windows
+Planned Maintenance Advance electronic notice provided before scheduled downtime
+Assessment Runs License Optimization: 12 runs/year; SoD: 90 runs/year (per SoW commercials)
+Support Hours KTern.AI Customer Success support during business hours; critical support
+9x5
+Data Re-run Policy Re-run available at no count cost for validated data discrepancy scenarios (per
+SoW T&C)
+9. Requirements Traceability Matrix (RTM)
+The following matrix maps each feature to its SoW coverage status, priority, and business owner.
+Feature ID Feature Name Stream SoW Coverage Priority Business Owner
+LO-01 User Information Analysis License Opt. In Scope P1 SAP License
+Manager
+
+-- 32 of 35 --
+
+KTern.AI | Product Requirements Document — License Optimization & SoD Analysis
+KTern.AI | Client: Lotte Chemical | Page 33
+LO-02 License Analysis & Classification License Opt. In Scope P1 SAP License
+Manager
+LO-03 Usage Statistics License Opt. In Scope P1 SAP Basis Team
+LO-04 Assigned Roles Analysis License Opt. In Scope P1 SAP Security
+Team
+LO-05 Authorization Objects Overview License Opt. In Scope P1 SAP Security
+Team
+LO-06 Assigned Transactions Analysis License Opt. In Scope P1 SAP Basis Team
+LO-07 Directly Assigned Auth Objects License Opt. In Scope P1 SAP Security
+Team
+LO-08 Used & Unused Auth Objects License Opt. In Scope P1 SAP Security
+Team
+LO-09 License Breakdown License Opt. In Scope P1 SAP License
+Manager
+LO-10 Top Transactions & Unused License Opt. In Scope P2 SAP Basis Team
+LO-11 Complete Role Utilization
+Analysis
+License Opt. In Scope P1 SAP Security
+Team
+LO-12 Role Activity & Auth Analysis License Opt. In Scope P1 SAP Security
+Team
+LO-ENH-01 Target License Classification
+Column
+License Opt. ENHANCEMENT P2 SAP License
+Manager
+LO-ENH-02 User-Based License
+Consumption Card
+License Opt. ENHANCEMENT P2 SAP License
+Manager
+LO-ENH-03 Role-Based License
+Classification Card
+License Opt. ENHANCEMENT P2 SAP License
+Manager
+LO-ENH-04 AI Recommendations on
+Dashboard
+License Opt. ENHANCEMENT P3 SAP License
+Manager
+SOD-01 Executive Summary Dashboard SoD Analysis In Scope P1 IT Compliance
+SOD-02 Overall Compliance Assessment SoD Analysis In Scope P1 IT Compliance
+
+-- 33 of 35 --
+
+KTern.AI | Product Requirements Document — License Optimization & SoD Analysis
+KTern.AI | Client: Lotte Chemical | Page 34
+SOD-03 Critical Findings Summary SoD Analysis In Scope P1 IT Compliance
+SOD-04 Immediate Actions (24–48 hrs) SoD Analysis In Scope P1 IT Compliance
+SOD-05 Compliance Impact Assessment SoD Analysis In Scope P1 Finance / Risk
+SOD-06 Super Administrators Detection SoD Analysis In Scope P1 IT Compliance
+SOD-07 Dual Process Control Violations SoD Analysis In Scope P1 Finance / Risk
+SOD-08 Emergency Access Violations SoD Analysis In Scope P1 IT Compliance
+SOD-09 OTC Control Violations SoD Analysis In Scope P1 Finance / Risk
+SOD-10 High-Risk Service Accounts SoD Analysis In Scope P2 SAP Basis Team
+SOD-11 Remediation & Governance Recs SoD Analysis In Scope P1 IT Compliance
+SOD-12 Continuous Compliance
+Enablement
+SoD Analysis In Scope P2 IT Compliance
+10. Commercials Summary
+Parameter Details
+Solution KTern.AI — License Optimization & SoD Agents
+Contract Duration 3 years (March 4, 2026 – March 4, 2029)
+Total Price USD 150,000 (inclusive of unlimited app user access and customer support)
+License Optimization Runs 12 runs per year
+SoD Analysis Runs 90 runs per year
+Billing Milestone 1 USD 50,000 — March 4, 2026
+Billing Milestone 2 USD 50,000 — March 4, 2027
+Billing Milestone 3 USD 50,000 — March 4, 2028
+Enhancement Tickets Governed by KTern.AI SLA (https://ktern.com/trust-center/sla)
+
+-- 34 of 35 --
+
+KTern.AI | Product Requirements Document — License Optimization & SoD Analysis
+KTern.AI | Client: Lotte Chemical | Page 35
+11. Glossary
+Term Definition
+Authorization Object An SAP security element that controls access to business functions, fields, and activities within the system.
+Enhancement Ticket A formal request for a feature or change that is outside the signed SoW, processed under the KTern.AI SLA.
+Firefighter Access Emergency privileged access in SAP, typically managed via SAP GRC firefighter IDs for break-glass scenarios.
+License
+Classification
+The categorization of an SAP user's license type (Professional / Functional / Productivity) based on their access and
+usage patterns.
+OTC Order-to-Cash — the end-to-end business process from customer order creation through billing and cash collection.
+PRD Product Requirements Document — this document.
+Role Utilization The degree to which authorization objects and transactions within an assigned role are actively used by the assigned
+user.
+SLA Service Level Agreement — the KTern.AI policy governing support response times and enhancement ticket delivery.
+SoD Segregation of Duties — the principle of separating conflicting business process steps across different users to reduce
+fraud and error risk.
+SoW Statement of Work — the signed contractual document between KTern.AI and Lotte Chemical defining the scope of
+delivery.
+T-Code Transaction Code — an SAP shortcut that executes a specific SAP function or program.
+USMM / LAW SAP License Administration Workbench and User System Measurement — SAP tools for license measurement
+and compliance.
+
+-- 35 of 35 --
+
