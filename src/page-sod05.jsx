@@ -5,18 +5,27 @@ const {
   ResponsiveContainer: P5_ResponsiveContainer, LabelList: P5_LabelList,
 } = Recharts;
 
-const { useState, useMemo } = React;
+const { useState, useMemo, useEffect } = React;
+
+/* ─── Modal Portal for Fixed Positioning ────────────────────
+   Renders modals on document.body to escape parent transform
+   constraints and ensure fixed positioning works correctly.
+─────────────────────────────────────────────────────────── */
+function ModalPortal({ children }) {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  if (!mounted) return null;
+  return ReactDOM.createPortal(children, document.body);
+}
 
 const Sod05Kpis = () => {
   const k = window.MOCK.IMPACT_KPIS;
-  const fmt$ = n => '$' + (n / 1_000_000).toFixed(1) + 'M';
   return (
-    <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-5">
+    <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-4">
       <StatCard label="MAPPED VIOLATIONS" value={k.totalMapped.toLocaleString()} delta={k.deltas.totalMapped} deltaInvertGood />
       <StatCard severity="Critical" label="HIGH EXPOSURE" value={k.financialExposureHigh} delta={k.deltas.financialExposureHigh} deltaInvertGood />
       <StatCard severity="Medium" label="MEDIUM EXPOSURE" value={k.financialExposureMed} />
       <StatCard severity="Low" label="LOW EXPOSURE" value={k.financialExposureLow} />
-      <StatCard severity="Critical" label="MONEY AT RISK" value={fmt$(k.totalDollarExposure)} delta={k.deltas.totalDollarExposure / 1_000_000} deltaSuffix="M" deltaInvertGood />
     </div>
   );
 };
@@ -120,6 +129,7 @@ const ImpactMatrix = () => {
   const [sort, setSort] = useState({ key: 'exposure', dir: 'asc' });
   const [page, setPage] = useState(1);
   const [expanded, setExpanded] = useState(null);
+  const [inspectedRow, setInspectedRow] = useState(null);
   const pageSize = 12;
   const expOrder = { High: 0, Medium: 1, Low: 2 };
 
@@ -155,8 +165,6 @@ const ImpactMatrix = () => {
               <Th>Impact Description</Th>
               <Th>Impact Type</Th>
               <Th sortKey="exposure" sort={sort} onSort={k => setSort({key:k, dir: sort.dir==='asc'?'desc':'asc'})}>Severity</Th>
-              <Th align="right">Metric ($)</Th>
-              <Th>Affected Areas</Th>
               <Th>Frameworks</Th>
             </tr>
           </thead>
@@ -177,14 +185,6 @@ const ImpactMatrix = () => {
                     <td className="px-4 py-3.5">
                       <span className={`inline-flex px-1.5 py-0.5 rounded font-bold text-[10px] ring-1 ring-inset ${SEV_STYLE[r.exposure]}`}>{r.exposure}</span>
                     </td>
-                    <td className="px-4 py-3.5 text-right font-mono font-bold text-ink-900">
-                      {r.dollars ? '$' + (r.dollars / 1_000_000).toFixed(2) + 'M' : '—'}
-                    </td>
-                    <td className="px-4 py-3.5">
-                      <div className="flex gap-1.5">
-                        {r.areas.slice(0,2).map(a => <span key={a} className="px-1.5 py-0.5 rounded bg-ink-100 text-[10px] font-bold text-ink-700">{a}</span>)}
-                      </div>
-                    </td>
                     <td className="px-4 py-3.5">
                       <div className="flex gap-1">
                         {r.frameworks.map(f => <span key={f} className="font-mono text-[10px] font-bold text-brand-600">{f}</span>)}
@@ -193,8 +193,8 @@ const ImpactMatrix = () => {
                   </tr>
                   {isOpen && (
                     <tr className="bg-ink-50/30">
-                      <td colSpan={8} className="px-12 py-5">
-                        <DrilldownPanel row={r} />
+                      <td colSpan={7} className="px-12 py-5">
+                        <DrilldownPanel row={r} onInspect={setInspectedRow} />
                       </td>
                     </tr>
                   )}
@@ -205,11 +205,123 @@ const ImpactMatrix = () => {
         </table>
       </div>
       <Pagination page={page} pageSize={pageSize} total={filtered.length} onPage={setPage} />
+      {inspectedRow && <ImpactProfilePanel row={inspectedRow} onClose={() => setInspectedRow(null)} />}
     </Section>
   );
 };
 
-const DrilldownPanel = ({ row }) => (
+function ImpactProfilePanel({ row, onClose }) {
+  if (!row) return null;
+
+  const profile = {
+    id: row.id,
+    description: row.desc,
+    category: row.category,
+    exposure: row.exposure,
+    frameworks: row.frameworks,
+    areas: row.areas,
+    dollars: row.dollars,
+  };
+
+  return (
+    <ModalPortal>
+      {/* Backdrop */}
+      <div
+        className="fixed inset-0 bg-black/40 z-[99998]"
+        onClick={onClose}
+      />
+
+      {/* Panel */}
+      <div
+        className="fixed top-0 right-0 h-full w-full max-w-md bg-white shadow-2xl z-[99999] flex flex-col"
+        style={{ animation: 'slideInRight 0.25s ease-out' }}
+      >
+        <style>{`
+          @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to   { transform: translateX(0);    opacity: 1; }
+          }
+        `}</style>
+
+        {/* Header */}
+        <div className="flex items-start gap-4 px-6 py-5 border-b border-ink-100 bg-[#0B0F19] text-white">
+          <div className="flex-1 min-w-0">
+            <h2 className="text-[15px] font-bold text-white truncate">{profile.id}</h2>
+            <div className="text-[11px] text-white/50 font-mono mt-0.5">{profile.category}</div>
+            <div className="flex items-center gap-2 mt-1.5">
+              <span className="text-[10px] font-bold bg-brand-600/30 text-brand-300 px-2 py-0.5 rounded-full uppercase">{profile.exposure}</span>
+            </div>
+          </div>
+          <button onClick={onClose} className="p-1.5 hover:bg-white/10 rounded-lg transition-colors">
+            <Icon name="x" className="w-4 h-4 text-white/60" strokeWidth={2} />
+          </button>
+        </div>
+
+        {/* Scrollable body */}
+        <div className="flex-1 overflow-y-auto px-6 py-5 space-y-5">
+          {/* Impact details */}
+          <div>
+            <div className="text-[10px] font-bold uppercase tracking-widest text-ink-400 mb-3">Impact Details</div>
+            <div className="rounded-lg bg-ink-50 ring-1 ring-ink-100 px-3 py-2.5">
+              <p className="text-[12px] text-ink-700 leading-relaxed">{profile.description}</p>
+            </div>
+          </div>
+
+          {/* Exposure & Risk */}
+          <div>
+            <div className="text-[10px] font-bold uppercase tracking-widest text-ink-400 mb-2">Risk Exposure</div>
+            <div className="grid grid-cols-2 gap-2">
+              <div className="rounded-lg bg-ink-50 ring-1 ring-ink-100 px-3 py-2">
+                <div className="text-[10px] font-bold uppercase tracking-widest text-ink-400 mb-0.5">Severity</div>
+                <div className="text-[13px] font-bold text-ink-800">{profile.exposure}</div>
+              </div>
+              {profile.dollars > 0 && <div className="rounded-lg bg-ink-50 ring-1 ring-ink-100 px-3 py-2">
+                <div className="text-[10px] font-bold uppercase tracking-widest text-ink-400 mb-0.5">Financial Impact</div>
+                <div className="text-[13px] font-bold text-ink-800">${(profile.dollars / 1_000_000).toFixed(2)}M</div>
+              </div>}
+            </div>
+          </div>
+
+          {/* Frameworks */}
+          <div>
+            <div className="text-[10px] font-bold uppercase tracking-widest text-ink-400 mb-2">Compliance Frameworks</div>
+            <div className="flex flex-wrap gap-1.5">
+              {profile.frameworks.map(f => (
+                <span key={f} className="text-[10px] font-bold font-mono bg-brand-50 text-brand-700 ring-1 ring-brand-200 px-2 py-1 rounded-md">
+                  {f}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          {/* Affected Areas */}
+          <div>
+            <div className="text-[10px] font-bold uppercase tracking-widest text-ink-400 mb-2">Process Areas</div>
+            <div className="flex flex-wrap gap-1.5">
+              {profile.areas.map(a => (
+                <span key={a} className="text-[10px] font-bold bg-ink-100 text-ink-700 ring-1 ring-ink-200 px-2 py-1 rounded-md">
+                  {a}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="px-6 py-4 border-t border-ink-100 bg-ink-50">
+          <button
+            onClick={onClose}
+            className="w-full rounded-lg bg-white ring-1 ring-ink-200 text-ink-700 text-xs font-bold py-2.5 hover:bg-ink-50 transition-colors"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </ModalPortal>
+  );
+}
+
+const DrilldownPanel = ({ row, onInspect }) => (
   <div className="grid grid-cols-12 gap-8 border-l-4 border-ink-200 pl-6">
     <div className="col-span-12 lg:col-span-4">
       <div className="text-[10px] font-bold uppercase tracking-widest text-ink-400 mb-2">Technical Summary</div>
@@ -223,7 +335,7 @@ const DrilldownPanel = ({ row }) => (
          </div>
        </div>
        <div className="flex flex-col justify-end">
-         <button className="rounded-lg bg-ink-900 px-4 py-2 text-xs font-bold text-white hover:bg-ink-800 transition-shadow shadow-sm">Inspect Full Profile</button>
+         <button onClick={() => onInspect(row)} className="rounded-lg bg-brand-600 px-4 py-2 text-xs font-bold text-white hover:bg-brand-500 transition-colors shadow-sm">Inspect Full Profile</button>
        </div>
     </div>
   </div>

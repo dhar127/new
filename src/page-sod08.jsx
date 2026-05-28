@@ -1,4 +1,4 @@
-const { useState } = React;
+const { useState, useEffect } = React;
 
 const APPROVAL_STYLE_08 = {
   Approved: { bar: '#22C55E' },
@@ -30,31 +30,79 @@ const UsageTimeline = () => {
     return score(b) - score(a);
   });
 
+  // Build month tick marks between start and end
+  const monthTicks = (() => {
+    const ticks = [];
+    const start = new Date(FIREFIGHTER_TIMELINE_START);
+    const end = new Date(FIREFIGHTER_TIMELINE_END);
+    // Start from the 1st of the month after (or equal to) the start date
+    const cursor = new Date(start.getFullYear(), start.getMonth(), 1);
+    while (cursor <= end) {
+      const dayOffset = daysBetween(FIREFIGHTER_TIMELINE_START, cursor.toISOString().slice(0, 10));
+      const pct = Math.max(0, Math.min(100, (dayOffset / totalDays) * 100));
+      ticks.push({
+        label: cursor.toLocaleString('default', { month: 'short', year: '2-digit' }),
+        pct,
+      });
+      cursor.setMonth(cursor.getMonth() + 1);
+    }
+    return ticks;
+  })();
+
   return (
     <Section title="Emergency Usage Chronology" subtitle="Time-series visualization of firefighter ID activation windows.">
       <div className="px-6 py-8">
         <div className="overflow-x-auto scrollbar-hide">
           <div className="relative min-w-[800px]">
+            {/* Month header */}
             <div className="flex border-b border-ink-100 pb-2 mb-4">
-               <div className="w-40 shrink-0 text-[10px] font-bold uppercase tracking-widest text-ink-400">Resource</div>
-               <div className="flex-1 flex justify-between px-2 text-[10px] font-bold uppercase tracking-widest text-ink-400">
-                  <span>Q2 Start</span>
-                  <span>Timeline</span>
-                  <span>Today</span>
-               </div>
+              <div className="w-40 shrink-0 text-[10px] font-bold uppercase tracking-widest text-ink-400" />
+              <div className="relative flex-1 h-5">
+                {monthTicks.map((tick, i) => (
+                  <span
+                    key={i}
+                    className="absolute text-[10px] font-bold uppercase tracking-widest text-ink-400 -translate-x-1/2"
+                    style={{ left: tick.pct + '%' }}
+                  >
+                    {tick.label}
+                  </span>
+                ))}
+              </div>
             </div>
-            <div className="space-y-2">
-              {rows.map(r => (
-                <TimelineRow key={r.id} row={r} totalDays={totalDays} timelineStart={FIREFIGHTER_TIMELINE_START} onHover={setHover} />
-              ))}
+
+            {/* Gridlines behind bars */}
+            <div className="relative">
+              <div className="absolute inset-0 flex pointer-events-none" style={{ left: '10rem' }}>
+                {monthTicks.map((tick, i) => (
+                  <div
+                    key={i}
+                    className="absolute top-0 bottom-0 border-l border-ink-100"
+                    style={{ left: tick.pct + '%' }}
+                  />
+                ))}
+              </div>
+
+              <div className="space-y-2">
+                {rows.map(r => (
+                  <TimelineRow
+                    key={r.id}
+                    row={r}
+                    totalDays={totalDays}
+                    timelineStart={FIREFIGHTER_TIMELINE_START}
+                    onHover={setHover}
+                  />
+                ))}
+              </div>
             </div>
+
             {hover && (
-              <div className="pointer-events-none absolute z-50 rounded-xl border border-ink-200 bg-white p-3 shadow-pop text-[11px]" style={{ top: hover.y, left: hover.x, transform: 'translate(-50%, -120%)' }}>
+              <div className="pointer-events-none absolute z-50 rounded-xl border border-ink-200 bg-white p-3 shadow-pop text-[11px]"
+                style={{ top: hover.y, left: hover.x, transform: 'translate(-50%, -120%)' }}>
                 <div className="font-bold text-ink-900 mb-1">{hover.row.user} · {hover.row.ffId}</div>
                 <div className="text-ink-600 font-mono mb-2">{hover.row.start} to {hover.row.end}</div>
                 <div className="flex gap-2">
-                   <span className="px-1.5 py-0.5 rounded bg-ink-900 text-white font-bold">{hover.duration} Days</span>
-                   <span className="px-1.5 py-0.5 rounded bg-blue-50 text-blue-700 font-bold ring-1 ring-inset ring-blue-200">{hover.row.approval}</span>
+                  <span className="px-1.5 py-0.5 rounded bg-ink-900 text-white font-bold">{hover.duration} Days</span>
+                  <span className="px-1.5 py-0.5 rounded bg-blue-50 text-blue-700 font-bold ring-1 ring-inset ring-blue-200">{hover.row.approval}</span>
                 </div>
               </div>
             )}
@@ -64,7 +112,6 @@ const UsageTimeline = () => {
     </Section>
   );
 };
-
 const TimelineRow = ({ row, totalDays, timelineStart, onHover }) => {
   const startDay = Math.max(0, daysBetween(timelineStart, row.start));
   const endDay = daysBetween(timelineStart, row.end);

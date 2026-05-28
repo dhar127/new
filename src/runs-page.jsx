@@ -15,31 +15,24 @@ const RUNS_PER_PAGE = 6;
 
 window.RunsPage = function ({ onNavigate }) {
   const { ANALYSIS_RUNS } = window.MOCK;
-  const [searchTerm, setSearchTerm]         = useState('');
-  const [statusFilter, setStatusFilter]     = useState('All');
-  const [scopeFilters, setScopeFilters]     = useState({});
-  const [showCreateRun, setShowCreateRun]   = useState(false);
-  const [showConnectSAP, setShowConnectSAP] = useState(false);
-  const [visibleCount, setVisibleCount]     = useState(RUNS_PER_PAGE);
+  const [searchTerm, setSearchTerm]       = useState('');
+  const [statusFilter, setStatusFilter]   = useState('All');
+  const [showCreateRun, setShowCreateRun] = useState(false);
+  const [visibleCount, setVisibleCount]   = useState(RUNS_PER_PAGE);
 
   const filteredRuns = useMemo(() => {
     return ANALYSIS_RUNS.filter(run => {
-      const matchesSearch  = run.name.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesStatus  = statusFilter === 'All' || run.status === statusFilter;
-      const activeScopes   = Object.keys(scopeFilters).filter(k => scopeFilters[k]);
-      const matchesScope   = activeScopes.length === 0 || activeScopes.some(s => run.scopes.includes(s));
-      return matchesSearch && matchesStatus && matchesScope;
+      const matchesSearch = run.name.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesStatus = statusFilter === 'All' || run.status === statusFilter;
+      return matchesSearch && matchesStatus;
     });
-  }, [searchTerm, statusFilter, scopeFilters, ANALYSIS_RUNS]);
+  }, [searchTerm, statusFilter, ANALYSIS_RUNS]);
 
-  const visibleRuns  = filteredRuns.slice(0, visibleCount);
-  const hasMore      = visibleCount < filteredRuns.length;
-  const remaining    = filteredRuns.length - visibleCount;
+  const visibleRuns = filteredRuns.slice(0, visibleCount);
+  const hasMore     = visibleCount < filteredRuns.length;
+  const remaining   = filteredRuns.length - visibleCount;
 
-  const handleScopeFilter = (scope) =>
-    setScopeFilters(prev => ({ ...prev, [scope]: !prev[scope] }));
-
-  useEffect(() => { setVisibleCount(RUNS_PER_PAGE); }, [searchTerm, statusFilter, scopeFilters]);
+  useEffect(() => { setVisibleCount(RUNS_PER_PAGE); }, [searchTerm, statusFilter]);
 
   return (
     <div className="space-y-6 px-4 md:px-7 py-6">
@@ -52,22 +45,13 @@ window.RunsPage = function ({ onNavigate }) {
             Select a completed run to explore its SoD report and user-level insights.
           </p>
         </div>
-        <div className="flex items-center gap-2 md:gap-3">
-          <button
-            onClick={() => setShowConnectSAP(true)}
-            className="px-4 py-2.5 rounded-lg bg-white text-gray-700 border-2 border-gray-300 hover:bg-gray-50 font-medium text-sm transition-colors flex items-center gap-2 whitespace-nowrap"
-          >
-            <window.Icon name="shield" className="w-4 h-4" strokeWidth={2} />
-            Connect SAP System
-          </button>
-          <button
-            onClick={() => setShowCreateRun(true)}
-            className="px-4 py-2.5 rounded-lg bg-red-600 text-white hover:bg-red-700 font-medium text-sm transition-colors flex items-center gap-2 whitespace-nowrap"
-          >
-            <window.Icon name="plus" className="w-4 h-4" strokeWidth={2} />
-            Create Run
-          </button>
-        </div>
+        <button
+          onClick={() => setShowCreateRun(true)}
+          className="px-4 py-2.5 rounded-lg bg-red-600 text-white hover:bg-red-700 font-medium text-sm transition-colors flex items-center gap-2 whitespace-nowrap"
+        >
+          <window.Icon name="plus" className="w-4 h-4" strokeWidth={2} />
+          Create Run
+        </button>
       </div>
 
       {/* ── Search ── */}
@@ -97,22 +81,6 @@ window.RunsPage = function ({ onNavigate }) {
               }`}
             >
               {s}
-            </button>
-          ))}
-        </div>
-        <div className="h-4 w-px bg-ink-200" />
-        <div className="flex gap-2">
-          {['P2P', 'O2C', 'FI', 'HR', 'Basis'].map(scope => (
-            <button
-              key={scope}
-              onClick={() => handleScopeFilter(scope)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                scopeFilters[scope]
-                  ? 'bg-red-100 text-red-700 ring-1 ring-red-200'
-                  : 'bg-white text-ink-600 ring-1 ring-ink-200 hover:bg-ink-50'
-              }`}
-            >
-              {scope}
             </button>
           ))}
         </div>
@@ -173,20 +141,12 @@ window.RunsPage = function ({ onNavigate }) {
         </div>
       )}
 
-      {/* ── Modals via Portal ── */}
+      {/* ── Modal via Portal ── */}
       {showCreateRun && (
         <Portal>
           <window.CreateRunModal
             onClose={() => setShowCreateRun(false)}
             onNavigate={key => { setShowCreateRun(false); onNavigate(key); }}
-          />
-        </Portal>
-      )}
-      {showConnectSAP && (
-        <Portal>
-          <window.ConnectSAPModal
-            onClose={() => setShowConnectSAP(false)}
-            onConnect={() => setShowConnectSAP(false)}
           />
         </Portal>
       )}
@@ -281,330 +241,309 @@ function RunCard({ run, onNavigate }) {
 
 /* ─── Create Run Modal ──────────────────────────────────────── */
 window.CreateRunModal = function ({ onClose, onNavigate }) {
+  // Steps: 'run' | 'sap' | 'done'
+  const [step, setStep]                     = useState('run');
+
+  // Run fields
   const [runName, setRunName]               = useState('LCSOD-2026-Q2-007');
-  const [selectedSystem, setSelectedSystem] = useState(null);
   const [uploadedFile, setUploadedFile]     = useState(null);
   const fileInputRef                        = useRef(null);
-  const { SAP_SYSTEMS } = window.MOCK;
 
-  const handleCreate = () => {
-    if (!selectedSystem) { alert('Please select a SAP system'); return; }
-    onClose();
-    if (onNavigate) onNavigate('home');
-  };
+  // SAP fields
+  const [sapName, setSapName]               = useState('');
+  const [appServer, setAppServer]           = useState('');
+  const [instanceNum, setInstanceNum]       = useState('');
+  const [client, setClient]                 = useState('');
+  const [username, setUsername]             = useState('');
+  const [password, setPassword]             = useState('');
+  const [showPassword, setShowPassword]     = useState(false);
+  const [checking, setChecking]             = useState(false);
+  const [checkResult, setCheckResult]       = useState(null); // null | 'success' | 'error'
 
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
     if (file) setUploadedFile(file);
   };
 
-  return (
-    <div
-      style={{
-        position: 'fixed', inset: 0,
-        background: 'rgba(0,0,0,0.45)',
-        zIndex: 99999,
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-      }}
-    >
-      <div className="rounded-2xl bg-white shadow-2xl flex flex-col"
-           style={{ width: 370, maxWidth: '95vw', maxHeight: '90vh' }}>
+  const handleCheckConnection = () => {
+    if (!sapName || !appServer || !instanceNum || !client || !username || !password) {
+      alert('Please fill in all SAP fields'); return;
+    }
+    setChecking(true);
+    setCheckResult(null);
+    setTimeout(() => {
+      setChecking(false);
+      setCheckResult('success');
+    }, 1500);
+  };
 
-        {/* Header */}
-        <div className="border-b border-gray-200 px-5 py-4 flex items-start gap-3">
-          <div className="flex items-center justify-center h-9 w-9 rounded-lg bg-red-50 flex-shrink-0">
-            <window.Icon name="play" className="w-5 h-5 text-red-600" strokeWidth={1.5} />
-          </div>
-          <div className="flex-1 min-w-0">
-            <h2 className="text-sm font-bold text-gray-900">Create New Run</h2>
-            <p className="text-[11px] text-gray-500 mt-0.5">Set up a new license optimization analysis run</p>
-          </div>
-          <button onClick={onClose} className="p-1 hover:bg-gray-100 rounded-md text-gray-400 transition-colors">
-            <window.Icon name="x" className="w-4 h-4" strokeWidth={2} />
+  const handleCreate = () => {
+    if (!runName) { alert('Please enter a run name'); return; }
+    onClose();
+    if (onNavigate) onNavigate('home');
+  };
+
+  /* ── Step: Run Details ── */
+  const RunStep = (
+    <>
+      <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3">
+        {/* Run Name */}
+        <div>
+          <label className="text-xs font-semibold text-gray-900 block mb-1.5">
+            Run Name <span className="text-red-500">*</span>
+          </label>
+          <input
+            type="text" value={runName}
+            onChange={e => setRunName(e.target.value)}
+            placeholder="e.g. LCSOD-2026-Q2-007"
+            className="w-full px-3 py-2 rounded-lg border-2 border-gray-200 text-gray-900 text-xs focus:outline-none focus:border-red-500 transition-colors"
+          />
+        </div>
+
+        {/* SAP System — inline connect trigger */}
+        <div>
+          <label className="text-xs font-semibold text-gray-900 block mb-1.5">
+            SAP System <span className="text-red-500">*</span>
+          </label>
+          <button
+            onClick={() => setStep('sap')}
+            className="w-full flex items-center justify-between px-3 py-2 rounded-lg border-2 border-dashed border-gray-300 hover:border-red-400 hover:bg-red-50 transition-colors group"
+          >
+            <span className="flex items-center gap-2 text-xs text-gray-500 group-hover:text-red-600">
+              <window.Icon name="shield" className="w-4 h-4" strokeWidth={1.5} />
+              {checkResult === 'success'
+                ? <span className="text-emerald-700 font-semibold">{sapName} — {appServer} (client {client}) ✓</span>
+                : 'Connect SAP System…'}
+            </span>
+            <window.Icon name="arrow" className="w-3.5 h-3.5 text-gray-400 group-hover:text-red-500" strokeWidth={2} />
           </button>
         </div>
 
-        {/* Body */}
-        <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3">
-          <div>
-            <label className="text-xs font-semibold text-gray-900 block mb-1.5">
-              Run Name <span className="text-red-500">*</span>
-            </label>
+        {/* Custom Rules */}
+        <div>
+          <label className="text-xs font-semibold text-gray-900 block mb-1.5">Custom Rules</label>
+          <div className="flex flex-col gap-2">
+            {/* Sample download */}
+            <div className="flex items-center justify-between bg-gray-50 border border-gray-200 rounded-lg px-3 py-2">
+              <div className="flex items-center gap-2">
+                <window.Icon name="file" className="w-4 h-4 text-red-500" strokeWidth={1.5} />
+                <div>
+                  <p className="text-[11px] font-semibold text-gray-900">rules_sample.xlsx</p>
+                  <p className="text-[10px] text-gray-400">Template · 3 sheets · SoD rule format</p>
+                </div>
+              </div>
+              <button
+                onClick={() => {
+                  const a = document.createElement('a');
+                  a.href = 'rules_sample.xlsx';
+                  a.download = 'rules_sample.xlsx';
+                  a.click();
+                }}
+                className="flex items-center gap-1 px-2.5 py-1 text-[11px] font-semibold text-gray-600 bg-white border border-gray-200 rounded-md hover:bg-gray-100 transition-colors whitespace-nowrap"
+              >
+                <window.Icon name="download" className="w-3 h-3" strokeWidth={2} />
+                Download
+              </button>
+            </div>
+
             <input
-              type="text" value={runName}
-              onChange={e => setRunName(e.target.value)}
-              placeholder="e.g. LCSOD-2026-Q2-007"
-              className="w-full px-3 py-2 rounded-lg border-2 border-gray-200 text-gray-900 text-xs focus:outline-none focus:border-red-500 transition-colors"
+              ref={fileInputRef}
+              type="file"
+              accept=".xlsx,.csv,.json"
+              style={{ display: 'none' }}
+              onChange={handleFileChange}
             />
-          </div>
 
-          <div>
-            <label className="text-xs font-semibold text-gray-900 block mb-1.5">
-              SAP System <span className="text-red-500">*</span>
-            </label>
-            <select
-              value={selectedSystem || ''}
-              onChange={e => setSelectedSystem(e.target.value ? parseInt(e.target.value) : null)}
-              className="w-full px-3 py-2 rounded-lg border-2 border-gray-200 text-gray-900 text-xs focus:outline-none focus:border-red-500 transition-colors bg-white"
-            >
-              <option value="">Select a system...</option>
-              {SAP_SYSTEMS.map(sys => (
-                <option key={sys.id} value={sys.id}>
-                  {sys.name} ({sys.ashost}) — Client {sys.client}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label className="text-xs font-semibold text-gray-900 block mb-1.5">
-              Custom Rules
-            </label>
-            <div className="flex flex-col gap-2">
-
-              {/* Sample download row */}
-              <div className="flex items-center justify-between bg-gray-50 border border-gray-200 rounded-lg px-3 py-2">
+            {uploadedFile ? (
+              <div className="flex items-center justify-between bg-red-50 border border-red-200 rounded-lg px-3 py-2">
                 <div className="flex items-center gap-2">
                   <window.Icon name="file" className="w-4 h-4 text-red-500" strokeWidth={1.5} />
                   <div>
-                    <p className="text-[11px] font-semibold text-gray-900">rules_sample.xlsx</p>
-                    <p className="text-[10px] text-gray-400">Template · 3 sheets · SoD rule format</p>
+                    <p className="text-[11px] font-semibold text-gray-900 truncate max-w-[170px]">{uploadedFile.name}</p>
+                    <p className="text-[10px] text-gray-400">{(uploadedFile.size / 1024).toFixed(1)} KB · ready to upload</p>
                   </div>
                 </div>
                 <button
-                  onClick={() => {
-                    const a = document.createElement('a');
-                    a.href = 'rules_sample.xlsx';
-                    a.download = 'rules_sample.xlsx';
-                    a.click();
-                  }}
-                  className="flex items-center gap-1 px-2.5 py-1 text-[11px] font-semibold text-gray-600 bg-white border border-gray-200 rounded-md hover:bg-gray-100 transition-colors whitespace-nowrap"
+                  onClick={() => { setUploadedFile(null); if (fileInputRef.current) fileInputRef.current.value = ''; }}
+                  className="p-1 hover:bg-red-100 rounded-md text-red-400 transition-colors"
                 >
-                  <window.Icon name="download" className="w-3 h-3" strokeWidth={2} />
-                  Download
+                  <window.Icon name="x" className="w-3.5 h-3.5" strokeWidth={2} />
                 </button>
               </div>
-
-              {/* Hidden file input */}
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept=".xlsx,.csv,.json"
-                style={{ display: 'none' }}
-                onChange={handleFileChange}
-              />
-
-              {/* Drop zone / uploaded state */}
-              {uploadedFile ? (
-                <div className="flex items-center justify-between bg-red-50 border border-red-200 rounded-lg px-3 py-2">
-                  <div className="flex items-center gap-2">
-                    <window.Icon name="file" className="w-4 h-4 text-red-500" strokeWidth={1.5} />
-                    <div>
-                      <p className="text-[11px] font-semibold text-gray-900 truncate max-w-[170px]">{uploadedFile.name}</p>
-                      <p className="text-[10px] text-gray-400">{(uploadedFile.size / 1024).toFixed(1)} KB · ready to upload</p>
-                    </div>
-                  </div>
-                  <button
-                    onClick={() => { setUploadedFile(null); if (fileInputRef.current) fileInputRef.current.value = ''; }}
-                    className="p-1 hover:bg-red-100 rounded-md text-red-400 transition-colors"
-                  >
-                    <window.Icon name="x" className="w-3.5 h-3.5" strokeWidth={2} />
-                  </button>
+            ) : (
+              <div
+                className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-red-400 hover:bg-red-50 transition-colors cursor-pointer"
+                onClick={() => fileInputRef.current?.click()}
+              >
+                <div className="flex justify-center mb-1.5">
+                  <window.Icon name="upload" className="w-6 h-6 text-red-300" strokeWidth={1.5} />
                 </div>
-              ) : (
-                <div
-                  className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-red-400 hover:bg-red-50 transition-colors cursor-pointer"
-                  onClick={() => fileInputRef.current?.click()}
-                >
-                  <div className="flex justify-center mb-1.5">
-                    <window.Icon name="upload" className="w-6 h-6 text-red-300" strokeWidth={1.5} />
-                  </div>
-                  <p className="text-xs font-semibold text-gray-900">Upload custom rules file</p>
-                  <p className="text-[10px] text-gray-500 mt-0.5">
-                    or <span className="text-red-600 font-medium">browse files</span>
-                    {' '}· .xlsx, .csv, .json
-                  </p>
-                </div>
-              )}
+                <p className="text-xs font-semibold text-gray-900">Upload custom rules file</p>
+                <p className="text-[10px] text-gray-500 mt-0.5">
+                  or <span className="text-red-600 font-medium">browse files</span>
+                  {' '}· .xlsx, .csv, .json
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
 
+      <div className="border-t border-gray-200 px-5 py-3 flex gap-2 justify-end bg-gray-50 rounded-b-2xl">
+        <button onClick={onClose}
+          className="px-4 py-1.5 rounded-lg bg-white text-gray-900 border border-gray-300 hover:bg-gray-100 font-medium text-xs transition-colors">
+          Cancel
+        </button>
+        <button onClick={handleCreate}
+          className="px-4 py-1.5 rounded-lg bg-red-600 text-white hover:bg-red-700 font-medium text-xs transition-colors flex items-center gap-1.5">
+          Create Run
+          <window.Icon name="arrow" className="w-3.5 h-3.5" strokeWidth={2} />
+        </button>
+      </div>
+    </>
+  );
+
+  /* ── Step: SAP Connection ── */
+  const SapStep = (
+    <>
+      <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3">
+        <div>
+          <label className="text-xs font-semibold text-gray-900 block mb-1.5">
+            SAP Name <span className="text-red-500">*</span>
+          </label>
+          <input type="text" value={sapName} onChange={e => setSapName(e.target.value)}
+            placeholder="e.g. PRD, Production ERP"
+            className="w-full px-3 py-2 rounded-lg border-2 border-gray-200 text-gray-900 text-xs focus:outline-none focus:border-red-500 transition-colors" />
+        </div>
+
+        <div className="grid grid-cols-3 gap-3">
+          <div className="col-span-2">
+            <label className="text-xs font-semibold text-gray-900 block mb-1.5">
+              Application Server <span className="text-red-500">*</span>
+            </label>
+            <input type="text" value={appServer} onChange={e => setAppServer(e.target.value)}
+              placeholder="sap-prd.company.com"
+              className="w-full px-3 py-2 rounded-lg border-2 border-gray-200 text-gray-900 text-xs focus:outline-none focus:border-red-500 transition-colors" />
+          </div>
+          <div>
+            <label className="text-xs font-semibold text-gray-900 block mb-1.5">
+              Client <span className="text-red-500">*</span>
+            </label>
+            <input type="text" value={client} onChange={e => setClient(e.target.value)}
+              placeholder="100"
+              className="w-full px-3 py-2 rounded-lg border-2 border-gray-200 text-gray-900 text-xs focus:outline-none focus:border-red-500 transition-colors" />
+          </div>
+        </div>
+
+        <div>
+          <label className="text-xs font-semibold text-gray-900 block mb-1.5">
+            Instance Number <span className="text-red-500">*</span>
+          </label>
+          <input type="text" value={instanceNum} onChange={e => setInstanceNum(e.target.value)}
+            placeholder="e.g. 00"
+            className="w-full px-3 py-2 rounded-lg border-2 border-gray-200 text-gray-900 text-xs focus:outline-none focus:border-red-500 transition-colors" />
+        </div>
+
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label className="text-xs font-semibold text-gray-900 block mb-1.5">
+              Username <span className="text-red-500">*</span>
+            </label>
+            <input type="text" value={username} onChange={e => setUsername(e.target.value)}
+              placeholder="SAP username"
+              className="w-full px-3 py-2 rounded-lg border-2 border-gray-200 text-gray-900 text-xs focus:outline-none focus:border-red-500 transition-colors" />
+          </div>
+          <div>
+            <label className="text-xs font-semibold text-gray-900 block mb-1.5">
+              Password <span className="text-red-500">*</span>
+            </label>
+            <div className="relative">
+              <input type={showPassword ? 'text' : 'password'} value={password} onChange={e => setPassword(e.target.value)}
+                placeholder="SAP password"
+                className="w-full px-3 py-2 pr-8 rounded-lg border-2 border-gray-200 text-gray-900 text-xs focus:outline-none focus:border-red-500 transition-colors" />
+              <button onClick={() => setShowPassword(p => !p)}
+                className="absolute right-2.5 top-2 text-gray-400 hover:text-gray-600 transition-colors">
+                <window.Icon name="info" className="w-4 h-4" strokeWidth={2} />
+              </button>
             </div>
           </div>
         </div>
 
-        {/* Footer */}
-        <div className="border-t border-gray-200 px-5 py-3 flex gap-2 justify-end bg-gray-50 rounded-b-2xl">
-          <button onClick={onClose}
-            className="px-4 py-1.5 rounded-lg bg-white text-gray-900 border border-gray-300 hover:bg-gray-100 font-medium text-xs transition-colors">
-            Cancel
+        {/* Connection result */}
+        {checkResult === 'success' && (
+          <div className="flex items-center gap-2 px-3 py-2.5 rounded-lg bg-emerald-50 border border-emerald-200">
+            <div className="flex items-center justify-center h-5 w-5 rounded-full bg-emerald-500 text-white flex-shrink-0">
+              <window.Icon name="check" className="w-3 h-3" strokeWidth={3} />
+            </div>
+            <p className="text-xs font-semibold text-emerald-800">Connection successful — {sapName} is reachable</p>
+          </div>
+        )}
+        {checkResult === 'error' && (
+          <div className="flex items-center gap-2 px-3 py-2.5 rounded-lg bg-rose-50 border border-rose-200">
+            <window.Icon name="x" className="w-4 h-4 text-rose-500 flex-shrink-0" strokeWidth={2} />
+            <p className="text-xs font-semibold text-rose-700">Connection failed — check your credentials and try again</p>
+          </div>
+        )}
+      </div>
+
+      <div className="border-t border-gray-200 px-5 py-3 flex gap-2 justify-between bg-gray-50 rounded-b-2xl">
+        <button onClick={() => { setCheckResult(null); setStep('run'); }}
+          className="px-4 py-1.5 rounded-lg bg-white text-gray-900 border border-gray-300 hover:bg-gray-100 font-medium text-xs transition-colors flex items-center gap-1.5">
+          <window.Icon name="chevron" className="w-3.5 h-3.5 -rotate-90" strokeWidth={2} />
+          Back
+        </button>
+        <div className="flex gap-2">
+          <button onClick={handleCheckConnection} disabled={checking}
+            className="px-4 py-1.5 rounded-lg bg-white text-red-600 border-2 border-red-200 hover:bg-red-50 font-medium text-xs transition-colors disabled:opacity-50 flex items-center gap-1.5">
+            {checking ? (
+              <>
+                <span className="inline-block w-3 h-3 border-2 border-red-500 border-t-transparent rounded-full animate-spin" />
+                Checking…
+              </>
+            ) : (
+              <>
+                <window.Icon name="shield" className="w-3.5 h-3.5" strokeWidth={2} />
+                Check Connection
+              </>
+            )}
           </button>
-          <button onClick={handleCreate}
-            className="px-4 py-1.5 rounded-lg bg-red-600 text-white hover:bg-red-700 font-medium text-xs transition-colors flex items-center gap-1.5">
-            Create Run
+          <button
+            onClick={() => { if (checkResult === 'success') setStep('run'); else alert('Please check connection first'); }}
+            className="px-4 py-1.5 rounded-lg bg-red-600 text-white hover:bg-red-700 font-medium text-xs transition-colors flex items-center gap-1.5"
+          >
+            Confirm
             <window.Icon name="arrow" className="w-3.5 h-3.5" strokeWidth={2} />
           </button>
         </div>
       </div>
-    </div>
+    </>
   );
-};
 
-/* ─── Connect SAP Modal ─────────────────────────────────────── */
-window.ConnectSAPModal = function ({ onClose, onConnect }) {
-  const [sapName, setSAPName]           = useState('');
-  const [appServer, setAppServer]       = useState('');
-  const [instanceNum, setInstanceNum]   = useState('');
-  const [client, setClient]             = useState('');
-  const [username, setUsername]         = useState('');
-  const [password, setPassword]         = useState('');
-  const [showPassword, setShowPassword] = useState(false);
-  const [connecting, setConnecting]     = useState(false);
-  const [connected, setConnected]       = useState(false);
-
-  const handleConnect = () => {
-    if (!sapName || !appServer || !instanceNum || !client || !username || !password) {
-      alert('Please fill in all fields'); return;
-    }
-    setConnecting(true);
-    setTimeout(() => { setConnecting(false); setConnected(true); }, 1500);
-  };
+  const stepTitle = step === 'sap' ? 'Connect SAP System' : 'Create New Run';
+  const stepDesc  = step === 'sap'
+    ? 'Enter credentials and verify the connection'
+    : 'Set up a new license optimization analysis run';
+  const stepIcon  = step === 'sap' ? 'shield' : 'play';
 
   return (
-    <div
-      style={{
-        position: 'fixed', inset: 0,
-        background: 'rgba(0,0,0,0.45)',
-        zIndex: 99999,
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-      }}
-    >
-      <div className="rounded-2xl bg-white shadow-2xl flex flex-col"
-           style={{ width: 370, maxWidth: '95vw', maxHeight: '90vh' }}>
+    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.45)', zIndex: 99999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div className="rounded-2xl bg-white shadow-2xl flex flex-col" style={{ width: 370, maxWidth: '95vw', maxHeight: '90vh' }}>
 
         {/* Header */}
         <div className="border-b border-gray-200 px-5 py-4 flex items-start gap-3">
           <div className="flex items-center justify-center h-9 w-9 rounded-lg bg-red-50 flex-shrink-0">
-            <window.Icon name="shield" className="w-5 h-5 text-red-600" strokeWidth={1.5} />
+            <window.Icon name={stepIcon} className="w-5 h-5 text-red-600" strokeWidth={1.5} />
           </div>
           <div className="flex-1 min-w-0">
-            <h2 className="text-sm font-bold text-gray-900">Connect SAP System</h2>
-            <p className="text-[11px] text-gray-500 mt-0.5">Enter your SAP connection details to link this system</p>
+            <h2 className="text-sm font-bold text-gray-900">{stepTitle}</h2>
+            <p className="text-[11px] text-gray-500 mt-0.5">{stepDesc}</p>
           </div>
           <button onClick={onClose} className="p-1 hover:bg-gray-100 rounded-md text-gray-400 transition-colors">
             <window.Icon name="x" className="w-4 h-4" strokeWidth={2} />
           </button>
         </div>
 
-        {/* Body */}
-        <div className="flex-1 overflow-y-auto px-5 py-4">
-          {!connected ? (
-            <div className="space-y-3">
-              <div>
-                <label className="text-xs font-semibold text-gray-900 block mb-1.5">
-                  SAP Name <span className="text-red-500">*</span>
-                </label>
-                <input type="text" value={sapName} onChange={e => setSAPName(e.target.value)}
-                  placeholder="e.g. PRD, Production ERP"
-                  className="w-full px-3 py-2 rounded-lg border-2 border-gray-200 text-gray-900 text-xs focus:outline-none focus:border-red-500 transition-colors" />
-              </div>
-
-              <div className="grid grid-cols-3 gap-3">
-                <div className="col-span-2">
-                  <label className="text-xs font-semibold text-gray-900 block mb-1.5">
-                    Application Server <span className="text-red-500">*</span>
-                  </label>
-                  <input type="text" value={appServer} onChange={e => setAppServer(e.target.value)}
-                    placeholder="sap-prd.company.com"
-                    className="w-full px-3 py-2 rounded-lg border-2 border-gray-200 text-gray-900 text-xs focus:outline-none focus:border-red-500 transition-colors" />
-                </div>
-                <div>
-                  <label className="text-xs font-semibold text-gray-900 block mb-1.5">
-                    Client <span className="text-red-500">*</span>
-                  </label>
-                  <input type="text" value={client} onChange={e => setClient(e.target.value)}
-                    placeholder="100"
-                    className="w-full px-3 py-2 rounded-lg border-2 border-gray-200 text-gray-900 text-xs focus:outline-none focus:border-red-500 transition-colors" />
-                </div>
-              </div>
-
-              <div>
-                <label className="text-xs font-semibold text-gray-900 block mb-1.5">
-                  Instance Number <span className="text-red-500">*</span>
-                </label>
-                <input type="text" value={instanceNum} onChange={e => setInstanceNum(e.target.value)}
-                  placeholder="e.g. 00"
-                  className="w-full px-3 py-2 rounded-lg border-2 border-gray-200 text-gray-900 text-xs focus:outline-none focus:border-red-500 transition-colors" />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="text-xs font-semibold text-gray-900 block mb-1.5">
-                    Username <span className="text-red-500">*</span>
-                  </label>
-                  <input type="text" value={username} onChange={e => setUsername(e.target.value)}
-                    placeholder="SAP username"
-                    className="w-full px-3 py-2 rounded-lg border-2 border-gray-200 text-gray-900 text-xs focus:outline-none focus:border-red-500 transition-colors" />
-                </div>
-                <div>
-                  <label className="text-xs font-semibold text-gray-900 block mb-1.5">
-                    Password <span className="text-red-500">*</span>
-                  </label>
-                  <div className="relative">
-                    <input type={showPassword ? 'text' : 'password'} value={password} onChange={e => setPassword(e.target.value)}
-                      placeholder="SAP password"
-                      className="w-full px-3 py-2 pr-8 rounded-lg border-2 border-gray-200 text-gray-900 text-xs focus:outline-none focus:border-red-500 transition-colors" />
-                    <button onClick={() => setShowPassword(p => !p)}
-                      className="absolute right-2.5 top-2 text-gray-400 hover:text-gray-600 transition-colors">
-                      <window.Icon name="info" className="w-4 h-4" strokeWidth={2} />
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          ) : (
-            <div className="p-5 rounded-lg bg-emerald-50 border border-emerald-200 text-center">
-              <div className="flex justify-center mb-2.5">
-                <div className="flex items-center justify-center h-10 w-10 rounded-full bg-emerald-500 text-white">
-                  <window.Icon name="check" className="w-5 h-5" strokeWidth={3} />
-                </div>
-              </div>
-              <p className="text-sm font-bold text-emerald-900">Connected successfully</p>
-              <p className="text-xs text-emerald-700 mt-1.5">
-                {sapName} — {appServer} (client {client}) is now linked.
-              </p>
-            </div>
-          )}
-        </div>
-
-        {/* Footer */}
-        <div className="border-t border-gray-200 px-5 py-3 flex gap-2 justify-end bg-gray-50 rounded-b-2xl">
-          {!connected ? (
-            <>
-              <button onClick={onClose}
-                className="px-4 py-1.5 rounded-lg bg-white text-gray-900 border border-gray-300 hover:bg-gray-100 font-medium text-xs transition-colors">
-                Cancel
-              </button>
-              <button onClick={handleConnect} disabled={connecting}
-                className="px-4 py-1.5 rounded-lg bg-red-600 text-white hover:bg-red-700 font-medium text-xs disabled:opacity-50 transition-colors flex items-center gap-1.5">
-                {connecting ? (
-                  <>
-                    <span className="inline-block w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                    Connecting...
-                  </>
-                ) : (
-                  <>
-                    Connect
-                    <window.Icon name="arrow" className="w-3.5 h-3.5" strokeWidth={2} />
-                  </>
-                )}
-              </button>
-            </>
-          ) : (
-            <button onClick={onConnect}
-              className="w-full px-4 py-1.5 rounded-lg bg-red-600 text-white hover:bg-red-700 font-medium text-xs transition-colors">
-              Done
-            </button>
-          )}
-        </div>
+        {step === 'run' ? RunStep : SapStep}
       </div>
     </div>
   );

@@ -1,6 +1,12 @@
+
+const {
+  BarChart: S07_BarChart, Bar: S07_Bar, XAxis: S07_XAxis, YAxis: S07_YAxis,
+  CartesianGrid: S07_CartesianGrid, Tooltip: S07_Tooltip,
+  ResponsiveContainer: S07_ResponsiveContainer, Cell: S07_Cell,
+} = Recharts;
+
 const { useState } = React;
 
-/* Subtle neutral palette — area is identity, not severity. */
 const AREA_COLOR_07 = {
   Procurement: '#475569',
   Finance:     '#0F172A',
@@ -22,78 +28,90 @@ const Sod07Kpis = () => {
   );
 };
 
-const ConflictMatrix = ({ selected, onSelect }) => {
-  const { DUAL_PROCESSES, CONFLICT_MATRIX } = window.MOCK;
+const ConflictChart = ({ selected, onSelect }) => {
+  const { CONFLICT_MATRIX, DUAL_PROCESSES } = window.MOCK;
   const procs = DUAL_PROCESSES;
-  const allCounts = [];
-  procs.forEach(r => procs.forEach(c => {
-    const v = getCount(r.key, c.key);
-    if (v != null) allCounts.push(v);
-  }));
-  const maxV = Math.max(...allCounts);
 
-  function getCount(a, b) {
-    if (a === b) return null;
-    const row = CONFLICT_MATRIX[a];
-    if (row && b in row) return row[b];
-    const rev = CONFLICT_MATRIX[b];
-    if (rev && a in rev) return rev[a];
-    return null;
-  }
+  const data = [];
+  procs.forEach(r => {
+    procs.forEach(c => {
+      if (r.key >= c.key) return;
+      const row = CONFLICT_MATRIX[r.key];
+      const val = row && c.key in row ? row[c.key]
+        : (CONFLICT_MATRIX[c.key] && r.key in CONFLICT_MATRIX[c.key] ? CONFLICT_MATRIX[c.key][r.key] : null);
+      if (val) data.push({ label: `${r.label} × ${c.label}`, p1: r.key, p2: c.key, count: val });
+    });
+  });
+  data.sort((a, b) => b.count - a.count);
+  const top = data.slice(0, 8);
 
   return (
-    <Section title="Interaction Heatmap" subtitle="Cross-process authorization overlaps highlighting systemic control weaknesses.">
-      <div className="p-6">
-        <div className="flex items-start gap-8 overflow-x-auto scrollbar-hide pb-4">
-           <div className="flex-1">
-             <table className="border-collapse" style={{ minWidth: 500 }}>
-               <thead>
-                 <tr>
-                   <th className="w-24"></th>
-                   {procs.map(c => (
-                     <th key={c.key} className="p-1 pb-4 align-bottom">
-                       <span className="origin-bottom-left -rotate-45 whitespace-nowrap text-[10px] font-bold text-ink-400 uppercase tracking-tighter" style={{ height: 40, lineHeight: '40px', display: 'block' }}>{c.label}</span>
-                     </th>
-                   ))}
-                 </tr>
-               </thead>
-               <tbody>
-                 {procs.map(r => (
-                   <tr key={r.key}>
-                     <td className="pr-4 text-right py-1">
-                        <span className="text-[11px] font-bold text-ink-900 uppercase tracking-tighter">{r.label}</span>
-                     </td>
-                     {procs.map(c => {
-                       const v = getCount(r.key, c.key);
-                       const isDiag = r.key === c.key;
-                       const isSel = selected && ((selected.p1 === r.key && selected.p2 === c.key) || (selected.p1 === c.key && selected.p2 === r.key));
-                       const intensity = v ? Math.max(0.1, v / maxV) : 0;
-                       return (
-                         <td key={c.key} className="p-0.5">
-                           {isDiag ? <div className="w-9 h-9 bg-ink-50 rounded-md" /> : (
-                             <button onClick={() => v != null && onSelect({ p1: r.key, p2: c.key, count: v })}
-                               className={`w-9 h-9 rounded-md border text-[11px] font-bold transition-all hover:scale-110 shadow-sm ${isSel ? 'ring-2 ring-ink-900 ring-offset-2' : ''}`}
-                               style={{ background: v ? `rgba(239, 68, 68, ${intensity})` : '#F8FAFC', borderColor: v ? '#EF444455' : '#E2E8F0', color: intensity > 0.5 ? '#fff' : '#7F1D1D' }}>
-                               {v || '·'}
-                             </button>
-                           )}
-                         </td>
-                       )
-                     })}
-                   </tr>
-                 ))}
-               </tbody>
-             </table>
-           </div>
-           <div className="w-56 shrink-0 space-y-4">
-              <div className="p-4 rounded-xl bg-ink-900 text-white shadow-sm">
-                 <div className="text-[9px] font-bold uppercase tracking-widest text-ink-400 mb-2">Matrix Context</div>
-                 <p className="text-[11px] font-semibold text-ink-200">The SO × Billing pair represents the highest risk with 22 concurrent controllers.</p>
-              </div>
-              <button className="w-full rounded-lg bg-ink-100 border border-ink-200 py-2 text-[11px] font-bold text-ink-700 hover:bg-ink-200 transition-colors uppercase tracking-widest" onClick={() => onSelect(null)}>Reset Heatmap</button>
-           </div>
-        </div>
+    <Section title="Process Conflict Distribution" subtitle="Top cross-process authorization overlaps ranked by user count.">
+      <div className="h-[300px] px-6 py-6">
+        <S07_ResponsiveContainer width="100%" height="100%">
+          <S07_BarChart data={top} layout="vertical" margin={{ top: 0, right: 40, bottom: 0, left: 160 }}>
+            <S07_CartesianGrid stroke="#F1F5F9" horizontal={false} />
+            <S07_XAxis type="number" hide />
+            <S07_YAxis
+              type="category"
+              dataKey="label"
+              width={160}
+              tick={{ fill: '#475569', fontSize: 11, fontWeight: 600 }}
+              axisLine={false}
+              tickLine={false}
+            />
+            <S07_Tooltip
+              cursor={{ fill: '#F8FAFC' }}
+              content={({ active, payload }) => {
+                if (!active || !payload?.length) return null;
+                const d = payload[0].payload;
+                return (
+                  <div className="rounded-lg border border-ink-200 bg-white px-3 py-2 shadow-pop text-[11px]">
+                    <div className="font-bold text-ink-900 mb-1">{d.label}</div>
+                    <div className="flex justify-between gap-4 text-ink-600">
+                      <span>Users in conflict:</span>
+                      <b className="font-mono text-ink-900">{d.count}</b>
+                    </div>
+                  </div>
+                );
+              }}
+            />
+            <S07_Bar
+              dataKey="count"
+              radius={[0, 4, 4, 0]}
+              barSize={20}
+              onClick={d => onSelect({ p1: d.p1, p2: d.p2, count: d.count })}
+            >
+              {top.map((d, i) => {
+                const isSel = selected && (
+                  (selected.p1 === d.p1 && selected.p2 === d.p2) ||
+                  (selected.p1 === d.p2 && selected.p2 === d.p1)
+                );
+                return (
+                  <S07_Cell
+                    key={i}
+                    fill={isSel ? '#0F172A' : d.count >= 15 ? '#EF4444' : d.count >= 8 ? '#F97316' : '#3B82F6'}
+                    cursor="pointer"
+                  />
+                );
+              })}
+            </S07_Bar>
+          </S07_BarChart>
+        </S07_ResponsiveContainer>
       </div>
+      {selected && (
+        <div className="mx-6 mb-5 flex items-center justify-between rounded-lg bg-ink-50 px-4 py-2.5 ring-1 ring-ink-200 text-[12px]">
+          <span className="font-bold text-ink-700">
+            Filtered: <span className="text-ink-900">{selected.p1} × {selected.p2}</span> — {selected.count} users
+          </span>
+          <button
+            onClick={() => onSelect(null)}
+            className="text-[11px] font-bold text-ink-500 hover:text-ink-900 uppercase tracking-widest"
+          >
+            Clear
+          </button>
+        </div>
+      )}
     </Section>
   );
 };
@@ -102,22 +120,25 @@ const DualProcessTable = ({ matrixFilter, onClearMatrixFilter }) => {
   const { DUAL_PROCESS_ROWS, DUAL_PROCESSES } = window.MOCK;
   const [rows, setRows] = useState(DUAL_PROCESS_ROWS);
   const [query, setQuery] = useState('');
-  const [sort, setSort] = useState({ key: 'severity', dir: 'asc' });
   const [page, setPage] = useState(1);
   const [expanded, setExpanded] = useState(new Set());
   const pageSize = 12;
 
   const procMap = Object.fromEntries(DUAL_PROCESSES.map(p => [p.key, p]));
+
   const toggle = id => setExpanded(s => {
     const next = new Set(s);
     if (next.has(id)) next.delete(id); else next.add(id);
     return next;
   });
-  const setStatus = (id, status) => setRows(rs => rs.map(r => r.id === id ? { ...r, status } : r));
 
   const filtered = rows
-    .filter(r => !matrixFilter || ((r.p1 === matrixFilter.p1 && r.p2 === matrixFilter.p2) || (r.p1 === matrixFilter.p2 && r.p2 === matrixFilter.p1)))
+    .filter(r => !matrixFilter || (
+      (r.p1 === matrixFilter.p1 && r.p2 === matrixFilter.p2) ||
+      (r.p1 === matrixFilter.p2 && r.p2 === matrixFilter.p1)
+    ))
     .filter(r => !query || (r.user + r.name).toLowerCase().includes(query.toLowerCase()));
+
   const paged = filtered.slice((page - 1) * pageSize, page * pageSize);
 
   return (
@@ -152,21 +173,23 @@ const DualProcessTable = ({ matrixFilter, onClearMatrixFilter }) => {
                       <div className="text-[10px] font-bold text-ink-400 uppercase">{r.name}</div>
                     </td>
                     <td className="px-4 py-3.5">
-                       <span className="font-bold text-ink-700 uppercase text-[10px] tracking-tight">{procMap[r.p1].label}</span>
+                      <span className="font-bold text-ink-700 uppercase text-[10px] tracking-tight">{procMap[r.p1].label}</span>
                     </td>
                     <td className="px-4 py-3.5">
-                       <span className="font-bold text-ink-700 uppercase text-[10px] tracking-tight">{procMap[r.p2].label}</span>
+                      <span className="font-bold text-ink-700 uppercase text-[10px] tracking-tight">{procMap[r.p2].label}</span>
                     </td>
                     <td className="px-4 py-3.5">
-                       <div className="flex gap-1">
-                          {r.tcodes.slice(0,3).map(t => <span key={t} className="px-1.5 py-0.5 rounded bg-ink-100 font-mono text-[10px] font-bold text-ink-600">{t}</span>)}
-                       </div>
+                      <div className="flex gap-1">
+                        {r.tcodes.slice(0, 3).map(t => (
+                          <span key={t} className="px-1.5 py-0.5 rounded bg-ink-100 font-mono text-[10px] font-bold text-ink-600">{t}</span>
+                        ))}
+                      </div>
                     </td>
                     <td className="px-4 py-3.5"><SeverityBadge value={r.severity} /></td>
                   </tr>
                   {isOpen && (
                     <tr className="bg-ink-50/30">
-                      <td colSpan={7} className="px-12 py-5">
+                      <td colSpan={6} className="px-12 py-5">
                         <ExecutionHistory row={r} p1={procMap[r.p1]} p2={procMap[r.p2]} />
                       </td>
                     </tr>
@@ -183,25 +206,38 @@ const DualProcessTable = ({ matrixFilter, onClearMatrixFilter }) => {
 };
 
 const ExecutionHistory = ({ row, p1, p2 }) => (
-  <div className="grid grid-cols-12 gap-8 border-l-4 border-ink-200 pl-6">
+  <div className="grid grid-cols-12 gap-6 border-l-4 border-ink-200 pl-6">
     <div className="col-span-12 lg:col-span-8">
-      <div className="text-[10px] font-bold uppercase tracking-widest text-ink-400 mb-4">Conflict Usage (Last 30 Days)</div>
-      <div className="space-y-1.5">
-        {row.execHistory.slice(0,3).map((h, i) => (
-          <div key={i} className="flex items-center gap-4 bg-white p-2 rounded ring-1 ring-ink-100 text-xs font-semibold">
-            <span className="font-mono text-ink-900">{h.date}</span>
-            <TCode code={h.tcode} size="sm" />
-            <span className="text-ink-600 truncate">{h.doc}</span>
-          </div>
-        ))}
+      <div className="text-[10px] font-bold uppercase tracking-widest text-ink-400 mb-3">
+        Conflict Usage — Last 30 Days
+      </div>
+      <div className="w-full">
+        <div className="grid grid-cols-3 gap-x-4 px-2 pb-1.5 text-[10px] font-bold uppercase tracking-widest text-ink-400 border-b border-ink-100">
+          <span>Date</span>
+          <span>T-Code</span>
+          <span>Document</span>
+        </div>
+        <div className="divide-y divide-ink-50">
+          {row.execHistory.slice(0, 5).map((h, i) => (
+            <div key={i} className="grid grid-cols-3 gap-x-4 px-2 py-2.5 text-xs hover:bg-ink-50 transition-colors rounded">
+              <span className="font-mono font-bold text-ink-700">{h.date}</span>
+              <TCode code={h.tcode} size="sm" />
+              <span className="text-ink-600 truncate">{h.doc}</span>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
-    <div className="col-span-12 lg:col-span-4">
-       <div className="rounded-xl bg-white p-4 ring-1 ring-ink-200 shadow-sm mb-4">
-         <div className="text-[10px] font-bold uppercase tracking-widest text-ink-400 mb-2">Audit Insight</div>
-         <p className="text-xs font-semibold text-ink-700 leading-relaxed italic">"Active cross-process execution detected. Immediate segregation recommended."</p>
-       </div>
-       <button className="w-full rounded-lg bg-ink-900 px-4 py-2.5 text-xs font-bold text-white hover:bg-ink-800 shadow-sm uppercase tracking-widest">Execute Profile Split</button>
+    <div className="col-span-12 lg:col-span-4 space-y-3">
+      <div className="rounded-xl bg-white p-4 ring-1 ring-ink-200 shadow-sm">
+        <div className="text-[10px] font-bold uppercase tracking-widest text-ink-400 mb-2">Audit Insight</div>
+        <p className="text-xs font-semibold text-ink-700 leading-relaxed italic">
+          "Active cross-process execution detected. Immediate segregation recommended."
+        </p>
+      </div>
+      <button className="w-full rounded-lg bg-ink-900 px-4 py-2.5 text-xs font-bold text-white hover:bg-ink-800 shadow-sm uppercase tracking-widest">
+        Execute Profile Split
+      </button>
     </div>
   </div>
 );
@@ -216,7 +252,7 @@ const Sod07Page = () => {
         subtitle="Identifying users with incompatible authorizations across split-control workflows."
       />
       <Sod07Kpis />
-      <ConflictMatrix selected={matrixFilter} onSelect={setMatrixFilter} />
+      <ConflictChart selected={matrixFilter} onSelect={setMatrixFilter} />
       <DualProcessTable matrixFilter={matrixFilter} onClearMatrixFilter={() => setMatrixFilter(null)} />
     </div>
   );

@@ -151,12 +151,6 @@ window.TopBar = function({ active, onNavigate, onToggleSidebar }) {
 
       {/* 2. Operational Telemetry (Adaptive) */}
       <div className="flex items-center gap-4 md:gap-8">
-        <div className="hidden xl:flex items-center gap-6">
-           <TelemetryItem label="System Status" value={RUN.status} color="#10B981" isMono />
-           <TelemetryItem label="Analysis Time" value={RUN.duration} isMono />
-           <TelemetryItem label="Identity Scope" value={`${RUN.scope.split(' ')[0]} Users`} />
-        </div>
-        
         <div className="flex items-center gap-2 md:gap-3 md:pl-6 md:border-l border-ink-100">
           <window.ExportButton label={window.innerWidth < 640 ? 'Export' : 'Download Report'} size="md" />
         </div>

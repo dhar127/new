@@ -4,8 +4,229 @@ const {
   ResponsiveContainer: P6_ResponsiveContainer, LabelList: P6_LabelList,
 } = Recharts;
 
-const { useState } = React;
+const { useState, useEffect, useRef } = React;
 
+/* ─────────────────────────────────────────────
+   MODAL PORTAL — Render modals on document.body to avoid z-index/layout issues
+───────────────────────────────────────────── */
+const ModalPortal = ({ children }) => {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  if (!mounted) return null;
+  return ReactDOM.createPortal(children, document.body);
+};
+
+/* ─────────────────────────────────────────────
+   DOWNLOAD SPLIT REPORT — Generate CSV file
+───────────────────────────────────────────── */
+const downloadSplitReport = (role) => {
+  const timestamp = new Date().toISOString().split('T')[0];
+  const csv = [
+    ['Role Split Report'],
+    ['Generated', new Date().toLocaleString()],
+    ['Original Role', role.role],
+    ['Current Users', role.users],
+    ['To Remediate', role.users],
+    [''],
+    ['Proposed Role Splits'],
+    ['Role Name', 'Description', 'Authorization Level'],
+    [role.role + '_READ', 'Read-only access — view GL entries, no posting rights', 'Read'],
+    [role.role + '_POST_CTL', 'Controlled posting — requires dual approval workflow', 'Write with Controls'],
+    [''],
+    ['Implementation Notes'],
+    ['1. Create new roles with restricted authorization objects'],
+    ['2. Migrate users to split roles incrementally'],
+    ['3. Implement dual-approval workflow for _POST_CTL assignments'],
+    ['4. Monitor all role assignment changes via SM01 logs'],
+    ['5. Schedule quarterly SoD compliance reviews'],
+    [''],
+    ['References'],
+    ['SAP Note 1860731 - Security Optimization Service guidelines'],
+    ['SAP Note 2159014 - Role segregation best practices'],
+    ['Internal Policy - Super-Admin accountability framework'],
+  ].map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(',')).join('\n');
+  
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const link = document.createElement('a');
+  const url = URL.createObjectURL(blob);
+  link.setAttribute('href', url);
+  link.setAttribute('download', `SOD-06_RoleSplit_${role.role}_${timestamp}.csv`);
+  link.style.visibility = 'hidden';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
+
+/* ─────────────────────────────────────────────
+   INFO TOOLTIP — hover-activated popover
+───────────────────────────────────────────── */
+const InfoTooltip = ({ content, maxWidth = 260 }) => {
+  const [show, setShow] = useState(false);
+  const [position, setPosition] = useState({ top: 0, left: 0 });
+  const buttonRef = useRef(null);
+
+  const handleMouseEnter = () => {
+    if (buttonRef.current) {
+      const rect = buttonRef.current.getBoundingClientRect();
+      setPosition({
+        top: rect.top - 10,
+        left: rect.left + rect.width / 2,
+      });
+    }
+    setShow(true);
+  };
+
+  return (
+    <span className="relative inline-flex items-center ml-1.5 align-middle" style={{ verticalAlign: 'middle' }}>
+      <button
+        ref={buttonRef}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={() => setShow(false)}
+        onFocus={handleMouseEnter}
+        onBlur={() => setShow(false)}
+        className="text-ink-400 hover:text-brand-500 transition-colors focus:outline-none"
+        aria-label="More information"
+        tabIndex={0}
+      >
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="1.5"/>
+          <path d="M8 7v5M8 5v.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+          <circle cx="8" cy="4.5" r="0.75" fill="currentColor"/>
+        </svg>
+      </button>
+      {show && (
+        <ModalPortal>
+          <div
+            className="fixed z-50 rounded-lg border border-ink-200 bg-white shadow-pop text-[11px] text-ink-700 leading-relaxed p-3"
+            style={{ 
+              width: maxWidth, 
+              top: `${position.top}px`, 
+              left: `${position.left}px`,
+              transform: 'translate(-50%, -100%)',
+              pointerEvents: 'none',
+              marginTop: '-8px'
+            }}
+          >
+            <div className="absolute left-1/2 -translate-x-1/2 top-full w-0 h-0"
+              style={{ borderLeft: '6px solid transparent', borderRight: '6px solid transparent', borderTop: '6px solid #fff' }} />
+            <div className="absolute left-1/2 -translate-x-1/2 top-full w-0 h-0"
+              style={{ borderLeft: '7px solid transparent', borderRight: '7px solid transparent', borderTop: '7px solid #E2E8F0', marginTop: '1px', marginLeft: '-7px' }} />
+            {content}
+          </div>
+        </ModalPortal>
+      )}
+    </span>
+  );
+};
+
+/* ─────────────────────────────────────────────
+   SPLIT REPORT MODAL
+───────────────────────────────────────────── */
+const SplitReportModal = ({ role, onClose }) => {
+  if (!role) return null;
+  return (
+    <ModalPortal>
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink-900/60 backdrop-blur-sm" onClick={onClose}>
+        <div
+          className="relative w-full max-w-lg mx-4 rounded-2xl bg-white shadow-2xl border border-ink-200 overflow-hidden"
+          onClick={e => e.stopPropagation()}
+        >
+          {/* Header */}
+          <div className="bg-ink-900 px-6 py-5">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <div className="text-[10px] font-bold uppercase tracking-widest text-ink-400 mb-1">Generate Split Report</div>
+                <div className="font-mono font-bold text-white text-base">{role.role}</div>
+              </div>
+              <button onClick={onClose} className="text-ink-400 hover:text-white transition-colors mt-0.5">
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M2 2l14 14M16 2L2 16" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>
+              </button>
+            </div>
+          </div>
+
+          {/* Body */}
+          <div className="px-6 py-5 space-y-4 max-h-[70vh] overflow-y-auto">
+            {/* Stats */}
+            <div className="grid grid-cols-2 gap-3">
+              <div className="rounded-lg bg-ink-50 border border-ink-200 px-3 py-3 text-center">
+                <div className="text-[22px] font-black font-mono text-rose-500">{role.users}</div>
+                <div className="text-[10px] font-bold uppercase tracking-wider text-ink-400 mt-0.5">Current Users</div>
+              </div>
+              <div className="rounded-lg bg-ink-50 border border-ink-200 px-3 py-3 text-center">
+                <div className="text-[22px] font-black font-mono text-amber-500">{role.users}</div>
+                <div className="text-[10px] font-bold uppercase tracking-wider text-ink-400 mt-0.5">To Remediate</div>
+              </div>
+            </div>
+
+            {/* Proposed split */}
+            <div>
+              <div className="text-[10px] font-bold uppercase tracking-widest text-ink-400 mb-2">Proposed Role Split</div>
+              <div className="space-y-2">
+                {[
+                  { name: role.role + '_READ', desc: 'Read-only access — view GL entries, no posting rights' },
+                  { name: role.role + '_POST_CTL', desc: 'Controlled posting — requires dual approval workflow' },
+                ].map(r => (
+                  <div key={r.name} className="flex items-start gap-2 rounded-lg bg-ink-50 px-3 py-2.5 border border-ink-200">
+                    <svg className="w-3.5 h-3.5 text-emerald-500 mt-0.5 shrink-0" viewBox="0 0 14 14" fill="none">
+                      <path d="M2 7l3.5 3.5L12 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                    <div>
+                      <div className="font-mono text-[11px] font-bold text-ink-900">{r.name}</div>
+                      <div className="text-[11px] text-ink-500 mt-0.5">{r.desc}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Implementation timeline */}
+            <div>
+              <div className="text-[10px] font-bold uppercase tracking-widest text-ink-400 mb-2">Implementation Roadmap</div>
+              <div className="space-y-1.5 text-[11px] text-ink-600">
+                <div className="flex gap-2">
+                  <span className="font-bold text-amber-600">Week 1:</span>
+                  <span>Create new split roles in DEV/QA, configure approvers</span>
+                </div>
+                <div className="flex gap-2">
+                  <span className="font-bold text-amber-600">Week 2:</span>
+                  <span>Notify users, commence migration to _READ role</span>
+                </div>
+                <div className="flex gap-2">
+                  <span className="font-bold text-amber-600">Week 3:</span>
+                  <span>Migrate posting rights to _POST_CTL with approval workflow</span>
+                </div>
+                <div className="flex gap-2">
+                  <span className="font-bold text-amber-600">Week 4:</span>
+                  <span>Revoke original role, validate all systems, monitor logs</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Footer */}
+          <div className="border-t border-ink-200 bg-ink-50 px-6 py-4 flex gap-2">
+            <button 
+              onClick={() => {
+                downloadSplitReport(role);
+                onClose();
+              }}
+              className="flex-1 rounded-lg bg-rose-600 px-4 py-2.5 text-xs font-bold text-white hover:bg-rose-500 transition-colors shadow-sm uppercase tracking-widest"
+            >
+              Download Split Report
+            </button>
+            <button onClick={onClose} className="px-4 py-2.5 rounded-lg bg-white text-xs font-bold text-ink-600 hover:bg-ink-100 transition-colors border border-ink-200 uppercase tracking-widest">
+              Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+    </ModalPortal>
+  );
+};
+
+/* ─────────────────────────────────────────────
+   KPIs
+───────────────────────────────────────────── */
 const Sod06Kpis = () => {
   const k = window.MOCK.SUPER_ADMIN_KPIS;
   return (
@@ -18,13 +239,19 @@ const Sod06Kpis = () => {
   );
 };
 
+/* ─────────────────────────────────────────────
+   ROLE CONCENTRATION CHART
+   Clickable role cards replace the dark panel
+───────────────────────────────────────────── */
 const RoleConcentrationChart = () => {
   const data = window.MOCK.ROLE_CONCENTRATION.slice().sort((a, b) => b.users - a.users);
   const maxUsers = Math.max(...data.map(d => d.users));
+  const [modalRole, setModalRole] = useState(null);
+
   return (
-    <Section title="Role Authority Concentration" subtitle="Identification of SAP roles responsible for granting near-unrestricted access.">
-      <div className="grid grid-cols-12 gap-0 divide-x divide-ink-100">
-        <div className="col-span-12 lg:col-span-8 p-6">
+    <>
+      <Section title="Role Authority Concentration" subtitle="Identification of SAP roles responsible for granting near-unrestricted access.">
+        <div className="p-6">
           <div className="h-[320px]">
             <P6_ResponsiveContainer>
               <P6_BarChart data={data} layout="vertical" margin={{ top: 8, right: 32, bottom: 0, left: 8 }}>
@@ -39,35 +266,39 @@ const RoleConcentrationChart = () => {
                       <div className="text-ink-600 flex justify-between gap-4">
                         <span>Grant Count:</span> <b className="font-mono text-ink-900">{payload[0].value} Users</b>
                       </div>
+                      <div className="text-[10px] text-brand-500 mt-1.5 font-semibold">Click bar to generate split report →</div>
                     </div>
                   );
                 }} />
-                <P6_Bar dataKey="users" radius={[0, 4, 4, 0]} barSize={20}>
-                  {data.map((d, i) => <P6_Cell key={i} fill={d.users / maxUsers > 0.6 ? '#EF4444' : '#475569'} />)}
+                <P6_Bar dataKey="users" radius={[0, 4, 4, 0]} barSize={20} onClick={(barData) => setModalRole(barData)}>
+                  {data.map((d, i) => (
+                    <P6_Cell
+                      key={i}
+                      fill={d.users / maxUsers > 0.6 ? '#EF4444' : '#475569'}
+                      style={{ cursor: 'pointer' }}
+                    />
+                  ))}
                   <P6_LabelList dataKey="users" position="right" fill="#0F172A" style={{ fontSize: 11, fontWeight: 700, fontFamily: 'JetBrains Mono' }} />
                 </P6_Bar>
               </P6_BarChart>
             </P6_ResponsiveContainer>
           </div>
+          <p className="text-[11px] text-ink-400 mt-2 pl-1">
+            <span className="inline-block w-2.5 h-2.5 rounded-sm bg-rose-500 mr-1.5 align-middle" />
+            Red bars exceed 60% concentration threshold — click any bar to generate a role split report.
+          </p>
         </div>
-        <div className="col-span-12 lg:col-span-4 p-6 bg-ink-900 text-white flex flex-col justify-center">
-           <div className="text-[10px] font-bold uppercase tracking-widest text-ink-400 mb-4">Critical Concentration</div>
-           <div className="space-y-4">
-              <div className="flex items-start gap-3">
-                <Icon name="shield" className="w-5 h-5 text-rose-500 mt-0.5" />
-                <div>
-                  <div className="text-sm font-bold">ZFI_BR_GL_POSTING</div>
-                  <p className="text-[12px] text-ink-300 mt-1">Granted to 9 super-admin accounts. SAP standard recommended: 0.</p>
-                </div>
-              </div>
-              <button className="w-full rounded-lg bg-white/10 border border-white/20 py-2 text-[11px] font-bold hover:bg-white/20 transition-colors uppercase tracking-widest">Generate Split Report</button>
-           </div>
-        </div>
-      </div>
-    </Section>
+      </Section>
+
+      {/* Split Report Modal */}
+      {modalRole && <SplitReportModal role={modalRole} onClose={() => setModalRole(null)} />}
+    </>
   );
 };
 
+/* ─────────────────────────────────────────────
+   SUPER ADMIN TABLE
+───────────────────────────────────────────── */
 const SuperAdminTable = () => {
   const { SUPER_ADMIN_ROWS, SUPER_ADMIN_RECOMMENDATIONS, SEVERITIES } = window.MOCK;
   const [rows, setRows] = useState(SUPER_ADMIN_ROWS);
@@ -76,16 +307,7 @@ const SuperAdminTable = () => {
   const [query, setQuery] = useState('');
   const [sort, setSort] = useState({ key: 'score', dir: 'desc' });
   const [page, setPage] = useState(1);
-  const [expanded, setExpanded] = useState(new Set());
   const pageSize = 10;
-
-  const toggle = id => setExpanded(s => {
-    const next = new Set(s);
-    if (next.has(id)) next.delete(id); else next.add(id);
-    return next;
-  });
-  const setStatus = (user, status) => setRows(rs => rs.map(r => r.user === user ? { ...r, status } : r));
-  const setAssignee = (user, assignee) => setRows(rs => rs.map(r => r.user === user ? { ...r, assignee } : r));
 
   const filtered = rows
     .filter(r => !recFilter || r.recommendation === recFilter)
@@ -104,50 +326,61 @@ const SuperAdminTable = () => {
       <FilterBar onClear={clear} hasFilters={!!(recFilter || sevFilter || query)}>
         <Select value={recFilter} onChange={setRecFilter} options={SUPER_ADMIN_RECOMMENDATIONS} placeholder="All Recommendations" />
         <Select value={sevFilter} onChange={setSevFilter} options={SEVERITIES} placeholder="All Severities" />
-        <SearchInput value={query} onChange={setQuery} placeholder="Search by User or ID…" />
+        <SearchInput value={query} onChange={setQuery} placeholder="Search by Username or ID…" />
       </FilterBar>
 
       <div className="overflow-x-auto">
         <table className="w-full text-[13px]">
           <thead className="bg-ink-50/50">
             <tr>
-              <Th></Th>
-              <Th sortKey="user" sort={sort} onSort={k => setSort({key:k, dir: sort.dir==='asc'?'desc':'asc'})}>Identifier</Th>
-              <Th>Security Indicator</Th>
-              <Th align="right">Authority Score</Th>
-              <Th align="right">Role Count</Th>
+              {/* USERNAME — was "Identifier" */}
+              <Th sortKey="user" sort={sort} onSort={k => setSort({ key: k, dir: sort.dir === 'asc' ? 'desc' : 'asc' })}>
+                <span className="inline-flex items-center">
+                  Username
+                </span>
+              </Th>
+
+              {/* USER ACTIONS — was "Security Indicator" */}
+              <Th>
+                <span className="inline-flex items-center">
+                  User Actions
+                </span>
+              </Th>
+
+              {/* AUTHORITY SCORE */}
+              <Th align="right">
+                <span className="inline-flex items-center justify-end">
+                  Authority Score
+                  <InfoTooltip content={
+                    <div className="text-[11px] leading-relaxed">
+                      <div className="font-bold mb-2">Risk Score Formula:</div>
+                      <div className="mb-2">• Critical roles = 10 points each</div>
+                      <div className="mb-2">• High roles = 5 points each</div>
+                      <div className="mb-2">• Medium roles = 2 points each</div>
+                      <div className="mt-3 pt-2 border-t border-ink-300 text-[10px]">Maximum: 100 points</div>
+                    </div>
+                  } maxWidth={280} />
+                </span>
+              </Th>
+
               <Th>Recommendation</Th>
               <Th>Severity</Th>
             </tr>
           </thead>
           <tbody className="divide-y divide-ink-100">
             {paged.map(r => {
-              const isOpen = expanded.has(r.user);
               return (
-                <React.Fragment key={r.user}>
-                  <tr onClick={() => toggle(r.user)} className="row-hover cursor-pointer group">
-                    <td className="pl-4">
-                      <Icon name="chevron" className={`w-3.5 h-3.5 text-ink-400 transition-transform ${isOpen ? 'rotate-90' : ''}`} />
-                    </td>
+                <tr key={r.user} className="row-hover">
                     <td className="px-4 py-3.5 font-mono font-bold text-ink-900 group-hover:text-brand-600 transition-colors">{r.user}</td>
                     <td className="px-4 py-3.5 font-semibold text-ink-800">{r.indicator}</td>
                     <td className="px-4 py-3.5 text-right">
-                       <span className="font-mono font-bold text-ink-900">{r.score}</span>
+                      <span className="font-mono font-bold text-ink-900">{r.score}</span>
                     </td>
-                    <td className="px-4 py-3.5 text-right font-bold text-ink-600">{r.roles.length}</td>
                     <td className="px-4 py-3.5">
                       <span className="font-bold text-[10px] tracking-tight uppercase text-ink-600 px-2 py-0.5 rounded bg-ink-100 ring-1 ring-inset ring-ink-200">{r.recommendation}</span>
                     </td>
                     <td className="px-4 py-3.5"><SeverityBadge value={r.severity} /></td>
-                  </tr>
-                  {isOpen && (
-                    <tr className="bg-ink-50/30">
-                      <td colSpan={8} className="px-12 py-5">
-                        <RoleDrilldown row={r} />
-                      </td>
-                    </tr>
-                  )}
-                </React.Fragment>
+                </tr>
               );
             })}
           </tbody>
@@ -158,24 +391,9 @@ const SuperAdminTable = () => {
   );
 };
 
-const RoleDrilldown = ({ row }) => (
-  <div className="grid grid-cols-12 gap-8 border-l-4 border-ink-200 pl-6">
-    <div className="col-span-12 lg:col-span-8">
-      <div className="text-[10px] font-bold uppercase tracking-widest text-ink-400 mb-4">Privileged Authorization Set</div>
-      <div className="flex flex-wrap gap-2">
-        {row.roles.map(r => <Role key={r.role} role={r.role} className="bg-white px-2 py-1 rounded ring-1 ring-ink-200 shadow-sm" />)}
-      </div>
-    </div>
-    <div className="col-span-12 lg:col-span-4 space-y-4">
-      <div className="rounded-xl bg-white p-4 ring-1 ring-ink-200 shadow-sm">
-        <div className="text-[10px] font-bold uppercase tracking-widest text-ink-400 mb-2">Technical Insight</div>
-        <p className="text-xs font-semibold text-ink-700">Account grants unrestricted SE16, PFCG, and SM30 authority across production client.</p>
-      </div>
-      <button className="w-full rounded-lg bg-rose-600 px-4 py-2.5 text-xs font-bold text-white hover:bg-rose-500 shadow-sm uppercase tracking-widest">Execute Revocation</button>
-    </div>
-  </div>
-);
-
+/* ─────────────────────────────────────────────
+   PAGE
+───────────────────────────────────────────── */
 const Sod06Page = () => {
   return (
     <div data-screen-label="06 Super Administrators" className="space-y-6 px-7 py-6">

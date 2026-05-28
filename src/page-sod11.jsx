@@ -52,81 +52,47 @@ const RemediationSummary = () => {
     const scale = 18;
     return {
       type,
-      Open:         set.filter(r => r.status === 'Open').length * scale,
-      'In Progress':set.filter(r => r.status === 'In Progress').length * scale,
-      Resolved:     set.filter(r => r.status === 'Resolved').length * scale,
+      Open:          set.filter(r => r.status === 'Open').length * scale,
+      'In Progress': set.filter(r => r.status === 'In Progress').length * scale,
+      Resolved:      set.filter(r => r.status === 'Resolved').length * scale,
     };
   });
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-12 gap-5">
-      <div className="md:col-span-8">
-        <Section title="Remediation Pipeline" subtitle="Workload distribution by task type and execution status.">
-          <div className="h-[260px] p-6">
-            <P11_ResponsiveContainer>
-              <P11_BarChart data={data} margin={{ top: 8, right: 16, bottom: 0, left: -24 }} layout="vertical">
-                <P11_CartesianGrid stroke="#F1F5F9" horizontal={false} />
-                <P11_XAxis type="number" hide />
-                <P11_YAxis dataKey="type" type="category" tick={{ fill: '#64748B', fontSize: 11, fontWeight: 600 }} axisLine={false} tickLine={false} width={120} />
-                <P11_Tooltip cursor={{ fill: '#F8FAFC' }} content={({ active, payload, label }) => {
-                  if (!active || !payload || !payload.length) return null;
-                  return (
-                    <div className="rounded-lg border border-ink-200 bg-white px-3 py-2 shadow-pop text-[11px]">
-                      <div className="font-bold text-ink-900 mb-1">{label}</div>
-                      {payload.map((p, i) => (
-                        <div key={i} className="flex items-center justify-between gap-4 py-0.5">
-                          <span className="flex items-center gap-1.5 text-ink-500">
-                            <span className="h-1.5 w-1.5 rounded-full" style={{ background: p.color }} />
-                            {p.name}
-                          </span>
-                          <span className="font-mono font-bold text-ink-900">{(p.value || 0).toLocaleString()}</span>
-                        </div>
-                      ))}
+    <Section title="Remediation Pipeline" subtitle="Workload distribution by task type and execution status.">
+      <div className="h-[260px] p-6">
+        <P11_ResponsiveContainer>
+          <P11_BarChart data={data} margin={{ top: 8, right: 16, bottom: 0, left: -24 }} layout="vertical">
+            <P11_CartesianGrid stroke="#F1F5F9" horizontal={false} />
+            <P11_XAxis type="number" hide />
+            <P11_YAxis dataKey="type" type="category" tick={{ fill: '#64748B', fontSize: 11, fontWeight: 600 }} axisLine={false} tickLine={false} width={120} />
+            <P11_Tooltip cursor={{ fill: '#F8FAFC' }} content={({ active, payload, label }) => {
+              if (!active || !payload || !payload.length) return null;
+              return (
+                <div className="rounded-lg border border-ink-200 bg-white px-3 py-2 shadow-pop text-[11px]">
+                  <div className="font-bold text-ink-900 mb-1">{label}</div>
+                  {payload.map((p, i) => (
+                    <div key={i} className="flex items-center justify-between gap-4 py-0.5">
+                      <span className="flex items-center gap-1.5 text-ink-500">
+                        <span className="h-1.5 w-1.5 rounded-full" style={{ background: p.color }} />
+                        {p.name}
+                      </span>
+                      <span className="font-mono font-bold text-ink-900">{(p.value || 0).toLocaleString()}</span>
                     </div>
-                  );
-                }} />
-                <P11_Bar dataKey="Open"        stackId="s" fill={STATUS_COLOR.Open}        radius={[0,0,0,0]} barSize={32} />
-                <P11_Bar dataKey="In Progress" stackId="s" fill={STATUS_COLOR['In Progress']} />
-                <P11_Bar dataKey="Resolved"    stackId="s" fill={STATUS_COLOR.Resolved}    radius={[0,4,4,0]} />
-              </P11_BarChart>
-            </P11_ResponsiveContainer>
-          </div>
-        </Section>
+                  ))}
+                </div>
+              );
+            }} />
+            <P11_Bar dataKey="Open"        stackId="s" fill={STATUS_COLOR.Open}            radius={[0,0,0,0]} barSize={32} />
+            <P11_Bar dataKey="In Progress" stackId="s" fill={STATUS_COLOR['In Progress']} />
+            <P11_Bar dataKey="Resolved"    stackId="s" fill={STATUS_COLOR.Resolved}        radius={[0,4,4,0]} />
+          </P11_BarChart>
+        </P11_ResponsiveContainer>
       </div>
-      <div className="md:col-span-4 flex flex-col gap-4">
-        <div className="flex-1 rounded-2xl bg-ink-900 p-5 text-white shadow-card">
-          <div className="text-[10px] font-bold uppercase tracking-widest text-ink-400">AI Performance Insights</div>
-          <div className="mt-4 flex items-start gap-3">
-            <div className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-emerald-500/20 text-emerald-400">
-              <Icon name="check" className="w-5 h-5" />
-            </div>
-            <div>
-              <div className="text-sm font-bold text-white">Access Removal Velocity</div>
-              <p className="mt-1 text-[12px] leading-relaxed text-ink-300">Tasks in this category are closing <b>42% faster</b> than Q1. Recommend prioritizing role-redesign next to maintain momentum.</p>
-            </div>
-          </div>
-          <div className="mt-6 space-y-4">
-             {data.slice(0,2).map(d => {
-               const total = d.Open + d['In Progress'] + d.Resolved;
-               const pct = Math.round((d.Resolved / total) * 100);
-               return (
-                 <div key={d.type}>
-                   <div className="flex justify-between text-[11px] mb-1.5">
-                     <span className="font-semibold text-ink-200">{d.type}</span>
-                     <span className="font-mono text-emerald-400">{pct}%</span>
-                   </div>
-                   <div className="h-1 w-full bg-white/10 rounded-full overflow-hidden">
-                     <div className="h-full bg-emerald-500 transition-all duration-1000" style={{ width: `${pct}%` }} />
-                   </div>
-                 </div>
-               )
-             })}
-          </div>
-        </div>
-      </div>
-    </div>
+    </Section>
   );
 };
+
 
 /* ------------------------------------------------------------ */
 /* Tracker — high density table                                 */
@@ -169,40 +135,52 @@ const RemediationTable = () => {
 
       <div className="overflow-x-auto">
         <table className="w-full text-[13px]">
-          <thead>
-            <tr className="bg-ink-50/50">
-              <Th className="w-10"></Th>
-              <Th sortKey="priority" sort={sort} onSort={k => setSort({key:k, dir: sort.dir==='asc'?'desc':'asc'})}>Prio</Th>
-              <Th sortKey="violationId" sort={sort} onSort={k => setSort({key:k, dir: sort.dir==='asc'?'desc':'asc'})}>Source Violation</Th>
-              <Th>Action Title</Th>
-              <Th>Category</Th>
-              <Th>Due Date</Th>
-            </tr>
-          </thead>
+        <thead>
+  <tr className="bg-ink-50/50">
+    <Th className="w-10"></Th>
+    <Th sortKey="priority" sort={sort} onSort={k => setSort({key:k, dir: sort.dir==='asc'?'desc':'asc'})}>Prio</Th>
+    <Th sortKey="violationId" sort={sort} onSort={k => setSort({key:k, dir: sort.dir==='asc'?'desc':'asc'})}>Source Violation</Th>
+    <Th>Action Title</Th>
+    <Th>Category</Th>
+    <Th>Status</Th>
+    <Th>AI Suggestion</Th>
+  </tr>
+</thead>
           <tbody className="divide-y divide-ink-100">
-            {paged.map(r => {
-              const ts = TYPE_STYLE_11[r.type];
-              return (
-                <tr key={r.id} className="row-hover group">
-                  <td className="pl-4"></td>
-                  <td className="px-4 py-3.5">
-                     <span className={`inline-flex items-center px-1.5 py-0.5 rounded font-bold text-[10px] ring-1 ring-inset ${PRIORITY_STYLE[r.priority]}`}>{r.priority}</span>
-                  </td>
-                  <td className="px-4 py-3.5 font-mono text-[11px] font-bold text-ink-900 group-hover:text-brand-600 transition-colors">{r.violationId}</td>
-                  <td className="px-4 py-3.5 font-semibold text-ink-800">{r.title}</td>
-                  <td className="px-4 py-3.5">
-                    <span className="inline-flex items-center gap-1.5 text-ink-600">
-                      <Icon name={ts.icon} className="w-3.5 h-3.5 opacity-60" />
-                      {r.type}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3.5 whitespace-nowrap">
-                     <span className={`font-mono text-[11px] ${r.overdue ? 'text-rose-600 font-bold' : 'text-ink-500'}`}>{r.due}</span>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
+  {paged.map(r => {
+    const ts = TYPE_STYLE_11[r.type];
+    const statusStyle = {
+      Open:        'bg-ink-50 text-ink-600 ring-ink-200',
+      'In Progress':'bg-blue-50 text-blue-700 ring-blue-200',
+      Resolved:    'bg-emerald-50 text-emerald-700 ring-emerald-200',
+    }[r.status];
+    return (
+      <tr key={r.id} className="row-hover group">
+        <td className="pl-4"></td>
+        <td className="px-4 py-3.5">
+          <span className={`inline-flex items-center px-1.5 py-0.5 rounded font-bold text-[10px] ring-1 ring-inset ${PRIORITY_STYLE[r.priority]}`}>{r.priority}</span>
+        </td>
+        <td className="px-4 py-3.5 font-mono text-[11px] font-bold text-ink-900 group-hover:text-brand-600 transition-colors">{r.violationId}</td>
+        <td className="px-4 py-3.5 font-semibold text-ink-800">{r.title}</td>
+        <td className="px-4 py-3.5">
+          <span className="inline-flex items-center gap-1.5 text-ink-600">
+            <Icon name={ts.icon} className="w-3.5 h-3.5 opacity-60" />
+            {r.type}
+          </span>
+        </td>
+        <td className="px-4 py-3.5">
+          <span className={`inline-flex items-center px-1.5 py-0.5 rounded font-bold text-[10px] ring-1 ring-inset ${statusStyle}`}>{r.status}</span>
+        </td>
+        <td className="px-4 py-3.5 w-[300px]">
+  <div className="flex items-start gap-1.5">
+    <Icon name="spark" className="w-3.5 h-3.5 text-brand-500 shrink-0 mt-0.5" />
+    <span className="text-[11px] text-ink-500 leading-snug">{r.rationale}</span>
+  </div>
+</td>
+      </tr>
+    );
+  })}
+</tbody>
         </table>
       </div>
       <Pagination page={page} pageSize={pageSize} total={filtered.length} onPage={setPage} />

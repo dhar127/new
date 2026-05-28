@@ -1,28 +1,103 @@
 const { useState, useMemo } = React;
-const {
-  ResponsiveContainer,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Cell,
-  LabelList,
-} = Recharts;
+
+const MOCK_AFFECTED_USERS = {
+  'P2P-001': [
+    { userId: 'USR-1042', name: 'Ravi Kumar',    role: 'AP Clerk'       },
+    { userId: 'USR-1087', name: 'Priya Nair',    role: 'Vendor Admin'   },
+    { userId: 'USR-1103', name: 'Arjun Mehta',   role: 'Finance Lead'   },
+  ],
+  'P2P-002': [
+    { userId: 'USR-1055', name: 'Sunita Rao',    role: 'AP Clerk'       },
+    { userId: 'USR-1061', name: 'Deepak Singh',  role: 'Buyer'          },
+  ],
+  'P2P-003': [
+    { userId: 'USR-1012', name: 'Meena Pillai',  role: 'Treasury Lead'  },
+    { userId: 'USR-1034', name: 'Karthik Iyer',  role: 'Finance Exec'   },
+    { userId: 'USR-1078', name: 'Anita Sharma',  role: 'AP Clerk'       },
+    { userId: 'USR-1091', name: 'Rahul Verma',   role: 'Controller'     },
+  ],
+  'P2P-004': [
+    { userId: 'USR-1023', name: 'Vijay Pandey',  role: 'Vendor Admin'   },
+    { userId: 'USR-1045', name: 'Lakshmi Das',   role: 'Procurement'    },
+  ],
+  'P2P-005': [
+    { userId: 'USR-1067', name: 'Suresh Babu',   role: 'AP Supervisor'  },
+    { userId: 'USR-1082', name: 'Nisha Menon',   role: 'Finance Exec'   },
+    { userId: 'USR-1094', name: 'Arun Krishnan', role: 'Buyer'          },
+  ],
+};
+
+const getFallbackUsers = (violationId) => [
+  { userId: `USR-${1000 + Math.abs(violationId.charCodeAt(4) * 7)}`, name: 'System User A', role: 'AP Clerk'     },
+  { userId: `USR-${1100 + Math.abs(violationId.charCodeAt(5) * 3)}`, name: 'System User B', role: 'Finance Exec' },
+];
+
+const ViolationRow = ({ violation }) => {
+  const [open, setOpen] = useState(false);
+  const users = MOCK_AFFECTED_USERS[violation.id] || getFallbackUsers(violation.id);
+
+  return (
+    <React.Fragment>
+      <tr
+        className="border-b border-ink-50 hover:bg-ink-50 transition-colors cursor-pointer group"
+        onClick={() => setOpen(o => !o)}
+      >
+        <td className="px-5 py-3">
+          <div className="flex items-center gap-2">
+            <window.Icon
+              name="chevron"
+              className={`w-3.5 h-3.5 text-ink-400 transition-transform ${open ? 'rotate-90' : ''}`}
+            />
+            <span className="text-xs font-mono font-bold text-ink-900">{violation.id}</span>
+          </div>
+        </td>
+        <td className="px-5 py-3 text-xs font-bold text-ink-900">{violation.pair}</td>
+        <td className="px-5 py-3 text-xs text-ink-700">{violation.desc}</td>
+        <td className="px-5 py-3">
+          <window.SeverityBadge value={violation.severity} size="sm" />
+        </td>
+        <td className="px-5 py-3">
+          <window.StatusBadge value={violation.status} />
+        </td>
+      </tr>
+      {open && (
+        <tr className="bg-ink-50/40">
+          <td colSpan={5} className="px-8 py-4">
+            <div className="text-[10px] font-bold uppercase tracking-widest text-ink-400 mb-3">
+              Affected Users — {violation.pair}
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+              {users.map((u, i) => (
+                <div key={i} className="flex items-center justify-between bg-white rounded-lg px-3 py-2.5 ring-1 ring-ink-100 text-xs">
+                  <div className="flex flex-col gap-0.5">
+                    <span className="font-mono font-bold text-ink-900">{u.userId}</span>
+                    <span className="text-ink-500">{u.name}</span>
+                  </div>
+                  <span className="text-[10px] font-bold uppercase tracking-tight text-ink-500 bg-ink-50 px-1.5 py-0.5 rounded ring-1 ring-ink-200">
+                    {u.role}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </td>
+        </tr>
+      )}
+    </React.Fragment>
+  );
+};
 
 window.SodP2pPage = function() {
-  const { P2P_KPIS, P2P_VIOLATIONS, VENDOR_RISK_HEATMAP, P2P_REMEDIATION } = window.MOCK;
+  const { P2P_KPIS, P2P_VIOLATIONS } = window.MOCK;
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('All');
 
   const filteredViolations = useMemo(() => {
-    let filtered = selectedStatus === 'All' 
-      ? P2P_VIOLATIONS 
+    let filtered = selectedStatus === 'All'
+      ? P2P_VIOLATIONS
       : P2P_VIOLATIONS.filter(v => v.status === selectedStatus);
-    
+
     if (searchTerm) {
-      filtered = filtered.filter(v => 
+      filtered = filtered.filter(v =>
         v.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
         v.pair.toLowerCase().includes(searchTerm.toLowerCase()) ||
         v.desc.toLowerCase().includes(searchTerm.toLowerCase())
@@ -40,11 +115,10 @@ window.SodP2pPage = function() {
       />
 
       {/* KPI Row */}
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-        <window.StatCard label="Total P2P Violations" value={P2P_KPIS.totalViolations} delta={P2P_KPIS.deltas.totalViolations} deltaInvertGood icon="split" />
-        <window.StatCard severity="Critical" label="High-Risk Combos" value={P2P_KPIS.highRiskCombos} delta={P2P_KPIS.deltas.highRiskCombos} deltaInvertGood icon="flame" />
-        <window.StatCard label="Affected Vendors" value={P2P_KPIS.affectedVendors} delta={P2P_KPIS.deltas.affectedVendors} deltaInvertGood icon="user" />
-        <window.StatCard severity="Critical" label="Estimated Exposure" value={'$' + (P2P_KPIS.estimatedExposure / 1_000_000).toFixed(1) + 'M'} delta={P2P_KPIS.deltas.estimatedExposure / 1_000_000} deltaSuffix="M" deltaInvertGood icon="impact" />
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
+        <window.StatCard label="Total P2P Violations" value={P2P_KPIS.totalViolations} delta={P2P_KPIS.deltas.totalViolations} deltaInvertGood />
+        <window.StatCard severity="Critical" label="High-Risk Combos" value={P2P_KPIS.highRiskCombos} delta={P2P_KPIS.deltas.highRiskCombos} deltaInvertGood />
+        <window.StatCard label="Affected Vendors" value={P2P_KPIS.affectedVendors} delta={P2P_KPIS.deltas.affectedVendors} deltaInvertGood />
       </div>
 
       {/* Search & Filter */}
@@ -81,123 +155,29 @@ window.SodP2pPage = function() {
       </div>
 
       {/* Violation Combo Table */}
-      <window.Section 
+      <window.Section
         title="P2P Violation Combinations"
-        subtitle="Detailed breakdown of authorization overlaps across the Procure-to-Pay cycle."
+        subtitle="Detailed breakdown of authorization overlaps across the Procure-to-Pay cycle. Click a row to see affected users."
       >
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-ink-100">
-                <th className="text-left px-5 py-3 text-[11px] font-bold uppercase tracking-widest text-ink-400">ID</th>
-                <th className="text-left px-5 py-3 text-[11px] font-bold uppercase tracking-widest text-ink-400">T-Code Pair</th>
-                <th className="text-left px-5 py-3 text-[11px] font-bold uppercase tracking-widest text-ink-400">Risk Description</th>
-                <th className="text-left px-5 py-3 text-[11px] font-bold uppercase tracking-widest text-ink-400">Users Affected</th>
-                <th className="text-left px-5 py-3 text-[11px] font-bold uppercase tracking-widest text-ink-400">Severity</th>
-                <th className="text-left px-5 py-3 text-[11px] font-bold uppercase tracking-widest text-ink-400">Status</th>
-              </tr>
-            </thead>
+  <tr className="border-b border-ink-100">
+    <th className="text-left px-5 py-3 text-[11px] font-bold uppercase tracking-widest text-ink-400">ID</th>
+    <th className="text-left px-5 py-3 text-[11px] font-bold uppercase tracking-widest text-ink-400">T-Code Pair</th>
+    <th className="text-left px-5 py-3 text-[11px] font-bold uppercase tracking-widest text-ink-400">Risk Description</th>
+    <th className="text-left px-5 py-3 text-[11px] font-bold uppercase tracking-widest text-ink-400">Severity</th>
+    <th className="text-left px-5 py-3 text-[11px] font-bold uppercase tracking-widest text-ink-400">Status</th>
+  </tr>
+</thead>
             <tbody>
               {filteredViolations.map(violation => (
-                <tr key={violation.id} className="border-b border-ink-50 hover:bg-ink-50 transition-colors">
-                  <td className="px-5 py-3 text-xs font-mono font-bold text-ink-900">{violation.id}</td>
-                  <td className="px-5 py-3">
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs font-bold text-ink-900">{violation.pair}</span>
-                    </div>
-                  </td>
-                  <td className="px-5 py-3 text-xs text-ink-700">{violation.desc}</td>
-                  <td className="px-5 py-3 text-xs font-bold text-ink-900">{violation.users} users</td>
-                  <td className="px-5 py-3">
-                    <window.SeverityBadge value={violation.severity} size="sm" />
-                  </td>
-                  <td className="px-5 py-3">
-                    <window.StatusBadge value={violation.status} />
-                  </td>
-                </tr>
+                <ViolationRow key={violation.id} violation={violation} />
               ))}
             </tbody>
           </table>
         </div>
       </window.Section>
-
-      {/* Vendor Risk Heatmap */}
-      <window.Section 
-        title="Vendor Risk Concentration"
-        subtitle="Top vendors with highest violation density across P2P processes."
-      >
-        <div className="h-[320px] p-6">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart 
-              data={VENDOR_RISK_HEATMAP.slice(0, 10)} 
-              layout="vertical" 
-              margin={{ top: 0, right: 60, bottom: 0, left: 140 }}
-            >
-              <CartesianGrid stroke="#F1F5F9" horizontal={false} />
-              <XAxis type="number" hide />
-              <YAxis 
-                type="category" 
-                dataKey="vendor" 
-                width={140}
-                tick={{ fill: '#0F172A', fontSize: 11, fontWeight: 600, fontFamily: 'JetBrains Mono' }} 
-                axisLine={false} 
-                tickLine={false} 
-              />
-              <Tooltip 
-                cursor={{ fill: '#F8FAFC' }} 
-                content={({ active, payload }) => {
-                  if (!active || !payload) return null;
-                  return (
-                    <div className="rounded-lg border border-ink-200 bg-white px-3 py-2 shadow-pop text-[11px]">
-                      <div className="font-bold text-ink-900 mb-1">{payload[0].payload.vendor}</div>
-                      <div className="text-ink-600 flex justify-between gap-4">
-                        <span>Violations:</span>
-                        <b className="font-mono text-ink-900">{payload[0].value}</b>
-                      </div>
-                      <div className="text-ink-600 flex justify-between gap-4 mt-1">
-                        <span>Exposure:</span>
-                        <b className="font-mono text-ink-900">{payload[0].payload.exposure}</b>
-                      </div>
-                    </div>
-                  );
-                }}
-              />
-              <Bar dataKey="violations" radius={[0, 4, 4, 0]} barSize={18} fill="#3B82F6">
-                {VENDOR_RISK_HEATMAP.slice(0, 10).map((d, i) => (
-                  <Cell key={i} fill={d.violations > 8 ? '#EF4444' : d.violations > 5 ? '#F97316' : '#3B82F6'} />
-                ))}
-                <LabelList dataKey="violations" position="right" fill="#0F172A" style={{ fontSize: 11, fontWeight: 700, fontFamily: 'JetBrains Mono' }} />
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-      </window.Section>
-
-      {/* Remediation Recommendations */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        {P2P_REMEDIATION.map((rec, idx) => (
-          <div key={idx} className="rounded-2xl bg-ink-900 text-white shadow-card ring-1 ring-ink-700 p-5">
-            <div className="flex items-start justify-between gap-2 mb-3">
-              <div>
-                <div className="text-[10px] font-bold uppercase tracking-widest text-ink-400">{rec.type}</div>
-                <h3 className="text-sm font-bold mt-1">{rec.title}</h3>
-              </div>
-              <span className={`shrink-0 px-2 py-1 rounded-md text-[9px] font-bold uppercase tracking-widest ring-1 ring-inset ${
-                rec.priority === 'P1' ? 'bg-rose-500/20 text-rose-300 ring-rose-500/30' :
-                'bg-blue-500/20 text-blue-300 ring-blue-500/30'
-              }`}>
-                {rec.priority}
-              </span>
-            </div>
-            <p className="text-xs text-ink-300 mb-3">{rec.description}</p>
-            <div className="flex items-center justify-between text-[10px]">
-              <span className="text-ink-400">Timeline: <b className="text-ink-100">{rec.timeline}</b></span>
-              <span className={`font-bold ${rec.impact === 'High' ? 'text-rose-300' : 'text-amber-300'}`}>{rec.impact} Impact</span>
-            </div>
-          </div>
-        ))}
-      </div>
-
     </div>
   );
 };
@@ -214,20 +194,20 @@ window.DetailHeader = function({ code, title, subtitle }) {
 
 window.StatCard = function({ label, value, delta, deltaInvertGood, deltaSuffix = '', severity, icon }) {
   const tones = {
-    default: 'bg-white',
+    default:  'bg-white',
     Critical: 'bg-gradient-to-br from-rose-50/70 to-white',
-    High: 'bg-gradient-to-br from-orange-50/70 to-white',
-    Medium: 'bg-gradient-to-br from-amber-50/70 to-white',
-    Low: 'bg-gradient-to-br from-blue-50/70 to-white',
-    Good: 'bg-gradient-to-br from-emerald-50/70 to-white',
+    High:     'bg-gradient-to-br from-orange-50/70 to-white',
+    Medium:   'bg-gradient-to-br from-amber-50/70 to-white',
+    Low:      'bg-gradient-to-br from-blue-50/70 to-white',
+    Good:     'bg-gradient-to-br from-emerald-50/70 to-white',
   };
   const ring = {
-    default: 'ring-ink-200',
+    default:  'ring-ink-200',
     Critical: 'ring-rose-200',
-    High: 'ring-orange-200',
-    Medium: 'ring-amber-200',
-    Low: 'ring-blue-200',
-    Good: 'ring-emerald-200',
+    High:     'ring-orange-200',
+    Medium:   'ring-amber-200',
+    Low:      'ring-blue-200',
+    Good:     'ring-emerald-200',
   };
   return (
     <div className={`rounded-xl ${tones[severity] || tones.default} px-4 py-3.5 shadow-card ring-1 ring-inset ${ring[severity] || ring.default}`}>
