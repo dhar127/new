@@ -109,6 +109,7 @@ window.SodP2pPage = function() {
   return (
     <div data-screen-label="P2P Violations" className="space-y-6 px-4 md:px-7 py-6">
       <window.DetailHeader
+        icon="package"
         code="SoD Analysis · P2P"
         title="Procure-to-Pay Violations"
         subtitle="High-risk authorization combinations in the vendor master and payment processes."
@@ -182,10 +183,13 @@ window.SodP2pPage = function() {
   );
 };
 
-window.DetailHeader = function({ code, title, subtitle }) {
+window.DetailHeader = function({ code, title, subtitle, icon }) {
   return (
     <div className="space-y-2">
-      <div className="text-[10px] font-bold uppercase tracking-[0.14em] text-ink-400">{code}</div>
+      <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.14em] text-ink-400">
+        {icon && <window.Icon name={icon} className="w-3.5 h-3.5 text-brand-600" />}
+        <span>{code}</span>
+      </div>
       <h1 className="text-2xl font-bold text-ink-900">{title}</h1>
       <p className="text-sm text-ink-500">{subtitle}</p>
     </div>

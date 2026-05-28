@@ -460,12 +460,11 @@ function RiskRadar() {
 
 // Hardcoded P2P stream card definition
 const P2P_STREAM_CARD = {
-  key: 'p2p',
+  key: 'sod-p2p',
   code: 'SoD · P2P',
   severity: 'Critical',
 
-  // UPDATED ICON
-  icon: 'wallet',
+  icon: 'package',
 
   title: 'Procure-to-Pay Violations',
 
@@ -487,7 +486,7 @@ function StreamOverview({ onNavigate }) {
         (c.code || '').toLowerCase().includes('o2c')
     );
 
-    const alreadyHasP2P = cards.some(c => c.key === 'p2p');
+    const alreadyHasP2P = cards.some(c => c.key === 'p2p' || c.key === 'sod-p2p');
 
     if (!alreadyHasP2P) {
       if (o2cIdx >= 0) {
