@@ -281,7 +281,7 @@ function RunCard({ run, onNavigate }) {
 
 /* ─── Create Run Modal ──────────────────────────────────────── */
 window.CreateRunModal = function ({ onClose, onNavigate }) {
-  const [runName, setRunName]               = useState('Q3 2025 License Audit');
+  const [runName, setRunName]               = useState('LCSOD-2026-Q2-007');
   const [selectedSystem, setSelectedSystem] = useState(null);
   const [uploadedFile, setUploadedFile]     = useState(null);
   const fileInputRef                        = useRef(null);
@@ -333,7 +333,7 @@ window.CreateRunModal = function ({ onClose, onNavigate }) {
             <input
               type="text" value={runName}
               onChange={e => setRunName(e.target.value)}
-              placeholder="e.g. Q3 2025 License Audit"
+              placeholder="e.g. LCSOD-2026-Q2-007"
               className="w-full px-3 py-2 rounded-lg border-2 border-gray-200 text-gray-900 text-xs focus:outline-none focus:border-red-500 transition-colors"
             />
           </div>
