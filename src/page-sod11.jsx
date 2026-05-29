@@ -109,8 +109,6 @@ const RemediationTable = () => {
   const pageSize = 10;
   const prioOrder = { P1: 0, P2: 1, P3: 2, P4: 3 };
 
-
-
   const filtered = rows
     .filter(r => !typeFilter || r.type === typeFilter)
     .filter(r => !prioFilter || r.priority === prioFilter)
@@ -135,61 +133,62 @@ const RemediationTable = () => {
 
       <div className="overflow-x-auto">
         <table className="w-full text-[13px]">
-        <thead>
-  <tr className="bg-ink-50/50">
-    <Th className="w-10"></Th>
-    <Th sortKey="priority" sort={sort} onSort={k => setSort({key:k, dir: sort.dir==='asc'?'desc':'asc'})}>Prio</Th>
-    <Th sortKey="violationId" sort={sort} onSort={k => setSort({key:k, dir: sort.dir==='asc'?'desc':'asc'})}>Source Violation</Th>
-    <Th>Action Title</Th>
-    <Th>Category</Th>
-    <Th>Status</Th>
-    <Th>AI Suggestion</Th>
-  </tr>
-</thead>
+          <thead>
+            <tr className="bg-ink-50/50">
+              <Th className="w-10"></Th>
+              <Th sortKey="priority" sort={sort} onSort={k => setSort({key:k, dir: sort.dir==='asc'?'desc':'asc'})}>Prio</Th>
+              <Th sortKey="violationId" sort={sort} onSort={k => setSort({key:k, dir: sort.dir==='asc'?'desc':'asc'})}>Source Violation</Th>
+              <Th>Action Title</Th>
+              <Th>Category</Th>
+              <Th>Status</Th>
+              <Th>AI Suggestion</Th>
+            </tr>
+          </thead>
           <tbody className="divide-y divide-ink-100">
-  {paged.map(r => {
-    const ts = TYPE_STYLE_11[r.type];
-    const statusStyle = {
-      Open:        'bg-ink-50 text-ink-600 ring-ink-200',
-      'In Progress':'bg-blue-50 text-blue-700 ring-blue-200',
-      Resolved:    'bg-emerald-50 text-emerald-700 ring-emerald-200',
-    }[r.status];
-    return (
-      <tr key={r.id} className="row-hover group">
-        <td className="pl-4"></td>
-        <td className="px-4 py-3.5">
-          <span className={`inline-flex items-center px-1.5 py-0.5 rounded font-bold text-[10px] ring-1 ring-inset ${PRIORITY_STYLE[r.priority]}`}>{r.priority}</span>
-        </td>
-        <td className="px-4 py-3.5 font-mono text-[11px] font-bold text-ink-900 group-hover:text-brand-600 transition-colors">{r.violationId}</td>
-        <td className="px-4 py-3.5 font-semibold text-ink-800">{r.title}</td>
-        <td className="px-4 py-3.5">
-          <span className="inline-flex items-center gap-1.5 text-ink-600">
-            <Icon name={ts.icon} className="w-3.5 h-3.5 opacity-60" />
-            {r.type}
-          </span>
-        </td>
-        <td className="px-4 py-3.5">
-          <span className={`inline-flex items-center px-1.5 py-0.5 rounded font-bold text-[10px] ring-1 ring-inset ${statusStyle}`}>{r.status}</span>
-        </td>
-        <td className="px-4 py-3.5 w-[300px]">
-  <div className="flex items-start gap-1.5">
-    <Icon name="spark" className="w-3.5 h-3.5 text-brand-500 shrink-0 mt-0.5" />
-    <span className="text-[11px] text-ink-500 leading-snug">{r.rationale}</span>
-  </div>
-</td>
-      </tr>
-    );
-  })}
-</tbody>
+            {paged.map(r => {
+              const ts = TYPE_STYLE_11[r.type];
+              const statusStyle = {
+                Open:         'bg-ink-50 text-ink-600 ring-ink-200',
+                'In Progress':'bg-blue-50 text-blue-700 ring-blue-200',
+                Resolved:     'bg-emerald-50 text-emerald-700 ring-emerald-200',
+              }[r.status];
+              return (
+                <tr key={r.id} className="row-hover group">
+                  <td className="pl-4"></td>
+                  <td className="px-4 py-3.5">
+                    <span className={`inline-flex items-center px-1.5 py-0.5 rounded font-bold text-[10px] ring-1 ring-inset ${PRIORITY_STYLE[r.priority]}`}>{r.priority}</span>
+                  </td>
+                  <td className="px-4 py-3.5 font-mono text-[11px] font-bold text-ink-900 group-hover:text-brand-600 transition-colors">{r.violationId}</td>
+                  <td className="px-4 py-3.5 font-semibold text-ink-800">{r.title}</td>
+                  <td className="px-4 py-3.5">
+                    <span className="inline-flex items-center gap-1.5 text-ink-600">
+                      <Icon name={ts.icon} className="w-3.5 h-3.5 opacity-60" />
+                      {r.type}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3.5">
+                    <span className={`inline-flex items-center px-1.5 py-0.5 rounded font-bold text-[10px] ring-1 ring-inset ${statusStyle}`}>{r.status}</span>
+                  </td>
+                  <td className="px-4 py-3.5 w-[300px]">
+                    <div className="flex items-start gap-1.5">
+                      <Icon name="spark" className="w-3.5 h-3.5 text-brand-500 shrink-0 mt-0.5" />
+                      <span className="text-[11px] text-ink-500 leading-snug">{r.rationale}</span>
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
         </table>
       </div>
       <Pagination page={page} pageSize={pageSize} total={filtered.length} onPage={setPage} />
     </Section>
   );
 };
+
 const ActionStepsPanel = ({ row }) => {
   const [completedSteps, setCompletedSteps] = useState(new Set());
-  
+
   const toggleStep = (idx) => {
     setCompletedSteps(prev => {
       const next = new Set(prev);
@@ -230,33 +229,6 @@ const ActionStepsPanel = ({ row }) => {
 };
 
 /* ------------------------------------------------------------ */
-const PolicySuggestions = () => {
-  const { POLICY_SUGGESTIONS } = window.MOCK;
-  return (
-    <Section eyebrow="Long-term Governance" title="AI Policy Recommendations" subtitle="Root-cause fixes to prevent recurring findings.">
-      <div className="overflow-x-auto pb-4 scrollbar-hide">
-        <div className="flex gap-4 p-5 min-w-max">
-          {POLICY_SUGGESTIONS.map((p, i) => (
-            <div key={i} className="w-[320px] rounded-xl bg-ink-50/50 p-5 ring-1 ring-ink-200 hover:bg-white hover:shadow-pop transition-all group">
-              <div className="flex items-center justify-between mb-3">
-                <span className={`px-2 py-0.5 rounded font-bold text-[10px] ring-1 ring-inset ${PRIORITY_STYLE[p.priority]}`}>{p.priority}</span>
-                <Icon name="spark" className="w-4 h-4 text-brand-500 animate-pulse" />
-              </div>
-              <h5 className="font-bold text-ink-900 text-sm leading-tight mb-2 group-hover:text-brand-700 transition-colors">{p.title}</h5>
-              <p className="text-[12px] text-ink-500 line-clamp-2 leading-relaxed mb-4">{p.rationale}</p>
-              <div className="flex items-center justify-between border-t border-ink-100 pt-3 mt-auto">
-                <span className="text-[11px] font-bold text-ink-700">{p.owner}</span>
-                <button className="text-[11px] font-bold text-brand-600 hover:underline">Adopt Policy</button>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </Section>
-  );
-};
-
-/* ------------------------------------------------------------ */
 /* Main page                                                     */
 /* ------------------------------------------------------------ */
 const Sod11Page = () => {
@@ -270,7 +242,6 @@ const Sod11Page = () => {
       <Sod11Kpis />
       <RemediationSummary />
       <RemediationTable />
-      <PolicySuggestions />
     </div>
   );
 };

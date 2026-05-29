@@ -217,14 +217,14 @@ function RunCard({ run, onNavigate }) {
         </div>
       </div>
 
-      {/* Scope Tags */}
+      {/* Scope Tags
       <div className="px-5 py-3 border-b border-ink-100 flex flex-wrap gap-1">
         {run.scopes.map(scope => (
           <span key={scope} className="inline-flex items-center px-2 py-1 rounded-md bg-ink-100 text-ink-600 text-[9px] font-bold uppercase tracking-wider">
             {scope}
           </span>
         ))}
-      </div>
+      </div> */}
 
       {/* Action */}
       <div className="px-5 py-3 mt-auto">
