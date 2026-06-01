@@ -201,7 +201,6 @@ const AccountDrilldown = ({ row }) => (
          <p className="text-xs font-semibold text-ink-700 leading-relaxed italic">"Identity holds production-wide authority with no valid custodian mapping. Recommend immediate profile scoping."</p>
        </div>
        <button className="w-full rounded-lg bg-ink-900 px-4 py-2.5 text-xs font-bold text-white hover:bg-ink-800 uppercase tracking-widest transition-colors shadow-sm">Assign Custodian</button>
-       <button className="w-full rounded-lg bg-amber-600 px-4 py-2.5 text-xs font-bold text-white hover:bg-amber-700 uppercase tracking-widest transition-colors shadow-sm">Assign for Remediation</button>
     </div>
   </div>
 );

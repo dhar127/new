@@ -218,56 +218,16 @@ function UserProfilePanel({ action, onClose }) {
             </div>
           </div>
 
-          {/* Regulatory Rules */}
-          <div>
-            <div className="text-[10px] font-bold uppercase tracking-widest text-ink-400 mb-2">
-              Applicable Regulatory Rules
-            </div>
-            <div className="rounded-xl bg-ink-50 ring-1 ring-ink-200 divide-y divide-ink-100 overflow-hidden">
-              {regulatoryRules.map(r => (
-                <div key={r.code} className="flex items-start gap-3 px-4 py-3">
-                  <span className="text-[10px] font-bold font-mono bg-white text-ink-700 ring-1 ring-ink-200 px-2 py-1 rounded whitespace-nowrap mt-0.5">
-                    {r.code}
-                  </span>
-                  <span className="text-[12px] text-ink-700 leading-snug">{r.desc}</span>
-                </div>
-              ))}
-            </div>
-          </div>
 
-          {/* Risk summary */}
-          <div>
-            <div className="text-[10px] font-bold uppercase tracking-widest text-ink-400 mb-2">Risk Summary</div>
-            <div className="rounded-xl bg-[#0B0F19] p-4 text-white">
-              <div className="flex items-center gap-2 mb-3">
-                <window.Icon name="bot" className="w-3.5 h-3.5 text-brand-400" />
-                <span className="text-[10px] font-bold uppercase tracking-widest text-brand-400">AI Assessment</span>
-              </div>
-              <p className="text-[12px] text-white/70 leading-relaxed">
-                This user holds overlapping authorizations across{' '}
-                <span className="text-white font-bold">{profile.authGroups.length} critical groups</span>,
-                creating {profile.violations.length} active SoD conflict{profile.violations.length !== 1 ? 's' : ''}.
-                Immediate role remediation is advised to reduce audit exposure in the{' '}
-                <span className="text-brand-400 font-bold">{profile.department}</span> stream.
-              </p>
-            </div>
-          </div>
         </div>
 
         {/* Footer actions */}
         <div className="px-6 py-4 border-t border-ink-100 bg-ink-50 flex gap-2">
           <button
             onClick={onClose}
-            className="flex-1 rounded-lg bg-white ring-1 ring-ink-200 text-ink-700 text-xs font-bold py-2.5 hover:bg-ink-50 transition-colors"
+            className="flex-1 rounded-lg bg-ink-900 text-white text-xs font-bold py-2.5 hover:bg-ink-800 transition-colors"
           >
             Close
-          </button>
-          <button
-            onClick={() => downloadRemediationRules(action, profile)}
-            className="flex-1 rounded-lg bg-emerald-600 text-white text-xs font-bold py-2.5 hover:bg-emerald-500 transition-colors flex items-center justify-center gap-1.5"
-          >
-            <window.Icon name="download" className="w-3.5 h-3.5" strokeWidth={2.5} />
-            Download Rules
           </button>
         </div>
       </div>

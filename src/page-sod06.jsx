@@ -7,7 +7,7 @@ const {
 const { useState, useEffect, useRef } = React;
 
 /* ─────────────────────────────────────────────
-   MODAL PORTAL — Render modals on document.body to avoid z-index/layout issues
+   MODAL PORTAL
 ───────────────────────────────────────────── */
 const ModalPortal = ({ children }) => {
   const [mounted, setMounted] = useState(false);
@@ -17,7 +17,7 @@ const ModalPortal = ({ children }) => {
 };
 
 /* ─────────────────────────────────────────────
-   DOWNLOAD SPLIT REPORT — Generate CSV file
+   DOWNLOAD SPLIT REPORT
 ───────────────────────────────────────────── */
 const downloadSplitReport = (role) => {
   const timestamp = new Date().toISOString().split('T')[0];
@@ -45,7 +45,7 @@ const downloadSplitReport = (role) => {
     ['SAP Note 2159014 - Role segregation best practices'],
     ['Internal Policy - Super-Admin accountability framework'],
   ].map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(',')).join('\n');
-  
+
   const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
   const link = document.createElement('a');
   const url = URL.createObjectURL(blob);
@@ -58,7 +58,7 @@ const downloadSplitReport = (role) => {
 };
 
 /* ─────────────────────────────────────────────
-   INFO TOOLTIP — hover-activated popover
+   INFO TOOLTIP
 ───────────────────────────────────────────── */
 const InfoTooltip = ({ content, maxWidth = 260 }) => {
   const [show, setShow] = useState(false);
@@ -68,10 +68,7 @@ const InfoTooltip = ({ content, maxWidth = 260 }) => {
   const handleMouseEnter = () => {
     if (buttonRef.current) {
       const rect = buttonRef.current.getBoundingClientRect();
-      setPosition({
-        top: rect.top - 10,
-        left: rect.left + rect.width / 2,
-      });
+      setPosition({ top: rect.top - 10, left: rect.left + rect.width / 2 });
     }
     setShow(true);
   };
@@ -88,7 +85,7 @@ const InfoTooltip = ({ content, maxWidth = 260 }) => {
         aria-label="More information"
         tabIndex={0}
       >
-        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
           <circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="1.5"/>
           <path d="M8 7v5M8 5v.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
           <circle cx="8" cy="4.5" r="0.75" fill="currentColor"/>
@@ -98,14 +95,7 @@ const InfoTooltip = ({ content, maxWidth = 260 }) => {
         <ModalPortal>
           <div
             className="fixed z-50 rounded-lg border border-ink-200 bg-white shadow-pop text-[11px] text-ink-700 leading-relaxed p-3"
-            style={{ 
-              width: maxWidth, 
-              top: `${position.top}px`, 
-              left: `${position.left}px`,
-              transform: 'translate(-50%, -100%)',
-              pointerEvents: 'none',
-              marginTop: '-8px'
-            }}
+            style={{ width: maxWidth, top: `${position.top}px`, left: `${position.left}px`, transform: 'translate(-50%, -100%)', pointerEvents: 'none', marginTop: '-8px' }}
           >
             <div className="absolute left-1/2 -translate-x-1/2 top-full w-0 h-0"
               style={{ borderLeft: '6px solid transparent', borderRight: '6px solid transparent', borderTop: '6px solid #fff' }} />
@@ -127,11 +117,7 @@ const SplitReportModal = ({ role, onClose }) => {
   return (
     <ModalPortal>
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink-900/60 backdrop-blur-sm" onClick={onClose}>
-        <div
-          className="relative w-full max-w-lg mx-4 rounded-2xl bg-white shadow-2xl border border-ink-200 overflow-hidden"
-          onClick={e => e.stopPropagation()}
-        >
-          {/* Header */}
+        <div className="relative w-full max-w-lg mx-4 rounded-2xl bg-white shadow-2xl border border-ink-200 overflow-hidden" onClick={e => e.stopPropagation()}>
           <div className="bg-ink-900 px-6 py-5">
             <div className="flex items-start justify-between gap-4">
               <div>
@@ -143,10 +129,7 @@ const SplitReportModal = ({ role, onClose }) => {
               </button>
             </div>
           </div>
-
-          {/* Body */}
           <div className="px-6 py-5 space-y-4 max-h-[70vh] overflow-y-auto">
-            {/* Stats */}
             <div className="grid grid-cols-2 gap-3">
               <div className="rounded-lg bg-ink-50 border border-ink-200 px-3 py-3 text-center">
                 <div className="text-[22px] font-black font-mono text-rose-500">{role.users}</div>
@@ -157,8 +140,6 @@ const SplitReportModal = ({ role, onClose }) => {
                 <div className="text-[10px] font-bold uppercase tracking-wider text-ink-400 mt-0.5">To Remediate</div>
               </div>
             </div>
-
-            {/* Proposed split */}
             <div>
               <div className="text-[10px] font-bold uppercase tracking-widest text-ink-400 mb-2">Proposed Role Split</div>
               <div className="space-y-2">
@@ -178,40 +159,26 @@ const SplitReportModal = ({ role, onClose }) => {
                 ))}
               </div>
             </div>
-
-            {/* Implementation timeline */}
             <div>
               <div className="text-[10px] font-bold uppercase tracking-widest text-ink-400 mb-2">Implementation Roadmap</div>
               <div className="space-y-1.5 text-[11px] text-ink-600">
-                <div className="flex gap-2">
-                  <span className="font-bold text-amber-600">Week 1:</span>
-                  <span>Create new split roles in DEV/QA, configure approvers</span>
-                </div>
-                <div className="flex gap-2">
-                  <span className="font-bold text-amber-600">Week 2:</span>
-                  <span>Notify users, commence migration to _READ role</span>
-                </div>
-                <div className="flex gap-2">
-                  <span className="font-bold text-amber-600">Week 3:</span>
-                  <span>Migrate posting rights to _POST_CTL with approval workflow</span>
-                </div>
-                <div className="flex gap-2">
-                  <span className="font-bold text-amber-600">Week 4:</span>
-                  <span>Revoke original role, validate all systems, monitor logs</span>
-                </div>
+                {[
+                  ['Week 1', 'Create new split roles in DEV/QA, configure approvers'],
+                  ['Week 2', 'Notify users, commence migration to _READ role'],
+                  ['Week 3', 'Migrate posting rights to _POST_CTL with approval workflow'],
+                  ['Week 4', 'Revoke original role, validate all systems, monitor logs'],
+                ].map(([w, t]) => (
+                  <div key={w} className="flex gap-2">
+                    <span className="font-bold text-amber-600">{w}:</span>
+                    <span>{t}</span>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
-
-          {/* Footer */}
           <div className="border-t border-ink-200 bg-ink-50 px-6 py-4 flex gap-2">
-            <button 
-              onClick={() => {
-                downloadSplitReport(role);
-                onClose();
-              }}
-              className="flex-1 rounded-lg bg-rose-600 px-4 py-2.5 text-xs font-bold text-white hover:bg-rose-500 transition-colors shadow-sm uppercase tracking-widest"
-            >
+            <button onClick={() => { downloadSplitReport(role); onClose(); }}
+              className="flex-1 rounded-lg bg-rose-600 px-4 py-2.5 text-xs font-bold text-white hover:bg-rose-500 transition-colors shadow-sm uppercase tracking-widest">
               Download Split Report
             </button>
             <button onClick={onClose} className="px-4 py-2.5 rounded-lg bg-white text-xs font-bold text-ink-600 hover:bg-ink-100 transition-colors border border-ink-200 uppercase tracking-widest">
@@ -241,7 +208,6 @@ const Sod06Kpis = () => {
 
 /* ─────────────────────────────────────────────
    ROLE CONCENTRATION CHART
-   Clickable role cards replace the dark panel
 ───────────────────────────────────────────── */
 const RoleConcentrationChart = () => {
   const data = window.MOCK.ROLE_CONCENTRATION.slice().sort((a, b) => b.users - a.users);
@@ -272,11 +238,7 @@ const RoleConcentrationChart = () => {
                 }} />
                 <P6_Bar dataKey="users" radius={[0, 4, 4, 0]} barSize={20} onClick={(barData) => setModalRole(barData)}>
                   {data.map((d, i) => (
-                    <P6_Cell
-                      key={i}
-                      fill={d.users / maxUsers > 0.6 ? '#EF4444' : '#475569'}
-                      style={{ cursor: 'pointer' }}
-                    />
+                    <P6_Cell key={i} fill={d.users / maxUsers > 0.6 ? '#EF4444' : '#475569'} style={{ cursor: 'pointer' }} />
                   ))}
                   <P6_LabelList dataKey="users" position="right" fill="#0F172A" style={{ fontSize: 11, fontWeight: 700, fontFamily: 'JetBrains Mono' }} />
                 </P6_Bar>
@@ -289,11 +251,22 @@ const RoleConcentrationChart = () => {
           </p>
         </div>
       </Section>
-
-      {/* Split Report Modal */}
       {modalRole && <SplitReportModal role={modalRole} onClose={() => setModalRole(null)} />}
     </>
   );
+};
+
+/* ─────────────────────────────────────────────
+   SEVERITY CHIP COLOR HELPER
+───────────────────────────────────────────── */
+const roleChipColor = (role) => {
+  if (!role) return '';
+  const n = role.toUpperCase();
+  if (n === 'SAP_ALL' || n.includes('PFCG') || n.includes('SU01') || n.includes('SYSTEM_ADMIN'))
+    return 'bg-rose-50 text-rose-800 border-rose-200';
+  if (n.includes('PAYMENT') || n.includes('TREASURY') || n.includes('PAYROLL') || n.includes('TRANSPORT'))
+    return 'bg-orange-50 text-orange-800 border-orange-200';
+  return 'bg-slate-50 text-slate-700 border-slate-200';
 };
 
 /* ─────────────────────────────────────────────
@@ -301,13 +274,22 @@ const RoleConcentrationChart = () => {
 ───────────────────────────────────────────── */
 const SuperAdminTable = () => {
   const { SUPER_ADMIN_ROWS, SUPER_ADMIN_RECOMMENDATIONS, SEVERITIES } = window.MOCK;
-  const [rows, setRows] = useState(SUPER_ADMIN_ROWS);
+  const [rows] = useState(SUPER_ADMIN_ROWS);
   const [recFilter, setRecFilter] = useState(null);
   const [sevFilter, setSevFilter] = useState(null);
   const [query, setQuery] = useState('');
   const [sort, setSort] = useState({ key: 'score', dir: 'desc' });
   const [page, setPage] = useState(1);
+  const [openRows, setOpenRows] = useState(new Set());
   const pageSize = 10;
+
+  const toggleRow = (user) => {
+    setOpenRows(prev => {
+      const next = new Set(prev);
+      next.has(user) ? next.delete(user) : next.add(user);
+      return next;
+    });
+  };
 
   const filtered = rows
     .filter(r => !recFilter || r.recommendation === recFilter)
@@ -333,21 +315,13 @@ const SuperAdminTable = () => {
         <table className="w-full text-[13px]">
           <thead className="bg-ink-50/50">
             <tr>
-              {/* USERNAME — was "Identifier" */}
+              <th className="w-8" />
               <Th sortKey="user" sort={sort} onSort={k => setSort({ key: k, dir: sort.dir === 'asc' ? 'desc' : 'asc' })}>
-                <span className="inline-flex items-center">
-                  Username
-                </span>
+                <span className="inline-flex items-center">Username</span>
               </Th>
-
-              {/* USER ACTIONS — was "Security Indicator" */}
               <Th>
-                <span className="inline-flex items-center">
-                  User Actions
-                </span>
+                <span className="inline-flex items-center">User Actions</span>
               </Th>
-
-              {/* AUTHORITY SCORE */}
               <Th align="right">
                 <span className="inline-flex items-center justify-end">
                   Authority Score
@@ -362,25 +336,93 @@ const SuperAdminTable = () => {
                   } maxWidth={280} />
                 </span>
               </Th>
-
               <Th>Recommendation</Th>
               <Th>Severity</Th>
             </tr>
           </thead>
           <tbody className="divide-y divide-ink-100">
             {paged.map(r => {
+              const isOpen = openRows.has(r.user);
               return (
-                <tr key={r.user} className="row-hover">
-                    <td className="px-4 py-3.5 font-mono font-bold text-ink-900 group-hover:text-brand-600 transition-colors">{r.user}</td>
+                <React.Fragment key={r.user}>
+                  {/* Main Row */}
+                  <tr
+                    className={`row-hover cursor-pointer select-none ${isOpen ? 'bg-ink-50/60' : ''}`}
+                    onClick={() => toggleRow(r.user)}
+                  >
+                    <td className="pl-3 pr-1 py-3.5">
+                      <svg
+                        className={`w-3.5 h-3.5 text-ink-400 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
+                        viewBox="0 0 14 14" fill="none"
+                      >
+                        <path d="M2 4.5l5 5 5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    </td>
+                    <td className="px-4 py-3.5 font-mono font-bold text-ink-900">{r.user}</td>
                     <td className="px-4 py-3.5 font-semibold text-ink-800">{r.indicator}</td>
                     <td className="px-4 py-3.5 text-right">
                       <span className="font-mono font-bold text-ink-900">{r.score}</span>
                     </td>
                     <td className="px-4 py-3.5">
-                      <span className="font-bold text-[10px] tracking-tight uppercase text-ink-600 px-2 py-0.5 rounded bg-ink-100 ring-1 ring-inset ring-ink-200">{r.recommendation}</span>
+                      <span className="font-bold text-[10px] tracking-tight uppercase text-ink-600 px-2 py-0.5 rounded bg-ink-100 ring-1 ring-inset ring-ink-200">
+                        {r.recommendation}
+                      </span>
                     </td>
                     <td className="px-4 py-3.5"><SeverityBadge value={r.severity} /></td>
-                </tr>
+                  </tr>
+
+                  {/* Expand Panel */}
+                  {isOpen && (
+                    <tr className="bg-ink-50/40">
+                      <td colSpan={6} className="px-0 pt-0 pb-0 border-b border-ink-100">
+                        <div className="pl-10 pr-6 py-4 space-y-4">
+
+                          {/* Meta */}
+                          <div className="flex flex-wrap gap-5 text-[12px]">
+                            <div className="text-ink-500">
+                              <span className="font-semibold text-ink-700">Systems: </span>
+                              {(r.systems || []).map(s => (
+                                <span key={s} className="font-mono text-[11px] bg-white border border-ink-200 rounded px-1.5 py-0.5 mr-1">{s}</span>
+                              ))}
+                            </div>
+                            <div className="text-ink-500">
+                              <span className="font-semibold text-ink-700">User ID: </span>{r.userId}
+                            </div>
+                            <div className="text-ink-500">
+                              <span className="font-semibold text-ink-700">Status: </span>{r.status}
+                            </div>
+                            {r.assignee && (
+                              <div className="text-ink-500">
+                                <span className="font-semibold text-ink-700">Assignee: </span>{r.assignee}
+                              </div>
+                            )}
+                            <div className="text-ink-500">
+                              <span className="font-semibold text-ink-700">Last Change: </span>{r.lastChange}
+                            </div>
+                          </div>
+
+                          {/* Roles */}
+                          {r.roles && r.roles.length > 0 && (
+                            <div>
+                              <div className="text-[10px] font-bold uppercase tracking-widest text-ink-400 mb-2">Assigned Roles & Access</div>
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                                {r.roles.map(role => (
+                                  <div key={role.role} className="bg-white border border-ink-200 rounded-lg px-3 py-2 flex items-start gap-2">
+                                    <span className={`font-mono text-[11px] px-2 py-0.5 rounded border shrink-0 mt-0.5 ${roleChipColor(role.role)}`}>
+                                      {role.role}
+                                    </span>
+                                    <span className="text-[11px] text-ink-500 leading-snug">{role.desc}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+
+                        </div>
+                      </td>
+                    </tr>
+                  )}
+                </React.Fragment>
               );
             })}
           </tbody>
