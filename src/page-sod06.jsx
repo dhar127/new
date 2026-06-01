@@ -388,17 +388,11 @@ const SuperAdminTable = () => {
                             <div className="text-ink-500">
                               <span className="font-semibold text-ink-700">User ID: </span>{r.userId}
                             </div>
-                            <div className="text-ink-500">
-                              <span className="font-semibold text-ink-700">Status: </span>{r.status}
-                            </div>
                             {r.assignee && (
                               <div className="text-ink-500">
                                 <span className="font-semibold text-ink-700">Assignee: </span>{r.assignee}
                               </div>
                             )}
-                            <div className="text-ink-500">
-                              <span className="font-semibold text-ink-700">Last Change: </span>{r.lastChange}
-                            </div>
                           </div>
 
                           {/* Roles */}

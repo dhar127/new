@@ -173,7 +173,6 @@ function UserProfilePanel({ action, onClose }) {
             <h2 className="text-[15px] font-bold text-white truncate">{profile.fullName}</h2>
             <div className="text-[11px] text-white/50 font-mono mt-0.5">{profile.userId}</div>
             <div className="flex items-center gap-2 mt-1.5">
-              <span className="text-[10px] font-bold bg-brand-600/30 text-brand-300 px-2 py-0.5 rounded-full">{profile.licenseType}</span>
               <span className="text-[10px] text-white/40">{profile.department} · {profile.role}</span>
             </div>
           </div>
