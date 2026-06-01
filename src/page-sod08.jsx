@@ -199,7 +199,12 @@ const EmergencyAccessTable = () => {
                       <div className="font-mono font-bold text-ink-700">{r.ffId}</div>
                       <div className="text-[10px] font-bold text-ink-400 uppercase">{r.role}</div>
                     </td>
-                    <td className="px-4 py-3.5 text-right font-mono font-bold text-ink-900">{dur}d</td>
+                    <td className="px-4 py-3.5">
+                      <div className="flex items-center justify-end gap-2">
+                        <span className="font-mono font-bold text-ink-900">{dur}d</span>
+                        <div className={`w-2.5 h-2.5 rounded-full ${dur > 30 ? 'bg-red-600' : dur > 15 ? 'bg-yellow-500' : 'bg-green-600'}`}></div>
+                      </div>
+                    </td>
                     <td className="px-4 py-3.5 text-right font-mono font-bold text-ink-600">{r.usage}</td>
                     <td className="px-4 py-3.5">
                        <span className="font-bold text-[10px] uppercase text-ink-700 px-2 py-0.5 rounded bg-ink-100 ring-1 ring-inset ring-ink-200">{r.approval}</span>
@@ -226,29 +231,46 @@ const EmergencyAccessTable = () => {
   );
 };
 
-const UsageLog = ({ row }) => (
-  <div className="grid grid-cols-12 gap-8 border-l-4 border-ink-200 pl-6">
-    <div className="col-span-12 lg:col-span-8">
-      <div className="text-[10px] font-bold uppercase tracking-widest text-ink-400 mb-4">Activation Sequence ({row.log.length} Entries)</div>
-      <div className="space-y-1.5">
-        {row.log.slice(0,5).map((l, i) => (
-          <div key={i} className="flex items-center gap-4 bg-white p-2 rounded ring-1 ring-ink-100 text-xs">
-            <span className="font-mono font-bold text-ink-900">{l.date}</span>
-            <TCode code={l.tcode} size="sm" />
-            <span className="text-ink-600 truncate">{l.desc}</span>
-          </div>
-        ))}
+const getStatusColor = (duration) => {
+  if (duration > 30) return { bg: 'bg-red-50', ring: 'ring-red-200', dot: 'bg-red-600', label: 'Critical', text: 'text-red-700' };
+  if (duration > 15) return { bg: 'bg-yellow-50', ring: 'ring-yellow-200', dot: 'bg-yellow-500', label: 'Warning', text: 'text-yellow-700' };
+  return { bg: 'bg-green-50', ring: 'ring-green-200', dot: 'bg-green-600', label: 'Approved', text: 'text-green-700' };
+};
+
+const UsageLog = ({ row }) => {
+  const duration = daysBetween(row.start, row.end);
+  const status = getStatusColor(duration);
+  
+  return (
+    <div className="grid grid-cols-12 gap-8 border-l-4 border-ink-200 pl-6">
+      <div className="col-span-12 lg:col-span-8">
+        <div className="text-[10px] font-bold uppercase tracking-widest text-ink-400 mb-4">Activation Sequence ({row.log.length} Entries)</div>
+        <div className="space-y-1.5">
+          {row.log.slice(0,5).map((l, i) => (
+            <div key={i} className="flex items-center gap-4 bg-white p-2 rounded ring-1 ring-ink-100 text-xs">
+              <span className="font-mono font-bold text-ink-900">{l.date}</span>
+              <TCode code={l.tcode} size="sm" />
+              <span className="text-ink-600 truncate">{l.desc}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="col-span-12 lg:col-span-4 space-y-4">
+         <div className="rounded-xl bg-white p-4 ring-1 ring-ink-200 shadow-sm">
+           <div className="text-[10px] font-bold uppercase tracking-widest text-ink-400 mb-2">Policy Rationale</div>
+           <p className="text-xs font-semibold text-ink-700">Account usage detected outside standard maintenance window. Requires immediate re-attestation.</p>
+         </div>
+         <div className={`rounded-lg ${status.bg} px-4 py-3 ring-1 ring-inset ${status.ring} flex items-center gap-3`}>
+           <div className={`w-3 h-3 rounded-full ${status.dot}`}></div>
+           <div>
+             <div className={`text-[10px] font-bold uppercase tracking-widest ${status.text}`}>{status.label}</div>
+             <div className={`text-xs font-semibold ${status.text}`}>{duration}d Window</div>
+           </div>
+         </div>
       </div>
     </div>
-    <div className="col-span-12 lg:col-span-4 space-y-4">
-       <div className="rounded-xl bg-white p-4 ring-1 ring-ink-200 shadow-sm">
-         <div className="text-[10px] font-bold uppercase tracking-widest text-ink-400 mb-2">Policy Rationale</div>
-         <p className="text-xs font-semibold text-ink-700">Account usage detected outside standard maintenance window. Requires immediate re-attestation.</p>
-       </div>
-       <button className="w-full rounded-lg bg-ink-900 px-4 py-2.5 text-xs font-bold text-white hover:bg-ink-800 shadow-sm uppercase tracking-widest">Terminate Session</button>
-    </div>
-  </div>
-);
+  );
+};
 
 const Sod08Page = () => {
   return (

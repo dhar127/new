@@ -106,8 +106,13 @@ const RemediationTable = () => {
   const [query, setQuery] = useState('');
   const [sort, setSort] = useState({ key: 'priority', dir: 'asc' });
   const [page, setPage] = useState(1);
+  const [assignees, setAssignees] = useState({});
   const pageSize = 10;
   const prioOrder = { P1: 0, P2: 1, P3: 2, P4: 3 };
+
+  const setAssignee = (id, assignee) => {
+    setAssignees(prev => ({ ...prev, [id]: assignee }));
+  };
 
   const filtered = rows
     .filter(r => !typeFilter || r.type === typeFilter)
@@ -142,6 +147,7 @@ const RemediationTable = () => {
               <Th>Category</Th>
               <Th>Status</Th>
               <Th>AI Suggestion</Th>
+              <Th>Assignee Suggestion</Th>
             </tr>
           </thead>
           <tbody className="divide-y divide-ink-100">
@@ -174,6 +180,18 @@ const RemediationTable = () => {
                       <Icon name="spark" className="w-3.5 h-3.5 text-brand-500 shrink-0 mt-0.5" />
                       <span className="text-[11px] text-ink-500 leading-snug">{r.rationale}</span>
                     </div>
+                  </td>
+                  <td className="px-4 py-3.5">
+                    <select 
+                      value={assignees[r.id] || ''} 
+                      onChange={(e) => setAssignee(r.id, e.target.value)}
+                      className="rounded border border-ink-200 text-[11px] font-bold text-ink-700 p-1.5 bg-white hover:border-ink-300 focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-colors"
+                    >
+                      <option value="">Select Assignee</option>
+                      {TEAMS && TEAMS.map(team => (
+                        <option key={team} value={team}>{team}</option>
+                      ))}
+                    </select>
                   </td>
                 </tr>
               );
