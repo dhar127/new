@@ -184,6 +184,46 @@ function UserProfilePanel({ action, onClose }) {
         {/* Scrollable body */}
         <div className="flex-1 overflow-y-auto px-6 py-5 space-y-5">
 
+          {/* Severity Score & Metrics Grid */}
+          <div className="grid grid-cols-3 gap-3">
+            <div className="rounded-lg bg-white border border-ink-200 p-3 text-center">
+              <div className="text-[20px] font-bold font-mono text-rose-600">{action.urgency.includes('P1') ? 95 : action.urgency.includes('P2') ? 75 : 55}/100</div>
+              <div className="text-[10px] font-bold uppercase tracking-widest text-ink-400 mt-1">Severity Score</div>
+            </div>
+            <div className="rounded-lg bg-white border border-ink-200 p-3 text-center">
+              <div className="text-[20px] font-bold font-mono text-ink-600">{profile.violations.length}</div>
+              <div className="text-[10px] font-bold uppercase tracking-widest text-ink-400 mt-1">Active Issues</div>
+            </div>
+            <div className="rounded-lg bg-white border border-ink-200 p-3 text-center">
+              <div className="text-[20px] font-bold font-mono text-ink-600">{profile.authGroups.length}</div>
+              <div className="text-[10px] font-bold uppercase tracking-widest text-ink-400 mt-1">Auth Groups</div>
+            </div>
+          </div>
+
+          {/* Affected Users */}
+          <div>
+            <div className="text-[10px] font-bold uppercase tracking-widest text-ink-400 mb-2">Affected Users</div>
+            <div className="flex flex-wrap gap-2">
+              {[profile.user || action.user].map(user => (
+                <span key={user} className="font-mono text-[10px] px-2.5 py-1.5 rounded-lg bg-rose-50 text-rose-700 ring-1 ring-rose-200 font-semibold">
+                  {user}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          {/* Immediate Action Users */}
+          <div>
+            <div className="text-[10px] font-bold uppercase tracking-widest text-ink-400 mb-2">Immediate Action Required</div>
+            <div className="flex flex-wrap gap-2">
+              {['Review authorizations', 'Escalate to manager', 'Initiate revocation'].map((task, i) => (
+                <span key={i} className="font-mono text-[10px] px-2.5 py-1.5 rounded-lg bg-amber-50 text-amber-700 ring-1 ring-amber-200 font-semibold">
+                  {task}
+                </span>
+              ))}
+            </div>
+          </div>
+
           {/* Authorization groups — kept as useful for compliance context */}
           <div>
             <div className="text-[10px] font-bold uppercase tracking-widest text-ink-400 mb-2">Authorization Groups</div>
@@ -342,7 +382,7 @@ window.Sod04Page = function () {
       </div>
 
       {/* Action Queue */}
-      <window.Section title="Action Queue">
+      <window.Section title="Action Queue" action={<window.ExportButton label="Download Actions" size="sm" />}>
         <div className="overflow-x-auto scrollbar-hide">
           <table className="w-full text-[13px]">
             <thead className="bg-ink-50/50">

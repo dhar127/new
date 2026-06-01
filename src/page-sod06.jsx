@@ -377,22 +377,44 @@ const SuperAdminTable = () => {
                       <td colSpan={6} className="px-0 pt-0 pb-0 border-b border-ink-100">
                         <div className="pl-10 pr-6 py-4 space-y-4">
 
-                          {/* Meta */}
-                          <div className="flex flex-wrap gap-5 text-[12px]">
-                            <div className="text-ink-500">
-                              <span className="font-semibold text-ink-700">Systems: </span>
-                              {(r.systems || []).map(s => (
-                                <span key={s} className="font-mono text-[11px] bg-white border border-ink-200 rounded px-1.5 py-0.5 mr-1">{s}</span>
+                          {/* Severity Score */}
+                          <div className="grid grid-cols-3 gap-3">
+                            <div className="rounded-lg bg-white border border-ink-200 p-3 text-center">
+                              <div className="text-[20px] font-bold font-mono text-rose-600">{r.score}/100</div>
+                              <div className="text-[10px] font-bold uppercase tracking-widest text-ink-400 mt-1">Severity Score</div>
+                            </div>
+                            <div className="rounded-lg bg-white border border-ink-200 p-3 text-center">
+                              <div className="text-[20px] font-bold font-mono text-ink-700">{(r.roles || []).length}</div>
+                              <div className="text-[10px] font-bold uppercase tracking-widest text-ink-400 mt-1">Critical Roles</div>
+                            </div>
+                            <div className="rounded-lg bg-white border border-ink-200 p-3 text-center">
+                              <div className="text-[20px] font-bold font-mono text-amber-600">{(r.systems || []).length}</div>
+                              <div className="text-[10px] font-bold uppercase tracking-widest text-ink-400 mt-1">Systems</div>
+                            </div>
+                          </div>
+
+                          {/* Affected Users */}
+                          <div>
+                            <div className="text-[10px] font-bold uppercase tracking-widest text-ink-400 mb-2">Affected Users</div>
+                            <div className="flex flex-wrap gap-2">
+                              {(r.affectedUsers || [r.user]).map(user => (
+                                <span key={user} className="font-mono text-[10px] px-2.5 py-1.5 rounded-lg bg-rose-50 text-rose-700 ring-1 ring-rose-200 font-semibold">
+                                  {user}
+                                </span>
                               ))}
                             </div>
-                            <div className="text-ink-500">
-                              <span className="font-semibold text-ink-700">User ID: </span>{r.userId}
+                          </div>
+
+                          {/* Immediate Action Users */}
+                          <div>
+                            <div className="text-[10px] font-bold uppercase tracking-widest text-ink-400 mb-2">Immediate Action Required</div>
+                            <div className="flex flex-wrap gap-2">
+                              {(r.immediateActionUsers || []).map(user => (
+                                <span key={user} className="font-mono text-[10px] px-2.5 py-1.5 rounded-lg bg-amber-50 text-amber-700 ring-1 ring-amber-200 font-semibold">
+                                  {user}
+                                </span>
+                              ))}
                             </div>
-                            {r.assignee && (
-                              <div className="text-ink-500">
-                                <span className="font-semibold text-ink-700">Assignee: </span>{r.assignee}
-                              </div>
-                            )}
                           </div>
 
                           {/* Roles */}
@@ -411,6 +433,14 @@ const SuperAdminTable = () => {
                               </div>
                             </div>
                           )}
+
+                          {/* Inspect Profile Button */}
+                          <div className="flex gap-2 pt-3 border-t border-ink-100">
+                            <button className="px-4 py-2.5 rounded-lg bg-brand-600 text-white text-xs font-bold hover:bg-brand-500 transition-colors shadow-sm uppercase tracking-widest">
+                              <Icon name="user" className="w-3.5 h-3.5 inline-block mr-1.5" />
+                              Inspect Full Profile
+                            </button>
+                          </div>
 
                         </div>
                       </td>

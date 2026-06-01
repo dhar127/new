@@ -21,11 +21,11 @@ function ModalPortal({ children }) {
 const Sod05Kpis = () => {
   const k = window.MOCK.IMPACT_KPIS;
   return (
-    <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-4">
+    <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
       <StatCard label="MAPPED VIOLATIONS" value={k.totalMapped.toLocaleString()} delta={k.deltas.totalMapped} deltaInvertGood />
-      <StatCard severity="Critical" label="HIGH EXPOSURE" value={k.financialExposureHigh} delta={k.deltas.financialExposureHigh} deltaInvertGood />
-      <StatCard severity="Medium" label="MEDIUM EXPOSURE" value={k.financialExposureMed} />
-      <StatCard severity="Low" label="LOW EXPOSURE" value={k.financialExposureLow} />
+      <StatCard severity="Critical" label="CRITICAL" value="324" icon="alert" />
+      <StatCard severity="High" label="HIGH" value="567" icon="bell" />
+      <StatCard severity="Medium" label="MEDIUM" value="256" icon="exclamation" />
     </div>
   );
 };
@@ -43,11 +43,6 @@ const BarTooltip = ({ active, payload }) => {
       <div className="text-ink-600 flex justify-between gap-4">
         <span>Count:</span> <b className="font-mono text-ink-900">{(d.count || 0).toLocaleString()}</b>
       </div>
-      {d.dollars > 0 && (
-        <div className="text-ink-600 flex justify-between gap-4">
-          <span>Exposure:</span> <b className="font-mono text-ink-900">${((d.dollars || 0) / 1_000_000).toFixed(1)}M</b>
-        </div>
-      )}
     </div>
   );
 };
@@ -55,7 +50,6 @@ const BarTooltip = ({ active, payload }) => {
 const RiskQuantification = () => {
   const { IMPACT_SPLIT } = window.MOCK;
   const total = IMPACT_SPLIT.reduce((s, x) => s + x.count, 0);
-  const totalDollars = IMPACT_SPLIT.reduce((s, x) => s + x.dollars, 0);
 
   const sorted = IMPACT_SPLIT.slice().sort((a, b) => b.count - a.count);
 
@@ -73,7 +67,6 @@ const RiskQuantification = () => {
           <div className="text-right">
             <span className="text-[10px] font-bold uppercase tracking-widest text-ink-400">Aggregate Risk · </span>
             <span className="text-[12px] font-bold tabular-nums text-ink-900">{total.toLocaleString()} Violations</span>
-            <span className="text-[10px] text-ink-400 ml-2">~${(totalDollars / 1_000_000).toFixed(1)}M Total Exposure</span>
           </div>
         </div>
 
@@ -89,10 +82,9 @@ const RiskQuantification = () => {
               <P5_CartesianGrid horizontal={false} strokeDasharray="3 3" stroke="#e5e7eb" />
               <P5_XAxis
                 type="number"
-                tick={{ fontSize: 10, fill: '#9ca3af', fontWeight: 600 }}
+                tick={false}
                 tickLine={false}
                 axisLine={false}
-                tickFormatter={v => v.toLocaleString()}
               />
               <P5_YAxis
                 type="category"
@@ -270,12 +262,6 @@ function ImpactProfilePanel({ row, onClose }) {
                 <div className="text-[10px] font-bold uppercase tracking-widest text-ink-400 mb-0.5">Severity</div>
                 <div className="text-[13px] font-bold text-ink-800">{profile.exposure}</div>
               </div>
-              {profile.dollars > 0 && (
-                <div className="rounded-lg bg-ink-50 ring-1 ring-ink-100 px-3 py-2">
-                  <div className="text-[10px] font-bold uppercase tracking-widest text-ink-400 mb-0.5">Financial Impact</div>
-                  <div className="text-[13px] font-bold text-ink-800">${(profile.dollars / 1_000_000).toFixed(2)}M</div>
-                </div>
-              )}
             </div>
           </div>
 
