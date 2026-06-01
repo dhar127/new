@@ -30,79 +30,9 @@ const Sod05Kpis = () => {
   );
 };
 
-const RiskQuantification = () => {
-  const { IMPACT_SPLIT, FRAMEWORK_BREAKDOWN } = window.MOCK;
-  const total = IMPACT_SPLIT.reduce((s, x) => s + x.count, 0);
-  const [hover, setHover] = useState(null);
-  const totalDollars = IMPACT_SPLIT.reduce((s, x) => s + x.dollars, 0);
-
-  return (
-    <Section title="Quantitative Impact Analysis" subtitle="Financial and operational risk distribution across the enterprise landscape.">
-      <div className="grid grid-cols-12 gap-0 divide-x divide-ink-100">
-        <div className="col-span-12 md:col-span-5 p-6">
-          <div className="text-[10px] font-bold uppercase tracking-widest text-ink-400 mb-4">Risk Distribution by Category</div>
-          <div className="relative h-[240px]">
-            <P5_ResponsiveContainer>
-              <P5_PieChart>
-                <P5_Pie
-                  data={IMPACT_SPLIT} dataKey="count" nameKey="category" cx="50%" cy="50%"
-                  innerRadius={72} outerRadius={100} paddingAngle={4} stroke="#fff" strokeWidth={4}
-                  onMouseEnter={(_, i) => setHover(i)} onMouseLeave={() => setHover(null)}
-                >
-                  {IMPACT_SPLIT.map((d, i) => (
-                    <P5_Cell key={i} fill={d.color} opacity={hover === null || hover === i ? 1 : 0.3} />
-                  ))}
-                </P5_Pie>
-                <P5_Tooltip content={<DonutTooltip total={total} />} />
-              </P5_PieChart>
-            </P5_ResponsiveContainer>
-            <div className="pointer-events-none absolute inset-0 grid place-items-center">
-              <div className="text-center">
-                <div className="text-[10px] font-bold uppercase tracking-widest text-ink-400">
-                  {hover != null ? IMPACT_SPLIT[hover].category : 'Aggregate Risk'}
-                </div>
-                <div className="text-3xl font-bold tabular-nums text-ink-900">
-                  {hover != null ? IMPACT_SPLIT[hover].count.toLocaleString() : total.toLocaleString()}
-                </div>
-                <div className="mt-0.5 text-[11px] font-semibold text-ink-500">
-                  {hover != null ? `${Math.round(IMPACT_SPLIT[hover].count / total * 100)}% Share` : `~$${(totalDollars / 1_000_000).toFixed(1)}M Total`}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="col-span-12 md:col-span-7 p-6 bg-ink-50/30">
-          <div className="flex items-center justify-between mb-4">
-            <div className="text-[10px] font-bold uppercase tracking-widest text-ink-400">Compliance Framework Coverage</div>
-          </div>
-          <div className="space-y-3.5">
-            {FRAMEWORK_BREAKDOWN.slice().sort((a, b) => b.count - a.count).map(f => {
-              const max = Math.max(...FRAMEWORK_BREAKDOWN.map(x => x.count));
-              const pct = (f.count / max) * 100;
-              return (
-                <div key={f.framework}>
-                  <div className="mb-1.5 flex items-center justify-between text-[11px]">
-                    <div className="flex items-center gap-3">
-                      <span className="font-mono font-bold text-ink-900 w-16">{f.framework}</span>
-                      <SeverityBadge value={f.criticality} />
-                    </div>
-                    <span className="font-mono font-bold text-ink-800">{f.count.toLocaleString()} <span className="font-normal text-ink-400 uppercase tracking-tighter">Violations</span></span>
-                  </div>
-                  <div className="h-1.5 w-full overflow-hidden rounded-full bg-ink-100">
-                    <div className="h-full rounded-full transition-all duration-700" style={{ width: pct + '%', background: SEV_HEX[f.criticality] }} />
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </div>
-    </Section>
-  );
-};
-
-const DonutTooltip = ({ active, payload, total }) => {
-  if (!active || !payload || !payload.length || !payload[0].payload) return null;
+/* ─── Custom Tooltip for Bar Chart ─────────────────────────── */
+const BarTooltip = ({ active, payload }) => {
+  if (!active || !payload || !payload.length) return null;
   const d = payload[0].payload;
   return (
     <div className="rounded-lg border border-ink-200 bg-white px-3 py-2 shadow-pop text-[11px]">
@@ -113,18 +43,102 @@ const DonutTooltip = ({ active, payload, total }) => {
       <div className="text-ink-600 flex justify-between gap-4">
         <span>Count:</span> <b className="font-mono text-ink-900">{(d.count || 0).toLocaleString()}</b>
       </div>
-      {d.dollars > 0 && <div className="text-ink-600 flex justify-between gap-4">
-        <span>Exposure:</span> <b className="font-mono text-ink-900">${((d.dollars || 0) / 1_000_000).toFixed(1)}M</b>
-      </div>}
+      {d.dollars > 0 && (
+        <div className="text-ink-600 flex justify-between gap-4">
+          <span>Exposure:</span> <b className="font-mono text-ink-900">${((d.dollars || 0) / 1_000_000).toFixed(1)}M</b>
+        </div>
+      )}
     </div>
   );
 };
 
+const RiskQuantification = () => {
+  const { IMPACT_SPLIT } = window.MOCK;
+  const total = IMPACT_SPLIT.reduce((s, x) => s + x.count, 0);
+  const totalDollars = IMPACT_SPLIT.reduce((s, x) => s + x.dollars, 0);
+
+  const sorted = IMPACT_SPLIT.slice().sort((a, b) => b.count - a.count);
+
+  return (
+    <Section
+      title="Quantitative Impact Analysis"
+      subtitle="Financial and operational risk distribution across the enterprise landscape."
+    >
+      <div className="p-6">
+        {/* Chart header */}
+        <div className="flex items-center justify-between mb-1">
+          <div className="text-[10px] font-bold uppercase tracking-widest text-ink-400">
+            Risk Distribution by Category
+          </div>
+          <div className="text-right">
+            <span className="text-[10px] font-bold uppercase tracking-widest text-ink-400">Aggregate Risk · </span>
+            <span className="text-[12px] font-bold tabular-nums text-ink-900">{total.toLocaleString()} Violations</span>
+            <span className="text-[10px] text-ink-400 ml-2">~${(totalDollars / 1_000_000).toFixed(1)}M Total Exposure</span>
+          </div>
+        </div>
+
+        {/* Horizontal bar chart */}
+        <div className="h-[260px] mt-4">
+          <P5_ResponsiveContainer width="100%" height="100%">
+            <P5_BarChart
+              data={sorted}
+              layout="vertical"
+              margin={{ top: 4, right: 80, left: 8, bottom: 4 }}
+              barCategoryGap="28%"
+            >
+              <P5_CartesianGrid horizontal={false} strokeDasharray="3 3" stroke="#e5e7eb" />
+              <P5_XAxis
+                type="number"
+                tick={{ fontSize: 10, fill: '#9ca3af', fontWeight: 600 }}
+                tickLine={false}
+                axisLine={false}
+                tickFormatter={v => v.toLocaleString()}
+              />
+              <P5_YAxis
+                type="category"
+                dataKey="category"
+                tick={{ fontSize: 11, fill: '#374151', fontWeight: 700 }}
+                tickLine={false}
+                axisLine={false}
+                width={110}
+              />
+              <P5_Tooltip content={<BarTooltip />} cursor={{ fill: 'rgba(0,0,0,0.04)' }} />
+              <P5_Bar dataKey="count" radius={[0, 3, 3, 0]}>
+                {sorted.map((d, i) => (
+                  <P5_Cell key={i} fill={d.color} />
+                ))}
+                <P5_LabelList
+                  dataKey="count"
+                  position="right"
+                  formatter={v => v.toLocaleString()}
+                  style={{ fontSize: 11, fontWeight: 700, fill: '#374151', fontFamily: 'monospace' }}
+                />
+              </P5_Bar>
+            </P5_BarChart>
+          </P5_ResponsiveContainer>
+        </div>
+
+        {/* Legend row */}
+        <div className="flex flex-wrap gap-x-5 gap-y-2 mt-4 pl-1">
+          {sorted.map(d => (
+            <div key={d.category} className="flex items-center gap-1.5">
+              <span className="h-2 w-2 rounded-sm flex-shrink-0" style={{ background: d.color }} />
+              <span className="text-[11px] font-semibold text-ink-600">{d.category}</span>
+              <span className="text-[10px] font-mono text-ink-400">
+                {Math.round(d.count / total * 100)}%
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </Section>
+  );
+};
+
 const ImpactMatrix = () => {
-  const { IMPACT_ROWS, IMPACT_CATEGORIES, EXPOSURE_LEVELS, FRAMEWORKS } = window.MOCK;
+  const { IMPACT_ROWS, IMPACT_CATEGORIES, EXPOSURE_LEVELS } = window.MOCK;
   const [cat, setCat] = useState(null);
   const [exp, setExp] = useState(null);
-  const [fw, setFw] = useState(null);
   const [query, setQuery] = useState('');
   const [sort, setSort] = useState({ key: 'exposure', dir: 'asc' });
   const [page, setPage] = useState(1);
@@ -136,7 +150,6 @@ const ImpactMatrix = () => {
   const filtered = IMPACT_ROWS
     .filter(r => !cat || r.category === cat)
     .filter(r => !exp || r.exposure === exp)
-    .filter(r => !fw || r.frameworks.includes(fw))
     .filter(r => !query || (r.id + r.desc).toLowerCase().includes(query.toLowerCase()))
     .sort((a, b) => {
       const dir = sort.dir === 'asc' ? 1 : -1;
@@ -145,14 +158,13 @@ const ImpactMatrix = () => {
     });
 
   const paged = filtered.slice((page - 1) * pageSize, page * pageSize);
-  const clear = () => { setCat(null); setExp(null); setFw(null); setQuery(''); };
+  const clear = () => { setCat(null); setExp(null); setQuery(''); };
 
   return (
     <Section title="Risk Inventory Matrix" action={<ExportButton label="Download Impact Set" size="sm" />}>
-      <FilterBar onClear={clear} hasFilters={!!(cat || exp || fw || query)}>
+      <FilterBar onClear={clear} hasFilters={!!(cat || exp || query)}>
         <Select value={cat} onChange={setCat} options={IMPACT_CATEGORIES} placeholder="All Categories" />
         <Select value={exp} onChange={setExp} options={EXPOSURE_LEVELS} placeholder="All Exposure Levels" />
-        <Select value={fw} onChange={setFw} options={FRAMEWORKS} placeholder="All Frameworks" />
         <SearchInput value={query} onChange={setQuery} placeholder="Search by ID or description…" />
       </FilterBar>
 
@@ -161,11 +173,10 @@ const ImpactMatrix = () => {
           <thead className="bg-ink-50/50">
             <tr>
               <Th></Th>
-              <Th sortKey="id" sort={sort} onSort={k => setSort({key:k, dir: sort.dir==='asc'?'desc':'asc'})}>Identifier</Th>
+              <Th sortKey="id" sort={sort} onSort={k => setSort({ key: k, dir: sort.dir === 'asc' ? 'desc' : 'asc' })}>Identifier</Th>
               <Th>Impact Description</Th>
               <Th>Impact Type</Th>
-              <Th sortKey="exposure" sort={sort} onSort={k => setSort({key:k, dir: sort.dir==='asc'?'desc':'asc'})}>Severity</Th>
-              <Th>Frameworks</Th>
+              <Th sortKey="exposure" sort={sort} onSort={k => setSort({ key: k, dir: sort.dir === 'asc' ? 'desc' : 'asc' })}>Severity</Th>
             </tr>
           </thead>
           <tbody className="divide-y divide-ink-100">
@@ -185,15 +196,10 @@ const ImpactMatrix = () => {
                     <td className="px-4 py-3.5">
                       <span className={`inline-flex px-1.5 py-0.5 rounded font-bold text-[10px] ring-1 ring-inset ${SEV_STYLE[r.exposure]}`}>{r.exposure}</span>
                     </td>
-                    <td className="px-4 py-3.5">
-                      <div className="flex gap-1">
-                        {r.frameworks.map(f => <span key={f} className="font-mono text-[10px] font-bold text-brand-600">{f}</span>)}
-                      </div>
-                    </td>
                   </tr>
                   {isOpen && (
                     <tr className="bg-ink-50/30">
-                      <td colSpan={7} className="px-12 py-5">
+                      <td colSpan={5} className="px-12 py-5">
                         <DrilldownPanel row={r} onInspect={setInspectedRow} />
                       </td>
                     </tr>
@@ -218,20 +224,13 @@ function ImpactProfilePanel({ row, onClose }) {
     description: row.desc,
     category: row.category,
     exposure: row.exposure,
-    frameworks: row.frameworks,
     areas: row.areas,
     dollars: row.dollars,
   };
 
   return (
     <ModalPortal>
-      {/* Backdrop */}
-      <div
-        className="fixed inset-0 bg-black/40 z-[99998]"
-        onClick={onClose}
-      />
-
-      {/* Panel */}
+      <div className="fixed inset-0 bg-black/40 z-[99998]" onClick={onClose} />
       <div
         className="fixed top-0 right-0 h-full w-full max-w-md bg-white shadow-2xl z-[99999] flex flex-col"
         style={{ animation: 'slideInRight 0.25s ease-out' }}
@@ -243,7 +242,6 @@ function ImpactProfilePanel({ row, onClose }) {
           }
         `}</style>
 
-        {/* Header */}
         <div className="flex items-start gap-4 px-6 py-5 border-b border-ink-100 bg-[#0B0F19] text-white">
           <div className="flex-1 min-w-0">
             <h2 className="text-[15px] font-bold text-white truncate">{profile.id}</h2>
@@ -257,9 +255,7 @@ function ImpactProfilePanel({ row, onClose }) {
           </button>
         </div>
 
-        {/* Scrollable body */}
         <div className="flex-1 overflow-y-auto px-6 py-5 space-y-5">
-          {/* Impact details */}
           <div>
             <div className="text-[10px] font-bold uppercase tracking-widest text-ink-400 mb-3">Impact Details</div>
             <div className="rounded-lg bg-ink-50 ring-1 ring-ink-100 px-3 py-2.5">
@@ -267,7 +263,6 @@ function ImpactProfilePanel({ row, onClose }) {
             </div>
           </div>
 
-          {/* Exposure & Risk */}
           <div>
             <div className="text-[10px] font-bold uppercase tracking-widest text-ink-400 mb-2">Risk Exposure</div>
             <div className="grid grid-cols-2 gap-2">
@@ -275,26 +270,15 @@ function ImpactProfilePanel({ row, onClose }) {
                 <div className="text-[10px] font-bold uppercase tracking-widest text-ink-400 mb-0.5">Severity</div>
                 <div className="text-[13px] font-bold text-ink-800">{profile.exposure}</div>
               </div>
-              {profile.dollars > 0 && <div className="rounded-lg bg-ink-50 ring-1 ring-ink-100 px-3 py-2">
-                <div className="text-[10px] font-bold uppercase tracking-widest text-ink-400 mb-0.5">Financial Impact</div>
-                <div className="text-[13px] font-bold text-ink-800">${(profile.dollars / 1_000_000).toFixed(2)}M</div>
-              </div>}
+              {profile.dollars > 0 && (
+                <div className="rounded-lg bg-ink-50 ring-1 ring-ink-100 px-3 py-2">
+                  <div className="text-[10px] font-bold uppercase tracking-widest text-ink-400 mb-0.5">Financial Impact</div>
+                  <div className="text-[13px] font-bold text-ink-800">${(profile.dollars / 1_000_000).toFixed(2)}M</div>
+                </div>
+              )}
             </div>
           </div>
 
-          {/* Frameworks */}
-          <div>
-            <div className="text-[10px] font-bold uppercase tracking-widest text-ink-400 mb-2">Compliance Frameworks</div>
-            <div className="flex flex-wrap gap-1.5">
-              {profile.frameworks.map(f => (
-                <span key={f} className="text-[10px] font-bold font-mono bg-brand-50 text-brand-700 ring-1 ring-brand-200 px-2 py-1 rounded-md">
-                  {f}
-                </span>
-              ))}
-            </div>
-          </div>
-
-          {/* Affected Areas */}
           <div>
             <div className="text-[10px] font-bold uppercase tracking-widest text-ink-400 mb-2">Process Areas</div>
             <div className="flex flex-wrap gap-1.5">
@@ -307,7 +291,6 @@ function ImpactProfilePanel({ row, onClose }) {
           </div>
         </div>
 
-        {/* Footer */}
         <div className="px-6 py-4 border-t border-ink-100 bg-ink-50">
           <button
             onClick={onClose}
@@ -328,15 +311,22 @@ const DrilldownPanel = ({ row, onInspect }) => (
       <p className="text-[13px] text-ink-700 leading-relaxed italic">"{row.desc}"</p>
     </div>
     <div className="col-span-12 lg:col-span-8 grid grid-cols-2 gap-6">
-       <div>
-         <div className="text-[10px] font-bold uppercase tracking-widest text-ink-400 mb-2">Framework Citation</div>
-         <div className="space-y-1">
-           {row.frameworks.map(f => <div key={f} className="text-xs font-semibold text-brand-700">● {f} Compliance Standard</div>)}
-         </div>
-       </div>
-       <div className="flex flex-col justify-end">
-         <button onClick={() => onInspect(row)} className="rounded-lg bg-brand-600 px-4 py-2 text-xs font-bold text-white hover:bg-brand-500 transition-colors shadow-sm">Inspect Full Profile</button>
-       </div>
+      <div>
+        <div className="text-[10px] font-bold uppercase tracking-widest text-ink-400 mb-2">Process Areas</div>
+        <div className="space-y-1">
+          {row.areas.map(a => (
+            <div key={a} className="text-xs font-semibold text-ink-700">● {a}</div>
+          ))}
+        </div>
+      </div>
+      <div className="flex flex-col justify-end">
+        <button
+          onClick={() => onInspect(row)}
+          className="rounded-lg bg-brand-600 px-4 py-2 text-xs font-bold text-white hover:bg-brand-500 transition-colors shadow-sm"
+        >
+          Inspect Full Profile
+        </button>
+      </div>
     </div>
   </div>
 );
