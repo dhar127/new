@@ -197,11 +197,10 @@ const SplitReportModal = ({ role, onClose }) => {
 const Sod06Kpis = () => {
   const k = window.MOCK.SUPER_ADMIN_KPIS;
   return (
-    <div className="grid grid-cols-2 gap-3 md:grid-cols-4 lg:grid-cols-4">
+    <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-3">
       <StatCard label="Total Super-Admins" value={k.totalSuperAdmins} delta={k.deltas.totalSuperAdmins} deltaInvertGood />
       <StatCard severity="Critical" label="Critical Severity" value={k.critical} delta={k.deltas.critical} deltaInvertGood />
       <StatCard label="Source Roles" value={k.rolesContributing} sub="contributing" delta={k.deltas.rolesContributing} deltaInvertGood />
-      <StatCard label="Affected Systems" value={k.systemsAffected} delta={k.deltas.systemsAffected} />
     </div>
   );
 };
@@ -311,9 +310,9 @@ const SuperAdminTable = () => {
         <SearchInput value={query} onChange={setQuery} placeholder="Search by Username or ID…" />
       </FilterBar>
 
-      <div className="overflow-x-auto">
+      <div className="overflow-auto max-h-[480px]">
         <table className="w-full text-[13px]">
-          <thead className="bg-ink-50/50">
+          <thead className="sticky top-0 z-10 bg-white">
             <tr>
               <th className="w-8" />
               <Th sortKey="user" sort={sort} onSort={k => setSort({ key: k, dir: sort.dir === 'asc' ? 'desc' : 'asc' })}>
@@ -321,20 +320,6 @@ const SuperAdminTable = () => {
               </Th>
               <Th>
                 <span className="inline-flex items-center">User Actions</span>
-              </Th>
-              <Th align="right">
-                <span className="inline-flex items-center justify-end">
-                  Authority Score
-                  <InfoTooltip content={
-                    <div className="text-[11px] leading-relaxed">
-                      <div className="font-bold mb-2">Risk Score Formula:</div>
-                      <div className="mb-2">• Critical roles = 10 points each</div>
-                      <div className="mb-2">• High roles = 5 points each</div>
-                      <div className="mb-2">• Medium roles = 2 points each</div>
-                      <div className="mt-3 pt-2 border-t border-ink-300 text-[10px]">Maximum: 100 points</div>
-                    </div>
-                  } maxWidth={280} />
-                </span>
               </Th>
               <Th>Recommendation</Th>
               <Th>Severity</Th>
@@ -360,9 +345,6 @@ const SuperAdminTable = () => {
                     </td>
                     <td className="px-4 py-3.5 font-mono font-bold text-ink-900">{r.user}</td>
                     <td className="px-4 py-3.5 font-semibold text-ink-800">{r.indicator}</td>
-                    <td className="px-4 py-3.5 text-right">
-                      <span className="font-mono font-bold text-ink-900">{r.score}</span>
-                    </td>
                     <td className="px-4 py-3.5">
                       <span className="font-bold text-[10px] tracking-tight uppercase text-ink-600 px-2 py-0.5 rounded bg-ink-100 ring-1 ring-inset ring-ink-200">
                         {r.recommendation}
@@ -376,22 +358,6 @@ const SuperAdminTable = () => {
                     <tr className="bg-ink-50/40">
                       <td colSpan={6} className="px-0 pt-0 pb-0 border-b border-ink-100">
                         <div className="pl-10 pr-6 py-4 space-y-4">
-
-                          {/* Severity Score */}
-                          <div className="grid grid-cols-3 gap-3">
-                            <div className="rounded-lg bg-white border border-ink-200 p-3 text-center">
-                              <div className="text-[20px] font-bold font-mono text-rose-600">{r.score}/100</div>
-                              <div className="text-[10px] font-bold uppercase tracking-widest text-ink-400 mt-1">Severity Score</div>
-                            </div>
-                            <div className="rounded-lg bg-white border border-ink-200 p-3 text-center">
-                              <div className="text-[20px] font-bold font-mono text-ink-700">{(r.roles || []).length}</div>
-                              <div className="text-[10px] font-bold uppercase tracking-widest text-ink-400 mt-1">Critical Roles</div>
-                            </div>
-                            <div className="rounded-lg bg-white border border-ink-200 p-3 text-center">
-                              <div className="text-[20px] font-bold font-mono text-amber-600">{(r.systems || []).length}</div>
-                              <div className="text-[10px] font-bold uppercase tracking-widest text-ink-400 mt-1">Systems</div>
-                            </div>
-                          </div>
 
                           {/* Compliance Risk Rationale */}
                           {r.rationale && (
@@ -417,18 +383,6 @@ const SuperAdminTable = () => {
                             <div className="flex flex-wrap gap-2">
                               {(r.affectedUsers || [r.user]).map(user => (
                                 <span key={user} className="font-mono text-[10px] px-2.5 py-1.5 rounded-lg bg-rose-50 text-rose-700 ring-1 ring-rose-200 font-semibold">
-                                  {user}
-                                </span>
-                              ))}
-                            </div>
-                          </div>
-
-                          {/* Immediate Action Users */}
-                          <div>
-                            <div className="text-[10px] font-bold uppercase tracking-widest text-ink-400 mb-2">Immediate Action Required</div>
-                            <div className="flex flex-wrap gap-2">
-                              {(r.immediateActionUsers || []).map(user => (
-                                <span key={user} className="font-mono text-[10px] px-2.5 py-1.5 rounded-lg bg-amber-50 text-amber-700 ring-1 ring-amber-200 font-semibold">
                                   {user}
                                 </span>
                               ))}
@@ -464,8 +418,6 @@ const SuperAdminTable = () => {
                             </div>
                           )}
 
-                          {/* Inspect Profile Button */}
-                          
                         </div>
                       </td>
                     </tr>

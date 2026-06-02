@@ -123,9 +123,9 @@ const RuleDeploymentLog = () => (
     subtitle="SoD control rules active in the system — custom-built, SAP standard, or migrated legacy rules."
     action={<window.ExportButton label="Export Log" size="sm" />}
   >
-    <div className="overflow-x-auto">
+    <div className="overflow-auto max-h-[480px]">
       <table className="w-full text-[13px]">
-        <thead className="bg-ink-50/50">
+        <thead className="sticky top-0 z-10 bg-white">
           <tr>
             <window.Th>Rule ID</window.Th>
             <window.Th>Technical Code</window.Th>

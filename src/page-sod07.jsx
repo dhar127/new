@@ -116,15 +116,57 @@ const ConflictChart = ({ selected, onSelect }) => {
   );
 };
 
+const ConflictInfoIcon = ({ procMap, rows }) => {
+  const [show, setShow] = React.useState(false);
+  const pairs = [...new Map(rows.map(r => [`${r.p1}:${r.p2}`, { p1: procMap[r.p1], p2: procMap[r.p2] }])).values()];
+  return (
+    <div className="relative inline-flex">
+      <button
+        onMouseEnter={() => setShow(true)}
+        onMouseLeave={() => setShow(false)}
+        className="text-ink-400 hover:text-brand-500 transition-colors focus:outline-none"
+        aria-label="Process conflict legend"
+      >
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+          <circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="1.5"/>
+          <path d="M8 7v5M8 5v.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+          <circle cx="8" cy="4.5" r="0.75" fill="currentColor"/>
+        </svg>
+      </button>
+      {show && (
+        <div className="absolute left-6 top-0 z-50 w-72 rounded-lg border border-ink-200 bg-white shadow-pop p-3 text-[11px]">
+          <div className="font-bold text-ink-700 mb-2 uppercase tracking-widest text-[10px]">Process Conflict Pairs</div>
+          <div className="space-y-1">
+            {pairs.map((p, i) => (
+              <div key={i} className="flex items-center gap-1.5 text-ink-600">
+                <span className="font-semibold text-ink-900">{p.p1?.label}</span>
+                <span className="text-ink-400">×</span>
+                <span className="font-semibold text-ink-900">{p.p2?.label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
 const DualProcessTable = ({ matrixFilter, onClearMatrixFilter }) => {
   const { DUAL_PROCESS_ROWS, DUAL_PROCESSES } = window.MOCK;
   const [rows, setRows] = useState(DUAL_PROCESS_ROWS);
   const [query, setQuery] = useState('');
+  const updateStatus = (id, val) => setRows(rs => rs.map(r => r.id === id ? { ...r, status: val } : r));
+  const [sevFilter, setSevFilter] = useState(null);
+  const [conflictFilter, setConflictFilter] = useState(null);
   const [page, setPage] = useState(1);
   const [expanded, setExpanded] = useState(new Set());
   const pageSize = 12;
 
   const procMap = Object.fromEntries(DUAL_PROCESSES.map(p => [p.key, p]));
+  const severities = ['Critical', 'High', 'Medium'];
+  const conflictOptions = [...new Map(
+    rows.map(r => [`${r.p1}:${r.p2}`, `${procMap[r.p1]?.label} \u00d7 ${procMap[r.p2]?.label}`])
+  ).values()];
 
   const toggle = id => setExpanded(s => {
     const next = new Set(s);
@@ -137,19 +179,25 @@ const DualProcessTable = ({ matrixFilter, onClearMatrixFilter }) => {
       (r.p1 === matrixFilter.p1 && r.p2 === matrixFilter.p2) ||
       (r.p1 === matrixFilter.p2 && r.p2 === matrixFilter.p1)
     ))
+    .filter(r => !sevFilter || r.severity === sevFilter)
+    .filter(r => !conflictFilter || `${procMap[r.p1]?.label} \u00d7 ${procMap[r.p2]?.label}` === conflictFilter)
     .filter(r => !query || (r.user + r.name).toLowerCase().includes(query.toLowerCase()));
 
   const paged = filtered.slice((page - 1) * pageSize, page * pageSize);
+  const clear = () => { setQuery(''); setSevFilter(null); setConflictFilter(null); onClearMatrixFilter(); };
 
   return (
     <Section title="Granular Conflict Set" action={<ExportButton label="Export Detailed Evidence" size="sm" />}>
-      <FilterBar onClear={() => { setQuery(''); onClearMatrixFilter(); }} hasFilters={!!(query || matrixFilter)}>
-        <SearchInput value={query} onChange={setQuery} placeholder="Search by User or ID…" />
+      <FilterBar onClear={clear} hasFilters={!!(query || matrixFilter || sevFilter || conflictFilter)}>
+        <Select value={sevFilter} onChange={setSevFilter} options={severities} placeholder="All Severities" />
+        <Select value={conflictFilter} onChange={setConflictFilter} options={conflictOptions} placeholder="All Process Conflicts" />
+        <ConflictInfoIcon procMap={procMap} rows={rows} />
+        <SearchInput value={query} onChange={setQuery} placeholder="Search by User or ID..." />
       </FilterBar>
 
-      <div className="overflow-x-auto">
+      <div className="overflow-auto max-h-[480px]">
         <table className="w-full text-[13px]">
-          <thead className="bg-ink-50/50">
+          <thead className="sticky top-0 z-10 bg-white">
             <tr>
               <Th></Th>
               <Th>User Identifier</Th>
@@ -157,6 +205,7 @@ const DualProcessTable = ({ matrixFilter, onClearMatrixFilter }) => {
               <Th>Process 2</Th>
               <Th>Conflict Codes</Th>
               <Th>Severity</Th>
+              <Th>Status</Th>
             </tr>
           </thead>
           <tbody className="divide-y divide-ink-100">
@@ -186,10 +235,25 @@ const DualProcessTable = ({ matrixFilter, onClearMatrixFilter }) => {
                       </div>
                     </td>
                     <td className="px-4 py-3.5"><SeverityBadge value={r.severity} /></td>
+                    <td className="px-4 py-3.5" onClick={e => e.stopPropagation()}>
+                      <select
+                        value={r.status}
+                        onChange={e => updateStatus(r.id, e.target.value)}
+                        className={`text-[11px] font-bold uppercase tracking-widest p-1.5 rounded ring-1 ring-inset border-none outline-none cursor-pointer ${
+                          r.status === 'Resolved'    ? 'bg-emerald-50 text-emerald-700 ring-emerald-200' :
+                          r.status === 'In Progress' ? 'bg-blue-50 text-blue-700 ring-blue-200' :
+                                                       'bg-ink-50 text-ink-600 ring-ink-200'
+                        }`}
+                      >
+                        <option value="Open">Open</option>
+                        <option value="In Progress">In Progress</option>
+                        <option value="Resolved">Resolved</option>
+                      </select>
+                    </td>
                   </tr>
                   {isOpen && (
                     <tr className="bg-ink-50/30">
-                      <td colSpan={6} className="px-12 py-5">
+                      <td colSpan={7} className="px-12 py-5">
                         <ExecutionHistory row={r} p1={procMap[r.p1]} p2={procMap[r.p2]} />
                       </td>
                     </tr>
@@ -231,11 +295,14 @@ const ExecutionHistory = ({ row, p1, p2 }) => (
     <div className="col-span-12 lg:col-span-4 space-y-3">
       <div className="rounded-xl bg-white p-4 ring-1 ring-ink-200 shadow-sm">
         <div className="text-[10px] font-bold uppercase tracking-widest text-ink-400 mb-2">Audit Insight</div>
-        <p className="text-xs font-semibold text-ink-700 leading-relaxed italic">
-          "Active cross-process execution detected. Immediate segregation recommended."
-        </p>
+        <div className="space-y-1.5 text-[11px]">
+          <div><span className="font-bold text-ink-500">Identity:</span> <span className="font-mono font-bold text-ink-900">{row.user}</span></div>
+          <div><span className="font-bold text-ink-500">Conflict:</span> <span className="text-ink-700">{p1.label} &times; {p2.label}</span></div>
+          <div><span className="font-bold text-ink-500">T-Codes:</span> <span className="font-mono text-ink-700">{row.tcodes.join(', ')}</span></div>
+          <div><span className="font-bold text-ink-500">Status:</span> <span className="text-ink-700">{row.status}</span></div>
+          {row.assignee && <div><span className="font-bold text-ink-500">Assignee:</span> <span className="text-ink-700">{row.assignee}</span></div>}
+        </div>
       </div>
-     
     </div>
   </div>
 );

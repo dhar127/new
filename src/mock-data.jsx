@@ -269,20 +269,20 @@ const FRAMEWORK_BREAKDOWN = [
 ];
 
 const IMPACT_ROWS = [
-  { id: 'V-1042', desc: 'Create Vendor + Approve Payment authority', category: 'Financial',   exposure: 'High',   dollars: 2_400_000, areas: ['Procurement', 'Finance'], frameworks: ['SOX', 'K-SOX'],            users: 7,  linked: ['V-1054', 'V-1086'] },
+  { id: 'V-1042', desc: 'Create Vendor + Approve Payment authority', category: 'Financial',   exposure: 'High',   dollars: 2_400_000, areas: ['Procurement', 'Finance'], frameworks: ['SAP GRC', 'SOX', 'K-SOX'],            users: 7,  linked: ['V-1054', 'V-1086'] },
   { id: 'V-1058', desc: 'Full OTC cycle controlled by single user', category: 'Financial',   exposure: 'High',   dollars: 1_800_000, areas: ['OTC'],                    frameworks: ['SOX', 'SAP GRC'],         users: 4,  linked: ['V-1112', 'V-1133'] },
   { id: 'V-1063', desc: 'GL Posting + Bank Reconciliation conflict',  category: 'Financial',   exposure: 'High',   dollars: 3_200_000, areas: ['Finance'],                frameworks: ['SOX', 'K-SOX', 'SAP GRC'],  users: 11, linked: ['V-1101', 'V-1144'] },
   { id: 'V-1071', desc: 'PFCG + end-user transaction access',         category: 'Operational', exposure: 'High',   dollars: null,      areas: ['IT'],                     frameworks: ['SAP GRC', 'ISO 27001'],     users: 3,  linked: ['V-1124'] },
-  { id: 'V-1082', desc: 'HR Payroll Maintain + Approve same user',    category: 'Regulatory',  exposure: 'Medium', dollars: null,      areas: ['HR'],                     frameworks: ['GDPR', 'K-SOX'],           users: 2,  linked: [] },
+  { id: 'V-1082', desc: 'HR Payroll Maintain + Approve same user',    category: 'Regulatory',  exposure: 'Medium', dollars: null,      areas: ['HR'],                     frameworks: ['SAP GRC', 'GDPR', 'K-SOX'],           users: 2,  linked: [] },
   { id: 'V-1090', desc: 'Firefighter ID active >180 days',            category: 'Regulatory',  exposure: 'High',   dollars: null,      areas: ['IT'],                     frameworks: ['SOX', 'SAP GRC'],          users: 14, linked: ['V-1124'] },
   { id: 'V-1094', desc: 'PO Create + PO Release threshold mismatch',  category: 'Operational', exposure: 'Medium', dollars: 640_000,   areas: ['Procurement'],            frameworks: ['SAP GRC'],                 users: 9,  linked: ['V-1131'] },
-  { id: 'V-1101', desc: 'F110 Auto-Payment Run misassigned',          category: 'Financial',   exposure: 'High',   dollars: 5_100_000, areas: ['Finance'],                frameworks: ['SOX', 'K-SOX'],            users: 5,  linked: ['V-1063'] },
-  { id: 'V-1112', desc: 'Customer Master + Sales Order Release',      category: 'Financial',   exposure: 'Medium', dollars: 480_000,   areas: ['OTC'],                    frameworks: ['SOX'],                     users: 6,  linked: ['V-1058'] },
+  { id: 'V-1101', desc: 'F110 Auto-Payment Run misassigned',          category: 'Financial',   exposure: 'High',   dollars: 5_100_000, areas: ['Finance'],                frameworks: ['SAP GRC', 'SOX', 'K-SOX'],            users: 5,  linked: ['V-1063'] },
+  { id: 'V-1112', desc: 'Customer Master + Sales Order Release',      category: 'Financial',   exposure: 'Medium', dollars: 480_000,   areas: ['OTC'],                    frameworks: ['SAP GRC', 'SOX'],                     users: 6,  linked: ['V-1058'] },
   { id: 'V-1124', desc: 'Background user RFC_BATCH_PI with SAP_ALL',  category: 'Operational', exposure: 'High',   dollars: null,      areas: ['IT'],                     frameworks: ['SAP GRC', 'ISO 27001'],     users: 1,  linked: ['V-1071'] },
   { id: 'V-1131', desc: 'GR + Invoice Verification same user',        category: 'Financial',   exposure: 'Medium', dollars: 820_000,   areas: ['Procurement', 'Finance'], frameworks: ['SOX', 'SAP GRC'],          users: 18, linked: ['V-1094'] },
-  { id: 'V-1144', desc: 'Vendor Bank Edit + Payment Block remove',    category: 'Financial',   exposure: 'High',   dollars: 1_300_000, areas: ['Finance'],                frameworks: ['SOX', 'K-SOX', 'GDPR'],     users: 4,  linked: ['V-1063'] },
-  { id: 'V-1152', desc: 'Personnel data export without retention',    category: 'Regulatory',  exposure: 'Medium', dollars: null,      areas: ['HR'],                     frameworks: ['GDPR'],                    users: 7,  linked: [] },
-  { id: 'V-1167', desc: 'Audit log table write access — non-IT',      category: 'Regulatory',  exposure: 'High',   dollars: null,      areas: ['IT', 'Finance'],          frameworks: ['SOX', 'ISO 27001'],         users: 3,  linked: ['V-1071'] },
+  { id: 'V-1144', desc: 'Vendor Bank Edit + Payment Block remove',    category: 'Financial',   exposure: 'High',   dollars: 1_300_000, areas: ['Finance'],                frameworks: ['SAP GRC', 'SOX', 'K-SOX', 'GDPR'],     users: 4,  linked: ['V-1063'] },
+  { id: 'V-1152', desc: 'Personnel data export without retention',    category: 'Regulatory',  exposure: 'Medium', dollars: null,      areas: ['HR'],                     frameworks: ['SAP GRC', 'GDPR'],                    users: 7,  linked: [] },
+  { id: 'V-1167', desc: 'Audit log table write access — non-IT',      category: 'Regulatory',  exposure: 'High',   dollars: null,      areas: ['IT', 'Finance'],          frameworks: ['SAP GRC', 'SOX', 'ISO 27001'],         users: 3,  linked: ['V-1071'] },
   { id: 'V-1174', desc: 'Production change deploy without approval',  category: 'Operational', exposure: 'High',   dollars: null,      areas: ['IT'],                     frameworks: ['SAP GRC', 'ISO 27001'],     users: 6,  linked: ['V-1071', 'V-1124'] },
 ];
 

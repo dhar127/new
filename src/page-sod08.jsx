@@ -118,18 +118,18 @@ const UsageTimeline = () => {
           Emergency Usage Chronology
           <InfoTooltip content={
             <div className="space-y-1.5">
-              <div className="font-bold text-ink-900 mb-1 text-[10px] uppercase tracking-wider">Timeline Bar Legend:</div>
+              <div className="font-bold text-ink-900 mb-1 text-[10px] uppercase tracking-wider">Bar Color = Access Duration:</div>
               <div className="flex items-center gap-2">
                 <span className="w-3.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
-                <span><b>Approved</b>: Session authorized via ticket</span>
+                <span><b>Green</b>: &le;15 days — within policy</span>
               </div>
               <div className="flex items-center gap-2">
-                <span className="w-3.5 h-1.5 rounded-full bg-blue-500 shrink-0" />
-                <span><b>Pending</b>: Validation in progress</span>
+                <span className="w-3.5 h-1.5 rounded-full bg-amber-400 shrink-0" />
+                <span><b>Amber</b>: 16–30 days — review required</span>
               </div>
               <div className="flex items-center gap-2">
                 <span className="w-3.5 h-1.5 rounded-full bg-rose-500 shrink-0" />
-                <span><b>Missing</b>: Policy breach (unapproved access)</span>
+                <span><b>Red</b>: &gt;30 days — policy breach</span>
               </div>
             </div>
           } maxWidth={240} />
@@ -138,6 +138,13 @@ const UsageTimeline = () => {
       subtitle="Time-series visualization of firefighter ID activation windows."
     >
       <div className="px-6 py-8">
+        {/* Always-visible legend */}
+        <div className="flex items-center gap-4 mb-4 text-[11px] text-ink-600">
+          <span className="font-bold uppercase tracking-widest text-ink-400 text-[10px]">Access Duration:</span>
+          <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-full bg-emerald-500 shrink-0" /> &le;15 days (Acceptable)</span>
+          <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-full bg-amber-400 shrink-0" /> 16–30 days (Warning)</span>
+          <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-full bg-rose-500 shrink-0" /> &gt;30 days (Policy Breach)</span>
+        </div>
         <div className="overflow-x-auto scrollbar-hide">
           <div className="relative min-w-[800px]">
             {/* Month header */}
@@ -182,8 +189,8 @@ const UsageTimeline = () => {
             </div>
 
             {hover && (
-              <div className="pointer-events-none absolute z-50 rounded-xl border border-ink-200 bg-white p-3 shadow-pop text-[11px]"
-                style={{ top: hover.y, left: hover.x, transform: 'translate(-50%, -120%)' }}>
+              <div className="pointer-events-none fixed z-[9999] rounded-xl border border-ink-200 bg-white p-3 shadow-pop text-[11px]"
+                style={{ top: hover.y - 10, left: hover.x, transform: 'translate(-50%, -100%)' }}>
                 <div className="font-bold text-ink-900 mb-1">{hover.row.user} · {hover.row.ffId}</div>
                 <div className="text-ink-600 font-mono mb-2">{hover.row.start} to {hover.row.end}</div>
                 <div className="flex gap-2">
@@ -201,9 +208,10 @@ const UsageTimeline = () => {
 const TimelineRow = ({ row, totalDays, timelineStart, onHover }) => {
   const startDay = Math.max(0, daysBetween(timelineStart, row.start));
   const endDay = daysBetween(timelineStart, row.end);
+  const duration = daysBetween(row.start, row.end);
   const left = (startDay / totalDays) * 100;
   const width = Math.max(2, ((endDay - startDay) / totalDays) * 100);
-  const st = APPROVAL_STYLE_08[row.approval];
+  const barColor = duration > 30 ? '#EF4444' : duration > 15 ? '#F59E0B' : '#22C55E';
 
   return (
     <div className="flex items-center group h-10 hover:bg-ink-50/50 rounded-lg transition-colors px-2">
@@ -214,11 +222,9 @@ const TimelineRow = ({ row, totalDays, timelineStart, onHover }) => {
       <div className="relative flex-1 h-full flex items-center">
         <div
           className="h-2 rounded-full cursor-pointer transition-all hover:h-4 hover:shadow-md"
-          style={{ left: left + '%', width: width + '%', background: st.bar, position: 'absolute' }}
+          style={{ left: left + '%', width: width + '%', background: barColor, position: 'absolute' }}
           onMouseMove={e => {
-             const rect = e.currentTarget.getBoundingClientRect();
-             const container = e.currentTarget.offsetParent.getBoundingClientRect();
-             onHover({ row, duration: daysBetween(row.start, row.end), x: e.clientX - container.left, y: rect.top - container.top });
+             onHover({ row, duration: daysBetween(row.start, row.end), x: e.clientX, y: e.clientY });
           }}
           onMouseLeave={() => onHover(null)}
         />
@@ -231,6 +237,8 @@ const EmergencyAccessTable = () => {
   const { EMERGENCY_ACCESS_ROWS, APPROVAL_STATUSES } = window.MOCK;
   const [rows, setRows] = useState(EMERGENCY_ACCESS_ROWS);
   const [query, setQuery] = useState('');
+  const [approvalFilter, setApprovalFilter] = useState(null);
+  const [anomalyFilter, setAnomalyFilter] = useState(null);
   const [sort, setSort] = useState({ key: 'duration', dir: 'desc' });
   const [page, setPage] = useState(1);
   const [expanded, setExpanded] = useState(new Set());
@@ -245,21 +253,26 @@ const EmergencyAccessTable = () => {
 
   const filtered = rows
     .filter(r => !query || (r.user + r.ffId).toLowerCase().includes(query.toLowerCase()))
+    .filter(r => !approvalFilter || r.approval === approvalFilter)
+    .filter(r => anomalyFilter === null || (anomalyFilter === 'Flagged' ? r.anomalyFlag : !r.anomalyFlag))
     .sort((a, b) => {
       const dir = sort.dir === 'asc' ? 1 : -1;
       return (daysBetween(a.start, a.end) - daysBetween(b.start, b.end)) * dir;
     });
   const paged = filtered.slice((page - 1) * pageSize, page * pageSize);
+  const clear = () => { setQuery(''); setApprovalFilter(null); setAnomalyFilter(null); };
 
   return (
     <Section title="Firefighter Activation Log" action={<ExportButton label="Export Usage Data" size="sm" />}>
-      <FilterBar onClear={() => setQuery('')} hasFilters={!!query}>
-        <SearchInput value={query} onChange={setQuery} placeholder="Search by User or FFID…" />
+      <FilterBar onClear={clear} hasFilters={!!(query || approvalFilter || anomalyFilter)}>
+        <Select value={approvalFilter} onChange={setApprovalFilter} options={APPROVAL_STATUSES} placeholder="All Approval Statuses" />
+        <Select value={anomalyFilter} onChange={setAnomalyFilter} options={['Flagged', 'Nominal']} placeholder="All Anomaly Flags" />
+        <SearchInput value={query} onChange={setQuery} placeholder="Search by User or FFID..." />
       </FilterBar>
 
-      <div className="overflow-x-auto">
+      <div className="overflow-auto max-h-[480px]">
         <table className="w-full text-[13px]">
-          <thead className="bg-ink-50/50">
+          <thead className="sticky top-0 z-10 bg-white">
             <tr>
               <Th></Th>
               <Th>User Identifier</Th>
@@ -287,8 +300,8 @@ const EmergencyAccessTable = () => {
                 </span>
               </Th>
               <Th align="right">Log Volume</Th>
-              <Th>Approval Authority</Th>
-              <Th>Status</Th>
+              <Th>Approval Status</Th>
+              <Th>Anomaly Flag</Th>
             </tr>
           </thead>
           <tbody className="divide-y divide-ink-100">

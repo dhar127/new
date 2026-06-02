@@ -374,7 +374,7 @@ window.Sod04Page = function () {
         <div className="text-[10px] font-bold uppercase tracking-widest text-ink-400 mb-3">Response Window Guide</div>
         <div className="grid grid-cols-3 gap-4">
           {[
-            { code: 'Priority 1', window: '24 hours',        desc: 'Immediate financial fraud or SOX audit risk. Escalate to security lead.',   color: 'text-rose-700',   bg: 'bg-rose-50',   ring: 'ring-rose-200'   },
+            { code: 'Priority 1', window: '24 hours',        desc: 'Immediate financial risk or SOX audit exposure. Escalate to security lead.',   color: 'text-rose-700',   bg: 'bg-rose-50',   ring: 'ring-rose-200'   },
             { code: 'Priority 2', window: '48 hours',        desc: 'High operational risk. Can cause compliance breach if unresolved.',         color: 'text-orange-700', bg: 'bg-orange-50', ring: 'ring-orange-200' },
             { code: 'Priority 3', window: '5 business days', desc: 'Standard resolution cycle. Log in change management.',                     color: 'text-amber-700',  bg: 'bg-amber-50',  ring: 'ring-amber-200'  },
           ].map(p => (
@@ -437,27 +437,21 @@ window.Sod04Page = function () {
 
       {/* Action Queue */}
       <window.Section title="Action Queue" action={<window.ExportButton label="Download Actions" size="sm" />}>
-        <div className="overflow-x-auto scrollbar-hide">
+        <div className="overflow-auto max-h-[480px] scrollbar-hide">
           <table className="w-full text-[13px]">
-            <thead className="bg-ink-50/50">
+            <thead className="sticky top-0 z-10 bg-white">
               <tr>
                 <window.Th>Identity</window.Th>
                 <window.Th>Violation Description</window.Th>
                 <window.Th>Business Risk</window.Th>
                 <window.Th>Required Action</window.Th>
-                <window.Th>Affected Users</window.Th>
-                <window.Th>Immediate Action Required</window.Th>
-                <window.Th>Authorization Groups</window.Th>
                 <window.Th>Regulatory Rules</window.Th>
                 <window.Th>Response Window</window.Th>
                 <window.Th>Status</window.Th>
-                <window.Th></window.Th>
               </tr>
             </thead>
             <tbody className="divide-y divide-ink-100">
               {filteredActions.map(action => {
-                const authGroups = getAuthGroups(action.user);
-                const immediateActions = getImmediateActions(action.urgency);
                 return (
                   <tr key={action.id} className="row-hover align-top">
                     {/* Identity */}
@@ -479,39 +473,6 @@ window.Sod04Page = function () {
                     {/* Required Action */}
                     <td className="px-4 py-3.5 max-w-xs">
                       <div className="text-ink-800 text-[12px] leading-snug">{action.action}</div>
-                    </td>
-
-                    {/* Affected Users */}
-                    <td className="px-4 py-3.5">
-                      <div className="flex flex-wrap gap-1">
-                        {[action.user].map(u => (
-                          <span key={u} className="font-mono text-[10px] px-2 py-0.5 rounded bg-rose-50 text-rose-700 ring-1 ring-rose-200 font-semibold whitespace-nowrap">
-                            {u}
-                          </span>
-                        ))}
-                      </div>
-                    </td>
-
-                    {/* Immediate Action Required */}
-                    <td className="px-4 py-3.5">
-                      <div className="flex flex-col gap-1 min-w-[150px]">
-                        {immediateActions.map((task, idx) => (
-                          <span key={idx} className="text-[10px] px-2 py-0.5 rounded bg-amber-50 text-amber-800 ring-1 ring-amber-200/60 font-semibold leading-tight text-center">
-                            {task}
-                          </span>
-                        ))}
-                      </div>
-                    </td>
-
-                    {/* Authorization Groups */}
-                    <td className="px-4 py-3.5">
-                      <div className="flex flex-wrap gap-1 max-w-[150px]">
-                        {authGroups.map(g => (
-                          <span key={g} className="text-[10px] font-bold font-mono bg-ink-100 text-ink-700 ring-1 ring-ink-200 px-1.5 py-0.5 rounded whitespace-nowrap">
-                            {g}
-                          </span>
-                        ))}
-                      </div>
                     </td>
 
                     {/* Regulatory Rules */}
@@ -538,17 +499,6 @@ window.Sod04Page = function () {
                         {statusOptions.map(s => <option key={s} value={s}>{s}</option>)}
                       </select>
                     </td>
-
-                    {/* Inspect */}
-                    <td className="px-4 py-3.5">
-                      <button
-                        onClick={() => setProfileAction(action)}
-                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-brand-50 text-brand-700 ring-1 ring-brand-200 text-[11px] font-bold hover:bg-brand-100 transition-colors whitespace-nowrap"
-                      >
-                        <window.Icon name="user" className="w-3.5 h-3.5" strokeWidth={2} />
-                        Inspect
-                      </button>
-                    </td>
                   </tr>
                 );
               })}
@@ -562,14 +512,6 @@ window.Sod04Page = function () {
           )}
         </div>
       </window.Section>
-
-      {/* Profile Slide-over */}
-      {profileAction && (
-        <UserProfilePanel
-          action={profileAction}
-          onClose={() => setProfileAction(null)}
-        />
-      )}
     </div>
   );
 };

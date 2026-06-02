@@ -160,9 +160,9 @@ window.SodP2pPage = function() {
         title="P2P Violation Combinations"
         subtitle="Detailed breakdown of authorization overlaps across the Procure-to-Pay cycle. Click a row to see affected users."
       >
-        <div className="overflow-x-auto">
+        <div className="overflow-auto max-h-[480px]">
           <table className="w-full">
-            <thead>
+            <thead className="sticky top-0 z-10 bg-white">
   <tr className="border-b border-ink-100">
     <th className="text-left px-5 py-3 text-[11px] font-bold uppercase tracking-widest text-ink-400">ID</th>
     <th className="text-left px-5 py-3 text-[11px] font-bold uppercase tracking-widest text-ink-400">T-Code Pair</th>

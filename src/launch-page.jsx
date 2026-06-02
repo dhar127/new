@@ -336,78 +336,45 @@ function ComplianceEngine() {
 /* ============================================================ */
 /* 4. AI-Assisted Expanded Row                                  */
 /* ============================================================ */
-function AIExpandedRow({ finding }) {
-  const { analysis, loading, error } = useAIAnalysis(finding, true);
-
-  if (loading) return (
-    <tr className="bg-ink-50/30 border-b border-ink-200">
-      <td colSpan={7} className="px-12 py-6">
-        <div className="flex items-center gap-3 text-ink-400">
-          <span className="inline-block w-4 h-4 border-2 border-brand-400 border-t-transparent rounded-full animate-spin" />
-          <span className="text-[12px] font-medium">AI is analysing this violation…</span>
-        </div>
-      </td>
-    </tr>
-  );
-
-  if (error || !analysis) return (
-    <tr className="bg-ink-50/30 border-b border-ink-200">
-      <td colSpan={7} className="px-12 py-4 text-[12px] text-ink-500">
-        <div className="flex flex-col gap-2">
-          <div><strong className="text-ink-900 mr-2">Action:</strong>{finding.action}</div>
-          <div><strong className="text-ink-900 mr-2">Violation ID:</strong><span className="font-mono">{finding.id}</span></div>
-          {error && <div className="text-rose-500 text-[11px]">{error}</div>}
-        </div>
-      </td>
-    </tr>
-  );
-
-  const urgencyColor = analysis.urgency === 'Immediate'
-    ? 'bg-rose-100 text-rose-700 ring-rose-200'
-    : analysis.urgency === 'Within 30 days'
-    ? 'bg-amber-100 text-amber-700 ring-amber-200'
-    : 'bg-blue-100 text-blue-700 ring-blue-200';
-
+/* Expanded row: shows the affected identities list for a violation */
+function IdentityExpandedRow({ finding }) {
+  const identities = finding.affectedUsersList || [];
   return (
     <tr className="border-b border-ink-200">
-      <td colSpan={7} className="px-8 py-5 bg-gradient-to-b from-ink-50/60 to-white">
-        <div className="flex items-center gap-2 mb-4">
-          <window.Icon name="bot" className="w-4 h-4 text-brand-600" />
-          <span className="text-[10px] font-bold uppercase tracking-widest text-brand-600">AI-Assisted Analysis</span>
-          <span className={`ml-auto text-[10px] font-bold px-2 py-0.5 rounded-full ring-1 ring-inset ${urgencyColor}`}>
-            {analysis.urgency}
+      <td colSpan={7} className="px-8 py-4 bg-ink-50/40">
+        <div className="mb-2 flex items-center gap-2">
+          <span className="text-[10px] font-bold uppercase tracking-widest text-ink-500">
+            Affected Identities
           </span>
-          <span className="text-[10px] font-semibold text-ink-500 bg-ink-100 px-2 py-0.5 rounded-full">
-            {analysis.estimatedImpact}
+          <span className="text-[10px] font-mono font-bold text-brand-600 bg-brand-50 px-1.5 py-0.5 rounded">
+            {identities.length}
+          </span>
+          <span className="text-[10px] text-ink-400 ml-2">
+            Violation: <span className="font-mono font-bold text-ink-700">{finding.id}</span>
+            {' · '}Area: <span className="font-bold text-ink-700">{finding.area}</span>
           </span>
         </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="rounded-xl bg-white ring-1 ring-ink-200 p-4">
-            <div className="text-[10px] font-bold uppercase tracking-widest text-ink-400 mb-2">Root Cause</div>
-            <p className="text-[12px] text-ink-700 leading-relaxed">{analysis.rootCause}</p>
-          </div>
-          <div className="rounded-xl bg-rose-50 ring-1 ring-rose-100 p-4">
-            <div className="text-[10px] font-bold uppercase tracking-widest text-rose-500 mb-2">Risk Rationale</div>
-            <p className="text-[12px] text-ink-700 leading-relaxed">{analysis.riskRationale}</p>
-          </div>
-          <div className="rounded-xl bg-emerald-50 ring-1 ring-emerald-100 p-4">
-            <div className="text-[10px] font-bold uppercase tracking-widest text-emerald-600 mb-2">Remediation Steps</div>
-            <ol className="space-y-1.5">
-              {(analysis.remediationSteps || []).map((step, i) => (
-                <li key={i} className="flex items-start gap-2 text-[12px] text-ink-700">
-                  <span className="flex-shrink-0 w-4 h-4 rounded-full bg-emerald-500 text-white text-[9px] font-bold flex items-center justify-center mt-0.5">{i + 1}</span>
-                  {step}
-                </li>
+        <div className="overflow-auto max-h-[360px]">
+          <table className="w-full text-[12px]">
+            <thead className="sticky top-0 z-10 bg-white">
+              <tr className="bg-ink-100/60">
+                <th className="px-3 py-2 text-left font-bold text-[10px] uppercase tracking-wider text-ink-500">Identity ID</th>
+                <th className="px-3 py-2 text-left font-bold text-[10px] uppercase tracking-wider text-ink-500">Name</th>
+                <th className="px-3 py-2 text-left font-bold text-[10px] uppercase tracking-wider text-ink-500">Department</th>
+                <th className="px-3 py-2 text-right font-bold text-[10px] uppercase tracking-wider text-ink-500">Roles in Scope</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-ink-100">
+              {identities.map((u) => (
+                <tr key={u.userId} className="hover:bg-ink-50 transition-colors">
+                  <td className="px-3 py-2 font-mono font-bold text-ink-800">{u.userId}</td>
+                  <td className="px-3 py-2 text-ink-700">{u.name}</td>
+                  <td className="px-3 py-2 text-ink-500">{u.dept}</td>
+                  <td className="px-3 py-2 text-right font-mono text-ink-700">{u.roles}</td>
+                </tr>
               ))}
-            </ol>
-          </div>
-        </div>
-
-        <div className="mt-3 flex gap-6 text-[11px] text-ink-400">
-          <span><strong className="text-ink-600">Violation ID:</strong> <span className="font-mono">{finding.id}</span></span>
-          <span><strong className="text-ink-600">Affected Users:</strong> {finding.users} identities in scope</span>
-          <span><strong className="text-ink-600">Area:</strong> {finding.area}</span>
+            </tbody>
+          </table>
         </div>
       </td>
     </tr>
@@ -423,8 +390,7 @@ function RiskRadar() {
   const [expandedId, setExpandedId]         = useState(null);
 
   const filtered = CRITICAL_FINDINGS
-    .filter(f => filterSeverity === 'All' || f.severity === filterSeverity)
-    .slice(0, 8);
+    .filter(f => filterSeverity === 'All' || f.severity === filterSeverity);
 
   return (
     <window.Section
@@ -451,17 +417,17 @@ function RiskRadar() {
         </div>
       }
     >
-      <div className="overflow-x-auto scrollbar-hide">
+      <div className="overflow-auto max-h-[480px] scrollbar-hide">
         <table className="w-full text-[13px]">
-          <thead className="bg-ink-50/50">
+          <thead className="sticky top-0 z-10 bg-white">
             <tr>
               <window.Th className="w-8"></window.Th>
-              <window.Th>User / Identity</window.Th>
+              <window.Th>Violation ID</window.Th>
               <window.Th>Area</window.Th>
               <window.Th>Violation Description</window.Th>
               <window.Th>Recommended Action</window.Th>
               <window.Th align="right">
-                <span>Affected Users</span>
+                <span>Affected Identities</span>
               </window.Th>
               <window.Th>Severity</window.Th>
             </tr>
@@ -484,7 +450,7 @@ function RiskRadar() {
                       )}
                     </div>
                   </td>
-                  <td className="px-4 py-3.5 font-mono font-bold text-ink-900 group-hover:text-brand-600 transition-colors">{f.user || f.id}</td>
+                  <td className="px-4 py-3.5 font-mono font-bold text-ink-900 group-hover:text-brand-600 transition-colors">{f.id}</td>
                   <td className="px-4 py-3.5">
                     <span className="font-bold text-[10px] uppercase text-ink-500 tracking-wider bg-ink-100 px-2 py-0.5 rounded ring-1 ring-inset ring-ink-200">{f.area}</span>
                   </td>
@@ -492,13 +458,13 @@ function RiskRadar() {
                   <td className="px-4 py-3.5 text-ink-600 max-w-[200px] truncate" title={f.action}>{f.action}</td>
                   <td className="px-4 py-3.5 text-right">
                     <span className="font-mono font-bold text-ink-900">{f.users}</span>
-                    <span className="text-[10px] text-ink-400 ml-1">users</span>
+                    <span className="text-[10px] text-ink-400 ml-1">identities</span>
                   </td>
                   <td className="px-4 py-3.5">
                     <window.SeverityBadge value={f.severity} />
                   </td>
                 </tr>
-                {expandedId === f.id && <AIExpandedRow finding={f} />}
+                {expandedId === f.id && <IdentityExpandedRow finding={f} />}
               </React.Fragment>
             ))}
           </tbody>

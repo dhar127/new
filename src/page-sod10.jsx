@@ -14,7 +14,7 @@ const Sod10Kpis = () => {
       <StatCard label="Total Identities" value={k.totalAccounts} delta={k.deltas.totalAccounts} />
       <StatCard severity="Critical" label="Elevated Privilege" value={k.highPrivilege} delta={k.deltas.highPrivilege} deltaInvertGood />
       <StatCard severity="High" label="Dormant (60d+)" value={k.inactiveAccounts} delta={k.deltas.inactiveAccounts} deltaInvertGood />
-      <StatCard severity="Critical" label="Unmanaged IDs" value={k.unmanagedAccounts} delta={k.deltas.unmanagedAccounts} deltaInvertGood />
+      <StatCard severity="Critical" label="No Owner Assigned" value={k.unmanagedAccounts} delta={k.deltas.unmanagedAccounts} deltaInvertGood />
     </div>
   );
 };
@@ -132,9 +132,9 @@ const ServiceAccountTable = () => {
         </div>
       </FilterBar>
 
-      <div className="overflow-x-auto">
+      <div className="overflow-auto max-h-[480px]">
         <table className="w-full text-[13px]">
-          <thead className="bg-ink-50/50">
+          <thead className="sticky top-0 z-10 bg-white">
             <tr>
               <Th></Th>
               <Th>System Identity</Th>
@@ -142,7 +142,6 @@ const ServiceAccountTable = () => {
               <Th>Privilege</Th>
               <Th>Last Activity</Th>
               <Th>Risk Classification</Th>
-              <Th>Custodian</Th>
             </tr>
           </thead>
           <tbody className="divide-y divide-ink-100">
@@ -162,13 +161,10 @@ const ServiceAccountTable = () => {
                     <td className="px-4 py-3.5"><SeverityBadge value={r.privilege} /></td>
                     <td className="px-4 py-3.5 font-mono font-bold text-ink-600">{r.lastActivity}</td>
                     <td className="px-4 py-3.5 font-semibold text-ink-800 text-[11px] leading-tight max-w-[200px]">{r.risk}</td>
-                    <td className="px-4 py-3.5">
-                       {r.owner ? <span className="font-bold text-ink-800">{r.owner}</span> : <span className="text-rose-600 font-bold uppercase text-[9px] tracking-widest bg-rose-50 px-1.5 py-0.5 rounded ring-1 ring-rose-200">Unmanaged</span>}
-                    </td>
                   </tr>
                   {isOpen && (
                     <tr className="bg-ink-50/30">
-                      <td colSpan={8} className="px-12 py-5">
+                      <td colSpan={6} className="px-12 py-5">
                         <AccountDrilldown row={r} />
                       </td>
                     </tr>
@@ -178,7 +174,7 @@ const ServiceAccountTable = () => {
             })}
           </tbody>
           {paged.length === 0 && (
-              <tr><td colSpan={8} className="py-12 text-center text-sm text-ink-500 font-bold uppercase tracking-widest">No Identities Match Selection</td></tr>
+              <tr><td colSpan={6} className="py-12 text-center text-sm text-ink-500 font-bold uppercase tracking-widest">No Identities Match Selection</td></tr>
           )}
         </table>
       </div>
@@ -195,12 +191,15 @@ const AccountDrilldown = ({ row }) => (
          {row.roles.map(r => <span key={r.role} className="px-2 py-1 rounded bg-white ring-1 ring-ink-200 shadow-sm font-mono text-[11px] font-bold text-ink-800">{r.role}</span>)}
       </div>
     </div>
-    <div className="col-span-12 lg:col-span-4 space-y-4">
+    <div className="col-span-12 lg:col-span-4 space-y-3">
        <div className="rounded-xl bg-white p-4 ring-1 ring-ink-200 shadow-sm">
-         <div className="text-[10px] font-bold uppercase tracking-widest text-ink-400 mb-2">IAM Integrity Logic</div>
-         <p className="text-xs font-semibold text-ink-700 leading-relaxed italic">"Identity holds production-wide authority with no valid custodian mapping. Recommend immediate profile scoping."</p>
+         <div className="text-[10px] font-bold uppercase tracking-widest text-ink-400 mb-2">Recommended Action</div>
+         <p className="text-xs font-semibold text-ink-700 leading-relaxed">{row.recommendation}</p>
        </div>
-       {/* <button className="w-full rounded-lg bg-ink-900 px-4 py-2.5 text-xs font-bold text-white hover:bg-ink-800 uppercase tracking-widest transition-colors shadow-sm">Assign Custodian</button> */}
+       <div className="rounded-xl bg-white p-4 ring-1 ring-ink-200 shadow-sm space-y-1.5 text-[11px]">
+         <div><span className="font-bold text-ink-500">Status:</span> <span className="text-ink-800">{row.status}</span></div>
+         {row.assignee && <div><span className="font-bold text-ink-500">Assignee:</span> <span className="text-ink-800">{row.assignee}</span></div>}
+       </div>
     </div>
   </div>
 );

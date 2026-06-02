@@ -5,18 +5,7 @@ const {
   ResponsiveContainer: P5_ResponsiveContainer, LabelList: P5_LabelList,
 } = Recharts;
 
-const { useState, useMemo, useEffect } = React;
-
-/* ─── Modal Portal for Fixed Positioning ────────────────────
-   Renders modals on document.body to escape parent transform
-   constraints and ensure fixed positioning works correctly.
-─────────────────────────────────────────────────────────── */
-function ModalPortal({ children }) {
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
-  if (!mounted) return null;
-  return ReactDOM.createPortal(children, document.body);
-}
+const { useState, useMemo } = React;
 
 const Sod05Kpis = () => {
   const k = window.MOCK.IMPACT_KPIS;
@@ -135,7 +124,6 @@ const ImpactMatrix = () => {
   const [sort, setSort] = useState({ key: 'exposure', dir: 'asc' });
   const [page, setPage] = useState(1);
   const [expanded, setExpanded] = useState(null);
-  const [inspectedRow, setInspectedRow] = useState(null);
   const pageSize = 12;
   const expOrder = { High: 0, Medium: 1, Low: 2 };
 
@@ -155,20 +143,21 @@ const ImpactMatrix = () => {
   return (
     <Section title="Risk Inventory Matrix" action={<ExportButton label="Download Impact Set" size="sm" />}>
       <FilterBar onClear={clear} hasFilters={!!(cat || exp || query)}>
-        <Select value={cat} onChange={setCat} options={IMPACT_CATEGORIES} placeholder="All Categories" />
-        <Select value={exp} onChange={setExp} options={EXPOSURE_LEVELS} placeholder="All Exposure Levels" />
+        <Select value={cat} onChange={setCat} options={IMPACT_CATEGORIES} placeholder="All Impact Types" />
+        <Select value={exp} onChange={setExp} options={EXPOSURE_LEVELS} placeholder="All Severity" />
         <SearchInput value={query} onChange={setQuery} placeholder="Search by ID or description…" />
       </FilterBar>
 
-      <div className="overflow-x-auto">
+      <div className="overflow-auto max-h-[480px]">
         <table className="w-full text-[13px]">
-          <thead className="bg-ink-50/50">
+          <thead className="sticky top-0 z-10 bg-white">
             <tr>
               <Th></Th>
               <Th sortKey="id" sort={sort} onSort={k => setSort({ key: k, dir: sort.dir === 'asc' ? 'desc' : 'asc' })}>Identifier</Th>
               <Th>Impact Description</Th>
               <Th>Impact Type</Th>
               <Th sortKey="exposure" sort={sort} onSort={k => setSort({ key: k, dir: sort.dir === 'asc' ? 'desc' : 'asc' })}>Severity</Th>
+              <Th>Regulatory Framework</Th>
             </tr>
           </thead>
           <tbody className="divide-y divide-ink-100">
@@ -188,11 +177,18 @@ const ImpactMatrix = () => {
                     <td className="px-4 py-3.5">
                       <span className={`inline-flex px-1.5 py-0.5 rounded font-bold text-[10px] ring-1 ring-inset ${SEV_STYLE[r.exposure]}`}>{r.exposure}</span>
                     </td>
+                    <td className="px-4 py-3.5">
+                      {(r.frameworks || []).includes('SAP GRC') && (
+                        <span className="text-[10px] font-bold font-mono px-1.5 py-0.5 rounded bg-brand-50 text-brand-700 ring-1 ring-brand-200">
+                          SAP GRC
+                        </span>
+                      )}
+                    </td>
                   </tr>
                   {isOpen && (
                     <tr className="bg-ink-50/30">
-                      <td colSpan={5} className="px-12 py-5">
-                        <DrilldownPanel row={r} onInspect={setInspectedRow} />
+                      <td colSpan={6} className="px-12 py-5">
+                        <DrilldownPanel row={r} />
                       </td>
                     </tr>
                   )}
@@ -203,94 +199,11 @@ const ImpactMatrix = () => {
         </table>
       </div>
       <Pagination page={page} pageSize={pageSize} total={filtered.length} onPage={setPage} />
-      {inspectedRow && <ImpactProfilePanel row={inspectedRow} onClose={() => setInspectedRow(null)} />}
     </Section>
   );
 };
 
-function ImpactProfilePanel({ row, onClose }) {
-  if (!row) return null;
-
-  const profile = {
-    id: row.id,
-    description: row.desc,
-    category: row.category,
-    exposure: row.exposure,
-    areas: row.areas,
-    dollars: row.dollars,
-  };
-
-  return (
-    <ModalPortal>
-      <div className="fixed inset-0 bg-black/40 z-[99998]" onClick={onClose} />
-      <div
-        className="fixed top-0 right-0 h-full w-full max-w-md bg-white shadow-2xl z-[99999] flex flex-col"
-        style={{ animation: 'slideInRight 0.25s ease-out' }}
-      >
-        <style>{`
-          @keyframes slideInRight {
-            from { transform: translateX(100%); opacity: 0; }
-            to   { transform: translateX(0);    opacity: 1; }
-          }
-        `}</style>
-
-        <div className="flex items-start gap-4 px-6 py-5 border-b border-ink-100 bg-[#0B0F19] text-white">
-          <div className="flex-1 min-w-0">
-            <h2 className="text-[15px] font-bold text-white truncate">{profile.id}</h2>
-            <div className="text-[11px] text-white/50 font-mono mt-0.5">{profile.category}</div>
-            <div className="flex items-center gap-2 mt-1.5">
-              <span className="text-[10px] font-bold bg-brand-600/30 text-brand-300 px-2 py-0.5 rounded-full uppercase">{profile.exposure}</span>
-            </div>
-          </div>
-          <button onClick={onClose} className="p-1.5 hover:bg-white/10 rounded-lg transition-colors">
-            <Icon name="x" className="w-4 h-4 text-white/60" strokeWidth={2} />
-          </button>
-        </div>
-
-        <div className="flex-1 overflow-y-auto px-6 py-5 space-y-5">
-          <div>
-            <div className="text-[10px] font-bold uppercase tracking-widest text-ink-400 mb-3">Impact Details</div>
-            <div className="rounded-lg bg-ink-50 ring-1 ring-ink-100 px-3 py-2.5">
-              <p className="text-[12px] text-ink-700 leading-relaxed">{profile.description}</p>
-            </div>
-          </div>
-
-          <div>
-            <div className="text-[10px] font-bold uppercase tracking-widest text-ink-400 mb-2">Risk Exposure</div>
-            <div className="grid grid-cols-2 gap-2">
-              <div className="rounded-lg bg-ink-50 ring-1 ring-ink-100 px-3 py-2">
-                <div className="text-[10px] font-bold uppercase tracking-widest text-ink-400 mb-0.5">Severity</div>
-                <div className="text-[13px] font-bold text-ink-800">{profile.exposure}</div>
-              </div>
-            </div>
-          </div>
-
-          <div>
-            <div className="text-[10px] font-bold uppercase tracking-widest text-ink-400 mb-2">Process Areas</div>
-            <div className="flex flex-wrap gap-1.5">
-              {profile.areas.map(a => (
-                <span key={a} className="text-[10px] font-bold bg-ink-100 text-ink-700 ring-1 ring-ink-200 px-2 py-1 rounded-md">
-                  {a}
-                </span>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        <div className="px-6 py-4 border-t border-ink-100 bg-ink-50">
-          <button
-            onClick={onClose}
-            className="w-full rounded-lg bg-white ring-1 ring-ink-200 text-ink-700 text-xs font-bold py-2.5 hover:bg-ink-50 transition-colors"
-          >
-            Close
-          </button>
-        </div>
-      </div>
-    </ModalPortal>
-  );
-}
-
-const DrilldownPanel = ({ row, onInspect }) => (
+const DrilldownPanel = ({ row }) => (
   <div className="grid grid-cols-12 gap-8 border-l-4 border-ink-200 pl-6">
     <div className="col-span-12 lg:col-span-4">
       <div className="text-[10px] font-bold uppercase tracking-widest text-ink-400 mb-2">Technical Summary</div>

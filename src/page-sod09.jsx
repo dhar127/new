@@ -193,9 +193,9 @@ const OtcTable = ({ activeStepFilter }) => {
         <SearchInput value={query} onChange={setQuery} placeholder="Search by User or ID…" />
       </FilterBar>
 
-      <div className="overflow-x-auto">
+      <div className="overflow-auto max-h-[480px]">
         <table className="w-full text-[13px]">
-          <thead className="bg-ink-50/50">
+          <thead className="sticky top-0 z-10 bg-white">
             <tr>
               <Th></Th>
               <Th>User Identifier</Th>
