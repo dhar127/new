@@ -300,22 +300,10 @@ window.Sod04Page = function () {
   const [actions, setActions]             = useState(enriched);
   const [searchTerm, setSearchTerm]       = useState('');
   const [statusFilter, setStatusFilter]   = useState('All');
-  const [userFilter, setUserFilter]       = useState(null);
-  const [actionFilter, setActionFilter]   = useState(null);
-  const [authGroupFilter, setAuthGroupFilter] = useState(null);
   const [profileAction, setProfileAction] = useState(null);
 
   const filteredActions = useMemo(() => {
     let f = statusFilter === 'All' ? actions : actions.filter(a => a.status === statusFilter);
-    if (userFilter) {
-      f = f.filter(a => a.user === userFilter);
-    }
-    if (actionFilter) {
-      f = f.filter(a => getImmediateActions(a.urgency).includes(actionFilter));
-    }
-    if (authGroupFilter) {
-      f = f.filter(a => getAuthGroups(a.user).includes(authGroupFilter));
-    }
     if (searchTerm) {
       const q = searchTerm.toLowerCase();
       f = f.filter(a =>
@@ -325,7 +313,7 @@ window.Sod04Page = function () {
       );
     }
     return f;
-  }, [actions, searchTerm, statusFilter, userFilter, actionFilter, authGroupFilter]);
+  }, [actions, searchTerm, statusFilter]);
 
   const updateStatus = (id, newStatus) =>
     setActions(prev => prev.map(a => a.id === id ? { ...a, status: newStatus } : a));
@@ -343,14 +331,11 @@ window.Sod04Page = function () {
     return Array.from(set);
   }, []);
 
-  const hasFilters = !!(searchTerm || statusFilter !== 'All' || userFilter || actionFilter || authGroupFilter);
+  const hasFilters = !!(searchTerm || statusFilter !== 'All');
 
   const clear = () => {
     setStatusFilter('All');
     setSearchTerm('');
-    setUserFilter(null);
-    setActionFilter(null);
-    setAuthGroupFilter(null);
   };
 
   return (
@@ -358,7 +343,7 @@ window.Sod04Page = function () {
       <window.DetailHeader
         code="SOD-04 · Triage"
         title="Immediate Actions"
-        subtitle="High-priority violations requiring remediation within defined response windows to prevent material exposure or audit failure."
+        subtitle="High-priority violations requiring remediation within defined timeframes to prevent material exposure or audit failure."
       />
 
       {/* KPI bar */}
@@ -369,9 +354,9 @@ window.Sod04Page = function () {
         <window.StatCard severity={countOverdue > 0 ? 'Critical' : 'Good'} label="Past Deadline" value={countOverdue} deltaInvertGood icon="flame" />
       </div>
 
-      {/* Response Window Legend */}
+      {/* Priority Legend */}
       <div className="rounded-xl bg-ink-50 ring-1 ring-ink-200 px-5 py-4">
-        <div className="text-[10px] font-bold uppercase tracking-widest text-ink-400 mb-3">Response Window Guide</div>
+        <div className="text-[10px] font-bold uppercase tracking-widest text-ink-400 mb-3">Priority Guide</div>
         <div className="grid grid-cols-3 gap-4">
           {[
             { code: 'Priority 1', window: '24 hours',        desc: 'Immediate financial risk or SOX audit exposure. Escalate to security lead.',   color: 'text-rose-700',   bg: 'bg-rose-50',   ring: 'ring-rose-200'   },
@@ -397,34 +382,6 @@ window.Sod04Page = function () {
           options={statusOptions} 
           placeholder="All Statuses" 
         />
-        <window.Select 
-          value={userFilter} 
-          onChange={setUserFilter} 
-          options={uniqueUsers} 
-          placeholder="All Affected Users" 
-        />
-        <window.Select 
-          value={actionFilter} 
-          onChange={setActionFilter} 
-          options={[
-            'Review authorizations',
-            'Escalate to manager',
-            'Initiate revocation',
-            'Conduct audit review',
-            'Notify department head',
-            'Update security logs',
-            'Schedule policy review',
-            'Log in change management',
-            'Verify quarterly compliance'
-          ]} 
-          placeholder="All Immediate Actions" 
-        />
-        <window.Select 
-          value={authGroupFilter} 
-          onChange={setAuthGroupFilter} 
-          options={['SUPER_USER', 'FI_POSTING', 'MM_ORDERS', 'HR_PAYROLL', 'BASIS_ADMIN']} 
-          placeholder="All Auth Groups" 
-        />
         <window.SearchInput 
           value={searchTerm} 
           onChange={setSearchTerm} 
@@ -446,7 +403,6 @@ window.Sod04Page = function () {
                 <window.Th>Business Risk</window.Th>
                 <window.Th>Required Action</window.Th>
                 <window.Th>Regulatory Rules</window.Th>
-                <window.Th>Response Window</window.Th>
                 <window.Th>Status</window.Th>
               </tr>
             </thead>
@@ -478,11 +434,6 @@ window.Sod04Page = function () {
                     {/* Regulatory Rules */}
                     <td className="px-4 py-3.5">
                       <RegulatoryRulesBadge urgency={action.urgency} />
-                    </td>
-
-                    {/* Response Window */}
-                    <td className="px-4 py-3.5">
-                      <ResponseWindowBadge urgency={action.urgency} createdDaysAgo={action.createdDaysAgo} />
                     </td>
 
                     {/* Status */}
