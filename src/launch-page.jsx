@@ -98,15 +98,40 @@ function SodBadge({ id }) {
 
   
 
-/* ============================================================ */
-/* 1. Unified Compliance Overview Card          [SOD-02]        */
-/* ============================================================ */
 function ComplianceOverviewCard() {
   const { KPIS, COMPLIANCE } = window.MOCK;
-  const current  = COMPLIANCE.maturityScore;
-  const baseline = COMPLIANCE.benchmarkSAPGRC;
-  const delta    = current - baseline;
-  const isAbove  = delta >= 0;
+
+  /* ── Severity weights ── */
+  const W = { critical: 1.0, high: 0.6, medium: 0.3, low: 0.1 };
+
+  /* ── Compute weighted totals from mock data ── */
+  const det = COMPLIANCE.detected;
+  const unm = COMPLIANCE.unmitigated;
+
+  const weightedDetected =
+    det.critical * W.critical +
+    det.high     * W.high +
+    det.medium   * W.medium +
+    det.low      * W.low;
+
+  const weightedUnmitigated =
+    unm.critical * W.critical +
+    unm.high     * W.high +
+    unm.medium   * W.medium +
+    unm.low      * W.low;
+
+  /* Score = (1 − Σ weighted unmitigated / Σ weighted detected) × 100 */
+  const rawScore = weightedDetected > 0
+    ? (1 - weightedUnmitigated / weightedDetected) * 100
+    : 100;
+  const current = Math.round(rawScore * 100) / 100;  // two-decimal precision
+  const displayScore = current.toFixed(1);
+
+  const totalDetected    = det.critical + det.high + det.medium + det.low;
+  const totalUnmitigated = unm.critical + unm.high + unm.medium + unm.low;
+  const affectedUsers    = COMPLIANCE.affectedUsers;
+  const totalUsers       = COMPLIANCE.totalUsersScanned;
+
   const isAtRisk = current < 60;
   const isWarn   = current >= 60 && current < 75;
 
@@ -127,37 +152,69 @@ function ComplianceOverviewCard() {
         <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${status.labelBg}`}>{status.label}</span>
       </div>
 
-      <div className="grid grid-cols-3 divide-x divide-ink-100">
-        <div className={`flex flex-col items-center py-3 px-3 rounded-l-xl ${status.bg}`}>
+      {/* ── Main Score + Key Metrics ── */}
+      <div className="grid grid-cols-4 divide-x divide-ink-100">
+        <div className={`flex flex-col items-center py-3 px-2 rounded-l-xl ${status.bg}`}>
           <span className="text-[10px] font-bold uppercase tracking-widest text-ink-400 mb-1">Current Score</span>
-          <span className={`text-[32px] font-bold font-mono tracking-tighter ${status.text}`}>{current}%</span>
+          <span className={`text-[28px] font-bold font-mono tracking-tighter ${status.text}`}>{displayScore}%</span>
         </div>
-        <div className="flex flex-col items-center py-3 px-3">
-          <span className="text-[10px] font-bold uppercase tracking-widest text-ink-400 mb-1">Analytic Scope</span>
-          <span className="text-[32px] font-bold font-mono tracking-tighter text-ink-800">4,287</span>
-          <span className="text-[10px] text-ink-400 font-medium">Identities</span>
+        <div className="flex flex-col items-center py-3 px-2">
+          <span className="text-[10px] font-bold uppercase tracking-widest text-ink-400 mb-1">Detected Risks</span>
+          <span className="text-[28px] font-bold font-mono tracking-tighter text-ink-800">{totalDetected.toLocaleString()}</span>
+          <span className="text-[10px] text-ink-400 font-medium">total violations</span>
         </div>
-        <div className="flex flex-col items-center py-3 px-3 rounded-r-xl bg-emerald-50">
-          <span className="text-[10px] font-bold uppercase tracking-widest text-ink-400 mb-1">SAP GRC Baseline</span>
-          <span className="text-[32px] font-bold font-mono tracking-tighter text-emerald-600">{baseline}%</span>
+        <div className="flex flex-col items-center py-3 px-2">
+          <span className="text-[10px] font-bold uppercase tracking-widest text-ink-400 mb-1">Unmitigated</span>
+          <span className="text-[28px] font-bold font-mono tracking-tighter text-rose-600">{totalUnmitigated.toLocaleString()}</span>
+          <span className="text-[10px] text-ink-400 font-medium">open risks</span>
+        </div>
+        <div className="flex flex-col items-center py-3 px-2 rounded-r-xl bg-amber-50">
+          <span className="text-[10px] font-bold uppercase tracking-widest text-ink-400 mb-1">Affected Users</span>
+          <span className="text-[28px] font-bold font-mono tracking-tighter text-amber-700">{affectedUsers}</span>
+          <span className="text-[10px] text-ink-400 font-medium">of {totalUsers.toLocaleString()} scanned</span>
         </div>
       </div>
 
+      {/* ── Score Progress Bar ── */}
       <div>
         <div className="flex justify-between text-[10px] font-bold text-ink-400 uppercase tracking-widest mb-1.5">
-          <span>Score vs Baseline</span>
-          <span className={isAbove ? 'text-emerald-600' : 'text-rose-600'}>
-            {isAbove ? '+' : ''}{delta}% vs SAP GRC
+          <span>Weighted Compliance Score</span>
+          <span className={current >= 75 ? 'text-emerald-600' : current >= 60 ? 'text-amber-600' : 'text-rose-600'}>
+            {displayScore}%
           </span>
         </div>
         <div className="relative h-3 bg-ink-100 rounded-full overflow-hidden">
-          <div className="absolute top-0 bottom-0 w-0.5 bg-emerald-500 z-10" style={{ left: `${baseline}%` }} />
-          <div className={`h-full rounded-full transition-all duration-700 ${status.bar}`} style={{ width: `${current}%` }} />
+          <div className={`h-full rounded-full transition-all duration-700 ${status.bar}`} style={{ width: `${Math.min(current, 100)}%` }} />
         </div>
         <div className="flex justify-between text-[9px] text-ink-400 mt-1">
           <span>0%</span>
-          <span className="text-emerald-600 font-bold">▲ Baseline {baseline}%</span>
           <span>100%</span>
+        </div>
+      </div>
+
+      {/* ── Weighted Formula Breakdown ── */}
+      <div className="rounded-xl bg-ink-50 ring-1 ring-ink-200 p-3">
+        <div className="text-[10px] font-bold uppercase tracking-widest text-ink-400 mb-2">Formula Breakdown · Severity Weights</div>
+        <div className="grid grid-cols-4 gap-2 text-[11px]">
+          {[
+            { label: 'Critical', w: W.critical, d: det.critical, u: unm.critical, color: 'text-rose-700',   bg: 'bg-rose-50' },
+            { label: 'High',     w: W.high,     d: det.high,     u: unm.high,     color: 'text-orange-700', bg: 'bg-orange-50' },
+            { label: 'Medium',   w: W.medium,   d: det.medium,   u: unm.medium,   color: 'text-amber-700',  bg: 'bg-amber-50' },
+            { label: 'Low',      w: W.low,      d: det.low,      u: unm.low,      color: 'text-blue-700',   bg: 'bg-blue-50' },
+          ].map(s => (
+            <div key={s.label} className={`rounded-lg p-2 ${s.bg}`}>
+              <div className={`text-[9px] font-bold uppercase tracking-widest ${s.color} mb-1`}>{s.label} ×{s.w}</div>
+              <div className="flex flex-col gap-0.5">
+                <span className="text-[11px] text-ink-700"><strong className="font-mono">{s.d}</strong> detected</span>
+                <span className="text-[11px] text-rose-600"><strong className="font-mono">{s.u}</strong> open</span>
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="mt-2 pt-2 border-t border-ink-200 flex items-center justify-between text-[10px] text-ink-500">
+          <span>Σ Weighted Detected: <strong className="font-mono text-ink-700">{weightedDetected.toFixed(1)}</strong></span>
+          <span>Σ Weighted Unmitigated: <strong className="font-mono text-rose-600">{weightedUnmitigated.toFixed(1)}</strong></span>
+          <span className={`font-bold ${status.text}`}>Score: (1 − {weightedUnmitigated.toFixed(1)}/{weightedDetected.toFixed(1)}) × 100 = {displayScore}%</span>
         </div>
       </div>
     </div>

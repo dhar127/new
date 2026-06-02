@@ -393,6 +393,24 @@ const SuperAdminTable = () => {
                             </div>
                           </div>
 
+                          {/* Compliance Risk Rationale */}
+                          {r.rationale && (
+                            <div className={`rounded-lg p-4 border border-ink-200 border-l-4 ${
+                              r.severity === 'Critical' ? 'border-l-rose-500 bg-rose-50/20' :
+                              r.severity === 'High' ? 'border-l-orange-500 bg-orange-50/20' :
+                              'border-l-amber-500 bg-amber-50/20'
+                            }`}>
+                              <div className={`text-[10px] font-bold uppercase tracking-widest mb-1.5 ${
+                                r.severity === 'Critical' ? 'text-rose-700' :
+                                r.severity === 'High' ? 'text-orange-700' :
+                                'text-amber-700'
+                              }`}>Compliance Risk Rationale</div>
+                              <p className="text-[12px] text-ink-700 leading-relaxed font-medium">
+                                {r.rationale}
+                              </p>
+                            </div>
+                          )}
+
                           {/* Affected Users */}
                           <div>
                             <div className="text-[10px] font-bold uppercase tracking-widest text-ink-400 mb-2">Affected Users</div>
@@ -423,11 +441,23 @@ const SuperAdminTable = () => {
                               <div className="text-[10px] font-bold uppercase tracking-widest text-ink-400 mb-2">Assigned Roles & Access</div>
                               <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                                 {r.roles.map(role => (
-                                  <div key={role.role} className="bg-white border border-ink-200 rounded-lg px-3 py-2 flex items-start gap-2">
+                                  <div key={role.role} className="bg-white border border-ink-200 rounded-lg px-3.5 py-2.5 flex items-start gap-2.5">
                                     <span className={`font-mono text-[11px] px-2 py-0.5 rounded border shrink-0 mt-0.5 ${roleChipColor(role.role)}`}>
                                       {role.role}
                                     </span>
-                                    <span className="text-[11px] text-ink-500 leading-snug">{role.desc}</span>
+                                    <div className="flex-1 min-w-0">
+                                      <div className="text-[11px] text-ink-700 leading-snug font-medium">{role.desc}</div>
+                                      {role.authObjects && role.authObjects.length > 0 && (
+                                        <div className="mt-2 flex flex-wrap gap-1 items-center">
+                                          <span className="text-[9px] font-extrabold uppercase tracking-widest text-ink-400 mr-1">Auth Objects:</span>
+                                          {role.authObjects.map(obj => (
+                                            <span key={obj} className="font-mono text-[9px] px-1.5 py-0.5 rounded bg-ink-100 text-ink-700 border border-ink-200/60 font-semibold shadow-sm">
+                                              {obj}
+                                            </span>
+                                          ))}
+                                        </div>
+                                      )}
+                                    </div>
                                   </div>
                                 ))}
                               </div>
@@ -435,13 +465,7 @@ const SuperAdminTable = () => {
                           )}
 
                           {/* Inspect Profile Button */}
-                          <div className="flex gap-2 pt-3 border-t border-ink-100">
-                            <button className="px-4 py-2.5 rounded-lg bg-brand-600 text-white text-xs font-bold hover:bg-brand-500 transition-colors shadow-sm uppercase tracking-widest">
-                              <Icon name="user" className="w-3.5 h-3.5 inline-block mr-1.5" />
-                              Inspect Full Profile
-                            </button>
-                          </div>
-
+                          
                         </div>
                       </td>
                     </tr>

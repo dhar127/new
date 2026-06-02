@@ -305,14 +305,7 @@ const DrilldownPanel = ({ row, onInspect }) => (
           ))}
         </div>
       </div>
-      <div className="flex flex-col justify-end">
-        <button
-          onClick={() => onInspect(row)}
-          className="rounded-lg bg-brand-600 px-4 py-2 text-xs font-bold text-white hover:bg-brand-500 transition-colors shadow-sm"
-        >
-          Inspect Full Profile
-        </button>
-      </div>
+
     </div>
   </div>
 );

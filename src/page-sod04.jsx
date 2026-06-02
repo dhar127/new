@@ -12,9 +12,9 @@ function ResponseWindowBadge({ urgency, createdDaysAgo }) {
   const isP2 = urgency.includes('P2');
   const deadlineHours = isP1 ? 24 : isP2 ? 48 : 120;
   const deadlineLabel = isP1 ? '24 h window' : isP2 ? '48 h window' : '5 day window';
-  const priorityLabel = isP1 ? 'P1 · Critical Response'
-                      : isP2 ? 'P2 · Urgent Response'
-                      :        'P3 · Standard Response';
+  const priorityLabel = isP1 ? 'Priority 1 · Critical Response'
+                      : isP2 ? 'Priority 2 · Urgent Response'
+                      :        'Priority 3 · Standard Response';
   const elapsedHours  = (createdDaysAgo || 0) * 24;
   const pct           = Math.min((elapsedHours / deadlineHours) * 100, 100);
   const overdueHours  = Math.max(elapsedHours - deadlineHours, 0);
@@ -128,6 +128,21 @@ function downloadRemediationRules(action, profile) {
   URL.revokeObjectURL(link.href);
 }
 
+const getAuthGroups = (user) => {
+  return ['SUPER_USER', 'FI_POSTING', 'MM_ORDERS', 'HR_PAYROLL', 'BASIS_ADMIN']
+           .slice(0, (Math.abs(user.charCodeAt(0)) % 3) + 2);
+};
+
+const getImmediateActions = (urgency) => {
+  if (urgency.includes('P1')) {
+    return ['Review authorizations', 'Escalate to manager', 'Initiate revocation'];
+  } else if (urgency.includes('P2')) {
+    return ['Conduct audit review', 'Notify department head', 'Update security logs'];
+  } else {
+    return ['Schedule policy review', 'Log in change management', 'Verify quarterly compliance'];
+  }
+};
+
 /* ─── User Profile Slide-over ─────────────────────────────────
    Cleaned up: removed Identity Details grid (location/login/
    roles/groups count). Kept Auth Groups chips, Active Violations,
@@ -143,8 +158,7 @@ function UserProfilePanel({ action, onClose }) {
     role:       ['Senior Analyst', 'Process Owner', 'SAP Admin', 'Controller', 'Manager'][Math.abs(action.user.charCodeAt(1) || 0) % 5],
     licenseType:['Professional', 'Limited Professional', 'Employee'][Math.abs(action.user.charCodeAt(3) || 0) % 3],
     violations: [action, ...(window.MOCK.IMMEDIATE_ACTIONS || []).filter(a => a.user === action.user && a.id !== action.id).slice(0, 2)],
-    authGroups: ['SUPER_USER', 'FI_POSTING', 'MM_ORDERS', 'HR_PAYROLL', 'BASIS_ADMIN']
-                  .slice(0, (Math.abs(action.user.charCodeAt(0)) % 3) + 2),
+    authGroups: getAuthGroups(action.user),
   };
 
   const tier = action.urgency.includes('P1') ? 'P1' : action.urgency.includes('P2') ? 'P2' : 'P3';
@@ -216,7 +230,7 @@ function UserProfilePanel({ action, onClose }) {
           <div>
             <div className="text-[10px] font-bold uppercase tracking-widest text-ink-400 mb-2">Immediate Action Required</div>
             <div className="flex flex-wrap gap-2">
-              {['Review authorizations', 'Escalate to manager', 'Initiate revocation'].map((task, i) => (
+              {getImmediateActions(action.urgency).map((task, i) => (
                 <span key={i} className="font-mono text-[10px] px-2.5 py-1.5 rounded-lg bg-amber-50 text-amber-700 ring-1 ring-amber-200 font-semibold">
                   {task}
                 </span>
@@ -286,10 +300,22 @@ window.Sod04Page = function () {
   const [actions, setActions]             = useState(enriched);
   const [searchTerm, setSearchTerm]       = useState('');
   const [statusFilter, setStatusFilter]   = useState('All');
+  const [userFilter, setUserFilter]       = useState(null);
+  const [actionFilter, setActionFilter]   = useState(null);
+  const [authGroupFilter, setAuthGroupFilter] = useState(null);
   const [profileAction, setProfileAction] = useState(null);
 
   const filteredActions = useMemo(() => {
     let f = statusFilter === 'All' ? actions : actions.filter(a => a.status === statusFilter);
+    if (userFilter) {
+      f = f.filter(a => a.user === userFilter);
+    }
+    if (actionFilter) {
+      f = f.filter(a => getImmediateActions(a.urgency).includes(actionFilter));
+    }
+    if (authGroupFilter) {
+      f = f.filter(a => getAuthGroups(a.user).includes(authGroupFilter));
+    }
     if (searchTerm) {
       const q = searchTerm.toLowerCase();
       f = f.filter(a =>
@@ -299,7 +325,7 @@ window.Sod04Page = function () {
       );
     }
     return f;
-  }, [actions, searchTerm, statusFilter]);
+  }, [actions, searchTerm, statusFilter, userFilter, actionFilter, authGroupFilter]);
 
   const updateStatus = (id, newStatus) =>
     setActions(prev => prev.map(a => a.id === id ? { ...a, status: newStatus } : a));
@@ -312,6 +338,21 @@ window.Sod04Page = function () {
     return hrs > dlHrs && a.status !== 'Resolved';
   }).length;
 
+  const uniqueUsers = useMemo(() => {
+    const set = new Set((IMMEDIATE_ACTIONS || []).map(a => a.user));
+    return Array.from(set);
+  }, []);
+
+  const hasFilters = !!(searchTerm || statusFilter !== 'All' || userFilter || actionFilter || authGroupFilter);
+
+  const clear = () => {
+    setStatusFilter('All');
+    setSearchTerm('');
+    setUserFilter(null);
+    setActionFilter(null);
+    setAuthGroupFilter(null);
+  };
+
   return (
     <div data-screen-label="SOD-04 Immediate Actions" className="space-y-6 px-4 md:px-7 py-6">
       <window.DetailHeader
@@ -323,7 +364,7 @@ window.Sod04Page = function () {
       {/* KPI bar */}
       <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
         <window.StatCard label="Total Urgent"   value={actions.length} icon="flame" />
-        <window.StatCard severity="Critical"    label="P1 · Must resolve in 24 h" value={actions.filter(a => a.urgency.includes('P1')).length} deltaInvertGood icon="bell" />
+        <window.StatCard severity="Critical"    label="Priority 1 · Must resolve in 24 h" value={actions.filter(a => a.urgency.includes('P1')).length} deltaInvertGood icon="bell" />
         <window.StatCard severity="High"        label="Currently Open"            value={actions.filter(a => a.status === 'Open').length} deltaInvertGood icon="x" />
         <window.StatCard severity={countOverdue > 0 ? 'Critical' : 'Good'} label="Past Deadline" value={countOverdue} deltaInvertGood icon="flame" />
       </div>
@@ -333,9 +374,9 @@ window.Sod04Page = function () {
         <div className="text-[10px] font-bold uppercase tracking-widest text-ink-400 mb-3">Response Window Guide</div>
         <div className="grid grid-cols-3 gap-4">
           {[
-            { code: 'P1', window: '24 hours',        desc: 'Immediate financial fraud or SOX audit risk. Escalate to security lead.',   color: 'text-rose-700',   bg: 'bg-rose-50',   ring: 'ring-rose-200'   },
-            { code: 'P2', window: '48 hours',        desc: 'High operational risk. Can cause compliance breach if unresolved.',         color: 'text-orange-700', bg: 'bg-orange-50', ring: 'ring-orange-200' },
-            { code: 'P3', window: '5 business days', desc: 'Standard resolution cycle. Log in change management.',                     color: 'text-amber-700',  bg: 'bg-amber-50',  ring: 'ring-amber-200'  },
+            { code: 'Priority 1', window: '24 hours',        desc: 'Immediate financial fraud or SOX audit risk. Escalate to security lead.',   color: 'text-rose-700',   bg: 'bg-rose-50',   ring: 'ring-rose-200'   },
+            { code: 'Priority 2', window: '48 hours',        desc: 'High operational risk. Can cause compliance breach if unresolved.',         color: 'text-orange-700', bg: 'bg-orange-50', ring: 'ring-orange-200' },
+            { code: 'Priority 3', window: '5 business days', desc: 'Standard resolution cycle. Log in change management.',                     color: 'text-amber-700',  bg: 'bg-amber-50',  ring: 'ring-amber-200'  },
           ].map(p => (
             <div key={p.code} className={`rounded-lg px-3 py-2.5 ${p.bg} ring-1 ring-inset ${p.ring}`}>
               <div className="flex items-center gap-2 mb-1">
@@ -348,38 +389,51 @@ window.Sod04Page = function () {
         </div>
       </div>
 
-      {/* Search & Filter */}
-      <div className="space-y-3">
-        <div className="relative">
-          <window.Icon name="search" className="absolute left-3 top-3 w-4 h-4 text-ink-400" />
-          <input
-            type="text"
-            placeholder="Search by ID, description, or user..."
-            value={searchTerm}
-            onChange={e => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 rounded-lg border border-ink-200 text-ink-900 placeholder-ink-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
-          />
-        </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="text-xs font-bold uppercase tracking-widest text-ink-400">Filter:</span>
-          {['All', 'Open', 'In Progress', 'Resolved'].map(s => (
-            <button
-              key={s}
-              onClick={() => setStatusFilter(s)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                statusFilter === s
-                  ? 'bg-brand-600 text-white'
-                  : 'bg-white text-ink-600 ring-1 ring-ink-200 hover:bg-ink-50'
-              }`}
-            >
-              {s}
-            </button>
-          ))}
-          <span className="ml-auto text-[11px] text-ink-400 font-medium">
-            {filteredActions.length} action{filteredActions.length !== 1 ? 's' : ''} found
-          </span>
-        </div>
-      </div>
+      {/* Search & Filter Bar */}
+      <window.FilterBar onClear={clear} hasFilters={hasFilters}>
+        <window.Select 
+          value={statusFilter === 'All' ? '' : statusFilter} 
+          onChange={val => setStatusFilter(val || 'All')} 
+          options={statusOptions} 
+          placeholder="All Statuses" 
+        />
+        <window.Select 
+          value={userFilter} 
+          onChange={setUserFilter} 
+          options={uniqueUsers} 
+          placeholder="All Affected Users" 
+        />
+        <window.Select 
+          value={actionFilter} 
+          onChange={setActionFilter} 
+          options={[
+            'Review authorizations',
+            'Escalate to manager',
+            'Initiate revocation',
+            'Conduct audit review',
+            'Notify department head',
+            'Update security logs',
+            'Schedule policy review',
+            'Log in change management',
+            'Verify quarterly compliance'
+          ]} 
+          placeholder="All Immediate Actions" 
+        />
+        <window.Select 
+          value={authGroupFilter} 
+          onChange={setAuthGroupFilter} 
+          options={['SUPER_USER', 'FI_POSTING', 'MM_ORDERS', 'HR_PAYROLL', 'BASIS_ADMIN']} 
+          placeholder="All Auth Groups" 
+        />
+        <window.SearchInput 
+          value={searchTerm} 
+          onChange={setSearchTerm} 
+          placeholder="Search by ID, desc, user…" 
+        />
+        <span className="ml-auto text-[11px] text-ink-400 font-semibold uppercase tracking-wider">
+          {filteredActions.length} action{filteredActions.length !== 1 ? 's' : ''} found
+        </span>
+      </window.FilterBar>
 
       {/* Action Queue */}
       <window.Section title="Action Queue" action={<window.ExportButton label="Download Actions" size="sm" />}>
@@ -391,6 +445,9 @@ window.Sod04Page = function () {
                 <window.Th>Violation Description</window.Th>
                 <window.Th>Business Risk</window.Th>
                 <window.Th>Required Action</window.Th>
+                <window.Th>Affected Users</window.Th>
+                <window.Th>Immediate Action Required</window.Th>
+                <window.Th>Authorization Groups</window.Th>
                 <window.Th>Regulatory Rules</window.Th>
                 <window.Th>Response Window</window.Th>
                 <window.Th>Status</window.Th>
@@ -398,66 +455,103 @@ window.Sod04Page = function () {
               </tr>
             </thead>
             <tbody className="divide-y divide-ink-100">
-              {filteredActions.map(action => (
-                <tr key={action.id} className="row-hover align-top">
-                  {/* Identity */}
-                  <td className="px-4 py-3.5">
-                    <div className="font-mono font-bold text-ink-900 text-[12px]">{action.id}</div>
-                    <div className="text-[11px] text-ink-500 mt-0.5">{action.user}</div>
-                  </td>
+              {filteredActions.map(action => {
+                const authGroups = getAuthGroups(action.user);
+                const immediateActions = getImmediateActions(action.urgency);
+                return (
+                  <tr key={action.id} className="row-hover align-top">
+                    {/* Identity */}
+                    <td className="px-4 py-3.5">
+                      <div className="font-mono font-bold text-ink-900 text-[12px]">{action.id}</div>
+                      <div className="text-[11px] text-ink-500 mt-0.5">{action.user}</div>
+                    </td>
 
-                  {/* Violation */}
-                  <td className="px-4 py-3.5 max-w-xs">
-                    <div className="font-bold text-ink-900 leading-snug">{action.desc}</div>
-                  </td>
+                    {/* Violation */}
+                    <td className="px-4 py-3.5 max-w-xs">
+                      <div className="font-bold text-ink-900 leading-snug">{action.desc}</div>
+                    </td>
 
-                  {/* Risk */}
-                  <td className="px-4 py-3.5 max-w-[180px]">
-                    <span className="text-ink-600 text-[12px] leading-snug">{action.risk}</span>
-                  </td>
+                    {/* Risk */}
+                    <td className="px-4 py-3.5 max-w-[180px]">
+                      <span className="text-ink-600 text-[12px] leading-snug">{action.risk}</span>
+                    </td>
 
-                  {/* Required Action */}
-                  <td className="px-4 py-3.5 max-w-xs">
-                    <div className="text-ink-800 text-[12px] leading-snug">{action.action}</div>
-                  </td>
+                    {/* Required Action */}
+                    <td className="px-4 py-3.5 max-w-xs">
+                      <div className="text-ink-800 text-[12px] leading-snug">{action.action}</div>
+                    </td>
 
-                  {/* Regulatory Rules — new column */}
-                  <td className="px-4 py-3.5">
-                    <RegulatoryRulesBadge urgency={action.urgency} />
-                  </td>
+                    {/* Affected Users */}
+                    <td className="px-4 py-3.5">
+                      <div className="flex flex-wrap gap-1">
+                        {[action.user].map(u => (
+                          <span key={u} className="font-mono text-[10px] px-2 py-0.5 rounded bg-rose-50 text-rose-700 ring-1 ring-rose-200 font-semibold whitespace-nowrap">
+                            {u}
+                          </span>
+                        ))}
+                      </div>
+                    </td>
 
-                  {/* Response Window */}
-                  <td className="px-4 py-3.5">
-                    <ResponseWindowBadge urgency={action.urgency} createdDaysAgo={action.createdDaysAgo} />
-                  </td>
+                    {/* Immediate Action Required */}
+                    <td className="px-4 py-3.5">
+                      <div className="flex flex-col gap-1 min-w-[150px]">
+                        {immediateActions.map((task, idx) => (
+                          <span key={idx} className="text-[10px] px-2 py-0.5 rounded bg-amber-50 text-amber-800 ring-1 ring-amber-200/60 font-semibold leading-tight text-center">
+                            {task}
+                          </span>
+                        ))}
+                      </div>
+                    </td>
 
-                  {/* Status */}
-                  <td className="px-4 py-3.5">
-                    <select
-                      value={action.status}
-                      onChange={e => updateStatus(action.id, e.target.value)}
-                      className={`text-[11px] font-bold uppercase tracking-widest p-1.5 rounded ring-1 ring-inset border-none outline-none focus:ring-2 ${
-                        action.status === 'Resolved'    ? 'bg-emerald-50 text-emerald-700 ring-emerald-200' :
-                        action.status === 'In Progress' ? 'bg-blue-50 text-blue-700 ring-blue-200'         :
-                                                          'bg-rose-50 text-rose-700 ring-rose-200'
-                      }`}
-                    >
-                      {statusOptions.map(s => <option key={s} value={s}>{s}</option>)}
-                    </select>
-                  </td>
+                    {/* Authorization Groups */}
+                    <td className="px-4 py-3.5">
+                      <div className="flex flex-wrap gap-1 max-w-[150px]">
+                        {authGroups.map(g => (
+                          <span key={g} className="text-[10px] font-bold font-mono bg-ink-100 text-ink-700 ring-1 ring-ink-200 px-1.5 py-0.5 rounded whitespace-nowrap">
+                            {g}
+                          </span>
+                        ))}
+                      </div>
+                    </td>
 
-                  {/* Inspect */}
-                  <td className="px-4 py-3.5">
-                    <button
-                      onClick={() => setProfileAction(action)}
-                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-brand-50 text-brand-700 ring-1 ring-brand-200 text-[11px] font-bold hover:bg-brand-100 transition-colors whitespace-nowrap"
-                    >
-                      <window.Icon name="user" className="w-3.5 h-3.5" strokeWidth={2} />
-                      Inspect
-                    </button>
-                  </td>
-                </tr>
-              ))}
+                    {/* Regulatory Rules */}
+                    <td className="px-4 py-3.5">
+                      <RegulatoryRulesBadge urgency={action.urgency} />
+                    </td>
+
+                    {/* Response Window */}
+                    <td className="px-4 py-3.5">
+                      <ResponseWindowBadge urgency={action.urgency} createdDaysAgo={action.createdDaysAgo} />
+                    </td>
+
+                    {/* Status */}
+                    <td className="px-4 py-3.5">
+                      <select
+                        value={action.status}
+                        onChange={e => updateStatus(action.id, e.target.value)}
+                        className={`text-[11px] font-bold uppercase tracking-widest p-1.5 rounded ring-1 ring-inset border-none outline-none focus:ring-2 ${
+                          action.status === 'Resolved'    ? 'bg-emerald-50 text-emerald-700 ring-emerald-200' :
+                          action.status === 'In Progress' ? 'bg-blue-50 text-blue-700 ring-blue-200'         :
+                                                            'bg-rose-50 text-rose-700 ring-rose-200'
+                        }`}
+                      >
+                        {statusOptions.map(s => <option key={s} value={s}>{s}</option>)}
+                      </select>
+                    </td>
+
+                    {/* Inspect */}
+                    <td className="px-4 py-3.5">
+                      <button
+                        onClick={() => setProfileAction(action)}
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-brand-50 text-brand-700 ring-1 ring-brand-200 text-[11px] font-bold hover:bg-brand-100 transition-colors whitespace-nowrap"
+                      >
+                        <window.Icon name="user" className="w-3.5 h-3.5" strokeWidth={2} />
+                        Inspect
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
 

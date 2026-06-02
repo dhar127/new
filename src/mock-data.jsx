@@ -34,10 +34,8 @@ const KPIS = {
 };
 
 const COMPLIANCE = {
-  maturityScore: 72,           // out of 100
-  benchmarkSAPGRC: 81,         // SAP GRC industry baseline
-  industryPeer: 68,            // chemicals sector median
   maturityLevel: 'Managed',    // Initial / Repeatable / Defined / Managed / Optimized
+  industryPeer: 68,            // chemicals sector median
   trend: [58, 61, 60, 63, 66, 68, 70, 72],
   systemicWeaknesses: [
     'Concentration of admin authority in IT Compliance group',
@@ -45,25 +43,164 @@ const COMPLIANCE = {
     'OTC role boundaries blurred across SD + FI',
     'Service accounts without owner attestation',
   ],
+  /*
+   * Weighted Compliance Score Formula:
+   *   Score = (1 − Σ Weighted Unmitigated / Σ Weighted Detected) × 100
+   *   Weights: Critical=1.0, High=0.6, Medium=0.3, Low=0.1
+   *
+   * detected = total risks found in the GRC rule set
+   * unmitigated = open risks still needing resolution
+   */
+  detected: {
+    critical: 47,
+    high: 186,
+    medium: 412,
+    low: 598,
+  },
+  unmitigated: {
+    critical: 18,
+    high: 72,
+    medium: 142,
+    low: 98,
+  },
+  /* Total unique users affected by at least one SoD violation */
+  affectedUsers: 287,
+  totalUsersScanned: 4287,
 };
 
 const PROCESS_AREAS = ['Finance', 'Procurement', 'OTC', 'HR', 'IT'];
 const SEVERITIES = ['Critical', 'High', 'Medium', 'Low'];
 const TEAMS = ['SAP Basis Team', 'IT Compliance', 'Finance Risk', 'SAP Security Team'];
 
+/*
+ * Risk Score Formula (per user per finding):
+ *   riskScore = severityBase + (conflictingRoles × 8) + tenureOffset
+ *   where severityBase: Critical=70, High=50, Medium=30
+ *         conflictingRoles: number of SoD-conflicting roles held (1-4)
+ *         tenureOffset: days since last access review / 30 (capped at 20)
+ *   Maximum: 100
+ */
 const CRITICAL_FINDINGS = [
-  { id: 'V-1042', desc: 'User holds Create Vendor + Approve Payment authority', users: 7, severity: 'Critical', area: 'Procurement', action: 'Revoke ZFI_BR_AP_PAYMENT from BCARRIER, APOCHE, BGILL' },
-  { id: 'V-1058', desc: 'Full OTC cycle control (Order → Bill → Collect) by single user', users: 4, severity: 'Critical', area: 'OTC', action: 'Split SD billing authority — redesign role ZSD_BR_BILLING_CREATE' },
-  { id: 'V-1063', desc: 'GL Posting + Bank Reconciliation conflict via ZFI_BR_GL_POSTING', users: 11, severity: 'Critical', area: 'Finance', action: 'Implement mitigating control · daily reviewer log' },
-  { id: 'V-1071', desc: 'PFCG role-admin combined with end-user transaction access', users: 3, severity: 'Critical', area: 'IT', action: 'Revoke PFCG from JSMITH_LC, KPARK_LC, HSCHRODE' },
-  { id: 'V-1082', desc: 'HR Payroll Maintain + Approve assigned to same user', users: 2, severity: 'High', area: 'HR', action: 'Reassign approval to HR Compliance group' },
-  { id: 'V-1090', desc: 'Firefighter ID active >180 days without re-attestation', users: 14, severity: 'High', area: 'IT', action: 'Force expiry — set 30-day max per Lotte policy' },
-  { id: 'V-1094', desc: 'PO Create + PO Release threshold exceeds user grade authority', users: 9, severity: 'High', area: 'Procurement', action: 'Redesign ZPM_BR_PROCUREMENT_1720 release strategy' },
-  { id: 'V-1101', desc: 'F110 Auto-Payment Run runnable by 5 non-treasury users', users: 5, severity: 'High', area: 'Finance', action: 'Restrict F110 to Treasury role pool' },
-  { id: 'V-1112', desc: 'Customer Master Maintain + Sales Order Release', users: 6, severity: 'Medium', area: 'OTC', action: 'Monitor — flag for quarterly review' },
-  { id: 'V-1124', desc: 'Background user RFC_BATCH_PI holds SAP_ALL equivalent', users: 1, severity: 'Critical', area: 'IT', action: 'Replace with scoped profile, rotate credentials' },
-  { id: 'V-1131', desc: 'Goods Receipt + Invoice Verification by same user', users: 18, severity: 'Medium', area: 'Procurement', action: 'Enable three-way match enforcement in MIRO' },
-  { id: 'V-1144', desc: 'Vendor Bank Detail edit + Payment Block remove', users: 4, severity: 'High', area: 'Finance', action: 'Move bank-detail edit to Vendor Master team only' },
+  { id: 'V-1042', desc: 'User holds Create Vendor + Approve Payment authority', users: 7, severity: 'Critical', area: 'Procurement', action: 'Revoke ZFI_BR_AP_PAYMENT from BCARRIER, APOCHE, BGILL',
+    affectedUsersList: [
+      { userId: 'BCARRIER', name: 'Brian Carrier',    dept: 'Finance',     roles: 3, riskScore: 98 },
+      { userId: 'APOCHE',   name: 'Alain Poche',      dept: 'Procurement', roles: 4, riskScore: 94 },
+      { userId: 'BGILL',    name: 'Baljinder Gill',   dept: 'Procurement', roles: 3, riskScore: 91 },
+      { userId: 'BHOOPER',  name: 'Beth Hooper',      dept: 'Finance',     roles: 2, riskScore: 88 },
+      { userId: 'DMARTINEZ',name: 'Diego Martinez',    dept: 'Procurement', roles: 2, riskScore: 86 },
+      { userId: 'EWILSON',  name: 'Emma Wilson',      dept: 'Finance',     roles: 2, riskScore: 82 },
+      { userId: 'LBAKER',   name: 'Lisa Baker',       dept: 'Finance',     roles: 2, riskScore: 78 },
+    ] },
+  { id: 'V-1058', desc: 'Full OTC cycle control (Order → Bill → Collect) by single user', users: 4, severity: 'Critical', area: 'OTC', action: 'Split SD billing authority — redesign role ZSD_BR_BILLING_CREATE',
+    affectedUsersList: [
+      { userId: 'YKIM',     name: 'Yu-jin Kim',       dept: 'Sales',       roles: 4, riskScore: 96 },
+      { userId: 'APOCHE',   name: 'Alain Poche',      dept: 'Procurement', roles: 3, riskScore: 91 },
+      { userId: 'SCHEN_LC', name: 'Shuhua Chen',      dept: 'Sales',       roles: 2, riskScore: 84 },
+      { userId: 'RTHOMPSON',name: 'Ryan Thompson',     dept: 'Sales',       roles: 2, riskScore: 80 },
+    ] },
+  { id: 'V-1063', desc: 'GL Posting + Bank Reconciliation conflict via ZFI_BR_GL_POSTING', users: 11, severity: 'Critical', area: 'Finance', action: 'Implement mitigating control · daily reviewer log',
+    affectedUsersList: [
+      { userId: 'BCARRIER', name: 'Brian Carrier',    dept: 'Finance',     roles: 3, riskScore: 98 },
+      { userId: 'HSCHRODE', name: 'Helga Schroder',   dept: 'Finance',     roles: 2, riskScore: 90 },
+      { userId: 'LBAKER',   name: 'Lisa Baker',       dept: 'Finance',     roles: 2, riskScore: 86 },
+      { userId: 'EWILSON',  name: 'Emma Wilson',      dept: 'Finance',     roles: 2, riskScore: 84 },
+      { userId: 'MJONES',   name: 'Mary Jones',       dept: 'HR',          roles: 2, riskScore: 82 },
+      { userId: 'BGILL',    name: 'Baljinder Gill',   dept: 'Procurement', roles: 2, riskScore: 80 },
+      { userId: 'BHOOPER',  name: 'Beth Hooper',      dept: 'Finance',     roles: 1, riskScore: 78 },
+      { userId: 'DMARTINEZ',name: 'Diego Martinez',    dept: 'Procurement', roles: 1, riskScore: 76 },
+      { userId: 'APOCHE',   name: 'Alain Poche',      dept: 'Procurement', roles: 1, riskScore: 75 },
+      { userId: 'SCHEN_LC', name: 'Shuhua Chen',      dept: 'IT Basis',    roles: 1, riskScore: 74 },
+      { userId: 'RTHOMPSON',name: 'Ryan Thompson',     dept: 'IT',          roles: 1, riskScore: 72 },
+    ] },
+  { id: 'V-1071', desc: 'PFCG role-admin combined with end-user transaction access', users: 3, severity: 'Critical', area: 'IT', action: 'Revoke PFCG from JSMITH_LC, KPARK_LC, HSCHRODE',
+    affectedUsersList: [
+      { userId: 'JSMITH_LC',name: 'Jane Smith',        dept: 'IT Basis',    roles: 3, riskScore: 94 },
+      { userId: 'KPARK_LC', name: 'Kyung-soo Park',    dept: 'IT Basis',    roles: 3, riskScore: 92 },
+      { userId: 'HSCHRODE', name: 'Helga Schroder',    dept: 'Finance',     roles: 2, riskScore: 85 },
+    ] },
+  { id: 'V-1082', desc: 'HR Payroll Maintain + Approve assigned to same user', users: 2, severity: 'High', area: 'HR', action: 'Reassign approval to HR Compliance group',
+    affectedUsersList: [
+      { userId: 'MJONES',   name: 'Mary Jones',        dept: 'HR',          roles: 3, riskScore: 79 },
+      { userId: 'RTHOMPSON',name: 'Ryan Thompson',      dept: 'HR',          roles: 2, riskScore: 68 },
+    ] },
+  { id: 'V-1090', desc: 'Firefighter ID active >180 days without re-attestation', users: 14, severity: 'High', area: 'IT', action: 'Force expiry — set 30-day max per Lotte policy',
+    affectedUsersList: [
+      { userId: 'FF_FIN_01',name: 'Firefighter Fin-01', dept: 'Finance',     roles: 2, riskScore: 76 },
+      { userId: 'FF_FIN_02',name: 'Firefighter Fin-02', dept: 'Finance',     roles: 2, riskScore: 74 },
+      { userId: 'FF_FIN_03',name: 'Firefighter Fin-03', dept: 'Finance',     roles: 2, riskScore: 72 },
+      { userId: 'FF_IT_01', name: 'Firefighter IT-01',  dept: 'IT Basis',    roles: 2, riskScore: 71 },
+      { userId: 'FF_IT_02', name: 'Firefighter IT-02',  dept: 'IT Basis',    roles: 1, riskScore: 68 },
+      { userId: 'FF_HR_01', name: 'Firefighter HR-01',  dept: 'HR',          roles: 2, riskScore: 67 },
+      { userId: 'FF_MM_01', name: 'Firefighter MM-01',  dept: 'Procurement', roles: 1, riskScore: 65 },
+      { userId: 'FF_MM_02', name: 'Firefighter MM-02',  dept: 'Procurement', roles: 1, riskScore: 64 },
+      { userId: 'FF_SD_01', name: 'Firefighter SD-01',  dept: 'Sales',       roles: 1, riskScore: 63 },
+      { userId: 'FF_SD_02', name: 'Firefighter SD-02',  dept: 'Sales',       roles: 1, riskScore: 62 },
+      { userId: 'FF_FIN_04',name: 'Firefighter Fin-04', dept: 'Finance',     roles: 1, riskScore: 61 },
+      { userId: 'FF_FIN_05',name: 'Firefighter Fin-05', dept: 'Finance',     roles: 1, riskScore: 60 },
+      { userId: 'FF_IT_03', name: 'Firefighter IT-03',  dept: 'IT Basis',    roles: 1, riskScore: 58 },
+      { userId: 'FF_BC_01', name: 'Firefighter BC-01',  dept: 'IT Basis',    roles: 1, riskScore: 56 },
+    ] },
+  { id: 'V-1094', desc: 'PO Create + PO Release threshold exceeds user grade authority', users: 9, severity: 'High', area: 'Procurement', action: 'Redesign ZPM_BR_PROCUREMENT_1720 release strategy',
+    affectedUsersList: [
+      { userId: 'BGILL',    name: 'Baljinder Gill',    dept: 'Procurement', roles: 3, riskScore: 79 },
+      { userId: 'DMARTINEZ',name: 'Diego Martinez',     dept: 'Procurement', roles: 2, riskScore: 74 },
+      { userId: 'APOCHE',   name: 'Alain Poche',       dept: 'Procurement', roles: 2, riskScore: 72 },
+      { userId: 'KPARK_LC', name: 'Kyung-soo Park',    dept: 'IT Basis',    roles: 2, riskScore: 70 },
+      { userId: 'BHOOPER',  name: 'Beth Hooper',       dept: 'Finance',     roles: 1, riskScore: 66 },
+      { userId: 'SCHEN_LC', name: 'Shuhua Chen',       dept: 'Procurement', roles: 1, riskScore: 64 },
+      { userId: 'LBAKER',   name: 'Lisa Baker',        dept: 'Finance',     roles: 1, riskScore: 62 },
+      { userId: 'EWILSON',  name: 'Emma Wilson',       dept: 'Finance',     roles: 1, riskScore: 60 },
+      { userId: 'RTHOMPSON',name: 'Ryan Thompson',      dept: 'IT',          roles: 1, riskScore: 58 },
+    ] },
+  { id: 'V-1101', desc: 'F110 Auto-Payment Run runnable by 5 non-treasury users', users: 5, severity: 'High', area: 'Finance', action: 'Restrict F110 to Treasury role pool',
+    affectedUsersList: [
+      { userId: 'JSMITH_LC',name: 'Jane Smith',         dept: 'IT Basis',    roles: 2, riskScore: 74 },
+      { userId: 'BCARRIER', name: 'Brian Carrier',      dept: 'Finance',     roles: 2, riskScore: 72 },
+      { userId: 'HSCHRODE', name: 'Helga Schroder',     dept: 'Finance',     roles: 1, riskScore: 68 },
+      { userId: 'LBAKER',   name: 'Lisa Baker',         dept: 'Finance',     roles: 1, riskScore: 64 },
+      { userId: 'BGILL',    name: 'Baljinder Gill',     dept: 'Procurement', roles: 1, riskScore: 60 },
+    ] },
+  { id: 'V-1112', desc: 'Customer Master Maintain + Sales Order Release', users: 6, severity: 'Medium', area: 'OTC', action: 'Monitor — flag for quarterly review',
+    affectedUsersList: [
+      { userId: 'YKIM',     name: 'Yu-jin Kim',         dept: 'Sales',       roles: 2, riskScore: 52 },
+      { userId: 'APOCHE',   name: 'Alain Poche',        dept: 'Procurement', roles: 2, riskScore: 48 },
+      { userId: 'SCHEN_LC', name: 'Shuhua Chen',        dept: 'Sales',       roles: 1, riskScore: 44 },
+      { userId: 'RTHOMPSON',name: 'Ryan Thompson',       dept: 'Sales',       roles: 1, riskScore: 42 },
+      { userId: 'EWILSON',  name: 'Emma Wilson',        dept: 'Finance',     roles: 1, riskScore: 40 },
+      { userId: 'DMARTINEZ',name: 'Diego Martinez',      dept: 'Procurement', roles: 1, riskScore: 38 },
+    ] },
+  { id: 'V-1124', desc: 'Background user RFC_BATCH_PI holds SAP_ALL equivalent', users: 1, severity: 'Critical', area: 'IT', action: 'Replace with scoped profile, rotate credentials',
+    affectedUsersList: [
+      { userId: 'RFC_BATCH_PI', name: 'RFC Batch PI (Service)', dept: 'IT Basis', roles: 4, riskScore: 100 },
+    ] },
+  { id: 'V-1131', desc: 'Goods Receipt + Invoice Verification by same user', users: 18, severity: 'Medium', area: 'Procurement', action: 'Enable three-way match enforcement in MIRO',
+    affectedUsersList: [
+      { userId: 'BGILL',    name: 'Baljinder Gill',     dept: 'Procurement', roles: 2, riskScore: 50 },
+      { userId: 'DMARTINEZ',name: 'Diego Martinez',      dept: 'Procurement', roles: 2, riskScore: 48 },
+      { userId: 'BHOOPER',  name: 'Beth Hooper',        dept: 'Finance',     roles: 1, riskScore: 46 },
+      { userId: 'APOCHE',   name: 'Alain Poche',        dept: 'Procurement', roles: 1, riskScore: 44 },
+      { userId: 'SCHEN_LC', name: 'Shuhua Chen',        dept: 'Procurement', roles: 1, riskScore: 42 },
+      { userId: 'EWILSON',  name: 'Emma Wilson',        dept: 'Finance',     roles: 1, riskScore: 40 },
+      { userId: 'LBAKER',   name: 'Lisa Baker',         dept: 'Finance',     roles: 1, riskScore: 39 },
+      { userId: 'RTHOMPSON',name: 'Ryan Thompson',       dept: 'IT',          roles: 1, riskScore: 38 },
+      { userId: 'MM_USER01',name: 'Kim Soojin',         dept: 'Procurement', roles: 1, riskScore: 37 },
+      { userId: 'MM_USER02',name: 'Park Jihoon',        dept: 'Procurement', roles: 1, riskScore: 36 },
+      { userId: 'MM_USER03',name: 'Lee Minji',          dept: 'Procurement', roles: 1, riskScore: 36 },
+      { userId: 'MM_USER04',name: 'Choi Seungho',       dept: 'Procurement', roles: 1, riskScore: 35 },
+      { userId: 'MM_USER05',name: 'Yoon Haena',         dept: 'Procurement', roles: 1, riskScore: 35 },
+      { userId: 'MM_USER06',name: 'Jung Taeyoung',      dept: 'Warehouse',   roles: 1, riskScore: 34 },
+      { userId: 'MM_USER07',name: 'Han Sooyeon',        dept: 'Warehouse',   roles: 1, riskScore: 34 },
+      { userId: 'MM_USER08',name: 'Kang Donghyun',      dept: 'Warehouse',   roles: 1, riskScore: 33 },
+      { userId: 'MM_USER09',name: 'Lim Eunji',          dept: 'Warehouse',   roles: 1, riskScore: 32 },
+      { userId: 'MM_USER10',name: 'Shin Woojin',        dept: 'Procurement', roles: 1, riskScore: 31 },
+    ] },
+  { id: 'V-1144', desc: 'Vendor Bank Detail edit + Payment Block remove', users: 4, severity: 'High', area: 'Finance', action: 'Move bank-detail edit to Vendor Master team only',
+    affectedUsersList: [
+      { userId: 'BHOOPER',  name: 'Beth Hooper',        dept: 'Finance',     roles: 2, riskScore: 76 },
+      { userId: 'BGILL',    name: 'Baljinder Gill',     dept: 'Procurement', roles: 2, riskScore: 72 },
+      { userId: 'EWILSON',  name: 'Emma Wilson',        dept: 'Finance',     roles: 1, riskScore: 66 },
+      { userId: 'LBAKER',   name: 'Lisa Baker',         dept: 'Finance',     roles: 1, riskScore: 62 },
+    ] },
 ];
 
 const IMMEDIATE_ACTIONS = [
@@ -176,89 +313,104 @@ const SUPER_ADMIN_RECOMMENDATIONS = ['Revoke', 'Redesign', 'Monitor'];
 
 const SUPER_ADMIN_ROWS = [
   { user: 'BCARRIER', name: 'Brian Carrier',     userId: 'BC4087', indicator: 'SAP_ALL equivalent', score: 98, severity: 'Critical', recommendation: 'Revoke',   systems: ['LCKR-PRD-01', 'LCKR-DEV-01'], status: 'Open', assignee: null, lastChange: '2026-04-18',
+    rationale: 'Holds SAP_ALL equivalent profiles granting unrestricted transactional, structural, and table access across production. Circumvents all segregation of duties controls.',
     roles: [
-      { role: 'SAP_ALL', desc: 'Unrestricted SAP system authorization — production profile' },
-      { role: 'ZBC_BR_SYSTEM_ADMIN', desc: 'Basis admin · client maintenance, transports, RFC' },
-      { role: 'ZFI_BR_GL_POSTING', desc: 'GL document posting · all company codes' },
-      { role: 'ZFI_BR_AP_PAYMENT', desc: 'Vendor payment approval up to $10M' },
+      { role: 'SAP_ALL', desc: 'Unrestricted SAP system authorization — production profile', authObjects: ['S_TCODE', 'S_TABU_DIS', 'S_PROGRAM', 'S_USER_GRP'] },
+      { role: 'ZBC_BR_SYSTEM_ADMIN', desc: 'Basis admin · client maintenance, transports, RFC', authObjects: ['S_ADMI_FCD', 'S_RZL_ADM', 'S_TABU_DIS', 'S_USER_GRP'] },
+      { role: 'ZFI_BR_GL_POSTING', desc: 'GL document posting · all company codes', authObjects: ['F_BKPF_BUK', 'F_BKPF_KOA'] },
+      { role: 'ZFI_BR_AP_PAYMENT', desc: 'Vendor payment approval up to $10M', authObjects: ['F_REGU_BUK', 'F_REGU_KOA'] },
     ] },
   { user: 'JSMITH_LC', name: 'Jane Smith',       userId: 'JS2104', indicator: 'PFCG + SU01 combo',   score: 94, severity: 'Critical', recommendation: 'Revoke',   systems: ['LCKR-PRD-01'], status: 'In Progress', assignee: 'SAP Security Team', lastChange: '2026-04-22',
+    rationale: 'Combines role maintenance (PFCG) with user administration (SU01). Allows creating backdoor credentials and self-assigning high-privilege profiles without dual approval.',
     roles: [
-      { role: 'PFCG_ROLE_MAINTAIN', desc: 'Role maintenance · can grant any authorization' },
-      { role: 'SU01_USER_MAINTAIN', desc: 'User master maintenance · can create/delete users' },
-      { role: 'ZIT_BR_ALL_EMPLOYEES', desc: 'IT admin role · cross-system' },
+      { role: 'PFCG_ROLE_MAINTAIN', desc: 'Role maintenance · can grant any authorization', authObjects: ['S_USER_AGR', 'S_USER_VAL', 'S_USER_PRO'] },
+      { role: 'SU01_USER_MAINTAIN', desc: 'User master maintenance · can create/delete users', authObjects: ['S_USER_GRP', 'S_USER_PRO', 'S_USER_SAS'] },
+      { role: 'ZIT_BR_ALL_EMPLOYEES', desc: 'IT admin role · cross-system', authObjects: ['S_TCODE', 'S_USER_GRP'] },
     ] },
   { user: 'APOCHE',    name: 'Alain Poche',      userId: 'AP1872', indicator: 'Cross-module admin',  score: 91, severity: 'Critical', recommendation: 'Redesign', systems: ['LCKR-PRD-01'], status: 'Open', assignee: null, lastChange: '2026-05-02',
+    rationale: 'Maintains cross-module change access spanning GL Posting, Purchase Orders, Billing Documents, and Transport Release. Breaks boundaries between Finance, Procurement, and Basis.',
     roles: [
-      { role: 'ZFI_BR_GL_POSTING', desc: 'Finance · GL posting' },
-      { role: 'ZMM_BR_PO_DISPLAY_PRO', desc: 'Procurement · PO display + change' },
-      { role: 'ZSD_BR_BILLING_CREATE', desc: 'OTC · billing document creation' },
-      { role: 'ZBC_BR_TRANSPORT', desc: 'Basis · transport release' },
+      { role: 'ZFI_BR_GL_POSTING', desc: 'Finance · GL posting', authObjects: ['F_BKPF_BUK', 'F_BKPF_KOA'] },
+      { role: 'ZMM_BR_PO_DISPLAY_PRO', desc: 'Procurement · PO display + change', authObjects: ['M_BEST_EKG', 'M_BEST_EKO', 'M_BEST_BSA'] },
+      { role: 'ZSD_BR_BILLING_CREATE', desc: 'OTC · billing document creation', authObjects: ['V_VBRK_FKA', 'V_VBRK_BUK'] },
+      { role: 'ZBC_BR_TRANSPORT', desc: 'Basis · transport release', authObjects: ['S_TRANSPRT', 'S_CTS_SADM'] },
     ] },
   { user: 'KPARK_LC',  name: 'Kyung-soo Park',   userId: 'KP5530', indicator: 'PFCG + business txns',score: 88, severity: 'Critical', recommendation: 'Revoke',   systems: ['LCKR-PRD-01', 'LCKR-QAS-01'], status: 'Open', assignee: null, lastChange: '2026-05-09',
+    rationale: 'Combines security administration rights (PFCG) with critical business transaction capability (PO Release and Invoice Posting). High risk of self-auditing violations.',
     roles: [
-      { role: 'PFCG_ROLE_MAINTAIN', desc: 'Role admin' },
-      { role: 'ZMM_BR_PO_RELEASE', desc: 'PO release strategy bypass' },
-      { role: 'ZFI_BR_AP_INVOICE', desc: 'Invoice posting' },
+      { role: 'PFCG_ROLE_MAINTAIN', desc: 'Role admin', authObjects: ['S_USER_AGR', 'S_USER_VAL', 'S_USER_PRO'] },
+      { role: 'ZMM_BR_PO_RELEASE', desc: 'PO release strategy bypass', authObjects: ['M_BEST_EKG', 'M_BEST_EKO', 'M_BEST_BSA'] },
+      { role: 'ZFI_BR_AP_INVOICE', desc: 'Invoice posting', authObjects: ['F_BKPF_BUK', 'F_BKPF_KOA'] },
     ] },
   { user: 'HSCHRODE',  name: 'Helga Schroder',   userId: 'HS3041', indicator: 'Basis + Finance',     score: 85, severity: 'High',     recommendation: 'Redesign', systems: ['LCKR-PRD-01'], status: 'Open', assignee: 'SAP Basis Team', lastChange: '2026-04-14',
+    rationale: 'Holds both Basis administration rights and Treasury operational access. Enables direct table level modifications of bank transfers and auto-payment runs.',
     roles: [
-      { role: 'ZBC_BR_SYSTEM_ADMIN', desc: 'Basis admin' },
-      { role: 'ZFI_BR_TREASURY', desc: 'Treasury access · F110, bank transfers' },
+      { role: 'ZBC_BR_SYSTEM_ADMIN', desc: 'Basis admin', authObjects: ['S_ADMI_FCD', 'S_RZL_ADM', 'S_TABU_DIS', 'S_USER_GRP'] },
+      { role: 'ZFI_BR_TREASURY', desc: 'Treasury access · F110, bank transfers', authObjects: ['F_T_CODB', 'F_REGU_BUK'] },
     ] },
   { user: 'YKIM',      name: 'Yu-jin Kim',       userId: 'YK6712', indicator: 'OTC full cycle',      score: 82, severity: 'High',     recommendation: 'Redesign', systems: ['LCKR-PRD-01'], status: 'In Progress', assignee: 'Finance Risk', lastChange: '2026-05-07',
+    rationale: 'Controls the end-to-end Order-to-Cash process from sales order creation through delivery, billing, and accounts receivable clearing. High exposure to invoice manipulation.',
     roles: [
-      { role: 'ZSD_BR_SO_CREATE', desc: 'Sales order create' },
-      { role: 'ZSD_BR_DELIVERY', desc: 'Delivery doc maintain' },
-      { role: 'ZSD_BR_BILLING_CREATE', desc: 'Billing document create' },
-      { role: 'ZFI_BR_AR_CLEAR', desc: 'AR clearing · cash app' },
+      { role: 'ZSD_BR_SO_CREATE', desc: 'Sales order create', authObjects: ['V_VBAK_AAT', 'V_VBAK_VKO'] },
+      { role: 'ZSD_BR_DELIVERY', desc: 'Delivery doc maintain', authObjects: ['V_LIKP_VST', 'V_LIKP_SHA'] },
+      { role: 'ZSD_BR_BILLING_CREATE', desc: 'Billing document create', authObjects: ['V_VBRK_FKA', 'V_VBRK_BUK'] },
+      { role: 'ZFI_BR_AR_CLEAR', desc: 'AR clearing · cash app', authObjects: ['F_BKPF_KOA', 'F_BKPF_BUK'] },
     ] },
   { user: 'BGILL',     name: 'Baljinder Gill',   userId: 'BG2299', indicator: 'P-cycle full power',  score: 79, severity: 'High',     recommendation: 'Redesign', systems: ['LCKR-PRD-01'], status: 'Open', assignee: null, lastChange: '2026-04-30',
+    rationale: 'Holds full authority across the purchase-to-payment cycle (Vendor Creation, Purchase Order, and Payment Approval). Risk of fictitious vendor payments.',
     roles: [
-      { role: 'ZMM_BR_VENDOR_CREATE', desc: 'Vendor master create' },
-      { role: 'ZMM_BR_PO_CREATE', desc: 'PO create + change' },
-      { role: 'ZFI_BR_AP_PAYMENT', desc: 'Payment approval' },
+      { role: 'ZMM_BR_VENDOR_CREATE', desc: 'Vendor master create', authObjects: ['F_LFA1_BUK', 'F_LFA1_GEN'] },
+      { role: 'ZMM_BR_PO_CREATE', desc: 'PO create + change', authObjects: ['M_BEST_EKG', 'M_BEST_EKO', 'M_BEST_BSA'] },
+      { role: 'ZFI_BR_AP_PAYMENT', desc: 'Payment approval', authObjects: ['F_REGU_BUK', 'F_REGU_KOA'] },
     ] },
   { user: 'BHOOPER',   name: 'Beth Hooper',      userId: 'BH4421', indicator: 'Vendor + Payment',    score: 76, severity: 'High',     recommendation: 'Redesign', systems: ['LCKR-PRD-01'], status: 'Open', assignee: null, lastChange: '2026-05-11',
+    rationale: 'Maintains dual capability to create vendor records and release payments. Breaks essential fraud prevention controls in accounts payable.',
     roles: [
-      { role: 'ZMM_BR_VENDOR_CREATE', desc: 'Vendor master create' },
-      { role: 'ZFI_BR_AP_PAYMENT', desc: 'AP payment approval' },
+      { role: 'ZMM_BR_VENDOR_CREATE', desc: 'Vendor master create', authObjects: ['F_LFA1_BUK', 'F_LFA1_GEN'] },
+      { role: 'ZFI_BR_AP_PAYMENT', desc: 'AP payment approval', authObjects: ['F_REGU_BUK', 'F_REGU_KOA'] },
     ] },
   { user: 'MJONES',    name: 'Mary Jones',       userId: 'MJ8830', indicator: 'HR + Payroll',        score: 72, severity: 'High',     recommendation: 'Redesign', systems: ['LCKR-PRD-01'], status: 'Open', assignee: null, lastChange: '2026-04-25',
+    rationale: 'Combines HR Master Data maintenance with Payroll Run execution and Override approvals. High risk of unauthorized payroll adjustments.',
     roles: [
-      { role: 'ZHR_BR_PAYROLL_PROCESS', desc: 'Payroll run · all employees' },
-      { role: 'ZHR_BR_MASTER_DATA', desc: 'HR master data maintain' },
-      { role: 'ZHR_BR_APPROVE', desc: 'HR approval override' },
+      { role: 'ZHR_BR_PAYROLL_PROCESS', desc: 'Payroll run · all employees', authObjects: ['P_ORGIN', 'P_PCR'] },
+      { role: 'ZHR_BR_MASTER_DATA', desc: 'HR master data maintain', authObjects: ['P_ORGIN', 'P_ORGXX'] },
+      { role: 'ZHR_BR_APPROVE', desc: 'HR approval override', authObjects: ['P_ORGIN', 'P_APPL'] },
     ] },
   { user: 'LBAKER',    name: 'Lisa Baker',       userId: 'LB6610', indicator: 'Multi-CC finance',    score: 69, severity: 'Medium',   recommendation: 'Monitor',  systems: ['LCKR-PRD-01'], status: 'Open', assignee: null, lastChange: '2026-05-03',
+    rationale: 'Holds posting and clearing rights across multiple company codes without local entity segregation. Increases general ledger variance exposure.',
     roles: [
-      { role: 'ZFI_BR_GL_POSTING', desc: 'Finance · GL posting · 4 company codes' },
-      { role: 'ZFI_BR_AR_CLEAR',   desc: 'AR clearing' },
+      { role: 'ZFI_BR_GL_POSTING', desc: 'Finance · GL posting · 4 company codes', authObjects: ['F_BKPF_BUK', 'F_BKPF_KOA'] },
+      { role: 'ZFI_BR_AR_CLEAR',   desc: 'AR clearing', authObjects: ['F_BKPF_KOA', 'F_BKPF_BUK'] },
     ] },
   { user: 'RTHOMPSON', name: 'Ryan Thompson',    userId: 'RT9183', indicator: 'IT + Compliance',     score: 68, severity: 'Medium',   recommendation: 'Monitor',  systems: ['LCKR-PRD-01', 'LCKR-QAS-01'], status: 'Resolved', assignee: 'IT Compliance', lastChange: '2026-03-29',
+    rationale: 'Holds both IT general access and read access to financial audit logs. Enables clearing or altering log traces without compliance logging.',
     roles: [
-      { role: 'ZIT_BR_ALL_EMPLOYEES', desc: 'IT compliance view' },
-      { role: 'ZFI_BR_AUDIT_LOG', desc: 'Audit log read' },
+      { role: 'ZIT_BR_ALL_EMPLOYEES', desc: 'IT compliance view', authObjects: ['S_TCODE', 'S_USER_GRP'] },
+      { role: 'ZFI_BR_AUDIT_LOG', desc: 'Audit log read', authObjects: ['S_TABU_DIS', 'S_PROGRAM'] },
     ] },
   { user: 'SCHEN_LC',  name: 'Shuhua Chen',      userId: 'SC1077', indicator: 'Basis + Transport',   score: 65, severity: 'Medium',   recommendation: 'Monitor',  systems: ['LCKR-PRD-01'], status: 'In Progress', assignee: 'SAP Basis Team', lastChange: '2026-05-06',
+    rationale: 'Maintains background job management and production transport deployment access. Allows executing unapproved changes via automated batch streams.',
     roles: [
-      { role: 'ZBC_BR_TRANSPORT', desc: 'Transport release' },
-      { role: 'ZBC_BR_BACKGROUND', desc: 'Background job admin' },
+      { role: 'ZBC_BR_TRANSPORT', desc: 'Transport release', authObjects: ['S_TRANSPRT', 'S_CTS_SADM'] },
+      { role: 'ZBC_BR_BACKGROUND', desc: 'Background job admin', authObjects: ['S_BTCH_ADM', 'S_BTCH_JOB'] },
     ] },
   { user: 'DMARTINEZ', name: 'Diego Martinez',   userId: 'DM4502', indicator: 'Multi-org procurement',score: 62, severity: 'Medium',   recommendation: 'Monitor',  systems: ['LCKR-PRD-01'], status: 'Open', assignee: null, lastChange: '2026-04-12',
+    rationale: 'Manages purchase order and vendor master creation across 6 separate plant organizations, bypassing regional compliance boundaries.',
     roles: [
-      { role: 'ZMM_BR_PO_CREATE',   desc: 'PO create — 6 plants' },
-      { role: 'ZMM_BR_VENDOR_CREATE', desc: 'Vendor create' },
+      { role: 'ZMM_BR_PO_CREATE',   desc: 'PO create — 6 plants', authObjects: ['M_BEST_EKG', 'M_BEST_EKO', 'M_BEST_BSA'] },
+      { role: 'ZMM_BR_VENDOR_CREATE', desc: 'Vendor create', authObjects: ['F_LFA1_BUK', 'F_LFA1_GEN'] },
     ] },
   { user: 'EWILSON',   name: 'Emma Wilson',      userId: 'EW7704', indicator: 'Treasury override',   score: 58, severity: 'Medium',   recommendation: 'Monitor',  systems: ['LCKR-PRD-01'], status: 'Open', assignee: null, lastChange: '2026-05-12',
+    rationale: 'Holds both Treasury bank settings access and bank statement reconciliation authority, weakening dual check controls for wire transfers.',
     roles: [
-      { role: 'ZFI_BR_TREASURY',  desc: 'Treasury bank' },
-      { role: 'ZFI_BR_BANK_RECON', desc: 'Bank reconciliation' },
+      { role: 'ZFI_BR_TREASURY',  desc: 'Treasury bank', authObjects: ['F_T_CODB', 'F_REGU_BUK'] },
+      { role: 'ZFI_BR_BANK_RECON', desc: 'Bank reconciliation', authObjects: ['F_FEB_BUK'] },
     ] },
   { user: 'FGARCIA',   name: 'Felipe Garcia',    userId: 'FG3318', indicator: 'Reporting + Posting', score: 54, severity: 'Medium',   recommendation: 'Monitor',  systems: ['LCKR-PRD-01'], status: 'Open', assignee: null, lastChange: '2026-04-08',
+    rationale: 'Combines corporate reporting with general ledger posting rights, violating the separation between book-keeping and independent auditing.',
     roles: [
-      { role: 'ZFI_BR_REPORTING', desc: 'Finance reporting cross-CC' },
-      { role: 'ZFI_BR_GL_POSTING', desc: 'GL posting limited CC' },
+      { role: 'ZFI_BR_REPORTING', desc: 'Finance reporting cross-CC', authObjects: ['F_BKPF_BUK'] },
+      { role: 'ZFI_BR_GL_POSTING', desc: 'GL posting limited CC', authObjects: ['F_BKPF_BUK', 'F_BKPF_KOA'] },
     ] },
 ];
 

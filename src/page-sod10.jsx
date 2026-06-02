@@ -200,7 +200,7 @@ const AccountDrilldown = ({ row }) => (
          <div className="text-[10px] font-bold uppercase tracking-widest text-ink-400 mb-2">IAM Integrity Logic</div>
          <p className="text-xs font-semibold text-ink-700 leading-relaxed italic">"Identity holds production-wide authority with no valid custodian mapping. Recommend immediate profile scoping."</p>
        </div>
-       <button className="w-full rounded-lg bg-ink-900 px-4 py-2.5 text-xs font-bold text-white hover:bg-ink-800 uppercase tracking-widest transition-colors shadow-sm">Assign Custodian</button>
+       {/* <button className="w-full rounded-lg bg-ink-900 px-4 py-2.5 text-xs font-bold text-white hover:bg-ink-800 uppercase tracking-widest transition-colors shadow-sm">Assign Custodian</button> */}
     </div>
   </div>
 );

@@ -20,7 +20,7 @@ const Sod07Kpis = () => {
   return (
     <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
       <StatCard label="Cross-Process Sets" value={k.total} delta={k.deltas.total} deltaInvertGood />
-      <StatCard severity="Critical" label="Fraud Pairings" value={k.critical} delta={k.deltas.critical} deltaInvertGood />
+      <StatCard severity="Critical" label="Critical Pairings" value={k.critical} delta={k.deltas.critical} deltaInvertGood />
       <StatCard severity="High" label="High Priority" value={k.high} delta={k.deltas.high} deltaInvertGood />
       <StatCard label="Unique Users" value={k.uniqueUsers} delta={k.deltas.uniqueUsers} deltaInvertGood />
       <StatCard label="Impacted Areas" value={k.processAreas} />
@@ -153,8 +153,8 @@ const DualProcessTable = ({ matrixFilter, onClearMatrixFilter }) => {
             <tr>
               <Th></Th>
               <Th>User Identifier</Th>
-              <Th>Control Axis 1</Th>
-              <Th>Control Axis 2</Th>
+              <Th>Process 1</Th>
+              <Th>Process 2</Th>
               <Th>Conflict Codes</Th>
               <Th>Severity</Th>
             </tr>
@@ -235,9 +235,7 @@ const ExecutionHistory = ({ row, p1, p2 }) => (
           "Active cross-process execution detected. Immediate segregation recommended."
         </p>
       </div>
-      <button className="w-full rounded-lg bg-ink-900 px-4 py-2.5 text-xs font-bold text-white hover:bg-ink-800 shadow-sm uppercase tracking-widest">
-        Execute Profile Split
-      </button>
+     
     </div>
   </div>
 );

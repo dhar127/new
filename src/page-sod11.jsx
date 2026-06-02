@@ -26,6 +26,13 @@ const STATUS_COLOR = {
   Resolved: '#22C55E',
 };
 
+const TEAM_STYLE = {
+  'SAP Basis Team':    { bg: 'bg-blue-50 text-blue-700 ring-blue-200', dot: 'bg-blue-500' },
+  'IT Compliance':     { bg: 'bg-purple-50 text-purple-700 ring-purple-200', dot: 'bg-purple-500' },
+  'Finance Risk':       { bg: 'bg-amber-50 text-amber-700 ring-amber-200', dot: 'bg-amber-500' },
+  'SAP Security Team': { bg: 'bg-rose-50 text-rose-700 ring-rose-200', dot: 'bg-rose-500' },
+};
+
 /* ------------------------------------------------------------ */
 /* KPIs — high density, professional                             */
 /* ------------------------------------------------------------ */
@@ -106,13 +113,8 @@ const RemediationTable = () => {
   const [query, setQuery] = useState('');
   const [sort, setSort] = useState({ key: 'priority', dir: 'asc' });
   const [page, setPage] = useState(1);
-  const [assignees, setAssignees] = useState({});
   const pageSize = 10;
   const prioOrder = { P1: 0, P2: 1, P3: 2, P4: 3 };
-
-  const setAssignee = (id, assignee) => {
-    setAssignees(prev => ({ ...prev, [id]: assignee }));
-  };
 
   const filtered = rows
     .filter(r => !typeFilter || r.type === typeFilter)
@@ -182,16 +184,21 @@ const RemediationTable = () => {
                     </div>
                   </td>
                   <td className="px-4 py-3.5">
-                    <select 
-                      value={assignees[r.id] || ''} 
-                      onChange={(e) => setAssignee(r.id, e.target.value)}
-                      className="rounded border border-ink-200 text-[11px] font-bold text-ink-700 p-1.5 bg-white hover:border-ink-300 focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-colors"
-                    >
-                      <option value="">Select Assignee</option>
-                      {TEAMS && TEAMS.map(team => (
-                        <option key={team} value={team}>{team}</option>
-                      ))}
-                    </select>
+                    {(() => {
+                      const sugg = r.assignee || {
+                        'Role Redesign':       'SAP Security Team',
+                        'Access Removal':      'SAP Basis Team',
+                        'Mitigating Control':  'Finance Risk',
+                        'Policy':              'IT Compliance',
+                      }[r.type] || 'SAP Basis Team';
+                      const st = TEAM_STYLE[sugg] || { bg: 'bg-ink-50 text-ink-700 ring-ink-200', dot: 'bg-ink-500' };
+                      return (
+                        <span className={`inline-flex items-center gap-1.5 rounded-md px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider ring-1 ring-inset ${st.bg}`}>
+                          <span className={`h-1 w-1 rounded-full ${st.dot}`} />
+                          {sugg}
+                        </span>
+                      );
+                    })()}
                   </td>
                 </tr>
               );
