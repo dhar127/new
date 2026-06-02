@@ -325,10 +325,6 @@ function ComplianceEngine() {
           );
         })}
       </div>
-
-      <button className="mt-8 w-full rounded-xl bg-brand-600 py-3 text-[11px] font-bold uppercase tracking-widest hover:bg-brand-500 transition-all shadow-lg shadow-brand-900/20">
-        Execute Remediation Strategy
-      </button>
     </div>
   );
 }
