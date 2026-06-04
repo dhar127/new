@@ -28,12 +28,10 @@ const STREAM_PAGES = [
   { key: 'sod-12',  label: 'Continuous Compliance'   },
 ];
 
-const MOCK_RUNS = [
-  { id: 'RUN-007', label: 'LCSOD-2026-Q2-007 · May 2026' },
-  { id: 'RUN-006', label: 'LCSOD-2026-Q1-006 · Feb 2026' },
-  { id: 'RUN-005', label: 'LCSOD-2025-Q4-005 · Nov 2025' },
-  { id: 'RUN-004', label: 'LCSOD-2025-Q3-004 · Aug 2025' },
-];
+const MOCK_RUNS = window.MOCK.ANALYSIS_RUNS.map(r => ({
+  id: r.id,
+  label: `${r.id} · ${r.date.split(' · ')[0]}`
+}));
 
 /* ── Dropdown primitive ─────────────────────────────────────── */
 function Dropdown({ trigger, children }) {

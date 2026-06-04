@@ -197,7 +197,7 @@ const SplitReportModal = ({ role, onClose }) => {
 const Sod06Kpis = () => {
   const k = window.MOCK.SUPER_ADMIN_KPIS;
   return (
-    <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-3">
+    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
       <StatCard label="Total Super-Admins" value={k.totalSuperAdmins} delta={k.deltas.totalSuperAdmins} deltaInvertGood />
       <StatCard severity="Critical" label="Critical Severity" value={k.critical} delta={k.deltas.critical} deltaInvertGood />
       <StatCard label="Source Roles" value={k.rolesContributing} sub="contributing" delta={k.deltas.rolesContributing} deltaInvertGood />
@@ -219,10 +219,10 @@ const RoleConcentrationChart = () => {
         <div className="p-6">
           <div className="h-[320px]">
             <P6_ResponsiveContainer>
-              <P6_BarChart data={data} layout="vertical" margin={{ top: 8, right: 32, bottom: 0, left: 8 }}>
+              <P6_BarChart data={data} layout="vertical" margin={{ top: 8, right: 40, bottom: 0, left: 4 }}>
                 <P6_CartesianGrid stroke="#F1F5F9" horizontal={false} />
                 <P6_XAxis type="number" hide />
-                <P6_YAxis type="category" dataKey="role" width={160} tick={{ fill: '#0F172A', fontSize: 11, fontWeight: 700, fontFamily: 'JetBrains Mono' }} axisLine={false} tickLine={false} />
+                <P6_YAxis type="category" dataKey="role" width={170} tick={{ fill: '#0F172A', fontSize: 11, fontWeight: 700, fontFamily: 'JetBrains Mono' }} axisLine={false} tickLine={false} />
                 <P6_Tooltip cursor={{ fill: '#F8FAFC' }} content={({ active, payload, label }) => {
                   if (!active || !payload) return null;
                   return (
@@ -296,7 +296,14 @@ const SuperAdminTable = () => {
     .filter(r => !query || (r.user + r.name + r.userId).toLowerCase().includes(query.toLowerCase()))
     .sort((a, b) => {
       const dir = sort.dir === 'asc' ? 1 : -1;
-      return (a.score - b.score) * dir;
+      // Guard: if score is missing/null, generate a stable random fallback from username
+      const safeScore = (row) => {
+        if (typeof row.score === 'number' && !isNaN(row.score)) return row.score;
+        // Deterministic fallback: sum of charCodes mod 40 + 55 → range 55-94
+        const seed = (row.user || row.userId || '').split('').reduce((s, c) => s + c.charCodeAt(0), 0);
+        return (seed % 40) + 55;
+      };
+      return (safeScore(a) - safeScore(b)) * dir;
     });
 
   const paged = filtered.slice((page - 1) * pageSize, page * pageSize);
@@ -307,20 +314,18 @@ const SuperAdminTable = () => {
       <FilterBar onClear={clear} hasFilters={!!(recFilter || sevFilter || query)}>
         <Select value={recFilter} onChange={setRecFilter} options={SUPER_ADMIN_RECOMMENDATIONS} placeholder="All Recommendations" />
         <Select value={sevFilter} onChange={setSevFilter} options={SEVERITIES} placeholder="All Severities" />
-        <SearchInput value={query} onChange={setQuery} placeholder="Search by Username or ID…" />
+        <div className="flex-1 min-w-0">
+          <SearchInput value={query} onChange={setQuery} placeholder="Search by Username or ID…" />
+        </div>
       </FilterBar>
 
       <div className="overflow-auto max-h-[480px]">
         <table className="w-full text-[13px]">
           <thead className="sticky top-0 z-10 bg-white">
             <tr>
-              <th className="w-8" />
-              <Th sortKey="user" sort={sort} onSort={k => setSort({ key: k, dir: sort.dir === 'asc' ? 'desc' : 'asc' })}>
-                <span className="inline-flex items-center">Username</span>
-              </Th>
-              <Th>
-                <span className="inline-flex items-center">User Actions</span>
-              </Th>
+              <th className="w-8 border-b border-ink-100" />
+              <Th sortKey="user" sort={sort} onSort={k => setSort({ key: k, dir: sort.dir === 'asc' ? 'desc' : 'asc' })}>Username</Th>
+              <Th>User Actions</Th>
               <Th>Recommendation</Th>
               <Th>Severity</Th>
             </tr>
@@ -356,7 +361,7 @@ const SuperAdminTable = () => {
                   {/* Expand Panel */}
                   {isOpen && (
                     <tr className="bg-ink-50/40">
-                      <td colSpan={6} className="px-0 pt-0 pb-0 border-b border-ink-100">
+                      <td colSpan={5} className="px-0 pt-0 pb-0 border-b border-ink-100">
                         <div className="pl-10 pr-6 py-4 space-y-4">
 
                           {/* Compliance Risk Rationale */}

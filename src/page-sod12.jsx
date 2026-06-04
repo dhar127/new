@@ -6,23 +6,8 @@ const {
 
 const { useState } = React;
 
-const SOD12_KPIS = {
-  automatedChecks: 847,
-  passRate: 94.2,
-  newViolationsThisRun: 41,
-  resolvedThisRun: 121,
-  rulesActive: 5,
-};
-
-const RULES_LOG = [
-  { id: 'RUL-904', code: 'Z_SOD_01', desc: 'Prevent Vendor Create + AP Payment',      deployed: '2026-05-20', author: 'J. Smith',    type: 'Custom'   },
-  { id: 'RUL-903', code: 'Z_SOD_02', desc: 'Enforce Firefighter Expiry < 30 days',     deployed: '2026-05-18', author: 'A. Poche',    type: 'Custom'   },
-  { id: 'RUL-902', code: 'Z_SOD_03', desc: 'Flag F110 out of Treasury',                deployed: '2026-05-10', author: 'B. Carrier',  type: 'Standard' },
-  { id: 'RUL-901', code: 'Z_SOD_04', desc: 'Restrict PFCG for non-Basis users',        deployed: '2026-05-02', author: 'J. Smith',    type: 'Standard' },
-  { id: 'RUL-900', code: 'Z_SOD_05', desc: 'Detect Bank Edit + Payment Block removal', deployed: '2026-04-25', author: 'H. Schroder', type: 'Legacy'   },
-  { id: 'RUL-899', code: 'Z_SOD_06', desc: 'Full OTC cycle by single user alert',      deployed: '2026-04-10', author: 'Y. Kim',      type: 'Custom'   },
-  { id: 'RUL-898', code: 'Z_SOD_07', desc: 'Background RFC with SAP_ALL equivalent',   deployed: '2026-04-05', author: 'S. Chen',     type: 'Legacy'   },
-];
+const SOD12_KPIS = window.MOCK.SOD12_KPIS;
+const RULES_LOG = window.MOCK.RULES_LOG;
 
 const RULE_TYPE_STYLE = {
   Custom:   'bg-blue-50 text-blue-700 ring-blue-200',
@@ -30,17 +15,7 @@ const RULE_TYPE_STYLE = {
   Legacy:   'bg-amber-50 text-amber-700 ring-amber-200',
 };
 
-const COMPLIANCE_TREND_DATA = [
-  { run: 'Run 1', passRate: 88.1, violations: 112, resolved: 45  },
-  { run: 'Run 2', passRate: 89.4, violations: 104, resolved: 58  },
-  { run: 'Run 3', passRate: 90.0, violations: 98,  resolved: 67  },
-  { run: 'Run 4', passRate: 90.8, violations: 89,  resolved: 79  },
-  { run: 'Run 5', passRate: 91.5, violations: 81,  resolved: 88  },
-  { run: 'Run 6', passRate: 92.1, violations: 74,  resolved: 97  },
-  { run: 'Run 7', passRate: 92.9, violations: 63,  resolved: 105 },
-  { run: 'Run 8', passRate: 93.4, violations: 55,  resolved: 112 },
-  { run: 'Run 9', passRate: 94.2, violations: 41,  resolved: 121 },
-];
+const COMPLIANCE_TREND_DATA = window.MOCK.COMPLIANCE_TREND_DATA;
 
 const Sod12Kpis = () => (
   <div className="grid grid-cols-2 gap-3 md:grid-cols-4 lg:grid-cols-5">

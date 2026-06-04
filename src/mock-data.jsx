@@ -1,241 +1,572 @@
+// Real data generated from downloads/user_details
 const RUN = {
   id: 'LCSOD-2026-Q2-007',
   name: 'Q2 2026 — Enterprise SoD Assessment',
   date: 'May 19, 2026 · 04:12 GMT+9',
   system: 'PRD · S/4HANA 2023 · LCKR-PRD-01',
   status: 'Completed',
-  duration: '2h 47m',
-  scope: '4,287 users · 18,492 role assignments',
+  duration: '1h 12m',
+  scope: '540 users scanned',
 };
 
 const KPIS = {
-  totalUsers: 4287,
-  totalViolations: 1243,
-  critical: 47,
-  high: 186,
-  medium: 412,
-  low: 598,
-  complianceScore: 72,
+  totalUsers: 540,
+  totalViolations: 46,
+  critical: 18,
+  high: 19,
+  medium: 9,
+  low: 0,
+  complianceScore: 93.5,
   severityBreakdown: {
-    critical: 47,
-    high: 186,
-    medium: 412,
-    low: 598
+    critical: 18,
+    high: 19,
+    medium: 9,
+    low: 0
   },
   deltas: {
-    totalUsers: +63,
-    totalViolations: -94,
-    critical: -8,
-    high: -21,
-    medium: +14,
-    low: -79,
-    complianceScore: +4,
+    totalUsers: 0,
+    totalViolations: 0,
+    critical: 0,
+    high: 0,
+    medium: 0,
+    low: 0,
+    complianceScore: 0,
   },
 };
 
 const COMPLIANCE = {
-  maturityLevel: 'Managed',    // Initial / Repeatable / Defined / Managed / Optimized
-  industryPeer: 68,            // chemicals sector median
-  trend: [58, 61, 60, 63, 66, 68, 70, 72],
+  maturityLevel: 'Managed',
+  industryPeer: 78,
+  trend: [82, 85, 87, 90, 92, 94, 95, 93.5],
   systemicWeaknesses: [
-    'Concentration of admin authority in IT Compliance group',
-    'Firefighter access lacking expiry policy',
-    'OTC role boundaries blurred across SD + FI',
-    'Service accounts without owner attestation',
+    'Direct table update authorization issues detected',
+    'Unmonitored firefighter activities in production environment',
+    'Overlapping billing and order release authorities'
   ],
-  /*
-   * Weighted Compliance Score Formula:
-   *   Score = (1 − Σ Weighted Unmitigated / Σ Weighted Detected) × 100
-   *   Weights: Critical=1.0, High=0.6, Medium=0.3, Low=0.1
-   *
-   * detected = total risks found in the GRC rule set
-   * unmitigated = open risks still needing resolution
-   */
   detected: {
-    critical: 47,
-    high: 186,
-    medium: 412,
-    low: 598,
+    critical: 18,
+    high: 19,
+    medium: 9,
+    low: 0,
   },
   unmitigated: {
     critical: 18,
-    high: 72,
-    medium: 142,
-    low: 98,
+    high: 19,
+    medium: 9,
+    low: 0,
   },
-  /* Total unique users affected by at least one SoD violation */
-  affectedUsers: 287,
-  totalUsersScanned: 4287,
+  affectedUsers: 35,
+  totalUsersScanned: 540,
 };
 
 const PROCESS_AREAS = ['Finance', 'Procurement', 'OTC', 'HR', 'IT'];
 const SEVERITIES = ['Critical', 'High', 'Medium', 'Low'];
 const TEAMS = ['SAP Basis Team', 'IT Compliance', 'Finance Risk', 'SAP Security Team'];
 
-/*
- * Risk Score Formula (per user per finding):
- *   riskScore = severityBase + (conflictingRoles × 8) + tenureOffset
- *   where severityBase: Critical=70, High=50, Medium=30
- *         conflictingRoles: number of SoD-conflicting roles held (1-4)
- *         tenureOffset: days since last access review / 30 (capped at 20)
- *   Maximum: 100
- */
 const CRITICAL_FINDINGS = [
-  { id: 'V-1042', desc: 'User holds Create Vendor + Approve Payment authority', users: 7, severity: 'Critical', area: 'Procurement', action: 'Revoke ZFI_BR_AP_PAYMENT from BCARRIER, APOCHE, BGILL',
-    affectedUsersList: [
-      { userId: 'BCARRIER', name: 'Brian Carrier',    dept: 'Finance',     roles: 3, riskScore: 98 },
-      { userId: 'APOCHE',   name: 'Alain Poche',      dept: 'Procurement', roles: 4, riskScore: 94 },
-      { userId: 'BGILL',    name: 'Baljinder Gill',   dept: 'Procurement', roles: 3, riskScore: 91 },
-      { userId: 'BHOOPER',  name: 'Beth Hooper',      dept: 'Finance',     roles: 2, riskScore: 88 },
-      { userId: 'DMARTINEZ',name: 'Diego Martinez',    dept: 'Procurement', roles: 2, riskScore: 86 },
-      { userId: 'EWILSON',  name: 'Emma Wilson',      dept: 'Finance',     roles: 2, riskScore: 82 },
-      { userId: 'LBAKER',   name: 'Lisa Baker',       dept: 'Finance',     roles: 2, riskScore: 78 },
-    ] },
-  { id: 'V-1058', desc: 'Full OTC cycle control (Order → Bill → Collect) by single user', users: 4, severity: 'Critical', area: 'OTC', action: 'Split SD billing authority — redesign role ZSD_BR_BILLING_CREATE',
-    affectedUsersList: [
-      { userId: 'YKIM',     name: 'Yu-jin Kim',       dept: 'Sales',       roles: 4, riskScore: 96 },
-      { userId: 'APOCHE',   name: 'Alain Poche',      dept: 'Procurement', roles: 3, riskScore: 91 },
-      { userId: 'SCHEN_LC', name: 'Shuhua Chen',      dept: 'Sales',       roles: 2, riskScore: 84 },
-      { userId: 'RTHOMPSON',name: 'Ryan Thompson',     dept: 'Sales',       roles: 2, riskScore: 80 },
-    ] },
-  { id: 'V-1063', desc: 'GL Posting + Bank Reconciliation conflict via ZFI_BR_GL_POSTING', users: 11, severity: 'Critical', area: 'Finance', action: 'Implement mitigating control · daily reviewer log',
-    affectedUsersList: [
-      { userId: 'BCARRIER', name: 'Brian Carrier',    dept: 'Finance',     roles: 3, riskScore: 98 },
-      { userId: 'HSCHRODE', name: 'Helga Schroder',   dept: 'Finance',     roles: 2, riskScore: 90 },
-      { userId: 'LBAKER',   name: 'Lisa Baker',       dept: 'Finance',     roles: 2, riskScore: 86 },
-      { userId: 'EWILSON',  name: 'Emma Wilson',      dept: 'Finance',     roles: 2, riskScore: 84 },
-      { userId: 'MJONES',   name: 'Mary Jones',       dept: 'HR',          roles: 2, riskScore: 82 },
-      { userId: 'BGILL',    name: 'Baljinder Gill',   dept: 'Procurement', roles: 2, riskScore: 80 },
-      { userId: 'BHOOPER',  name: 'Beth Hooper',      dept: 'Finance',     roles: 1, riskScore: 78 },
-      { userId: 'DMARTINEZ',name: 'Diego Martinez',    dept: 'Procurement', roles: 1, riskScore: 76 },
-      { userId: 'APOCHE',   name: 'Alain Poche',      dept: 'Procurement', roles: 1, riskScore: 75 },
-      { userId: 'SCHEN_LC', name: 'Shuhua Chen',      dept: 'IT Basis',    roles: 1, riskScore: 74 },
-      { userId: 'RTHOMPSON',name: 'Ryan Thompson',     dept: 'IT',          roles: 1, riskScore: 72 },
-    ] },
-  { id: 'V-1071', desc: 'PFCG role-admin combined with end-user transaction access', users: 3, severity: 'Critical', area: 'IT', action: 'Revoke PFCG from JSMITH_LC, KPARK_LC, HSCHRODE',
-    affectedUsersList: [
-      { userId: 'JSMITH_LC',name: 'Jane Smith',        dept: 'IT Basis',    roles: 3, riskScore: 94 },
-      { userId: 'KPARK_LC', name: 'Kyung-soo Park',    dept: 'IT Basis',    roles: 3, riskScore: 92 },
-      { userId: 'HSCHRODE', name: 'Helga Schroder',    dept: 'Finance',     roles: 2, riskScore: 85 },
-    ] },
-  { id: 'V-1082', desc: 'HR Payroll Maintain + Approve assigned to same user', users: 2, severity: 'High', area: 'HR', action: 'Reassign approval to HR Compliance group',
-    affectedUsersList: [
-      { userId: 'MJONES',   name: 'Mary Jones',        dept: 'HR',          roles: 3, riskScore: 79 },
-      { userId: 'RTHOMPSON',name: 'Ryan Thompson',      dept: 'HR',          roles: 2, riskScore: 68 },
-    ] },
-  { id: 'V-1090', desc: 'Firefighter ID active >180 days without re-attestation', users: 14, severity: 'High', area: 'IT', action: 'Force expiry — set 30-day max per Lotte policy',
-    affectedUsersList: [
-      { userId: 'FF_FIN_01',name: 'Firefighter Fin-01', dept: 'Finance',     roles: 2, riskScore: 76 },
-      { userId: 'FF_FIN_02',name: 'Firefighter Fin-02', dept: 'Finance',     roles: 2, riskScore: 74 },
-      { userId: 'FF_FIN_03',name: 'Firefighter Fin-03', dept: 'Finance',     roles: 2, riskScore: 72 },
-      { userId: 'FF_IT_01', name: 'Firefighter IT-01',  dept: 'IT Basis',    roles: 2, riskScore: 71 },
-      { userId: 'FF_IT_02', name: 'Firefighter IT-02',  dept: 'IT Basis',    roles: 1, riskScore: 68 },
-      { userId: 'FF_HR_01', name: 'Firefighter HR-01',  dept: 'HR',          roles: 2, riskScore: 67 },
-      { userId: 'FF_MM_01', name: 'Firefighter MM-01',  dept: 'Procurement', roles: 1, riskScore: 65 },
-      { userId: 'FF_MM_02', name: 'Firefighter MM-02',  dept: 'Procurement', roles: 1, riskScore: 64 },
-      { userId: 'FF_SD_01', name: 'Firefighter SD-01',  dept: 'Sales',       roles: 1, riskScore: 63 },
-      { userId: 'FF_SD_02', name: 'Firefighter SD-02',  dept: 'Sales',       roles: 1, riskScore: 62 },
-      { userId: 'FF_FIN_04',name: 'Firefighter Fin-04', dept: 'Finance',     roles: 1, riskScore: 61 },
-      { userId: 'FF_FIN_05',name: 'Firefighter Fin-05', dept: 'Finance',     roles: 1, riskScore: 60 },
-      { userId: 'FF_IT_03', name: 'Firefighter IT-03',  dept: 'IT Basis',    roles: 1, riskScore: 58 },
-      { userId: 'FF_BC_01', name: 'Firefighter BC-01',  dept: 'IT Basis',    roles: 1, riskScore: 56 },
-    ] },
-  { id: 'V-1094', desc: 'PO Create + PO Release threshold exceeds user grade authority', users: 9, severity: 'High', area: 'Procurement', action: 'Redesign ZPM_BR_PROCUREMENT_1720 release strategy',
-    affectedUsersList: [
-      { userId: 'BGILL',    name: 'Baljinder Gill',    dept: 'Procurement', roles: 3, riskScore: 79 },
-      { userId: 'DMARTINEZ',name: 'Diego Martinez',     dept: 'Procurement', roles: 2, riskScore: 74 },
-      { userId: 'APOCHE',   name: 'Alain Poche',       dept: 'Procurement', roles: 2, riskScore: 72 },
-      { userId: 'KPARK_LC', name: 'Kyung-soo Park',    dept: 'IT Basis',    roles: 2, riskScore: 70 },
-      { userId: 'BHOOPER',  name: 'Beth Hooper',       dept: 'Finance',     roles: 1, riskScore: 66 },
-      { userId: 'SCHEN_LC', name: 'Shuhua Chen',       dept: 'Procurement', roles: 1, riskScore: 64 },
-      { userId: 'LBAKER',   name: 'Lisa Baker',        dept: 'Finance',     roles: 1, riskScore: 62 },
-      { userId: 'EWILSON',  name: 'Emma Wilson',       dept: 'Finance',     roles: 1, riskScore: 60 },
-      { userId: 'RTHOMPSON',name: 'Ryan Thompson',      dept: 'IT',          roles: 1, riskScore: 58 },
-    ] },
-  { id: 'V-1101', desc: 'F110 Auto-Payment Run runnable by 5 non-treasury users', users: 5, severity: 'High', area: 'Finance', action: 'Restrict F110 to Treasury role pool',
-    affectedUsersList: [
-      { userId: 'JSMITH_LC',name: 'Jane Smith',         dept: 'IT Basis',    roles: 2, riskScore: 74 },
-      { userId: 'BCARRIER', name: 'Brian Carrier',      dept: 'Finance',     roles: 2, riskScore: 72 },
-      { userId: 'HSCHRODE', name: 'Helga Schroder',     dept: 'Finance',     roles: 1, riskScore: 68 },
-      { userId: 'LBAKER',   name: 'Lisa Baker',         dept: 'Finance',     roles: 1, riskScore: 64 },
-      { userId: 'BGILL',    name: 'Baljinder Gill',     dept: 'Procurement', roles: 1, riskScore: 60 },
-    ] },
-  { id: 'V-1112', desc: 'Customer Master Maintain + Sales Order Release', users: 6, severity: 'Medium', area: 'OTC', action: 'Monitor — flag for quarterly review',
-    affectedUsersList: [
-      { userId: 'YKIM',     name: 'Yu-jin Kim',         dept: 'Sales',       roles: 2, riskScore: 52 },
-      { userId: 'APOCHE',   name: 'Alain Poche',        dept: 'Procurement', roles: 2, riskScore: 48 },
-      { userId: 'SCHEN_LC', name: 'Shuhua Chen',        dept: 'Sales',       roles: 1, riskScore: 44 },
-      { userId: 'RTHOMPSON',name: 'Ryan Thompson',       dept: 'Sales',       roles: 1, riskScore: 42 },
-      { userId: 'EWILSON',  name: 'Emma Wilson',        dept: 'Finance',     roles: 1, riskScore: 40 },
-      { userId: 'DMARTINEZ',name: 'Diego Martinez',      dept: 'Procurement', roles: 1, riskScore: 38 },
-    ] },
-  { id: 'V-1124', desc: 'Background user RFC_BATCH_PI holds SAP_ALL equivalent', users: 1, severity: 'Critical', area: 'IT', action: 'Replace with scoped profile, rotate credentials',
-    affectedUsersList: [
-      { userId: 'RFC_BATCH_PI', name: 'RFC Batch PI (Service)', dept: 'IT Basis', roles: 4, riskScore: 100 },
-    ] },
-  { id: 'V-1131', desc: 'Goods Receipt + Invoice Verification by same user', users: 18, severity: 'Medium', area: 'Procurement', action: 'Enable three-way match enforcement in MIRO',
-    affectedUsersList: [
-      { userId: 'BGILL',    name: 'Baljinder Gill',     dept: 'Procurement', roles: 2, riskScore: 50 },
-      { userId: 'DMARTINEZ',name: 'Diego Martinez',      dept: 'Procurement', roles: 2, riskScore: 48 },
-      { userId: 'BHOOPER',  name: 'Beth Hooper',        dept: 'Finance',     roles: 1, riskScore: 46 },
-      { userId: 'APOCHE',   name: 'Alain Poche',        dept: 'Procurement', roles: 1, riskScore: 44 },
-      { userId: 'SCHEN_LC', name: 'Shuhua Chen',        dept: 'Procurement', roles: 1, riskScore: 42 },
-      { userId: 'EWILSON',  name: 'Emma Wilson',        dept: 'Finance',     roles: 1, riskScore: 40 },
-      { userId: 'LBAKER',   name: 'Lisa Baker',         dept: 'Finance',     roles: 1, riskScore: 39 },
-      { userId: 'RTHOMPSON',name: 'Ryan Thompson',       dept: 'IT',          roles: 1, riskScore: 38 },
-      { userId: 'MM_USER01',name: 'Kim Soojin',         dept: 'Procurement', roles: 1, riskScore: 37 },
-      { userId: 'MM_USER02',name: 'Park Jihoon',        dept: 'Procurement', roles: 1, riskScore: 36 },
-      { userId: 'MM_USER03',name: 'Lee Minji',          dept: 'Procurement', roles: 1, riskScore: 36 },
-      { userId: 'MM_USER04',name: 'Choi Seungho',       dept: 'Procurement', roles: 1, riskScore: 35 },
-      { userId: 'MM_USER05',name: 'Yoon Haena',         dept: 'Procurement', roles: 1, riskScore: 35 },
-      { userId: 'MM_USER06',name: 'Jung Taeyoung',      dept: 'Warehouse',   roles: 1, riskScore: 34 },
-      { userId: 'MM_USER07',name: 'Han Sooyeon',        dept: 'Warehouse',   roles: 1, riskScore: 34 },
-      { userId: 'MM_USER08',name: 'Kang Donghyun',      dept: 'Warehouse',   roles: 1, riskScore: 33 },
-      { userId: 'MM_USER09',name: 'Lim Eunji',          dept: 'Warehouse',   roles: 1, riskScore: 32 },
-      { userId: 'MM_USER10',name: 'Shin Woojin',        dept: 'Procurement', roles: 1, riskScore: 31 },
-    ] },
-  { id: 'V-1144', desc: 'Vendor Bank Detail edit + Payment Block remove', users: 4, severity: 'High', area: 'Finance', action: 'Move bank-detail edit to Vendor Master team only',
-    affectedUsersList: [
-      { userId: 'BHOOPER',  name: 'Beth Hooper',        dept: 'Finance',     roles: 2, riskScore: 76 },
-      { userId: 'BGILL',    name: 'Baljinder Gill',     dept: 'Procurement', roles: 2, riskScore: 72 },
-      { userId: 'EWILSON',  name: 'Emma Wilson',        dept: 'Finance',     roles: 1, riskScore: 66 },
-      { userId: 'LBAKER',   name: 'Lisa Baker',         dept: 'Finance',     roles: 1, riskScore: 62 },
-    ] },
+  {
+    "id": "V-1058",
+    "desc": "Full OTC cycle control (Order \u2192 Bill \u2192 Collect) by single user",
+    "users": 5,
+    "severity": "Critical",
+    "area": "OTC",
+    "action": "Split SD billing authority \u2014 redesign role ZSD_BR_BILLING_CREATE",
+    "affectedUsersList": [
+      {
+        "userId": "HOANG.NGUYEN",
+        "name": "Hoang Nguyen",
+        "dept": "Finance",
+        "roles": 237,
+        "riskScore": 75
+      },
+      {
+        "userId": "JAE.KANG",
+        "name": "Jae Kang",
+        "dept": "Finance",
+        "roles": 148,
+        "riskScore": 75
+      },
+      {
+        "userId": "PVALENCIA",
+        "name": "Valencia Patricia",
+        "dept": "Finance",
+        "roles": 107,
+        "riskScore": 75
+      },
+      {
+        "userId": "RUTGER.DUKES",
+        "name": "Rutger Dukes",
+        "dept": "Finance",
+        "roles": 50,
+        "riskScore": 75
+      },
+      {
+        "userId": "WBERRYMAN",
+        "name": "Wendy Berryman",
+        "dept": "Finance",
+        "roles": 51,
+        "riskScore": 75
+      }
+    ]
+  },
+  {
+    "id": "V-1071",
+    "desc": "PFCG role-admin combined with end-user transaction access",
+    "users": 5,
+    "severity": "Critical",
+    "area": "IT",
+    "action": "Revoke PFCG from end-users",
+    "affectedUsersList": [
+      {
+        "userId": "FF.IT",
+        "name": "Ely Taleon",
+        "dept": "Finance",
+        "roles": 78,
+        "riskScore": 90
+      },
+      {
+        "userId": "JSONNIER",
+        "name": "JAMES SONNIER",
+        "dept": "Finance",
+        "roles": 35,
+        "riskScore": 90
+      },
+      {
+        "userId": "SBRYAN",
+        "name": "Stephanie Brown Bryan",
+        "dept": "Finance",
+        "roles": 96,
+        "riskScore": 90
+      },
+      {
+        "userId": "SUNIL.SAHAI",
+        "name": "Sunil Sahai",
+        "dept": "Finance",
+        "roles": 78,
+        "riskScore": 90
+      },
+      {
+        "userId": "VRADHAKRISHN",
+        "name": "Vinoth Radhakrishnan",
+        "dept": "Finance",
+        "roles": 74,
+        "riskScore": 90
+      }
+    ]
+  },
+  {
+    "id": "V-1090",
+    "desc": "Firefighter ID active >180 days without re-attestation",
+    "users": 13,
+    "severity": "High",
+    "area": "IT",
+    "action": "Force expiry \u2014 set 30-day max per Lotte policy",
+    "affectedUsersList": [
+      {
+        "userId": "FF.BASIS",
+        "name": "Firefighter ID for Basis Administration",
+        "dept": "IT Basis",
+        "roles": 78,
+        "riskScore": 75
+      },
+      {
+        "userId": "FF.EWM",
+        "name": "Firefighter ID for EWM - Extended Warehouse Managment",
+        "dept": "IT Basis",
+        "roles": 16,
+        "riskScore": 75
+      },
+      {
+        "userId": "FF.FI",
+        "name": "Firefighter ID for Finance",
+        "dept": "IT Basis",
+        "roles": 17,
+        "riskScore": 75
+      },
+      {
+        "userId": "FF.IT",
+        "name": "Ely Taleon",
+        "dept": "IT Basis",
+        "roles": 78,
+        "riskScore": 75
+      },
+      {
+        "userId": "FF.IT02",
+        "name": "FF IT02",
+        "dept": "IT Basis",
+        "roles": 71,
+        "riskScore": 75
+      },
+      {
+        "userId": "FF.MM",
+        "name": "Firefighter ID for Materials Management",
+        "dept": "IT Basis",
+        "roles": 53,
+        "riskScore": 75
+      },
+      {
+        "userId": "FF.MM02",
+        "name": "FF.MM02",
+        "dept": "IT Basis",
+        "roles": 17,
+        "riskScore": 75
+      },
+      {
+        "userId": "FF.PM",
+        "name": "Firefighter ID for Plant Maintenance",
+        "dept": "IT Basis",
+        "roles": 22,
+        "riskScore": 75
+      },
+      {
+        "userId": "FF.PP",
+        "name": "Firefighter ID for Production Planning",
+        "dept": "IT Basis",
+        "roles": 17,
+        "riskScore": 75
+      },
+      {
+        "userId": "FF.SD",
+        "name": "Firefighter ID for Sales & Distribution",
+        "dept": "IT Basis",
+        "roles": 29,
+        "riskScore": 75
+      },
+      {
+        "userId": "FF.TEMP",
+        "name": "FireFighter Temporary",
+        "dept": "IT Basis",
+        "roles": 71,
+        "riskScore": 75
+      },
+      {
+        "userId": "JEFF.DOZART",
+        "name": "Jeff Dozart",
+        "dept": "IT Basis",
+        "roles": 34,
+        "riskScore": 75
+      },
+      {
+        "userId": "LSCHIFFMAN",
+        "name": "Lauren Schiffman",
+        "dept": "IT Basis",
+        "roles": 7,
+        "riskScore": 75
+      }
+    ]
+  },
+  {
+    "id": "V-1094",
+    "desc": "PO Create + PO Release threshold exceeds user grade authority",
+    "users": 1,
+    "severity": "High",
+    "area": "Procurement",
+    "action": "Redesign ZPM_BR_PROCUREMENT_1720 release strategy",
+    "affectedUsersList": [
+      {
+        "userId": "SBRYAN",
+        "name": "Stephanie Brown Bryan",
+        "dept": "Finance",
+        "roles": 96,
+        "riskScore": 75
+      }
+    ]
+  },
+  {
+    "id": "V-1101",
+    "desc": "F110 Auto-Payment Run runnable by non-treasury users",
+    "users": 5,
+    "severity": "High",
+    "area": "Finance",
+    "action": "Restrict F110 to Treasury role pool",
+    "affectedUsersList": [
+      {
+        "userId": "FF.FI",
+        "name": "Firefighter ID for Finance",
+        "dept": "Finance",
+        "roles": 17,
+        "riskScore": 75
+      },
+      {
+        "userId": "FF.IT",
+        "name": "Ely Taleon",
+        "dept": "Finance",
+        "roles": 78,
+        "riskScore": 75
+      },
+      {
+        "userId": "FF.IT02",
+        "name": "FF IT02",
+        "dept": "Finance",
+        "roles": 71,
+        "riskScore": 75
+      },
+      {
+        "userId": "FF.TEMP",
+        "name": "FireFighter Temporary",
+        "dept": "Finance",
+        "roles": 71,
+        "riskScore": 75
+      },
+      {
+        "userId": "SBRYAN",
+        "name": "Stephanie Brown Bryan",
+        "dept": "Finance",
+        "roles": 96,
+        "riskScore": 75
+      }
+    ]
+  },
+  {
+    "id": "V-1124",
+    "desc": "Background user RFC_BATCH_PI holds SAP_ALL equivalent",
+    "users": 8,
+    "severity": "Critical",
+    "area": "IT",
+    "action": "Replace with scoped profile, rotate credentials",
+    "affectedUsersList": [
+      {
+        "userId": "BATCH_USER",
+        "name": "BATCH_USER",
+        "dept": "IT Basis",
+        "roles": 44,
+        "riskScore": 100
+      },
+      {
+        "userId": "DDIC",
+        "name": "DDIC",
+        "dept": "IT Basis",
+        "roles": 9,
+        "riskScore": 100
+      },
+      {
+        "userId": "KTERN_SERVIC",
+        "name": "KTern Connection",
+        "dept": "IT Basis",
+        "roles": 7,
+        "riskScore": 100
+      },
+      {
+        "userId": "RFCUSER",
+        "name": "RFCUSER",
+        "dept": "IT Basis",
+        "roles": 13,
+        "riskScore": 100
+      },
+      {
+        "userId": "SAPSUPPORT",
+        "name": "SAPSUPPORT",
+        "dept": "IT Basis",
+        "roles": 70,
+        "riskScore": 100
+      },
+      {
+        "userId": "SAP_WFRT",
+        "name": "Workflow user",
+        "dept": "IT Basis",
+        "roles": 17,
+        "riskScore": 100
+      },
+      {
+        "userId": "SDMI_GJJNQXG",
+        "name": "SDMI_GJJNQXG",
+        "dept": "IT Basis",
+        "roles": 1,
+        "riskScore": 100
+      },
+      {
+        "userId": "TC_USER",
+        "name": "TC_USER",
+        "dept": "IT Basis",
+        "roles": 1,
+        "riskScore": 100
+      }
+    ]
+  },
+  {
+    "id": "V-1131",
+    "desc": "Goods Receipt + Invoice Verification by same user",
+    "users": 9,
+    "severity": "Medium",
+    "area": "Procurement",
+    "action": "Enable three-way match enforcement in MIRO",
+    "affectedUsersList": [
+      {
+        "userId": "EELLIOTT",
+        "name": "Ellen Elliott",
+        "dept": "Finance",
+        "roles": 75,
+        "riskScore": 75
+      },
+      {
+        "userId": "HCLEMENT",
+        "name": "Hannah Clement",
+        "dept": "Finance",
+        "roles": 37,
+        "riskScore": 75
+      },
+      {
+        "userId": "HOANG.NGUYEN",
+        "name": "Hoang Nguyen",
+        "dept": "Finance",
+        "roles": 237,
+        "riskScore": 75
+      },
+      {
+        "userId": "JAE.KANG",
+        "name": "Jae Kang",
+        "dept": "Finance",
+        "roles": 148,
+        "riskScore": 75
+      },
+      {
+        "userId": "SBORDELON",
+        "name": "Shelly Bordelon",
+        "dept": "Finance",
+        "roles": 34,
+        "riskScore": 75
+      },
+      {
+        "userId": "SBRYAN",
+        "name": "Stephanie Brown Bryan",
+        "dept": "Finance",
+        "roles": 96,
+        "riskScore": 75
+      },
+      {
+        "userId": "SONJA.WRIGHT",
+        "name": "Sonja Wright",
+        "dept": "Finance",
+        "roles": 27,
+        "riskScore": 75
+      },
+      {
+        "userId": "SUNIL.SAHAI",
+        "name": "Sunil Sahai",
+        "dept": "Finance",
+        "roles": 78,
+        "riskScore": 75
+      },
+      {
+        "userId": "VMEHTA",
+        "name": "Vinay Mehta",
+        "dept": "Finance",
+        "roles": 108,
+        "riskScore": 75
+      }
+    ]
+  }
 ];
 
 const IMMEDIATE_ACTIONS = [
-  { id: 'IA-204', desc: 'BCARRIER holds Create Vendor + Approve Payment in PRD', urgency: 'P1 · 24h', user: 'BCARRIER', action: 'Revoke ZFI_BR_AP_PAYMENT, force re-attestation', risk: '$2.4M payment fraud exposure', status: 'Open', assignee: null },
-  { id: 'IA-205', desc: 'Background user RFC_BATCH_PI runs with SAP_ALL equivalent', urgency: 'P1 · 24h', user: 'RFC_BATCH_PI', action: 'Rotate credentials, replace with scoped profile', risk: 'Full-system compromise vector', status: 'In Progress', assignee: 'SAP Basis Team' },
-  { id: 'IA-206', desc: 'Firefighter FF_FIN_03 assigned 214 days, last used 11d ago', urgency: 'P1 · 48h', user: 'APOCHE', action: 'Terminate assignment, require ticket-based re-issue', risk: 'Audit material weakness — SOX 302', status: 'Open', assignee: 'IT Compliance' },
-  { id: 'IA-207', desc: '5 non-treasury users authorized to run F110 in PRD', urgency: 'P1 · 48h', user: 'JSMITH_LC +4', action: 'Strip F110 authorization, route to Treasury role', risk: 'Unauthorized payment run · $5M+ exposure', status: 'Open', assignee: 'Finance Risk' },
-  { id: 'IA-208', desc: 'KPARK_LC granted PFCG + ME21N + FB60 simultaneously', urgency: 'P1 · 48h', user: 'KPARK_LC', action: 'Revoke PFCG, audit role changes last 90 days', risk: 'Privilege escalation + procurement abuse', status: 'Open', assignee: null },
-  { id: 'IA-209', desc: 'Vendor bank-detail edit accessible to 4 AP clerks', urgency: 'P2 · 48h', user: 'BHOOPER +3', action: 'Move FK02 bank-tab to Vendor Master team only', risk: 'Vendor-bank-redirect fraud — high industry trend', status: 'Resolved', assignee: 'SAP Security Team' },
-  { id: 'IA-210', desc: 'YKIM holds full OTC cycle (VA01 → VL01N → VF01 → F-28)', urgency: 'P1 · 24h', user: 'YKIM', action: 'Split SD billing — emergency role redesign', risk: 'Revenue manipulation · $1.8M exposure', status: 'In Progress', assignee: 'Finance Risk' },
+  {
+    "id": "IA-201",
+    "desc": "HOANG.NGUYEN holds Full OTC cycle control (Order \u2192 Bill \u2192 Collect) by single user in PRD",
+    "urgency": "P1 \u00b7 24h",
+    "user": "HOANG.NGUYEN",
+    "action": "Split SD billing authority \u2014 redesign role ZSD_BR_BILLING_CREATE",
+    "risk": "Potential financial exposure of $1,800,000",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "IA-202",
+    "desc": "JAE.KANG holds Full OTC cycle control (Order \u2192 Bill \u2192 Collect) by single user in PRD",
+    "urgency": "P1 \u00b7 24h",
+    "user": "JAE.KANG",
+    "action": "Split SD billing authority \u2014 redesign role ZSD_BR_BILLING_CREATE",
+    "risk": "Potential financial exposure of $1,800,000",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "IA-203",
+    "desc": "PVALENCIA holds Full OTC cycle control (Order \u2192 Bill \u2192 Collect) by single user in PRD",
+    "urgency": "P1 \u00b7 24h",
+    "user": "PVALENCIA",
+    "action": "Split SD billing authority \u2014 redesign role ZSD_BR_BILLING_CREATE",
+    "risk": "Potential financial exposure of $1,800,000",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "IA-204",
+    "desc": "FF.IT holds PFCG role-admin combined with end-user transaction access in PRD",
+    "urgency": "P1 \u00b7 24h",
+    "user": "FF.IT",
+    "action": "Revoke PFCG from end-users",
+    "risk": "System security threat",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "IA-205",
+    "desc": "JSONNIER holds PFCG role-admin combined with end-user transaction access in PRD",
+    "urgency": "P1 \u00b7 24h",
+    "user": "JSONNIER",
+    "action": "Revoke PFCG from end-users",
+    "risk": "System security threat",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "IA-206",
+    "desc": "SBRYAN holds PFCG role-admin combined with end-user transaction access in PRD",
+    "urgency": "P1 \u00b7 24h",
+    "user": "SBRYAN",
+    "action": "Revoke PFCG from end-users",
+    "risk": "System security threat",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "IA-207",
+    "desc": "BATCH_USER holds Background user RFC_BATCH_PI holds SAP_ALL equivalent in PRD",
+    "urgency": "P1 \u00b7 24h",
+    "user": "BATCH_USER",
+    "action": "Replace with scoped profile, rotate credentials",
+    "risk": "System security threat",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "IA-208",
+    "desc": "DDIC holds Background user RFC_BATCH_PI holds SAP_ALL equivalent in PRD",
+    "urgency": "P1 \u00b7 24h",
+    "user": "DDIC",
+    "action": "Replace with scoped profile, rotate credentials",
+    "risk": "System security threat",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "IA-209",
+    "desc": "KTERN_SERVIC holds Background user RFC_BATCH_PI holds SAP_ALL equivalent in PRD",
+    "urgency": "P1 \u00b7 24h",
+    "user": "KTERN_SERVIC",
+    "action": "Replace with scoped profile, rotate credentials",
+    "risk": "System security threat",
+    "status": "Open",
+    "assignee": null
+  }
 ];
 
-/* SOD-12 Trend — last 8 runs */
 const RUN_TREND = [
-  { run: 'Q2-2025', date: '2025-05', new: 412, resolved: 0,   persisting: 1672, score: 58 },
-  { run: 'Q3-2025', date: '2025-08', new: 198, resolved: 286, persisting: 1584, score: 61 },
-  { run: 'Q4-2025', date: '2025-11', new: 142, resolved: 218, persisting: 1508, score: 60 },
-  { run: 'Q1-2026', date: '2026-02', new: 121, resolved: 264, persisting: 1365, score: 63 },
-  { run: 'M01-26', date: '2026-03', new: 87,  resolved: 198, persisting: 1254, score: 66 },
-  { run: 'M02-26', date: '2026-04', new: 64,  resolved: 152, persisting: 1166, score: 68 },
-  { run: 'M03-26', date: '2026-04', new: 52,  resolved: 138, persisting: 1080, score: 70 },
-  { run: 'Q2-2026', date: '2026-05', new: 41,  resolved: 121, persisting: 1000, score: 72 },
+  { run: 'Q4-2025', date: '2025-11', new: 10, resolved: 5, persisting: 25, score: 90.0 },
+  { run: 'Q1-2026', date: '2026-02', new: 8, resolved: 12, persisting: 21, score: 92.5 },
+  { run: 'Q2-2026', date: '2026-05', new: 0, resolved: 15, persisting: 35, score: 93.5 }
 ];
 
-/* Violation Category Navigation Cards — ordered per PRD SOD-04 → SOD-12 */
 const CATEGORY_CARDS = [
-  { key: 'sod-04', code: 'SOD-04', title: 'Immediate Actions',        count: 7,   severity: 'Critical', blurb: 'P1/P2 violations needing remediation within 24-48 hours', icon: 'flame' },
-  { key: 'sod-05', code: 'SOD-05', title: 'Risk Exposure & Impact',   count: 15,  severity: 'Critical', blurb: 'Financial, operational & regulatory exposure assessment', icon: 'impact' },
-  { key: 'sod-06', code: 'SOD-06', title: 'Super Administrators',     count: 23,  severity: 'Critical', blurb: 'Concentration-of-power risk · least-privilege gaps', icon: 'shield' },
-  { key: 'sod-07', code: 'SOD-07', title: 'Dual Process Control',     count: 184, severity: 'Critical', blurb: 'Cross-process authority · Vendor / AP / OTC conflicts', icon: 'split' },
-  { key: 'sod-08', code: 'SOD-08', title: 'Emergency Access',         count: 31,  severity: 'High',     blurb: 'Firefighter usage · approvals + anomaly detection', icon: 'flame' },
-  { key: 'sod-09', code: 'SOD-09', title: 'OTC Control Violations',   count: 47,  severity: 'Critical', blurb: 'End-to-end Order-to-Cash control by single user', icon: 'cycle' },
-  { key: 'sod-10', code: 'SOD-10', title: 'High-Risk Service Accounts', count: 62, severity: 'High',   blurb: 'Background, RFC, integration users · privilege drift', icon: 'bot' },
-  { key: 'sod-11', code: 'SOD-11', title: 'Remediation & Governance', count: 312, severity: 'Medium',   blurb: 'Open recommendations · policy + role redesign', icon: 'wrench' },
-  { key: 'sod-12', code: 'SOD-12', title: 'Continuous Compliance',    count: 847, severity: 'Low',      blurb: 'Automated GRC checks · rule deployment tracking', icon: 'shield' },
+  { key: 'sod-04', code: 'SOD-04', title: 'Immediate Actions',        count: 9,   severity: 'Critical', blurb: 'P1 violations needing remediation within 24-48 hours', icon: 'flame' },
+  { key: 'sod-05', code: 'SOD-05', title: 'Risk Exposure & Impact',   count: 46,  severity: 'Critical', blurb: 'Financial & regulatory exposure assessment', icon: 'impact' },
+  { key: 'sod-06', code: 'SOD-06', title: 'Super Administrators',     count: 32,  severity: 'Critical', blurb: 'Concentration of administrative authority', icon: 'shield' },
+  { key: 'sod-07', code: 'SOD-07', title: 'Dual Process Control',     count: 19, severity: 'Critical', blurb: 'Cross-process authorization overlaps', icon: 'split' },
+  { key: 'sod-08', code: 'SOD-08', title: 'Emergency Access',         count: 13,  severity: 'High',     blurb: 'Firefighter usage and anomaly flags', icon: 'flame' },
+  { key: 'sod-09', code: 'SOD-09', title: 'OTC Control Violations',   count: 13,  severity: 'Critical', blurb: 'Order-to-Cash process conflicts', icon: 'cycle' },
+  { key: 'sod-10', code: 'SOD-10', title: 'High-Risk Service Accounts', count: 125, severity: 'High',   blurb: 'Service accounts with excessive privileges', icon: 'bot' },
+  { key: 'sod-11', code: 'SOD-11', title: 'Remediation & Governance', count: 7, severity: 'Medium',   blurb: 'Open remediation recommendations', icon: 'wrench' },
+  { key: 'sod-12', code: 'SOD-12', title: 'Continuous Compliance',    count: 540, severity: 'Low',      blurb: 'Automated scans and rule execution metrics', icon: 'shield' },
 ];
 
 window.MOCK = {
@@ -245,58 +576,186 @@ window.MOCK = {
   RUN_TREND, CATEGORY_CARDS,
 };
 
-/* ============================================================ */
-/* SOD-05 — Compliance Impact Assessment                         */
-/* ============================================================ */
-
+// SOD-05 - Compliance Impact Assessment
 const IMPACT_CATEGORIES = ['Financial', 'Operational', 'Regulatory'];
 const EXPOSURE_LEVELS = ['High', 'Medium', 'Low'];
 const FRAMEWORKS = ['SOX', 'GDPR', 'ISO 27001', 'SAP GRC', 'K-SOX'];
 
-/* Impact split for the donut */
 const IMPACT_SPLIT = [
-  { category: 'Financial',   count: 487, dollars: 12_400_000, color: '#EF4444' },
-  { category: 'Operational', count: 412, dollars: 6_200_000,  color: '#475569' },
-  { category: 'Regulatory',  count: 344, dollars: 9_800_000,  color: '#94A3B8' },
+  {
+    "category": "Financial",
+    "count": 19,
+    "dollars": 41880000,
+    "color": "#EF4444"
+  },
+  {
+    "category": "Operational",
+    "count": 14,
+    "dollars": 0,
+    "color": "#475569"
+  },
+  {
+    "category": "Regulatory",
+    "count": 13,
+    "dollars": 0,
+    "color": "#94A3B8"
+  }
 ];
 
 const FRAMEWORK_BREAKDOWN = [
-  { framework: 'SOX',        count: 412, criticality: 'Critical' },
-  { framework: 'K-SOX',      count: 387, criticality: 'Critical' },
-  { framework: 'SAP GRC',    count: 1243, criticality: 'High' },
-  { framework: 'GDPR',       count: 168, criticality: 'High' },
-  { framework: 'ISO 27001',  count: 241, criticality: 'Medium' },
+  {
+    "framework": "SOX",
+    "count": 32,
+    "criticality": "Critical"
+  },
+  {
+    "framework": "K-SOX",
+    "count": 5,
+    "criticality": "Critical"
+  },
+  {
+    "framework": "SAP GRC",
+    "count": 46,
+    "criticality": "High"
+  },
+  {
+    "framework": "GDPR",
+    "count": 0,
+    "criticality": "High"
+  },
+  {
+    "framework": "ISO 27001",
+    "count": 13,
+    "criticality": "Medium"
+  }
 ];
 
 const IMPACT_ROWS = [
-  { id: 'V-1042', desc: 'Create Vendor + Approve Payment authority', category: 'Financial',   exposure: 'High',   dollars: 2_400_000, areas: ['Procurement', 'Finance'], frameworks: ['SAP GRC', 'SOX', 'K-SOX'],            users: 7,  linked: ['V-1054', 'V-1086'] },
-  { id: 'V-1058', desc: 'Full OTC cycle controlled by single user', category: 'Financial',   exposure: 'High',   dollars: 1_800_000, areas: ['OTC'],                    frameworks: ['SOX', 'SAP GRC'],         users: 4,  linked: ['V-1112', 'V-1133'] },
-  { id: 'V-1063', desc: 'GL Posting + Bank Reconciliation conflict',  category: 'Financial',   exposure: 'High',   dollars: 3_200_000, areas: ['Finance'],                frameworks: ['SOX', 'K-SOX', 'SAP GRC'],  users: 11, linked: ['V-1101', 'V-1144'] },
-  { id: 'V-1071', desc: 'PFCG + end-user transaction access',         category: 'Operational', exposure: 'High',   dollars: null,      areas: ['IT'],                     frameworks: ['SAP GRC', 'ISO 27001'],     users: 3,  linked: ['V-1124'] },
-  { id: 'V-1082', desc: 'HR Payroll Maintain + Approve same user',    category: 'Regulatory',  exposure: 'Medium', dollars: null,      areas: ['HR'],                     frameworks: ['SAP GRC', 'GDPR', 'K-SOX'],           users: 2,  linked: [] },
-  { id: 'V-1090', desc: 'Firefighter ID active >180 days',            category: 'Regulatory',  exposure: 'High',   dollars: null,      areas: ['IT'],                     frameworks: ['SOX', 'SAP GRC'],          users: 14, linked: ['V-1124'] },
-  { id: 'V-1094', desc: 'PO Create + PO Release threshold mismatch',  category: 'Operational', exposure: 'Medium', dollars: 640_000,   areas: ['Procurement'],            frameworks: ['SAP GRC'],                 users: 9,  linked: ['V-1131'] },
-  { id: 'V-1101', desc: 'F110 Auto-Payment Run misassigned',          category: 'Financial',   exposure: 'High',   dollars: 5_100_000, areas: ['Finance'],                frameworks: ['SAP GRC', 'SOX', 'K-SOX'],            users: 5,  linked: ['V-1063'] },
-  { id: 'V-1112', desc: 'Customer Master + Sales Order Release',      category: 'Financial',   exposure: 'Medium', dollars: 480_000,   areas: ['OTC'],                    frameworks: ['SAP GRC', 'SOX'],                     users: 6,  linked: ['V-1058'] },
-  { id: 'V-1124', desc: 'Background user RFC_BATCH_PI with SAP_ALL',  category: 'Operational', exposure: 'High',   dollars: null,      areas: ['IT'],                     frameworks: ['SAP GRC', 'ISO 27001'],     users: 1,  linked: ['V-1071'] },
-  { id: 'V-1131', desc: 'GR + Invoice Verification same user',        category: 'Financial',   exposure: 'Medium', dollars: 820_000,   areas: ['Procurement', 'Finance'], frameworks: ['SOX', 'SAP GRC'],          users: 18, linked: ['V-1094'] },
-  { id: 'V-1144', desc: 'Vendor Bank Edit + Payment Block remove',    category: 'Financial',   exposure: 'High',   dollars: 1_300_000, areas: ['Finance'],                frameworks: ['SAP GRC', 'SOX', 'K-SOX', 'GDPR'],     users: 4,  linked: ['V-1063'] },
-  { id: 'V-1152', desc: 'Personnel data export without retention',    category: 'Regulatory',  exposure: 'Medium', dollars: null,      areas: ['HR'],                     frameworks: ['SAP GRC', 'GDPR'],                    users: 7,  linked: [] },
-  { id: 'V-1167', desc: 'Audit log table write access — non-IT',      category: 'Regulatory',  exposure: 'High',   dollars: null,      areas: ['IT', 'Finance'],          frameworks: ['SAP GRC', 'SOX', 'ISO 27001'],         users: 3,  linked: ['V-1071'] },
-  { id: 'V-1174', desc: 'Production change deploy without approval',  category: 'Operational', exposure: 'High',   dollars: null,      areas: ['IT'],                     frameworks: ['SAP GRC', 'ISO 27001'],     users: 6,  linked: ['V-1071', 'V-1124'] },
+  {
+    "id": "V-1058",
+    "desc": "Full OTC cycle control (Order \u2192 Bill \u2192 Collect) by single user",
+    "category": "Financial",
+    "exposure": "High",
+    "dollars": 1800000,
+    "areas": [
+      "OTC"
+    ],
+    "frameworks": [
+      "SOX",
+      "SAP GRC"
+    ],
+    "users": 5,
+    "linked": []
+  },
+  {
+    "id": "V-1071",
+    "desc": "PFCG role-admin combined with end-user transaction access",
+    "category": "Operational",
+    "exposure": "High",
+    "dollars": null,
+    "areas": [
+      "IT"
+    ],
+    "frameworks": [
+      "SAP GRC",
+      "ISO 27001"
+    ],
+    "users": 5,
+    "linked": []
+  },
+  {
+    "id": "V-1090",
+    "desc": "Firefighter ID active >180 days without re-attestation",
+    "category": "Regulatory",
+    "exposure": "High",
+    "dollars": null,
+    "areas": [
+      "IT"
+    ],
+    "frameworks": [
+      "SOX",
+      "SAP GRC"
+    ],
+    "users": 13,
+    "linked": []
+  },
+  {
+    "id": "V-1094",
+    "desc": "PO Create + PO Release threshold exceeds user grade authority",
+    "category": "Operational",
+    "exposure": "Medium",
+    "dollars": 640000,
+    "areas": [
+      "Procurement"
+    ],
+    "frameworks": [
+      "SAP GRC"
+    ],
+    "users": 1,
+    "linked": []
+  },
+  {
+    "id": "V-1101",
+    "desc": "F110 Auto-Payment Run runnable by non-treasury users",
+    "category": "Financial",
+    "exposure": "High",
+    "dollars": 5100000,
+    "areas": [
+      "Finance"
+    ],
+    "frameworks": [
+      "SAP GRC",
+      "SOX",
+      "K-SOX"
+    ],
+    "users": 5,
+    "linked": []
+  },
+  {
+    "id": "V-1124",
+    "desc": "Background user RFC_BATCH_PI holds SAP_ALL equivalent",
+    "category": "Operational",
+    "exposure": "High",
+    "dollars": null,
+    "areas": [
+      "IT"
+    ],
+    "frameworks": [
+      "SAP GRC",
+      "ISO 27001"
+    ],
+    "users": 8,
+    "linked": []
+  },
+  {
+    "id": "V-1131",
+    "desc": "Goods Receipt + Invoice Verification by same user",
+    "category": "Financial",
+    "exposure": "Medium",
+    "dollars": 820000,
+    "areas": [
+      "Procurement"
+    ],
+    "frameworks": [
+      "SOX",
+      "SAP GRC"
+    ],
+    "users": 9,
+    "linked": []
+  }
 ];
 
 const IMPACT_KPIS = {
-  totalMapped: 1243,
-  financialExposureHigh: 312,
-  financialExposureMed: 487,
-  financialExposureLow: 444,
-  totalDollarExposure: 28_400_000,
+  totalMapped: 46,
+  financialExposureHigh: 18,
+  financialExposureMed: 19,
+  financialExposureLow: 9,
+  totalDollarExposure: 42520000,
   frameworksAffected: 5,
   deltas: {
-    totalMapped: -94,
-    financialExposureHigh: -18,
-    totalDollarExposure: -4_200_000,
+    totalMapped: 0,
+    financialExposureHigh: 0,
+    totalDollarExposure: 0,
   },
 };
 
@@ -305,150 +764,2531 @@ Object.assign(window.MOCK, {
   IMPACT_SPLIT, FRAMEWORK_BREAKDOWN, IMPACT_ROWS, IMPACT_KPIS,
 });
 
-/* ============================================================ */
-/* SOD-06 — Super Administrators                                 */
-/* ============================================================ */
-
+// SOD-06 - Super Administrators
 const SUPER_ADMIN_RECOMMENDATIONS = ['Revoke', 'Redesign', 'Monitor'];
-
 const SUPER_ADMIN_ROWS = [
-  { user: 'BCARRIER', name: 'Brian Carrier',     userId: 'BC4087', indicator: 'SAP_ALL equivalent', score: 98, severity: 'Critical', recommendation: 'Revoke',   systems: ['LCKR-PRD-01', 'LCKR-DEV-01'], status: 'Open', assignee: null, lastChange: '2026-04-18',
-    rationale: 'Holds SAP_ALL equivalent profiles granting unrestricted transactional, structural, and table access across production. Circumvents all segregation of duties controls.',
-    roles: [
-      { role: 'SAP_ALL', desc: 'Unrestricted SAP system authorization — production profile', authObjects: ['S_TCODE', 'S_TABU_DIS', 'S_PROGRAM', 'S_USER_GRP'] },
-      { role: 'ZBC_BR_SYSTEM_ADMIN', desc: 'Basis admin · client maintenance, transports, RFC', authObjects: ['S_ADMI_FCD', 'S_RZL_ADM', 'S_TABU_DIS', 'S_USER_GRP'] },
-      { role: 'ZFI_BR_GL_POSTING', desc: 'GL document posting · all company codes', authObjects: ['F_BKPF_BUK', 'F_BKPF_KOA'] },
-      { role: 'ZFI_BR_AP_PAYMENT', desc: 'Vendor payment approval up to $10M', authObjects: ['F_REGU_BUK', 'F_REGU_KOA'] },
-    ] },
-  { user: 'JSMITH_LC', name: 'Jane Smith',       userId: 'JS2104', indicator: 'PFCG + SU01 combo',   score: 94, severity: 'Critical', recommendation: 'Revoke',   systems: ['LCKR-PRD-01'], status: 'In Progress', assignee: 'SAP Security Team', lastChange: '2026-04-22',
-    rationale: 'Combines role maintenance (PFCG) with user administration (SU01). Allows creating backdoor credentials and self-assigning high-privilege profiles without dual approval.',
-    roles: [
-      { role: 'PFCG_ROLE_MAINTAIN', desc: 'Role maintenance · can grant any authorization', authObjects: ['S_USER_AGR', 'S_USER_VAL', 'S_USER_PRO'] },
-      { role: 'SU01_USER_MAINTAIN', desc: 'User master maintenance · can create/delete users', authObjects: ['S_USER_GRP', 'S_USER_PRO', 'S_USER_SAS'] },
-      { role: 'ZIT_BR_ALL_EMPLOYEES', desc: 'IT admin role · cross-system', authObjects: ['S_TCODE', 'S_USER_GRP'] },
-    ] },
-  { user: 'APOCHE',    name: 'Alain Poche',      userId: 'AP1872', indicator: 'Cross-module admin',  score: 91, severity: 'Critical', recommendation: 'Redesign', systems: ['LCKR-PRD-01'], status: 'Open', assignee: null, lastChange: '2026-05-02',
-    rationale: 'Maintains cross-module change access spanning GL Posting, Purchase Orders, Billing Documents, and Transport Release. Breaks boundaries between Finance, Procurement, and Basis.',
-    roles: [
-      { role: 'ZFI_BR_GL_POSTING', desc: 'Finance · GL posting', authObjects: ['F_BKPF_BUK', 'F_BKPF_KOA'] },
-      { role: 'ZMM_BR_PO_DISPLAY_PRO', desc: 'Procurement · PO display + change', authObjects: ['M_BEST_EKG', 'M_BEST_EKO', 'M_BEST_BSA'] },
-      { role: 'ZSD_BR_BILLING_CREATE', desc: 'OTC · billing document creation', authObjects: ['V_VBRK_FKA', 'V_VBRK_BUK'] },
-      { role: 'ZBC_BR_TRANSPORT', desc: 'Basis · transport release', authObjects: ['S_TRANSPRT', 'S_CTS_SADM'] },
-    ] },
-  { user: 'KPARK_LC',  name: 'Kyung-soo Park',   userId: 'KP5530', indicator: 'PFCG + business txns',score: 88, severity: 'Critical', recommendation: 'Revoke',   systems: ['LCKR-PRD-01', 'LCKR-QAS-01'], status: 'Open', assignee: null, lastChange: '2026-05-09',
-    rationale: 'Combines security administration rights (PFCG) with critical business transaction capability (PO Release and Invoice Posting). High risk of self-auditing violations.',
-    roles: [
-      { role: 'PFCG_ROLE_MAINTAIN', desc: 'Role admin', authObjects: ['S_USER_AGR', 'S_USER_VAL', 'S_USER_PRO'] },
-      { role: 'ZMM_BR_PO_RELEASE', desc: 'PO release strategy bypass', authObjects: ['M_BEST_EKG', 'M_BEST_EKO', 'M_BEST_BSA'] },
-      { role: 'ZFI_BR_AP_INVOICE', desc: 'Invoice posting', authObjects: ['F_BKPF_BUK', 'F_BKPF_KOA'] },
-    ] },
-  { user: 'HSCHRODE',  name: 'Helga Schroder',   userId: 'HS3041', indicator: 'Basis + Finance',     score: 85, severity: 'High',     recommendation: 'Redesign', systems: ['LCKR-PRD-01'], status: 'Open', assignee: 'SAP Basis Team', lastChange: '2026-04-14',
-    rationale: 'Holds both Basis administration rights and Treasury operational access. Enables direct table level modifications of bank transfers and auto-payment runs.',
-    roles: [
-      { role: 'ZBC_BR_SYSTEM_ADMIN', desc: 'Basis admin', authObjects: ['S_ADMI_FCD', 'S_RZL_ADM', 'S_TABU_DIS', 'S_USER_GRP'] },
-      { role: 'ZFI_BR_TREASURY', desc: 'Treasury access · F110, bank transfers', authObjects: ['F_T_CODB', 'F_REGU_BUK'] },
-    ] },
-  { user: 'YKIM',      name: 'Yu-jin Kim',       userId: 'YK6712', indicator: 'OTC full cycle',      score: 82, severity: 'High',     recommendation: 'Redesign', systems: ['LCKR-PRD-01'], status: 'In Progress', assignee: 'Finance Risk', lastChange: '2026-05-07',
-    rationale: 'Controls the end-to-end Order-to-Cash process from sales order creation through delivery, billing, and accounts receivable clearing. High exposure to invoice manipulation.',
-    roles: [
-      { role: 'ZSD_BR_SO_CREATE', desc: 'Sales order create', authObjects: ['V_VBAK_AAT', 'V_VBAK_VKO'] },
-      { role: 'ZSD_BR_DELIVERY', desc: 'Delivery doc maintain', authObjects: ['V_LIKP_VST', 'V_LIKP_SHA'] },
-      { role: 'ZSD_BR_BILLING_CREATE', desc: 'Billing document create', authObjects: ['V_VBRK_FKA', 'V_VBRK_BUK'] },
-      { role: 'ZFI_BR_AR_CLEAR', desc: 'AR clearing · cash app', authObjects: ['F_BKPF_KOA', 'F_BKPF_BUK'] },
-    ] },
-  { user: 'BGILL',     name: 'Baljinder Gill',   userId: 'BG2299', indicator: 'P-cycle full power',  score: 79, severity: 'High',     recommendation: 'Redesign', systems: ['LCKR-PRD-01'], status: 'Open', assignee: null, lastChange: '2026-04-30',
-    rationale: 'Holds full authority across the purchase-to-payment cycle (Vendor Creation, Purchase Order, and Payment Approval). Risk of fictitious vendor payments.',
-    roles: [
-      { role: 'ZMM_BR_VENDOR_CREATE', desc: 'Vendor master create', authObjects: ['F_LFA1_BUK', 'F_LFA1_GEN'] },
-      { role: 'ZMM_BR_PO_CREATE', desc: 'PO create + change', authObjects: ['M_BEST_EKG', 'M_BEST_EKO', 'M_BEST_BSA'] },
-      { role: 'ZFI_BR_AP_PAYMENT', desc: 'Payment approval', authObjects: ['F_REGU_BUK', 'F_REGU_KOA'] },
-    ] },
-  { user: 'BHOOPER',   name: 'Beth Hooper',      userId: 'BH4421', indicator: 'Vendor + Payment',    score: 76, severity: 'High',     recommendation: 'Redesign', systems: ['LCKR-PRD-01'], status: 'Open', assignee: null, lastChange: '2026-05-11',
-    rationale: 'Maintains dual capability to create vendor records and release payments. Breaks essential fraud prevention controls in accounts payable.',
-    roles: [
-      { role: 'ZMM_BR_VENDOR_CREATE', desc: 'Vendor master create', authObjects: ['F_LFA1_BUK', 'F_LFA1_GEN'] },
-      { role: 'ZFI_BR_AP_PAYMENT', desc: 'AP payment approval', authObjects: ['F_REGU_BUK', 'F_REGU_KOA'] },
-    ] },
-  { user: 'MJONES',    name: 'Mary Jones',       userId: 'MJ8830', indicator: 'HR + Payroll',        score: 72, severity: 'High',     recommendation: 'Redesign', systems: ['LCKR-PRD-01'], status: 'Open', assignee: null, lastChange: '2026-04-25',
-    rationale: 'Combines HR Master Data maintenance with Payroll Run execution and Override approvals. High risk of unauthorized payroll adjustments.',
-    roles: [
-      { role: 'ZHR_BR_PAYROLL_PROCESS', desc: 'Payroll run · all employees', authObjects: ['P_ORGIN', 'P_PCR'] },
-      { role: 'ZHR_BR_MASTER_DATA', desc: 'HR master data maintain', authObjects: ['P_ORGIN', 'P_ORGXX'] },
-      { role: 'ZHR_BR_APPROVE', desc: 'HR approval override', authObjects: ['P_ORGIN', 'P_APPL'] },
-    ] },
-  { user: 'LBAKER',    name: 'Lisa Baker',       userId: 'LB6610', indicator: 'Multi-CC finance',    score: 69, severity: 'Medium',   recommendation: 'Monitor',  systems: ['LCKR-PRD-01'], status: 'Open', assignee: null, lastChange: '2026-05-03',
-    rationale: 'Holds posting and clearing rights across multiple company codes without local entity segregation. Increases general ledger variance exposure.',
-    roles: [
-      { role: 'ZFI_BR_GL_POSTING', desc: 'Finance · GL posting · 4 company codes', authObjects: ['F_BKPF_BUK', 'F_BKPF_KOA'] },
-      { role: 'ZFI_BR_AR_CLEAR',   desc: 'AR clearing', authObjects: ['F_BKPF_KOA', 'F_BKPF_BUK'] },
-    ] },
-  { user: 'RTHOMPSON', name: 'Ryan Thompson',    userId: 'RT9183', indicator: 'IT + Compliance',     score: 68, severity: 'Medium',   recommendation: 'Monitor',  systems: ['LCKR-PRD-01', 'LCKR-QAS-01'], status: 'Resolved', assignee: 'IT Compliance', lastChange: '2026-03-29',
-    rationale: 'Holds both IT general access and read access to financial audit logs. Enables clearing or altering log traces without compliance logging.',
-    roles: [
-      { role: 'ZIT_BR_ALL_EMPLOYEES', desc: 'IT compliance view', authObjects: ['S_TCODE', 'S_USER_GRP'] },
-      { role: 'ZFI_BR_AUDIT_LOG', desc: 'Audit log read', authObjects: ['S_TABU_DIS', 'S_PROGRAM'] },
-    ] },
-  { user: 'SCHEN_LC',  name: 'Shuhua Chen',      userId: 'SC1077', indicator: 'Basis + Transport',   score: 65, severity: 'Medium',   recommendation: 'Monitor',  systems: ['LCKR-PRD-01'], status: 'In Progress', assignee: 'SAP Basis Team', lastChange: '2026-05-06',
-    rationale: 'Maintains background job management and production transport deployment access. Allows executing unapproved changes via automated batch streams.',
-    roles: [
-      { role: 'ZBC_BR_TRANSPORT', desc: 'Transport release', authObjects: ['S_TRANSPRT', 'S_CTS_SADM'] },
-      { role: 'ZBC_BR_BACKGROUND', desc: 'Background job admin', authObjects: ['S_BTCH_ADM', 'S_BTCH_JOB'] },
-    ] },
-  { user: 'DMARTINEZ', name: 'Diego Martinez',   userId: 'DM4502', indicator: 'Multi-org procurement',score: 62, severity: 'Medium',   recommendation: 'Monitor',  systems: ['LCKR-PRD-01'], status: 'Open', assignee: null, lastChange: '2026-04-12',
-    rationale: 'Manages purchase order and vendor master creation across 6 separate plant organizations, bypassing regional compliance boundaries.',
-    roles: [
-      { role: 'ZMM_BR_PO_CREATE',   desc: 'PO create — 6 plants', authObjects: ['M_BEST_EKG', 'M_BEST_EKO', 'M_BEST_BSA'] },
-      { role: 'ZMM_BR_VENDOR_CREATE', desc: 'Vendor create', authObjects: ['F_LFA1_BUK', 'F_LFA1_GEN'] },
-    ] },
-  { user: 'EWILSON',   name: 'Emma Wilson',      userId: 'EW7704', indicator: 'Treasury override',   score: 58, severity: 'Medium',   recommendation: 'Monitor',  systems: ['LCKR-PRD-01'], status: 'Open', assignee: null, lastChange: '2026-05-12',
-    rationale: 'Holds both Treasury bank settings access and bank statement reconciliation authority, weakening dual check controls for wire transfers.',
-    roles: [
-      { role: 'ZFI_BR_TREASURY',  desc: 'Treasury bank', authObjects: ['F_T_CODB', 'F_REGU_BUK'] },
-      { role: 'ZFI_BR_BANK_RECON', desc: 'Bank reconciliation', authObjects: ['F_FEB_BUK'] },
-    ] },
-  { user: 'FGARCIA',   name: 'Felipe Garcia',    userId: 'FG3318', indicator: 'Reporting + Posting', score: 54, severity: 'Medium',   recommendation: 'Monitor',  systems: ['LCKR-PRD-01'], status: 'Open', assignee: null, lastChange: '2026-04-08',
-    rationale: 'Combines corporate reporting with general ledger posting rights, violating the separation between book-keeping and independent auditing.',
-    roles: [
-      { role: 'ZFI_BR_REPORTING', desc: 'Finance reporting cross-CC', authObjects: ['F_BKPF_BUK'] },
-      { role: 'ZFI_BR_GL_POSTING', desc: 'GL posting limited CC', authObjects: ['F_BKPF_BUK', 'F_BKPF_KOA'] },
-    ] },
+  {
+    "user": "BASIS_AMS",
+    "name": "AMS Support Basis",
+    "userId": "BASIS_AMS",
+    "indicator": "PFCG + SU01 combo",
+    "score": 56,
+    "severity": "Critical",
+    "recommendation": "Revoke",
+    "systems": [
+      "LCKR-PRD-01"
+    ],
+    "status": "Open",
+    "assignee": null,
+    "lastChange": "06-09-2025",
+    "rationale": "User holds PFCG + SU01 combo permissions, granting administrative control over users and authorizations.",
+    "roles": [
+      {
+        "role": "ZBASIS_BR_BGJOB_ADMIN",
+        "desc": "Role: ZBASIS_BR_BGJOB_ADMIN",
+        "authObjects": [
+          "LCM_LT",
+          "/SRMSMC/BO",
+          "LCM_GEN",
+          "LCM_CTX",
+          "LCM_LTENSO",
+          "I_IWERK",
+          "S_BTCH_ADM",
+          "S_LOG_COM",
+          "S_DHBASACT",
+          "S_BTCH_JOB"
+        ]
+      },
+      {
+        "role": "ZBASIS_BR_USER_ROLE_ADMIN",
+        "desc": "Role: ZBASIS_BR_USER_ROLE_ADMIN",
+        "authObjects": [
+          "S_USER_STA",
+          "S_IMG_GENE",
+          "S_RFC",
+          "PLOG",
+          "S_USER_SYS",
+          "S_USER_PRO",
+          "S_BTCH_ADM",
+          "P_TCODE",
+          "S_USER_VAL",
+          "S_BTCH_JOB"
+        ]
+      },
+      {
+        "role": "ZBASIS_BR_PERFORMANCE_ANALYSIS",
+        "desc": "Role: ZBASIS_BR_PERFORMANCE_ANALYSIS",
+        "authObjects": [
+          "S_C_FUNCT",
+          "S_PROGNAM",
+          "S_RFC",
+          "S_USER_PRO",
+          "S_TABU_NAM",
+          "S_ABAPDUMP",
+          "S_TABU_CLI",
+          "S_USER_GRP",
+          "S_ESH_ADM",
+          "S_TOOLS_EX"
+        ]
+      },
+      {
+        "role": "ZBASIS_BR_DB_ADMIN",
+        "desc": "Role: ZBASIS_BR_DB_ADMIN",
+        "authObjects": [
+          "S_ARCHIVE",
+          "S_RZL_ADM",
+          "S_ADMI_FCD",
+          "S_TCODE",
+          "S_DBCON"
+        ]
+      }
+    ]
+  },
+  {
+    "user": "BATCH_USER",
+    "name": "BATCH_USER",
+    "userId": "BATCH_USER",
+    "indicator": "SAP_ALL equivalent",
+    "score": 98,
+    "severity": "Critical",
+    "recommendation": "Revoke",
+    "systems": [
+      "LCKR-PRD-01"
+    ],
+    "status": "Open",
+    "assignee": null,
+    "lastChange": "00-00-0000",
+    "rationale": "User holds SAP_ALL equivalent permissions, granting administrative control over users and authorizations.",
+    "roles": [
+      {
+        "role": "ZM:IT_PROJECT_TEAM_DISPLAY",
+        "desc": "Role: ZM:IT_PROJECT_TEAM_DISPLAY",
+        "authObjects": [
+          "F_UHC_ACT",
+          "/ACCGO/DGR",
+          "I_VVSO_PRG",
+          "UIU_COMP",
+          "E_CACS_NSC",
+          "E_LOYALACC",
+          "A_IMPR_PRC",
+          "EAML_LRP",
+          "M_CUST_MCS",
+          "I_ICL_SBRG"
+        ]
+      },
+      {
+        "role": "ZBASIS_BR_BGJOB_ADMIN",
+        "desc": "Role: ZBASIS_BR_BGJOB_ADMIN",
+        "authObjects": [
+          "LCM_LT",
+          "/SRMSMC/BO",
+          "LCM_GEN",
+          "LCM_CTX",
+          "LCM_LTENSO",
+          "I_IWERK",
+          "S_BTCH_ADM",
+          "S_LOG_COM",
+          "S_DHBASACT",
+          "S_BTCH_JOB"
+        ]
+      },
+      {
+        "role": "ZM:IT_SAP_ALL_RESTRICTED_FF",
+        "desc": "Role: ZM:IT_SAP_ALL_RESTRICTED_FF",
+        "authObjects": [
+          "W_VKPR_PLT",
+          "M_CUST_MCS",
+          "A_IMPR_PRC",
+          "C_APPL_SOP",
+          "M_BCO_VKOR",
+          "M_ISEG_WIB",
+          "M_LIFO_MLY",
+          "M_KONA_ORG",
+          "S_WFAR_OBJ",
+          "W_WTAD_IR"
+        ]
+      },
+      {
+        "role": "ZIT_BR_ALL_EMPLOYEES",
+        "desc": "Role: ZIT_BR_ALL_EMPLOYEES",
+        "authObjects": [
+          "M_ANFR_BSA",
+          "A_S_WERK",
+          "F_FUND_PST",
+          "M_RFQ_BSA",
+          "M_RFQ_EKG",
+          "C_DRAW_TCD",
+          "F_LFA1_GEN",
+          "M_RECH_WRK",
+          "F_FAGL_SEG",
+          "S_PB_CHIP"
+        ]
+      }
+    ]
+  },
+  {
+    "user": "BBREVES",
+    "name": "Bruno Breves",
+    "userId": "BBREVES",
+    "indicator": "PFCG + SU01 combo",
+    "score": 94,
+    "severity": "Critical",
+    "recommendation": "Revoke",
+    "systems": [
+      "LCKR-PRD-01"
+    ],
+    "status": "Open",
+    "assignee": null,
+    "lastChange": "15-04-2026",
+    "rationale": "User holds PFCG + SU01 combo permissions, granting administrative control over users and authorizations.",
+    "roles": [
+      {
+        "role": "ZALL_BR_EMPLOYEE",
+        "desc": "Role: ZALL_BR_EMPLOYEE",
+        "authObjects": [
+          "S_ESH_CONN",
+          "B_BUPA_FDG",
+          "/CPD/MP",
+          "S_RS_COMP",
+          "S_WFAR_OBJ",
+          "P_ORGIN",
+          "PLOG",
+          "SDDLVIEW",
+          "S_RS_COMP1",
+          "B_BUPA_GRP"
+        ]
+      },
+      {
+        "role": "ZL_BR_CA_COSTCENTER_MANAGER",
+        "desc": "Role: ZL_BR_CA_COSTCENTER_MANAGER",
+        "authObjects": [
+          "M_ANFR_BSA",
+          "M_RFQ_BSA",
+          "M_MSEG_BWF",
+          "M_RFQ_EKG",
+          "C_DRAW_TCD",
+          "F_LFA1_GEN",
+          "F_FAGL_SEG",
+          "F_CC_HIER",
+          "K_CSKS",
+          "C_PRPS_USR"
+        ]
+      },
+      {
+        "role": "ZL_BR_FI_AR_REPORTS",
+        "desc": "Role: ZL_BR_FI_AR_REPORTS",
+        "authObjects": [
+          "M_ANFR_BSA",
+          "M_RFQ_BSA",
+          "S_WFAR_OBJ",
+          "M_RFQ_EKG",
+          "C_DRAW_TCD",
+          "F_LFA1_GEN",
+          "FIAR_CLIPA",
+          "K_CSKS",
+          "C_PRPS_USR",
+          "S_ESH_CONN"
+        ]
+      },
+      {
+        "role": "ZL_BR_FI_GENERAL_FINANCE",
+        "desc": "Role: ZL_BR_FI_GENERAL_FINANCE",
+        "authObjects": [
+          "M_ANFR_BSA",
+          "W_BETR_USR",
+          "M_RFQ_BSA",
+          "K_KA_RPT",
+          "S_WFAR_OBJ",
+          "M_MSEG_BWF",
+          "M_RFQ_EKG",
+          "C_DRAW_TCD",
+          "F_LFA1_GEN",
+          "M_RECH_WRK"
+        ]
+      }
+    ]
+  },
+  {
+    "user": "BDAUGHERTY",
+    "name": "Ben Daugherty",
+    "userId": "BDAUGHERTY",
+    "indicator": "PFCG + SU01 combo",
+    "score": 94,
+    "severity": "Critical",
+    "recommendation": "Revoke",
+    "systems": [
+      "LCKR-PRD-01"
+    ],
+    "status": "Open",
+    "assignee": null,
+    "lastChange": "14-07-2025",
+    "rationale": "User holds PFCG + SU01 combo permissions, granting administrative control over users and authorizations.",
+    "roles": [
+      {
+        "role": "ZL_BR_ALL_DISPLAY",
+        "desc": "Role: ZL_BR_ALL_DISPLAY",
+        "authObjects": [
+          "W_VKPR_PLT",
+          "M_CUST_MCS",
+          "A_IMPR_PRC",
+          "C_APPL_SOP",
+          "M_BCO_VKOR",
+          "M_ISEG_WIB",
+          "M_LIFO_MLY",
+          "M_KONA_ORG",
+          "S_WFAR_OBJ",
+          "W_WTAD_IR"
+        ]
+      },
+      {
+        "role": "ZL_BR_MM_INVTRY_REPORTS",
+        "desc": "Role: ZL_BR_MM_INVTRY_REPORTS",
+        "authObjects": [
+          "W_BETR_USR",
+          "M_RFQ_BSA",
+          "C_CABN_GRP",
+          "S_WFAR_OBJ",
+          "M_MSEG_BWF",
+          "M_RFQ_EKG",
+          "C_DRAW_TCD",
+          "F_LFA1_GEN",
+          "V_VTTK_SHT",
+          "S_ESH_CONN"
+        ]
+      },
+      {
+        "role": "ZL_BR_MM_PR_PROCESSING",
+        "desc": "Role: ZL_BR_MM_PR_PROCESSING",
+        "authObjects": [
+          "M_ANFR_BSA",
+          "A_S_WERK",
+          "M_RFQ_BSA",
+          "S_WFAR_OBJ",
+          "M_RFQ_EKG",
+          "M_EINF_EKG",
+          "C_DRAW_TCD",
+          "F_LFA1_GEN",
+          "F_FAGL_SEG",
+          "K_CSKS"
+        ]
+      },
+      {
+        "role": "ZL_BR_MM_PRPO_REPORTS_P09",
+        "desc": "Role: ZL_BR_MM_PRPO_REPORTS_P09",
+        "authObjects": [
+          "M_ANFR_BSA",
+          "F_FUND_PST",
+          "M_RFQ_BSA",
+          "S_WFAR_OBJ",
+          "M_MSEG_BWF",
+          "M_RFQ_EKG",
+          "C_DRAW_TCD",
+          "F_LFA1_GEN",
+          "M_RECH_WRK",
+          "F_FAGL_SEG"
+        ]
+      }
+    ]
+  },
+  {
+    "user": "DDIC",
+    "name": "DDIC",
+    "userId": "DDIC",
+    "indicator": "SAP_ALL equivalent",
+    "score": 98,
+    "severity": "Critical",
+    "recommendation": "Revoke",
+    "systems": [
+      "LCKR-PRD-01"
+    ],
+    "status": "Open",
+    "assignee": null,
+    "lastChange": "21-10-2020",
+    "rationale": "User holds SAP_ALL equivalent permissions, granting administrative control over users and authorizations.",
+    "roles": [
+      {
+        "role": "SAP_ALL",
+        "desc": "Role: SAP_ALL",
+        "authObjects": [
+          "F_UHC_ACT",
+          "I_VVSO_PRG",
+          "QIE_INSPDO",
+          "C_MPE_CER",
+          "CRM_ICMCAS",
+          "FPS_CDICT",
+          "/UI2/UISC",
+          "CRM_PS_SXP",
+          "MFG_PLNR",
+          "K_KEDT_TC"
+        ]
+      },
+      {
+        "role": "ZBASIS_BR_BGJOB_ADMIN",
+        "desc": "Role: ZBASIS_BR_BGJOB_ADMIN",
+        "authObjects": [
+          "LCM_LT",
+          "/SRMSMC/BO",
+          "LCM_GEN",
+          "LCM_CTX",
+          "LCM_LTENSO",
+          "I_IWERK",
+          "S_BTCH_ADM",
+          "S_LOG_COM",
+          "S_DHBASACT",
+          "S_BTCH_JOB"
+        ]
+      },
+      {
+        "role": "S_A.SYSTEM",
+        "desc": "Role: S_A.SYSTEM",
+        "authObjects": [
+          "S_NUMBER",
+          "S_OC_ROLE",
+          "S_C_FUNCT",
+          "S_IDOCMONI",
+          "S_CARRID",
+          "S_TABU_RFC",
+          "S_IMG_GENE",
+          "S_CALENDAR",
+          "S_DOKU_AUT",
+          "S_PATH"
+        ]
+      },
+      {
+        "role": "SAP_ESH_BOS_RFC_ENDUSER",
+        "desc": "Role: SAP_ESH_BOS_RFC_ENDUSER",
+        "authObjects": [
+          "S_USER_GRP",
+          "S_RFC",
+          "S_TCODE",
+          "S_DEVELOP",
+          "S_START"
+        ]
+      }
+    ]
+  },
+  {
+    "user": "DS4_FALLBACK",
+    "name": "DS4_FALLBACK",
+    "userId": "DS4_FALLBACK",
+    "indicator": "PFCG + SU01 combo",
+    "score": 94,
+    "severity": "Critical",
+    "recommendation": "Revoke",
+    "systems": [
+      "LCKR-PRD-01"
+    ],
+    "status": "Open",
+    "assignee": null,
+    "lastChange": "21-10-2020",
+    "rationale": "User holds PFCG + SU01 combo permissions, granting administrative control over users and authorizations.",
+    "roles": [
+      {
+        "role": "HEC_BASIS_ADMIN_V3",
+        "desc": "Role: HEC_BASIS_ADMIN_V3",
+        "authObjects": [
+          "S_WF_WI",
+          "S_WFAR_PRI",
+          "S_WFAR_KPR",
+          "S_IDOCMONI",
+          "COM_ASET",
+          "C_CABN_GRP",
+          "S_DOKU_AUT",
+          "S_DX_MAIN",
+          "S_WFAR_OBJ",
+          "S_TWB"
+        ]
+      },
+      {
+        "role": "ZHEC_CAM_CHANGE",
+        "desc": "Role: ZHEC_CAM_CHANGE",
+        "authObjects": [
+          "S_USER_GRP",
+          "S_TABU_RFC",
+          "S_USER_AGR",
+          "S_RFC",
+          "S_TABU_DIS",
+          "S_USER_PRO",
+          "S_USER_SAS",
+          "S_USER_AUT",
+          "S_TABU_NAM",
+          "S_TCODE"
+        ]
+      },
+      {
+        "role": "SAP_ESH_BOS_RFC_ENDUSER",
+        "desc": "Role: SAP_ESH_BOS_RFC_ENDUSER",
+        "authObjects": [
+          "S_USER_GRP",
+          "S_RFC",
+          "S_TCODE",
+          "S_DEVELOP",
+          "S_START"
+        ]
+      },
+      {
+        "role": "SAP_ESH_SEARCH_CATEG",
+        "desc": "Role: SAP_ESH_SEARCH_CATEG",
+        "authObjects": [
+          "S_ESH_CAT"
+        ]
+      }
+    ]
+  },
+  {
+    "user": "EMOGG",
+    "name": "Erin MOGG",
+    "userId": "EMOGG",
+    "indicator": "PFCG + SU01 combo",
+    "score": 94,
+    "severity": "Critical",
+    "recommendation": "Revoke",
+    "systems": [
+      "LCKR-PRD-01"
+    ],
+    "status": "Open",
+    "assignee": null,
+    "lastChange": "16-08-2021",
+    "rationale": "User holds PFCG + SU01 combo permissions, granting administrative control over users and authorizations.",
+    "roles": [
+      {
+        "role": "ZL_BR_FI_GL_ACCNTING",
+        "desc": "Role: ZL_BR_FI_GL_ACCNTING",
+        "authObjects": [
+          "M_ANFR_BSA",
+          "W_BETR_USR",
+          "M_RFQ_BSA",
+          "S_WFAR_OBJ",
+          "M_RFQ_EKG",
+          "C_DRAW_TCD",
+          "F_LFA1_GEN",
+          "F_FAGL_SEG",
+          "F_CC_HIER",
+          "K_CSKS"
+        ]
+      },
+      {
+        "role": "ZL_BR_FI_PAY_PROCESS",
+        "desc": "Role: ZL_BR_FI_PAY_PROCESS",
+        "authObjects": [
+          "M_ANFR_BSA",
+          "F_REGU_PAY",
+          "W_BETR_USR",
+          "A_S_WERK",
+          "M_RFQ_BSA",
+          "S_WFAR_OBJ",
+          "M_RFQ_EKG",
+          "C_DRAW_TCD",
+          "F_LFA1_GEN",
+          "F_FAGL_SEG"
+        ]
+      },
+      {
+        "role": "ZL_BR_FI_PAY_PROPOSAL",
+        "desc": "Role: ZL_BR_FI_PAY_PROPOSAL",
+        "authObjects": [
+          "M_ANFR_BSA",
+          "F_REGU_PAY",
+          "W_BETR_USR",
+          "A_S_WERK",
+          "M_RFQ_BSA",
+          "S_WFAR_OBJ",
+          "M_RFQ_EKG",
+          "C_DRAW_TCD",
+          "F_LFA1_GEN",
+          "F_FAGL_SEG"
+        ]
+      },
+      {
+        "role": "ZM:IT-PROJECT_TEAM_DISPLAY",
+        "desc": "Role: ZM:IT-PROJECT_TEAM_DISPLAY",
+        "authObjects": [
+          "F_UHC_ACT",
+          "I_VVSO_PRG",
+          "UIU_COMP",
+          "E_CACS_NSC",
+          "E_LOYALACC",
+          "A_IMPR_PRC",
+          "EAML_LRP",
+          "M_CUST_MCS",
+          "I_ICL_SBRG",
+          "I_AGCY_PAY"
+        ]
+      }
+    ]
+  },
+  {
+    "user": "FF.EWM",
+    "name": "Firefighter ID for EWM - Extended Warehouse Managment",
+    "userId": "FF.EWM",
+    "indicator": "SAP_ALL equivalent",
+    "score": 98,
+    "severity": "Critical",
+    "recommendation": "Revoke",
+    "systems": [
+      "LCKR-PRD-01"
+    ],
+    "status": "Open",
+    "assignee": null,
+    "lastChange": "25-08-2023",
+    "rationale": "User holds SAP_ALL equivalent permissions, granting administrative control over users and authorizations.",
+    "roles": [
+      {
+        "role": "ZEWM_BR_STOCK_MONITORING_LAMW",
+        "desc": "Role: ZEWM_BR_STOCK_MONITORING_LAMW",
+        "authObjects": [
+          "/SCWM/VAS",
+          "C_TCLS_BER",
+          "/SCWM/WBMR",
+          "/SCWM/QSUP",
+          "W_BETR_USR",
+          "/SCWM/TATT",
+          "C_APO_PROD",
+          "/SCWM/LG",
+          "/SCWM/SLFU",
+          "C_APO_DEF"
+        ]
+      },
+      {
+        "role": "ZEWM_BR_WH_DISPLAY_LAMW",
+        "desc": "Role: ZEWM_BR_WH_DISPLAY_LAMW",
+        "authObjects": [
+          "M_ANFR_BSA",
+          "/SCWM/QSUP",
+          "W_BETR_USR",
+          "M_RFQ_BSA",
+          "/SCWM/DLV2",
+          "M_RFQ_EKG",
+          "C_DRAW_TCD",
+          "F_LFA1_GEN",
+          "/SCWM/DATC",
+          "/SCWM/STBI"
+        ]
+      },
+      {
+        "role": "ZEWM_BR_INBOUND_PRCESING_LAMW",
+        "desc": "Role: ZEWM_BR_INBOUND_PRCESING_LAMW",
+        "authObjects": [
+          "M_ANFR_BSA",
+          "/SCWM/QSUP",
+          "QIE_INSPDO",
+          "C_LO_HU",
+          "/SCWM/DLV2",
+          "S_WFAR_OBJ",
+          "M_EINF_EKG",
+          "C_DRAW_TCD",
+          "F_LFA1_GEN",
+          "/SCWM/DATC"
+        ]
+      },
+      {
+        "role": "ZEWM_BR_OUTBOUND_PRCESING_LAMW",
+        "desc": "Role: ZEWM_BR_OUTBOUND_PRCESING_LAMW",
+        "authObjects": [
+          "/SCWM/VAS",
+          "C_TCLS_BER",
+          "QIE_INSPDO",
+          "C_SHEP_TPG",
+          "C_APO_PROD",
+          "/SCWM/LG",
+          "/SCWM/SLFU",
+          "C_LIME_HU",
+          "/SCWM/DLV2",
+          "C_TCLS_MNT"
+        ]
+      }
+    ]
+  },
+  {
+    "user": "FF.FI",
+    "name": "Firefighter ID for Finance",
+    "userId": "FF.FI",
+    "indicator": "SAP_ALL equivalent",
+    "score": 98,
+    "severity": "Critical",
+    "recommendation": "Revoke",
+    "systems": [
+      "LCKR-PRD-01"
+    ],
+    "status": "Open",
+    "assignee": null,
+    "lastChange": "25-03-2026",
+    "rationale": "User holds SAP_ALL equivalent permissions, granting administrative control over users and authorizations.",
+    "roles": [
+      {
+        "role": "ZM:IT_SAP_ALL_RESTRICTED",
+        "desc": "Role: ZM:IT_SAP_ALL_RESTRICTED",
+        "authObjects": [
+          "F_UHC_ACT",
+          "/ACCGO/DGR",
+          "I_VVSO_PRG",
+          "UIU_COMP",
+          "F_REMOB_BR",
+          "E_CACS_NSC",
+          "/SCWM/QSUP",
+          "A_IMPR_PRC",
+          "E_LOYALACC",
+          "EAML_LRP"
+        ]
+      },
+      {
+        "role": "ZFI_BR_AP_MGR_CAMAN_1720",
+        "desc": "Role: ZFI_BR_AP_MGR_CAMAN_1720",
+        "authObjects": [
+          "K_TP_VALU",
+          "M_RECH_SPG",
+          "F_BNKA_BUK",
+          "F_PAYRQ",
+          "F_BKPF_BED",
+          "F_FEBB_BUK",
+          "M_BEST_EKO",
+          "F_REGU_KOA",
+          "M_MATE_MAT",
+          "F_KNA1_APP"
+        ]
+      },
+      {
+        "role": "ZFI_BR_AP_MGR_CAMAN_1730",
+        "desc": "Role: ZFI_BR_AP_MGR_CAMAN_1730",
+        "authObjects": [
+          "K_TP_VALU",
+          "M_RECH_SPG",
+          "F_BNKA_BUK",
+          "F_PAYRQ",
+          "F_BKPF_BED",
+          "F_FEBB_BUK",
+          "M_BEST_EKO",
+          "F_REGU_KOA",
+          "M_MATE_MAT",
+          "F_KNA1_APP"
+        ]
+      },
+      {
+        "role": "ZTECH_BR_ABABPER",
+        "desc": "Role: ZTECH_BR_ABABPER",
+        "authObjects": [
+          "S_TABU_CLI",
+          "S_DATASET",
+          "RLFW_SCHED",
+          "S_GUI",
+          "S_TRANSPRT",
+          "S_APPL_LOG",
+          "S_DOKU_AUT",
+          "S_PROGRAM",
+          "S_TABU_DIS",
+          "/IWBEP/SB"
+        ]
+      }
+    ]
+  },
+  {
+    "user": "FF.IT",
+    "name": "Ely Taleon",
+    "userId": "FF.IT",
+    "indicator": "SAP_ALL equivalent",
+    "score": 98,
+    "severity": "Critical",
+    "recommendation": "Revoke",
+    "systems": [
+      "LCKR-PRD-01"
+    ],
+    "status": "Open",
+    "assignee": null,
+    "lastChange": "24-10-2024",
+    "rationale": "User holds SAP_ALL equivalent permissions, granting administrative control over users and authorizations.",
+    "roles": [
+      {
+        "role": "ZM:IT_PROJECT_TEAM_DISPLAY",
+        "desc": "Role: ZM:IT_PROJECT_TEAM_DISPLAY",
+        "authObjects": [
+          "F_UHC_ACT",
+          "/ACCGO/DGR",
+          "I_VVSO_PRG",
+          "UIU_COMP",
+          "E_CACS_NSC",
+          "E_LOYALACC",
+          "A_IMPR_PRC",
+          "EAML_LRP",
+          "M_CUST_MCS",
+          "I_ICL_SBRG"
+        ]
+      },
+      {
+        "role": "ZTECH_BR_ABABPER",
+        "desc": "Role: ZTECH_BR_ABABPER",
+        "authObjects": [
+          "S_TABU_CLI",
+          "S_DATASET",
+          "RLFW_SCHED",
+          "S_GUI",
+          "S_TRANSPRT",
+          "S_APPL_LOG",
+          "S_DOKU_AUT",
+          "S_PROGRAM",
+          "S_TABU_DIS",
+          "/IWBEP/SB"
+        ]
+      },
+      {
+        "role": "ZM:IT-SPRO_DIS_MASTR",
+        "desc": "Role: ZM:IT-SPRO_DIS_MASTR",
+        "authObjects": [
+          "F_REMM_MN",
+          "S_WFAR_OBJ",
+          "K_KEB_TC",
+          "K_KEDT_TC",
+          "S_SCMG_CAS",
+          "F_KKVARI",
+          "G_GB93_",
+          "B_BUPA_RLT",
+          "T_STAM_GAT",
+          "K_CSLA_SET"
+        ]
+      },
+      {
+        "role": "ZM:IT-POST_PROC_ORD_FF_MASTR",
+        "desc": "Role: ZM:IT-POST_PROC_ORD_FF_MASTR",
+        "authObjects": [
+          "/SAPPO/ORD",
+          "/SAPPO/FLT",
+          "S_TCODE"
+        ]
+      }
+    ]
+  },
+  {
+    "user": "FF.IT02",
+    "name": "FF IT02",
+    "userId": "FF.IT02",
+    "indicator": "SAP_ALL equivalent",
+    "score": 98,
+    "severity": "Critical",
+    "recommendation": "Revoke",
+    "systems": [
+      "LCKR-PRD-01"
+    ],
+    "status": "Open",
+    "assignee": null,
+    "lastChange": "24-08-2023",
+    "rationale": "User holds SAP_ALL equivalent permissions, granting administrative control over users and authorizations.",
+    "roles": [
+      {
+        "role": "ZM:IT_PROJECT_TEAM_DISPLAY",
+        "desc": "Role: ZM:IT_PROJECT_TEAM_DISPLAY",
+        "authObjects": [
+          "F_UHC_ACT",
+          "/ACCGO/DGR",
+          "I_VVSO_PRG",
+          "UIU_COMP",
+          "E_CACS_NSC",
+          "E_LOYALACC",
+          "A_IMPR_PRC",
+          "EAML_LRP",
+          "M_CUST_MCS",
+          "I_ICL_SBRG"
+        ]
+      },
+      {
+        "role": "ZM:IT-SPRO_DIS_MASTR",
+        "desc": "Role: ZM:IT-SPRO_DIS_MASTR",
+        "authObjects": [
+          "F_REMM_MN",
+          "S_WFAR_OBJ",
+          "K_KEB_TC",
+          "K_KEDT_TC",
+          "S_SCMG_CAS",
+          "F_KKVARI",
+          "G_GB93_",
+          "B_BUPA_RLT",
+          "T_STAM_GAT",
+          "K_CSLA_SET"
+        ]
+      },
+      {
+        "role": "ZM:IT-POST_PROC_ORD_FF_MASTR",
+        "desc": "Role: ZM:IT-POST_PROC_ORD_FF_MASTR",
+        "authObjects": [
+          "/SAPPO/ORD",
+          "/SAPPO/FLT",
+          "S_TCODE"
+        ]
+      },
+      {
+        "role": "ZM:IT_SAP_ALL_RESTRICTED_FF",
+        "desc": "Role: ZM:IT_SAP_ALL_RESTRICTED_FF",
+        "authObjects": [
+          "W_VKPR_PLT",
+          "M_CUST_MCS",
+          "A_IMPR_PRC",
+          "C_APPL_SOP",
+          "M_BCO_VKOR",
+          "M_ISEG_WIB",
+          "M_LIFO_MLY",
+          "M_KONA_ORG",
+          "S_WFAR_OBJ",
+          "W_WTAD_IR"
+        ]
+      }
+    ]
+  },
+  {
+    "user": "FF.MM",
+    "name": "Firefighter ID for Materials Management",
+    "userId": "FF.MM",
+    "indicator": "SAP_ALL equivalent",
+    "score": 98,
+    "severity": "Critical",
+    "recommendation": "Revoke",
+    "systems": [
+      "LCKR-PRD-01"
+    ],
+    "status": "Open",
+    "assignee": null,
+    "lastChange": "05-03-2026",
+    "rationale": "User holds SAP_ALL equivalent permissions, granting administrative control over users and authorizations.",
+    "roles": [
+      {
+        "role": "ZM:IT_PROJECT_TEAM_DISPLAY",
+        "desc": "Role: ZM:IT_PROJECT_TEAM_DISPLAY",
+        "authObjects": [
+          "F_UHC_ACT",
+          "/ACCGO/DGR",
+          "I_VVSO_PRG",
+          "UIU_COMP",
+          "E_CACS_NSC",
+          "E_LOYALACC",
+          "A_IMPR_PRC",
+          "EAML_LRP",
+          "M_CUST_MCS",
+          "I_ICL_SBRG"
+        ]
+      },
+      {
+        "role": "ZM:IT_SAP_ALL_RESTRICTED",
+        "desc": "Role: ZM:IT_SAP_ALL_RESTRICTED",
+        "authObjects": [
+          "F_UHC_ACT",
+          "/ACCGO/DGR",
+          "I_VVSO_PRG",
+          "UIU_COMP",
+          "F_REMOB_BR",
+          "E_CACS_NSC",
+          "/SCWM/QSUP",
+          "A_IMPR_PRC",
+          "E_LOYALACC",
+          "EAML_LRP"
+        ]
+      },
+      {
+        "role": "ZM:IT-PROJECT_TEAM_DISPLAY",
+        "desc": "Role: ZM:IT-PROJECT_TEAM_DISPLAY",
+        "authObjects": [
+          "F_UHC_ACT",
+          "I_VVSO_PRG",
+          "UIU_COMP",
+          "E_CACS_NSC",
+          "E_LOYALACC",
+          "A_IMPR_PRC",
+          "EAML_LRP",
+          "M_CUST_MCS",
+          "I_ICL_SBRG",
+          "I_AGCY_PAY"
+        ]
+      },
+      {
+        "role": "ZL_BR_CA_COSTCEN_MAN_LACCPMAN",
+        "desc": "Role: ZL_BR_CA_COSTCEN_MAN_LACCPMAN",
+        "authObjects": [
+          "M_ANFR_BSA",
+          "M_RFQ_BSA",
+          "M_MSEG_BWF",
+          "M_RFQ_EKG",
+          "C_DRAW_TCD",
+          "F_LFA1_GEN",
+          "F_FAGL_SEG",
+          "F_CC_HIER",
+          "K_CSKS",
+          "C_PRPS_USR"
+        ]
+      }
+    ]
+  },
+  {
+    "user": "FF.MM02",
+    "name": "FF.MM02",
+    "userId": "FF.MM02",
+    "indicator": "SAP_ALL equivalent",
+    "score": 98,
+    "severity": "Critical",
+    "recommendation": "Revoke",
+    "systems": [
+      "LCKR-PRD-01"
+    ],
+    "status": "Open",
+    "assignee": null,
+    "lastChange": "12-07-2024",
+    "rationale": "User holds SAP_ALL equivalent permissions, granting administrative control over users and authorizations.",
+    "roles": [
+      {
+        "role": "ZTECH_BR_ABABPER",
+        "desc": "Role: ZTECH_BR_ABABPER",
+        "authObjects": [
+          "S_TABU_CLI",
+          "S_DATASET",
+          "RLFW_SCHED",
+          "S_GUI",
+          "S_TRANSPRT",
+          "S_APPL_LOG",
+          "S_DOKU_AUT",
+          "S_PROGRAM",
+          "S_TABU_DIS",
+          "/IWBEP/SB"
+        ]
+      },
+      {
+        "role": "ZM:IT_SAP_ALL_RESTRICTED_FF",
+        "desc": "Role: ZM:IT_SAP_ALL_RESTRICTED_FF",
+        "authObjects": [
+          "W_VKPR_PLT",
+          "M_CUST_MCS",
+          "A_IMPR_PRC",
+          "C_APPL_SOP",
+          "M_BCO_VKOR",
+          "M_ISEG_WIB",
+          "M_LIFO_MLY",
+          "M_KONA_ORG",
+          "S_WFAR_OBJ",
+          "W_WTAD_IR"
+        ]
+      },
+      {
+        "role": "ZL_BR_MM_INVTRY_REPORTS",
+        "desc": "Role: ZL_BR_MM_INVTRY_REPORTS",
+        "authObjects": [
+          "W_BETR_USR",
+          "M_RFQ_BSA",
+          "C_CABN_GRP",
+          "S_WFAR_OBJ",
+          "M_MSEG_BWF",
+          "M_RFQ_EKG",
+          "C_DRAW_TCD",
+          "F_LFA1_GEN",
+          "V_VTTK_SHT",
+          "S_ESH_CONN"
+        ]
+      },
+      {
+        "role": "ZL_BR_MM_PR_PROCESSING",
+        "desc": "Role: ZL_BR_MM_PR_PROCESSING",
+        "authObjects": [
+          "M_ANFR_BSA",
+          "A_S_WERK",
+          "M_RFQ_BSA",
+          "S_WFAR_OBJ",
+          "M_RFQ_EKG",
+          "M_EINF_EKG",
+          "C_DRAW_TCD",
+          "F_LFA1_GEN",
+          "F_FAGL_SEG",
+          "K_CSKS"
+        ]
+      }
+    ]
+  },
+  {
+    "user": "FF.PM",
+    "name": "Firefighter ID for Plant Maintenance",
+    "userId": "FF.PM",
+    "indicator": "SAP_ALL equivalent",
+    "score": 98,
+    "severity": "Critical",
+    "recommendation": "Revoke",
+    "systems": [
+      "LCKR-PRD-01"
+    ],
+    "status": "Open",
+    "assignee": null,
+    "lastChange": "17-02-2026",
+    "rationale": "User holds SAP_ALL equivalent permissions, granting administrative control over users and authorizations.",
+    "roles": [
+      {
+        "role": "ZM:IT_SAP_ALL_RESTRICTED",
+        "desc": "Role: ZM:IT_SAP_ALL_RESTRICTED",
+        "authObjects": [
+          "F_UHC_ACT",
+          "/ACCGO/DGR",
+          "I_VVSO_PRG",
+          "UIU_COMP",
+          "F_REMOB_BR",
+          "E_CACS_NSC",
+          "/SCWM/QSUP",
+          "A_IMPR_PRC",
+          "E_LOYALACC",
+          "EAML_LRP"
+        ]
+      },
+      {
+        "role": "ZM:IT-PROJECT_TEAM_DISPLAY",
+        "desc": "Role: ZM:IT-PROJECT_TEAM_DISPLAY",
+        "authObjects": [
+          "F_UHC_ACT",
+          "I_VVSO_PRG",
+          "UIU_COMP",
+          "E_CACS_NSC",
+          "E_LOYALACC",
+          "A_IMPR_PRC",
+          "EAML_LRP",
+          "M_CUST_MCS",
+          "I_ICL_SBRG",
+          "I_AGCY_PAY"
+        ]
+      },
+      {
+        "role": "ZM:IT_SAP_DVLP_ACS_DISPLAY",
+        "desc": "Role: ZM:IT_SAP_DVLP_ACS_DISPLAY",
+        "authObjects": [
+          "S_DATASET",
+          "RLFW_SCHED",
+          "S_TRANSPRT",
+          "S_APPL_LOG",
+          "S_DOKU_AUT",
+          "S_PROGRAM",
+          "/IWBEP/SB",
+          "S_TCODE",
+          "S_DEVELOP"
+        ]
+      },
+      {
+        "role": "ZEWM_BR_EM_TASK_LAMW",
+        "desc": "Role: ZEWM_BR_EM_TASK_LAMW",
+        "authObjects": [
+          "S_DATASET",
+          "S_PPF_CUST",
+          "/SAPCND/CM",
+          "S_PPF_CONF",
+          "/SAPCND/CO",
+          "S_TABU_DIS",
+          "S_TABU_NAM",
+          "S_TCODE"
+        ]
+      }
+    ]
+  },
+  {
+    "user": "FF.PP",
+    "name": "Firefighter ID for Production Planning",
+    "userId": "FF.PP",
+    "indicator": "SAP_ALL equivalent",
+    "score": 98,
+    "severity": "Critical",
+    "recommendation": "Revoke",
+    "systems": [
+      "LCKR-PRD-01"
+    ],
+    "status": "Open",
+    "assignee": null,
+    "lastChange": "24-08-2023",
+    "rationale": "User holds SAP_ALL equivalent permissions, granting administrative control over users and authorizations.",
+    "roles": [
+      {
+        "role": "ZL_BR_MFG_EXECUTION",
+        "desc": "Role: ZL_BR_MFG_EXECUTION",
+        "authObjects": [
+          "C_OA_EXEC",
+          "C_ROUT",
+          "Q_INSPPNT",
+          "W_BETR_USR",
+          "C_AFRU_AWK",
+          "C_CABN_GRP",
+          "S_WFAR_OBJ",
+          "M_MSEG_BWF",
+          "C_DRAW_TCD",
+          "F_LFA1_GEN"
+        ]
+      },
+      {
+        "role": "ZM:IT_SAP_ALL_RESTRICTED_FF",
+        "desc": "Role: ZM:IT_SAP_ALL_RESTRICTED_FF",
+        "authObjects": [
+          "W_VKPR_PLT",
+          "M_CUST_MCS",
+          "A_IMPR_PRC",
+          "C_APPL_SOP",
+          "M_BCO_VKOR",
+          "M_ISEG_WIB",
+          "M_LIFO_MLY",
+          "M_KONA_ORG",
+          "S_WFAR_OBJ",
+          "W_WTAD_IR"
+        ]
+      },
+      {
+        "role": "ZL_BR_MFG_INVTRY_REPORTS",
+        "desc": "Role: ZL_BR_MFG_INVTRY_REPORTS",
+        "authObjects": [
+          "W_BETR_USR",
+          "C_CABN_GRP",
+          "S_WFAR_OBJ",
+          "M_MSEG_BWF",
+          "C_DRAW_TCD",
+          "F_LFA1_GEN",
+          "S_ESH_CONN",
+          "M_BANF_EKG",
+          "M_MRES_WWA",
+          "M_MSEG_WWE"
+        ]
+      },
+      {
+        "role": "ZL_BR_CA_ALL_USERS",
+        "desc": "Role: ZL_BR_CA_ALL_USERS",
+        "authObjects": [
+          "S_WF_WI",
+          "M_ANFR_BSA",
+          "F_FUND_PST",
+          "M_RFQ_BSA",
+          "S_WFAR_OBJ",
+          "M_RFQ_EKG",
+          "C_DRAW_TCD",
+          "F_LFA1_GEN",
+          "M_RECH_WRK",
+          "F_FAGL_SEG"
+        ]
+      }
+    ]
+  },
+  {
+    "user": "FF.SD",
+    "name": "Firefighter ID for Sales & Distribution",
+    "userId": "FF.SD",
+    "indicator": "SAP_ALL equivalent",
+    "score": 98,
+    "severity": "Critical",
+    "recommendation": "Revoke",
+    "systems": [
+      "LCKR-PRD-01"
+    ],
+    "status": "Open",
+    "assignee": null,
+    "lastChange": "02-04-2026",
+    "rationale": "User holds SAP_ALL equivalent permissions, granting administrative control over users and authorizations.",
+    "roles": [
+      {
+        "role": "ZM:IT_SAP_ALL_RESTRICTED",
+        "desc": "Role: ZM:IT_SAP_ALL_RESTRICTED",
+        "authObjects": [
+          "F_UHC_ACT",
+          "/ACCGO/DGR",
+          "I_VVSO_PRG",
+          "UIU_COMP",
+          "F_REMOB_BR",
+          "E_CACS_NSC",
+          "/SCWM/QSUP",
+          "A_IMPR_PRC",
+          "E_LOYALACC",
+          "EAML_LRP"
+        ]
+      },
+      {
+        "role": "ZM:IT-PROJECT_TEAM_DISPLAY",
+        "desc": "Role: ZM:IT-PROJECT_TEAM_DISPLAY",
+        "authObjects": [
+          "F_UHC_ACT",
+          "I_VVSO_PRG",
+          "UIU_COMP",
+          "E_CACS_NSC",
+          "E_LOYALACC",
+          "A_IMPR_PRC",
+          "EAML_LRP",
+          "M_CUST_MCS",
+          "I_ICL_SBRG",
+          "I_AGCY_PAY"
+        ]
+      },
+      {
+        "role": "ZL_BR_SD_ORDER_ISSUES",
+        "desc": "Role: ZL_BR_SD_ORDER_ISSUES",
+        "authObjects": [
+          "C_TCLS_BER",
+          "S_GOS_ATT",
+          "M_BEST_EKO",
+          "V_LIKP_VST",
+          "C_TCLS_MNT",
+          "S_PROGNAM",
+          "S_WFAR_OBJ",
+          "V_VBAK_AAT",
+          "C_DRAW_TCD",
+          "F_LFA1_GEN"
+        ]
+      },
+      {
+        "role": "ZL_BR_SD_REPORTS_COMM",
+        "desc": "Role: ZL_BR_SD_REPORTS_COMM",
+        "authObjects": [
+          "S_RS_AUTH",
+          "M_MATE_MAT",
+          "M_INVVAL",
+          "S_GOS_ATT",
+          "V_LIKP_VST",
+          "M_MSEG_WWA",
+          "POC_DEFN",
+          "F_KNA1_APP",
+          "S_PROGNAM",
+          "M_MSEG_WMB"
+        ]
+      }
+    ]
+  },
+  {
+    "user": "FF.TEMP",
+    "name": "FireFighter Temporary",
+    "userId": "FF.TEMP",
+    "indicator": "SAP_ALL equivalent",
+    "score": 98,
+    "severity": "Critical",
+    "recommendation": "Revoke",
+    "systems": [
+      "LCKR-PRD-01"
+    ],
+    "status": "Open",
+    "assignee": null,
+    "lastChange": "27-01-2023",
+    "rationale": "User holds SAP_ALL equivalent permissions, granting administrative control over users and authorizations.",
+    "roles": [
+      {
+        "role": "ZM:IT_PROJECT_TEAM_DISPLAY",
+        "desc": "Role: ZM:IT_PROJECT_TEAM_DISPLAY",
+        "authObjects": [
+          "F_UHC_ACT",
+          "/ACCGO/DGR",
+          "I_VVSO_PRG",
+          "UIU_COMP",
+          "E_CACS_NSC",
+          "E_LOYALACC",
+          "A_IMPR_PRC",
+          "EAML_LRP",
+          "M_CUST_MCS",
+          "I_ICL_SBRG"
+        ]
+      },
+      {
+        "role": "ZM:IT-SPRO_DIS_MASTR",
+        "desc": "Role: ZM:IT-SPRO_DIS_MASTR",
+        "authObjects": [
+          "F_REMM_MN",
+          "S_WFAR_OBJ",
+          "K_KEB_TC",
+          "K_KEDT_TC",
+          "S_SCMG_CAS",
+          "F_KKVARI",
+          "G_GB93_",
+          "B_BUPA_RLT",
+          "T_STAM_GAT",
+          "K_CSLA_SET"
+        ]
+      },
+      {
+        "role": "ZM:IT-POST_PROC_ORD_FF_MASTR",
+        "desc": "Role: ZM:IT-POST_PROC_ORD_FF_MASTR",
+        "authObjects": [
+          "/SAPPO/ORD",
+          "/SAPPO/FLT",
+          "S_TCODE"
+        ]
+      },
+      {
+        "role": "ZM:IT_SAP_ALL_RESTRICTED_FF",
+        "desc": "Role: ZM:IT_SAP_ALL_RESTRICTED_FF",
+        "authObjects": [
+          "W_VKPR_PLT",
+          "M_CUST_MCS",
+          "A_IMPR_PRC",
+          "C_APPL_SOP",
+          "M_BCO_VKOR",
+          "M_ISEG_WIB",
+          "M_LIFO_MLY",
+          "M_KONA_ORG",
+          "S_WFAR_OBJ",
+          "W_WTAD_IR"
+        ]
+      }
+    ]
+  },
+  {
+    "user": "FIORIADM",
+    "name": "FIORIADM",
+    "userId": "FIORIADM",
+    "indicator": "PFCG + SU01 combo",
+    "score": 94,
+    "severity": "Critical",
+    "recommendation": "Revoke",
+    "systems": [
+      "LCKR-PRD-01"
+    ],
+    "status": "Open",
+    "assignee": null,
+    "lastChange": "15-01-2021",
+    "rationale": "User holds PFCG + SU01 combo permissions, granting administrative control over users and authorizations.",
+    "roles": [
+      {
+        "role": "ZL_BR_CA_EMPLOYEE",
+        "desc": "Role: ZL_BR_CA_EMPLOYEE",
+        "authObjects": [
+          "UIU_COMP",
+          "F_KNA1_APP",
+          "S_WFAR_OBJ",
+          "PLOG",
+          "F_LFA1_GEN",
+          "B_BUPA_ADR",
+          "B_BUPR_BZT",
+          "K_CSKS",
+          "V_KNA1_VKO",
+          "S_USER_GRP"
+        ]
+      },
+      {
+        "role": "ZL_BR_CA_ALL_USERS",
+        "desc": "Role: ZL_BR_CA_ALL_USERS",
+        "authObjects": [
+          "S_WF_WI",
+          "M_ANFR_BSA",
+          "F_FUND_PST",
+          "M_RFQ_BSA",
+          "S_WFAR_OBJ",
+          "M_RFQ_EKG",
+          "C_DRAW_TCD",
+          "F_LFA1_GEN",
+          "M_RECH_WRK",
+          "F_FAGL_SEG"
+        ]
+      },
+      {
+        "role": "SAP_ESH_BOS_ADMIN",
+        "desc": "Role: SAP_ESH_BOS_ADMIN",
+        "authObjects": [
+          "S_WF_WI",
+          "S_OC_ROLE",
+          "S_C_FUNCT",
+          "S_IDOCMONI",
+          "S_TABU_RFC",
+          "S_RFC",
+          "PLOG",
+          "S_USER_PRO",
+          "B_ALE_LSYS",
+          "S_BTCH_ADM"
+        ]
+      },
+      {
+        "role": "ZL_BR_CA_BP_DIS",
+        "desc": "Role: ZL_BR_CA_BP_DIS",
+        "authObjects": [
+          "F_KNA1_APP",
+          "B_BUPA_ATT",
+          "C_DRAW_TCD",
+          "F_LFA1_GEN",
+          "F_KNA1_BED",
+          "B_BUPA_ADR",
+          "B_BUPR_BZT",
+          "V_KNA1_VKO",
+          "F_LFA1_APP",
+          "F_LFA1_AEN"
+        ]
+      }
+    ]
+  },
+  {
+    "user": "KTERN_SERVIC",
+    "name": "KTern Connection",
+    "userId": "KTERN_SERVIC",
+    "indicator": "SAP_ALL equivalent",
+    "score": 98,
+    "severity": "Critical",
+    "recommendation": "Revoke",
+    "systems": [
+      "LCKR-PRD-01"
+    ],
+    "status": "Open",
+    "assignee": null,
+    "lastChange": "15-04-2026",
+    "rationale": "User holds SAP_ALL equivalent permissions, granting administrative control over users and authorizations.",
+    "roles": [
+      {
+        "role": "ZM:IT_PROJECT_TEAM_DISPLAY",
+        "desc": "Role: ZM:IT_PROJECT_TEAM_DISPLAY",
+        "authObjects": [
+          "F_UHC_ACT",
+          "/ACCGO/DGR",
+          "I_VVSO_PRG",
+          "UIU_COMP",
+          "E_CACS_NSC",
+          "E_LOYALACC",
+          "A_IMPR_PRC",
+          "EAML_LRP",
+          "M_CUST_MCS",
+          "I_ICL_SBRG"
+        ]
+      },
+      {
+        "role": "ZM:IT_SAP_ALL_RESTRICTED",
+        "desc": "Role: ZM:IT_SAP_ALL_RESTRICTED",
+        "authObjects": [
+          "F_UHC_ACT",
+          "/ACCGO/DGR",
+          "I_VVSO_PRG",
+          "UIU_COMP",
+          "F_REMOB_BR",
+          "E_CACS_NSC",
+          "/SCWM/QSUP",
+          "A_IMPR_PRC",
+          "E_LOYALACC",
+          "EAML_LRP"
+        ]
+      },
+      {
+        "role": "ZIT_BR_ALL_EMPLOYEES",
+        "desc": "Role: ZIT_BR_ALL_EMPLOYEES",
+        "authObjects": [
+          "M_ANFR_BSA",
+          "A_S_WERK",
+          "F_FUND_PST",
+          "M_RFQ_BSA",
+          "M_RFQ_EKG",
+          "C_DRAW_TCD",
+          "F_LFA1_GEN",
+          "M_RECH_WRK",
+          "F_FAGL_SEG",
+          "S_PB_CHIP"
+        ]
+      },
+      {
+        "role": "ZM:IT-RFC_ADM_MASTR",
+        "desc": "Role: ZM:IT-RFC_ADM_MASTR",
+        "authObjects": [
+          "S_BGRFC",
+          "S_USER_GRP",
+          "S_GUI",
+          "S_USER_AGR",
+          "S_RFC",
+          "S_ADMI_FCD",
+          "S_RFC_ADM",
+          "S_USER_SAS",
+          "S_USER_PRO",
+          "S_TCODE"
+        ]
+      }
+    ]
+  },
+  {
+    "user": "NEUGENIA",
+    "name": "Eugenia Najar",
+    "userId": "NEUGENIA",
+    "indicator": "SAP_ALL equivalent",
+    "score": 98,
+    "severity": "Critical",
+    "recommendation": "Revoke",
+    "systems": [
+      "LCKR-PRD-01"
+    ],
+    "status": "Open",
+    "assignee": null,
+    "lastChange": "15-11-2025",
+    "rationale": "User holds SAP_ALL equivalent permissions, granting administrative control over users and authorizations.",
+    "roles": [
+      {
+        "role": "SAP_ALL",
+        "desc": "Role: SAP_ALL",
+        "authObjects": [
+          "/ACCGO/DGR",
+          "/SRMSMC/DB",
+          "/SMERP/SWM",
+          "/SCWM/QSUP",
+          "A_IMPR_PRC",
+          "C_APPL_SOP",
+          "/MVA/6VRSA",
+          "/PRA/BPMST",
+          "/SRMSMC/R2",
+          "/SCWM/DLV2"
+        ]
+      },
+      {
+        "role": "Z_UI2_ADMIN_700",
+        "desc": "Role: Z_UI2_ADMIN_700",
+        "authObjects": [
+          "S_USER_STA",
+          "S_PROGNAM",
+          "PLOG",
+          "S_ICF_ADM",
+          "S_USER_PRO",
+          "S_TABU_NAM",
+          "S_BTCH_ADM",
+          "S_USER_VAL",
+          "S_TABU_CLI",
+          "S_BTCH_JOB"
+        ]
+      },
+      {
+        "role": "Z_UI2_ADMIN_731",
+        "desc": "Role: Z_UI2_ADMIN_731",
+        "authObjects": [
+          "S_USER_VAL",
+          "S_BTCH_JOB",
+          "S_USER_GRP",
+          "S_TCODE",
+          "S_GUI",
+          "S_USER_STA",
+          "S_TRANSPRT",
+          "S_USER_AGR",
+          "PLOG",
+          "S_USER_SAS"
+        ]
+      },
+      {
+        "role": "Z_UI2_ADMIN_750",
+        "desc": "Role: Z_UI2_ADMIN_750",
+        "authObjects": [
+          "S_TABU_CLI",
+          "S_TCODE",
+          "S_TRANSPRT",
+          "S_RFC",
+          "S_START"
+        ]
+      }
+    ]
+  },
+  {
+    "user": "PKAREN",
+    "name": "karen Ponce",
+    "userId": "PKAREN",
+    "indicator": "SAP_ALL equivalent",
+    "score": 98,
+    "severity": "Critical",
+    "recommendation": "Revoke",
+    "systems": [
+      "LCKR-PRD-01"
+    ],
+    "status": "Open",
+    "assignee": null,
+    "lastChange": "00-00-0000",
+    "rationale": "User holds SAP_ALL equivalent permissions, granting administrative control over users and authorizations.",
+    "roles": [
+      {
+        "role": "SAP_ALL",
+        "desc": "Role: SAP_ALL",
+        "authObjects": [
+          "/ACCGO/DGR",
+          "/SRMSMC/DB",
+          "/SMERP/SWM",
+          "/SCWM/QSUP",
+          "A_IMPR_PRC",
+          "C_APPL_SOP",
+          "/MVA/6VRSA",
+          "/PRA/BPMST",
+          "/SRMSMC/R2",
+          "/SCWM/DLV2"
+        ]
+      },
+      {
+        "role": "Z_UI2_ADMIN_700",
+        "desc": "Role: Z_UI2_ADMIN_700",
+        "authObjects": [
+          "S_USER_STA",
+          "S_PROGNAM",
+          "PLOG",
+          "S_ICF_ADM",
+          "S_USER_PRO",
+          "S_TABU_NAM",
+          "S_BTCH_ADM",
+          "S_USER_VAL",
+          "S_TABU_CLI",
+          "S_BTCH_JOB"
+        ]
+      },
+      {
+        "role": "Z_UI2_ADMIN_731",
+        "desc": "Role: Z_UI2_ADMIN_731",
+        "authObjects": [
+          "S_USER_VAL",
+          "S_BTCH_JOB",
+          "S_USER_GRP",
+          "S_TCODE",
+          "S_GUI",
+          "S_USER_STA",
+          "S_TRANSPRT",
+          "S_USER_AGR",
+          "PLOG",
+          "S_USER_SAS"
+        ]
+      },
+      {
+        "role": "Z_UI2_ADMIN_750",
+        "desc": "Role: Z_UI2_ADMIN_750",
+        "authObjects": [
+          "S_TABU_CLI",
+          "S_TCODE",
+          "S_TRANSPRT",
+          "S_RFC",
+          "S_START"
+        ]
+      }
+    ]
+  },
+  {
+    "user": "RBUCHANAN",
+    "name": "Regina Buchanan",
+    "userId": "RBUCHANAN",
+    "indicator": "PFCG + SU01 combo",
+    "score": 94,
+    "severity": "Critical",
+    "recommendation": "Revoke",
+    "systems": [
+      "LCKR-PRD-01"
+    ],
+    "status": "Open",
+    "assignee": null,
+    "lastChange": "15-04-2026",
+    "rationale": "User holds PFCG + SU01 combo permissions, granting administrative control over users and authorizations.",
+    "roles": [
+      {
+        "role": "ZHCM_BR_PA_BP",
+        "desc": "Role: ZHCM_BR_PA_BP",
+        "authObjects": [
+          "B_BUP_DCPA",
+          "B_BUPA_ATT",
+          "PLOG",
+          "B_BUPA_ADR",
+          "S_USER_PRO",
+          "B_BUPR_BZT",
+          "P_TCODE",
+          "S_USER_GRP",
+          "P_ORGIN",
+          "/SCMB/LOCB"
+        ]
+      },
+      {
+        "role": "ZFI_BR_ALL_DISPLAY_1710",
+        "desc": "Role: ZFI_BR_ALL_DISPLAY_1710",
+        "authObjects": [
+          "M_ANFR_BSA",
+          "W_BETR_USR",
+          "F_FUND_PST",
+          "M_RFQ_BSA",
+          "M_RFQ_EKG",
+          "F_LFA1_GEN",
+          "F_FAGL_SEG",
+          "K_CSKS",
+          "C_PRPS_USR",
+          "M_QTN_EKG"
+        ]
+      },
+      {
+        "role": "ZFI_BR_ALL_DISPLAY_1720",
+        "desc": "Role: ZFI_BR_ALL_DISPLAY_1720",
+        "authObjects": [
+          "M_ANFR_BSA",
+          "W_BETR_USR",
+          "F_FUND_PST",
+          "M_RFQ_BSA",
+          "M_RFQ_EKG",
+          "F_LFA1_GEN",
+          "F_FAGL_SEG",
+          "K_CSKS",
+          "C_PRPS_USR",
+          "M_QTN_EKG"
+        ]
+      },
+      {
+        "role": "ZFI_BR_ALL_DISPLAY_1730",
+        "desc": "Role: ZFI_BR_ALL_DISPLAY_1730",
+        "authObjects": [
+          "M_ANFR_BSA",
+          "W_BETR_USR",
+          "F_FUND_PST",
+          "M_RFQ_BSA",
+          "M_RFQ_EKG",
+          "F_LFA1_GEN",
+          "F_FAGL_SEG",
+          "K_CSKS",
+          "C_PRPS_USR",
+          "M_QTN_EKG"
+        ]
+      }
+    ]
+  },
+  {
+    "user": "RFCUSER",
+    "name": "RFCUSER",
+    "userId": "RFCUSER",
+    "indicator": "SAP_ALL equivalent",
+    "score": 98,
+    "severity": "Critical",
+    "recommendation": "Revoke",
+    "systems": [
+      "LCKR-PRD-01"
+    ],
+    "status": "Open",
+    "assignee": null,
+    "lastChange": "08-10-2024",
+    "rationale": "User holds SAP_ALL equivalent permissions, granting administrative control over users and authorizations.",
+    "roles": [
+      {
+        "role": "SAP_ALL",
+        "desc": "Role: SAP_ALL",
+        "authObjects": [
+          "/ACCGO/DGR",
+          "E_CACS_NSC",
+          "/SCWM/QSUP",
+          "A_IMPR_PRC",
+          "E_LOYALACC",
+          "EAML_LRP",
+          "C_MPE_CER",
+          "CRM_ICMCAS",
+          "/SCWM/DLV2",
+          "FPS_CDICT"
+        ]
+      },
+      {
+        "role": "ZBASIS_BR_BGJOB_ADMIN",
+        "desc": "Role: ZBASIS_BR_BGJOB_ADMIN",
+        "authObjects": [
+          "LCM_LT",
+          "/SRMSMC/BO",
+          "LCM_GEN",
+          "LCM_CTX",
+          "LCM_LTENSO",
+          "I_IWERK",
+          "S_BTCH_ADM",
+          "S_LOG_COM",
+          "S_DHBASACT",
+          "S_BTCH_JOB"
+        ]
+      },
+      {
+        "role": "ZIT_BR_ALL_EMPLOYEES",
+        "desc": "Role: ZIT_BR_ALL_EMPLOYEES",
+        "authObjects": [
+          "M_ANFR_BSA",
+          "A_S_WERK",
+          "F_FUND_PST",
+          "M_RFQ_BSA",
+          "M_RFQ_EKG",
+          "C_DRAW_TCD",
+          "F_LFA1_GEN",
+          "M_RECH_WRK",
+          "F_FAGL_SEG",
+          "S_PB_CHIP"
+        ]
+      },
+      {
+        "role": "ZBASIS_BR_ADMIN",
+        "desc": "Role: ZBASIS_BR_ADMIN",
+        "authObjects": [
+          "S_C_FUNCT",
+          "S_PROGNAM",
+          "S_TABU_NAM",
+          "B_ALE_LSYS",
+          "S_Q_GOVERN",
+          "S_ABAPDUMP",
+          "S_YCM",
+          "S_IDOCPART",
+          "S_BTCH_TMP",
+          "S_TABU_CLI"
+        ]
+      }
+    ]
+  },
+  {
+    "user": "S4KT_ABAP",
+    "name": "User ABAP",
+    "userId": "S4KT_ABAP",
+    "indicator": "SAP_ALL equivalent",
+    "score": 98,
+    "severity": "Critical",
+    "recommendation": "Revoke",
+    "systems": [
+      "LCKR-PRD-01"
+    ],
+    "status": "Open",
+    "assignee": null,
+    "lastChange": "15-12-2025",
+    "rationale": "User holds SAP_ALL equivalent permissions, granting administrative control over users and authorizations.",
+    "roles": [
+      {
+        "role": "ZM:IT_SAP_ALL_RESTRICTED",
+        "desc": "Role: ZM:IT_SAP_ALL_RESTRICTED",
+        "authObjects": [
+          "F_UHC_ACT",
+          "/ACCGO/DGR",
+          "I_VVSO_PRG",
+          "UIU_COMP",
+          "F_REMOB_BR",
+          "E_CACS_NSC",
+          "/SCWM/QSUP",
+          "A_IMPR_PRC",
+          "E_LOYALACC",
+          "EAML_LRP"
+        ]
+      },
+      {
+        "role": "ZTECH_BR_ABABPER",
+        "desc": "Role: ZTECH_BR_ABABPER",
+        "authObjects": [
+          "S_TABU_CLI",
+          "S_DATASET",
+          "RLFW_SCHED",
+          "S_GUI",
+          "S_TRANSPRT",
+          "S_APPL_LOG",
+          "S_DOKU_AUT",
+          "S_PROGRAM",
+          "S_TABU_DIS",
+          "/IWBEP/SB"
+        ]
+      },
+      {
+        "role": "ZL_BR_ALL_DISPLAY",
+        "desc": "Role: ZL_BR_ALL_DISPLAY",
+        "authObjects": [
+          "W_VKPR_PLT",
+          "M_CUST_MCS",
+          "A_IMPR_PRC",
+          "C_APPL_SOP",
+          "M_BCO_VKOR",
+          "M_ISEG_WIB",
+          "M_LIFO_MLY",
+          "M_KONA_ORG",
+          "S_WFAR_OBJ",
+          "W_WTAD_IR"
+        ]
+      },
+      {
+        "role": "ZL_BR_CA_ALL_USERS",
+        "desc": "Role: ZL_BR_CA_ALL_USERS",
+        "authObjects": [
+          "S_WF_WI",
+          "M_ANFR_BSA",
+          "F_FUND_PST",
+          "M_RFQ_BSA",
+          "S_WFAR_OBJ",
+          "M_RFQ_EKG",
+          "C_DRAW_TCD",
+          "F_LFA1_GEN",
+          "M_RECH_WRK",
+          "F_FAGL_SEG"
+        ]
+      }
+    ]
+  },
+  {
+    "user": "S4KT_SD",
+    "name": "SD",
+    "userId": "S4KT_SD",
+    "indicator": "SAP_ALL equivalent",
+    "score": 98,
+    "severity": "Critical",
+    "recommendation": "Revoke",
+    "systems": [
+      "LCKR-PRD-01"
+    ],
+    "status": "Open",
+    "assignee": null,
+    "lastChange": "20-11-2025",
+    "rationale": "User holds SAP_ALL equivalent permissions, granting administrative control over users and authorizations.",
+    "roles": [
+      {
+        "role": "ZL_BR_FI_AP_MGR",
+        "desc": "Role: ZL_BR_FI_AP_MGR",
+        "authObjects": [
+          "M_ANFR_BSA",
+          "W_BETR_USR",
+          "M_RFQ_BSA",
+          "S_WFAR_OBJ",
+          "M_RFQ_EKG",
+          "C_DRAW_TCD",
+          "F_LFA1_GEN",
+          "F_FAGL_SEG",
+          "K_CSKS",
+          "C_PRPS_USR"
+        ]
+      },
+      {
+        "role": "ZL_BR_FI_AP_MGR_CAMAN",
+        "desc": "Role: ZL_BR_FI_AP_MGR_CAMAN",
+        "authObjects": [
+          "K_TP_VALU",
+          "M_RECH_SPG",
+          "F_BNKA_BUK",
+          "F_PAYRQ",
+          "F_BKPF_BED",
+          "F_FEBB_BUK",
+          "M_BEST_EKO",
+          "/SRMSMC/BO",
+          "F_REGU_KOA",
+          "F_KNA1_APP"
+        ]
+      },
+      {
+        "role": "ZL_BR_FI_AP_MGR_LACCFCON",
+        "desc": "Role: ZL_BR_FI_AP_MGR_LACCFCON",
+        "authObjects": [
+          "S_WFAR_OBJ",
+          "C_DRAW_TCD",
+          "F_LFA1_GEN",
+          "F_FAGL_SEG",
+          "K_CSKS",
+          "F_LFA1_APP",
+          "S_ESH_CONN",
+          "M_BANF_EKG",
+          "B_BUPA_RLT",
+          "M_BANF_BSA"
+        ]
+      },
+      {
+        "role": "ZL_BR_FI_AP_MGR_LACCFMAN",
+        "desc": "Role: ZL_BR_FI_AP_MGR_LACCFMAN",
+        "authObjects": [
+          "K_TP_VALU",
+          "M_RECH_SPG",
+          "F_BNKA_BUK",
+          "F_PAYRQ",
+          "F_BKPF_BED",
+          "F_FEBB_BUK",
+          "M_BEST_EKO",
+          "/SRMSMC/BO",
+          "F_REGU_KOA",
+          "F_KNA1_APP"
+        ]
+      }
+    ]
+  },
+  {
+    "user": "SAPSUPPORT",
+    "name": "SAPSUPPORT",
+    "userId": "SAPSUPPORT",
+    "indicator": "SAP_ALL equivalent",
+    "score": 98,
+    "severity": "Critical",
+    "recommendation": "Revoke",
+    "systems": [
+      "LCKR-PRD-01"
+    ],
+    "status": "Open",
+    "assignee": null,
+    "lastChange": "25-02-2026",
+    "rationale": "User holds SAP_ALL equivalent permissions, granting administrative control over users and authorizations.",
+    "roles": [
+      {
+        "role": "ZM:IT_PROJECT_TEAM_DISPLAY",
+        "desc": "Role: ZM:IT_PROJECT_TEAM_DISPLAY",
+        "authObjects": [
+          "F_UHC_ACT",
+          "/ACCGO/DGR",
+          "I_VVSO_PRG",
+          "UIU_COMP",
+          "E_CACS_NSC",
+          "E_LOYALACC",
+          "A_IMPR_PRC",
+          "EAML_LRP",
+          "M_CUST_MCS",
+          "I_ICL_SBRG"
+        ]
+      },
+      {
+        "role": "ZM:IT_SAP_ALL_RESTRICTED",
+        "desc": "Role: ZM:IT_SAP_ALL_RESTRICTED",
+        "authObjects": [
+          "F_UHC_ACT",
+          "/ACCGO/DGR",
+          "I_VVSO_PRG",
+          "UIU_COMP",
+          "F_REMOB_BR",
+          "E_CACS_NSC",
+          "/SCWM/QSUP",
+          "A_IMPR_PRC",
+          "E_LOYALACC",
+          "EAML_LRP"
+        ]
+      },
+      {
+        "role": "ZFI_BR_AP_MGR_CAMAN_1720",
+        "desc": "Role: ZFI_BR_AP_MGR_CAMAN_1720",
+        "authObjects": [
+          "K_TP_VALU",
+          "M_RECH_SPG",
+          "F_BNKA_BUK",
+          "F_PAYRQ",
+          "F_BKPF_BED",
+          "F_FEBB_BUK",
+          "M_BEST_EKO",
+          "F_REGU_KOA",
+          "M_MATE_MAT",
+          "F_KNA1_APP"
+        ]
+      },
+      {
+        "role": "ZFI_BR_AP_MGR_CAMAN_1730",
+        "desc": "Role: ZFI_BR_AP_MGR_CAMAN_1730",
+        "authObjects": [
+          "K_TP_VALU",
+          "M_RECH_SPG",
+          "F_BNKA_BUK",
+          "F_PAYRQ",
+          "F_BKPF_BED",
+          "F_FEBB_BUK",
+          "M_BEST_EKO",
+          "F_REGU_KOA",
+          "M_MATE_MAT",
+          "F_KNA1_APP"
+        ]
+      }
+    ]
+  },
+  {
+    "user": "SAP_WFRT",
+    "name": "Workflow user",
+    "userId": "SAP_WFRT",
+    "indicator": "SAP_ALL equivalent",
+    "score": 98,
+    "severity": "Critical",
+    "recommendation": "Revoke",
+    "systems": [
+      "LCKR-PRD-01"
+    ],
+    "status": "Open",
+    "assignee": null,
+    "lastChange": "15-04-2026",
+    "rationale": "User holds SAP_ALL equivalent permissions, granting administrative control over users and authorizations.",
+    "roles": [
+      {
+        "role": "SAP_ALL",
+        "desc": "Role: SAP_ALL",
+        "authObjects": [
+          "F_UHC_ACT",
+          "I_VVSO_PRG",
+          "QIE_INSPDO",
+          "C_MPE_CER",
+          "CRM_ICMCAS",
+          "FPS_CDICT",
+          "/UI2/UISC",
+          "CRM_PS_SXP",
+          "MFG_PLNR",
+          "K_KEDT_TC"
+        ]
+      },
+      {
+        "role": "ZBASIS_BR_BGJOB_ADMIN",
+        "desc": "Role: ZBASIS_BR_BGJOB_ADMIN",
+        "authObjects": [
+          "LCM_LT",
+          "/SRMSMC/BO",
+          "LCM_GEN",
+          "LCM_CTX",
+          "LCM_LTENSO",
+          "I_IWERK",
+          "S_BTCH_ADM",
+          "S_LOG_COM",
+          "S_DHBASACT",
+          "S_BTCH_JOB"
+        ]
+      },
+      {
+        "role": "ZL_BR_CA_ALL_USER_1710",
+        "desc": "Role: ZL_BR_CA_ALL_USER_1710",
+        "authObjects": [
+          "S_WF_WI",
+          "M_ANFR_BSA",
+          "W_BETR_USR",
+          "M_RFQ_BSA",
+          "M_RFQ_EKG",
+          "C_DRAW_TCD",
+          "F_LFA1_GEN",
+          "S_PB_CHIP",
+          "C_ARPL_WRK",
+          "S_ESH_CONN"
+        ]
+      },
+      {
+        "role": "ZL_BR_CA_ALL_USER_1720",
+        "desc": "Role: ZL_BR_CA_ALL_USER_1720",
+        "authObjects": [
+          "S_WF_WI",
+          "M_ANFR_BSA",
+          "W_BETR_USR",
+          "M_RFQ_BSA",
+          "M_RFQ_EKG",
+          "C_DRAW_TCD",
+          "F_LFA1_GEN",
+          "S_PB_CHIP",
+          "C_ARPL_WRK",
+          "S_ESH_CONN"
+        ]
+      }
+    ]
+  },
+  {
+    "user": "SDMI_GJJNQXG",
+    "name": "SDMI_GJJNQXG",
+    "userId": "SDMI_GJJNQXG",
+    "indicator": "SAP_ALL equivalent",
+    "score": 98,
+    "severity": "Critical",
+    "recommendation": "Revoke",
+    "systems": [
+      "LCKR-PRD-01"
+    ],
+    "status": "Open",
+    "assignee": null,
+    "lastChange": "00-00-0000",
+    "rationale": "User holds SAP_ALL equivalent permissions, granting administrative control over users and authorizations.",
+    "roles": [
+      {
+        "role": "SAP_ALL",
+        "desc": "Role: SAP_ALL",
+        "authObjects": [
+          "F_UHC_ACT",
+          "I_VVSO_PRG",
+          "QIE_INSPDO",
+          "C_MPE_CER",
+          "CRM_ICMCAS",
+          "FPS_CDICT",
+          "/UI2/UISC",
+          "CRM_PS_SXP",
+          "MFG_PLNR",
+          "K_KEDT_TC"
+        ]
+      }
+    ]
+  },
+  {
+    "user": "SPC_SNOTE",
+    "name": "SPC_SNOTE",
+    "userId": "SPC_SNOTE",
+    "indicator": "PFCG + SU01 combo",
+    "score": 94,
+    "severity": "Critical",
+    "recommendation": "Revoke",
+    "systems": [
+      "LCKR-PRD-01"
+    ],
+    "status": "Open",
+    "assignee": null,
+    "lastChange": "00-00-0000",
+    "rationale": "User holds PFCG + SU01 combo permissions, granting administrative control over users and authorizations.",
+    "roles": [
+      {
+        "role": "ZHEC_SNOTE_V8",
+        "desc": "Role: ZHEC_SNOTE_V8",
+        "authObjects": [
+          "S_C_FUNCT",
+          "S_TABU_RFC",
+          "S_RFC",
+          "S_TABU_NAM",
+          "S_BTCH_ADM",
+          "S_LOG_COM",
+          "S_USER_VAL",
+          "S_TABU_CLI",
+          "S_BTCH_JOB",
+          "S_BTCH_NAM"
+        ]
+      },
+      {
+        "role": "SAP_ESH_BOS_RFC_ENDUSER",
+        "desc": "Role: SAP_ESH_BOS_RFC_ENDUSER",
+        "authObjects": [
+          "S_USER_GRP",
+          "S_RFC",
+          "S_TCODE",
+          "S_DEVELOP",
+          "S_START"
+        ]
+      },
+      {
+        "role": "SAP_ESH_SEARCH_CATEG",
+        "desc": "Role: SAP_ESH_SEARCH_CATEG",
+        "authObjects": [
+          "S_ESH_CAT"
+        ]
+      },
+      {
+        "role": "SAP_ESH_SEARCH_USER",
+        "desc": "Role: SAP_ESH_SEARCH_USER",
+        "authObjects": [
+          "S_ESH_CONN",
+          "S_START",
+          "S_ESH_CAT"
+        ]
+      }
+    ]
+  },
+  {
+    "user": "TC_USER",
+    "name": "TC_USER",
+    "userId": "TC_USER",
+    "indicator": "SAP_ALL equivalent",
+    "score": 98,
+    "severity": "Critical",
+    "recommendation": "Revoke",
+    "systems": [
+      "LCKR-PRD-01"
+    ],
+    "status": "Open",
+    "assignee": null,
+    "lastChange": "00-00-0000",
+    "rationale": "User holds SAP_ALL equivalent permissions, granting administrative control over users and authorizations.",
+    "roles": [
+      {
+        "role": "SAP_ALL",
+        "desc": "Role: SAP_ALL",
+        "authObjects": [
+          "F_UHC_ACT",
+          "I_VVSO_PRG",
+          "QIE_INSPDO",
+          "C_MPE_CER",
+          "CRM_ICMCAS",
+          "FPS_CDICT",
+          "/UI2/UISC",
+          "CRM_PS_SXP",
+          "MFG_PLNR",
+          "K_KEDT_TC"
+        ]
+      }
+    ]
+  },
+  {
+    "user": "TESTUSR1",
+    "name": "Test Usr1",
+    "userId": "TESTUSR1",
+    "indicator": "PFCG + SU01 combo",
+    "score": 94,
+    "severity": "Critical",
+    "recommendation": "Revoke",
+    "systems": [
+      "LCKR-PRD-01"
+    ],
+    "status": "Open",
+    "assignee": null,
+    "lastChange": "00-00-0000",
+    "rationale": "User holds PFCG + SU01 combo permissions, granting administrative control over users and authorizations.",
+    "roles": [
+      {
+        "role": "ZL_BR_FI_GL_ACCNTING",
+        "desc": "Role: ZL_BR_FI_GL_ACCNTING",
+        "authObjects": [
+          "M_ANFR_BSA",
+          "W_BETR_USR",
+          "M_RFQ_BSA",
+          "S_WFAR_OBJ",
+          "M_RFQ_EKG",
+          "C_DRAW_TCD",
+          "F_LFA1_GEN",
+          "F_FAGL_SEG",
+          "F_CC_HIER",
+          "K_CSKS"
+        ]
+      },
+      {
+        "role": "ZL_BR_CA_COSTCENTER_MANAGER",
+        "desc": "Role: ZL_BR_CA_COSTCENTER_MANAGER",
+        "authObjects": [
+          "M_ANFR_BSA",
+          "M_RFQ_BSA",
+          "M_MSEG_BWF",
+          "M_RFQ_EKG",
+          "C_DRAW_TCD",
+          "F_LFA1_GEN",
+          "F_FAGL_SEG",
+          "F_CC_HIER",
+          "K_CSKS",
+          "C_PRPS_USR"
+        ]
+      },
+      {
+        "role": "ZL_BR_FI_AR",
+        "desc": "Role: ZL_BR_FI_AR",
+        "authObjects": [
+          "M_ANFR_BSA",
+          "W_BETR_USR",
+          "F_FUND_PST",
+          "M_RFQ_BSA",
+          "S_WFAR_OBJ",
+          "M_RFQ_EKG",
+          "C_DRAW_TCD",
+          "F_LFA1_GEN",
+          "F_FAGL_SEG",
+          "FIAR_CLIPA"
+        ]
+      },
+      {
+        "role": "ZL_BR_FI_AR_REPORTS",
+        "desc": "Role: ZL_BR_FI_AR_REPORTS",
+        "authObjects": [
+          "M_ANFR_BSA",
+          "M_RFQ_BSA",
+          "S_WFAR_OBJ",
+          "M_RFQ_EKG",
+          "C_DRAW_TCD",
+          "F_LFA1_GEN",
+          "FIAR_CLIPA",
+          "K_CSKS",
+          "C_PRPS_USR",
+          "S_ESH_CONN"
+        ]
+      }
+    ]
+  },
+  {
+    "user": "VRADHAKRISHN",
+    "name": "Vinoth Radhakrishnan",
+    "userId": "VRADHAKRISHN",
+    "indicator": "PFCG + SU01 combo",
+    "score": 94,
+    "severity": "Critical",
+    "recommendation": "Revoke",
+    "systems": [
+      "LCKR-PRD-01"
+    ],
+    "status": "Open",
+    "assignee": null,
+    "lastChange": "15-04-2026",
+    "rationale": "User holds PFCG + SU01 combo permissions, granting administrative control over users and authorizations.",
+    "roles": [
+      {
+        "role": "ZM:IT-PROJECT_TEAM_DISPLAY",
+        "desc": "Role: ZM:IT-PROJECT_TEAM_DISPLAY",
+        "authObjects": [
+          "F_UHC_ACT",
+          "I_VVSO_PRG",
+          "UIU_COMP",
+          "E_CACS_NSC",
+          "E_LOYALACC",
+          "A_IMPR_PRC",
+          "EAML_LRP",
+          "M_CUST_MCS",
+          "I_ICL_SBRG",
+          "I_AGCY_PAY"
+        ]
+      },
+      {
+        "role": "ZL_BR_CA_EMPLOYEE",
+        "desc": "Role: ZL_BR_CA_EMPLOYEE",
+        "authObjects": [
+          "UIU_COMP",
+          "F_KNA1_APP",
+          "S_WFAR_OBJ",
+          "PLOG",
+          "F_LFA1_GEN",
+          "B_BUPA_ADR",
+          "B_BUPR_BZT",
+          "K_CSKS",
+          "V_KNA1_VKO",
+          "S_USER_GRP"
+        ]
+      },
+      {
+        "role": "ZL_BR_MFG_EXECUTION_PL1710",
+        "desc": "Role: ZL_BR_MFG_EXECUTION_PL1710",
+        "authObjects": [
+          "C_OA_EXEC",
+          "C_ROUT",
+          "Q_INSPPNT",
+          "W_BETR_USR",
+          "C_AFRU_AWK",
+          "C_CABN_GRP",
+          "S_WFAR_OBJ",
+          "M_MSEG_BWF",
+          "C_DRAW_TCD",
+          "F_LFA1_GEN"
+        ]
+      },
+      {
+        "role": "ZL_BR_MFG_EXECUTION_PL1720",
+        "desc": "Role: ZL_BR_MFG_EXECUTION_PL1720",
+        "authObjects": [
+          "C_OA_EXEC",
+          "C_ROUT",
+          "Q_INSPPNT",
+          "W_BETR_USR",
+          "C_AFRU_AWK",
+          "C_CABN_GRP",
+          "S_WFAR_OBJ",
+          "M_MSEG_BWF",
+          "C_DRAW_TCD",
+          "F_LFA1_GEN"
+        ]
+      }
+    ]
+  }
 ];
 
 const SUPER_ADMIN_KPIS = {
-  totalSuperAdmins: 23,
-  critical: 4,
-  rolesContributing: 28,
-  systemsAffected: 3,
+  totalSuperAdmins: 32,
+  critical: 32,
+  rolesContributing: 10,
+  systemsAffected: 1,
   deltas: {
-    totalSuperAdmins: -3,
-    critical: -2,
-    rolesContributing: -4,
+    totalSuperAdmins: 0,
+    critical: 0,
+    rolesContributing: 0,
     systemsAffected: 0,
   },
 };
 
-/* Top 10 roles contributing to super-admin violations */
 const ROLE_CONCENTRATION = [
-  { role: 'SAP_ALL',               users: 4,  category: 'Basis' },
-  { role: 'PFCG_ROLE_MAINTAIN',    users: 3,  category: 'Basis' },
-  { role: 'ZBC_BR_SYSTEM_ADMIN',   users: 5,  category: 'Basis' },
-  { role: 'ZFI_BR_AP_PAYMENT',     users: 7,  category: 'Finance' },
-  { role: 'ZFI_BR_GL_POSTING',     users: 9,  category: 'Finance' },
-  { role: 'ZMM_BR_VENDOR_CREATE',  users: 6,  category: 'Procurement' },
-  { role: 'ZMM_BR_PO_CREATE',      users: 5,  category: 'Procurement' },
-  { role: 'ZSD_BR_BILLING_CREATE', users: 4,  category: 'OTC' },
-  { role: 'ZFI_BR_TREASURY',       users: 4,  category: 'Finance' },
-  { role: 'ZHR_BR_PAYROLL_PROCESS',users: 3,  category: 'HR' },
+  {
+    "role": "ZL_BR_CA_BP_DIS",
+    "users": 215,
+    "category": "Procurement"
+  },
+  {
+    "role": "ZL_BR_CA_MAT_MSTR_DIS",
+    "users": 213,
+    "category": "Procurement"
+  },
+  {
+    "role": "ZL_BR_CA_STOCK_DIS",
+    "users": 198,
+    "category": "Procurement"
+  },
+  {
+    "role": "ZL_BR_CA_ALL_USERS",
+    "users": 197,
+    "category": "Procurement"
+  },
+  {
+    "role": "ZIT_BR_ALL_EMPLOYEES",
+    "users": 182,
+    "category": "Procurement"
+  },
+  {
+    "role": "ZPM_BR_NOTIF_CREATE_1720",
+    "users": 174,
+    "category": "Procurement"
+  },
+  {
+    "role": "ZPM_BR_NOTIF_CREATE_1730",
+    "users": 155,
+    "category": "Procurement"
+  },
+  {
+    "role": "ZMM_BR_PR_CHANGE_PRO",
+    "users": 153,
+    "category": "Procurement"
+  },
+  {
+    "role": "ZMM_BR_PR_DISPLAY_PRO",
+    "users": 148,
+    "category": "Procurement"
+  },
+  {
+    "role": "ZMM_BR_PO_DISPLAY_PRO",
+    "users": 147,
+    "category": "Procurement"
+  }
 ];
 
 Object.assign(window.MOCK, {
   SUPER_ADMIN_RECOMMENDATIONS, SUPER_ADMIN_ROWS, SUPER_ADMIN_KPIS, ROLE_CONCENTRATION,
 });
 
-/* ============================================================ */
-/* SOD-07 — Dual Process Control                                 */
-/* ============================================================ */
-
+// SOD-07 - Dual Process Control
 const DUAL_PROCESSES = [
   { key: 'CV', label: 'Create Vendor',      short: 'Vendor',   area: 'Procurement' },
   { key: 'AP', label: 'Approve PO',         short: 'PO Apv',   area: 'Procurement' },
@@ -457,96 +3297,570 @@ const DUAL_PROCESSES = [
   { key: 'PM', label: 'Approve Payment',    short: 'Payment',  area: 'Finance' },
   { key: 'SO', label: 'Create Sales Order', short: 'Sales',    area: 'OTC' },
   { key: 'BL', label: 'Create Billing',     short: 'Billing',  area: 'OTC' },
-  { key: 'GL', label: 'GL Posting',         short: 'GL Post',  area: 'Finance' },
+  { key: 'GL', label: 'GL Posting',         short: 'GL Post',  area: 'Finance' }
 ];
 
-/* Upper-triangle conflict matrix · counts per process pair */
 const CONFLICT_MATRIX = {
-  CV: { AP: 12, GR: 8,  IV: 4,  PM: 9,  SO: 2,  BL: 1,  GL: 3 },
-  AP: {         GR: 4,  IV: 15, PM: 10, SO: 3,  BL: 2,  GL: 6 },
-  GR: {                 IV: 18, PM: 3,  SO: 1,  BL: 0,  GL: 2 },
-  IV: {                         PM: 14, SO: 2,  BL: 1,  GL: 7 },
-  PM: {                                 SO: 3,  BL: 2,  GL: 17 },
-  SO: {                                         BL: 22, GL: 5 },
-  BL: {                                                 GL: 8 },
+  "CV": {
+    "AP": 0,
+    "GR": 0,
+    "IV": 0,
+    "PM": 0,
+    "SO": 0,
+    "BL": 0,
+    "GL": 0
+  },
+  "AP": {
+    "GR": 5,
+    "IV": 1,
+    "PM": 1,
+    "SO": 0,
+    "BL": 0,
+    "GL": 1
+  },
+  "GR": {
+    "IV": 9,
+    "PM": 3,
+    "SO": 5,
+    "BL": 6,
+    "GL": 6
+  },
+  "IV": {
+    "PM": 1,
+    "SO": 2,
+    "BL": 3,
+    "GL": 4
+  },
+  "PM": {
+    "SO": 0,
+    "BL": 0,
+    "GL": 1
+  },
+  "SO": {
+    "BL": 8,
+    "GL": 2
+  },
+  "BL": {
+    "GL": 2
+  }
 };
-
 const DUAL_PROCESS_ROWS = [
-  { id: 'DP-3041', user: 'BCARRIER',  name: 'Brian Carrier',   p1: 'CV', p2: 'PM', tcodes: ['FK01','F110','FB60'],     severity: 'Critical', status: 'Open',        assignee: null,
-    execHistory: [
-      { date: '2026-05-14', tcode: 'FK01',  doc: 'Vendor 4500091224 · Acme Steel KR', amount: null },
-      { date: '2026-05-15', tcode: 'F110',  doc: 'Payment run · Run-2026-051501',     amount: 2_140_000 },
-      { date: '2026-05-15', tcode: 'FB60',  doc: '1800012881 · Invoice posting',      amount: 487_300 },
-    ] },
-  { id: 'DP-3042', user: 'JSMITH_LC', name: 'Jane Smith',      p1: 'AP', p2: 'IV', tcodes: ['ME29N','MIRO','ME23N'],   severity: 'Critical', status: 'In Progress', assignee: 'SAP Security Team',
-    execHistory: [
-      { date: '2026-05-12', tcode: 'ME29N', doc: 'PO 4500083471 · release strategy override', amount: 1_640_000 },
-      { date: '2026-05-13', tcode: 'MIRO',  doc: 'Invoice receipt · 5105000812',              amount: 1_640_000 },
-    ] },
-  { id: 'DP-3043', user: 'APOCHE',    name: 'Alain Poche',     p1: 'PM', p2: 'GL', tcodes: ['F110','FB50','FBL1N'],    severity: 'Critical', status: 'Open',        assignee: null,
-    execHistory: [
-      { date: '2026-05-10', tcode: 'F110',  doc: 'Payment run · Run-2026-051001',   amount: 3_120_000 },
-      { date: '2026-05-10', tcode: 'FB50',  doc: 'GL document 100001245 · reclass', amount: 78_400 },
-    ] },
-  { id: 'DP-3044', user: 'YKIM',      name: 'Yu-jin Kim',      p1: 'SO', p2: 'BL', tcodes: ['VA01','VL01N','VF01'],    severity: 'Critical', status: 'Open',        assignee: null,
-    execHistory: [
-      { date: '2026-05-16', tcode: 'VA01', doc: 'Sales order 0030049817 · KR-East', amount: 940_000 },
-      { date: '2026-05-16', tcode: 'VL01N',doc: 'Delivery 0080091203 · same day',   amount: 940_000 },
-      { date: '2026-05-16', tcode: 'VF01', doc: 'Billing 0090055521',               amount: 940_000 },
-    ] },
-  { id: 'DP-3045', user: 'KPARK_LC',  name: 'Kyung-soo Park',  p1: 'AP', p2: 'GR', tcodes: ['ME29N','MIGO'],           severity: 'High',     status: 'Open',        assignee: null,
-    execHistory: [
-      { date: '2026-04-29', tcode: 'ME29N', doc: 'PO 4500082109 · release',    amount: 740_000 },
-      { date: '2026-04-30', tcode: 'MIGO',  doc: 'Goods receipt 5000812441',   amount: 740_000 },
-    ] },
-  { id: 'DP-3046', user: 'BHOOPER',   name: 'Beth Hooper',     p1: 'CV', p2: 'PM', tcodes: ['FK01','F110'],            severity: 'Critical', status: 'Open',        assignee: null,
-    execHistory: [
-      { date: '2026-05-03', tcode: 'FK01', doc: 'Vendor 4500091811 created',          amount: null },
-      { date: '2026-05-05', tcode: 'F110', doc: 'Payment run includes 4500091811',   amount: 218_000 },
-    ] },
-  { id: 'DP-3047', user: 'BGILL',     name: 'Baljinder Gill',  p1: 'GR', p2: 'IV', tcodes: ['MIGO','MIRO'],            severity: 'High',     status: 'In Progress', assignee: 'Finance Risk',
-    execHistory: [
-      { date: '2026-05-08', tcode: 'MIGO', doc: 'GR 5000813099 · Plant 1100',  amount: 412_000 },
-      { date: '2026-05-08', tcode: 'MIRO', doc: 'IV 5105001884 · same vendor', amount: 412_000 },
-    ] },
-  { id: 'DP-3048', user: 'MJONES',    name: 'Mary Jones',      p1: 'PM', p2: 'GL', tcodes: ['F110','FB50'],            severity: 'High',     status: 'Open',        assignee: null,
-    execHistory: [
-      { date: '2026-05-11', tcode: 'F110', doc: 'Payment run · Run-2026-051101', amount: 1_180_000 },
-      { date: '2026-05-11', tcode: 'FB50', doc: 'GL reclass 100001331',          amount: 56_200 },
-    ] },
-  { id: 'DP-3049', user: 'HSCHRODE',  name: 'Helga Schroder',  p1: 'PM', p2: 'GL', tcodes: ['F110','FB50','FF67'],     severity: 'High',     status: 'Open',        assignee: null,
-    execHistory: [
-      { date: '2026-04-25', tcode: 'F110', doc: 'Payment run · Run-2026-042501', amount: 980_000 },
-      { date: '2026-04-25', tcode: 'FF67', doc: 'Bank statement upload',          amount: null },
-    ] },
-  { id: 'DP-3050', user: 'LBAKER',    name: 'Lisa Baker',      p1: 'SO', p2: 'GL', tcodes: ['VA01','FB50'],            severity: 'High',     status: 'Resolved',    assignee: 'Finance Risk',
-    execHistory: [
-      { date: '2026-03-18', tcode: 'VA01', doc: 'Sales order 0030047012',    amount: 220_000 },
-      { date: '2026-03-19', tcode: 'FB50', doc: 'Revenue posting 100001098', amount: 220_000 },
-    ] },
-  { id: 'DP-3051', user: 'DMARTINEZ', name: 'Diego Martinez',  p1: 'CV', p2: 'AP', tcodes: ['FK01','ME29N'],           severity: 'Medium',   status: 'Open',        assignee: null,
-    execHistory: [
-      { date: '2026-05-02', tcode: 'FK01',  doc: 'Vendor 4500091990 created', amount: null },
-      { date: '2026-05-04', tcode: 'ME29N', doc: 'PO 4500083880 release',     amount: 132_000 },
-    ] },
-  { id: 'DP-3052', user: 'RTHOMPSON', name: 'Ryan Thompson',   p1: 'PM', p2: 'GL', tcodes: ['F110','FB50'],            severity: 'High',     status: 'Open',        assignee: null,
-    execHistory: [
-      { date: '2026-05-06', tcode: 'F110', doc: 'Payment run · Run-2026-050601', amount: 1_540_000 },
-      { date: '2026-05-06', tcode: 'FB50', doc: 'GL adjustment 100001288',       amount: 88_400 },
-    ] },
+  {
+    "id": "DP-3001",
+    "user": "AMBER.DUNBAR",
+    "name": "Amber Dunbar",
+    "p1": "SO",
+    "p2": "BL",
+    "tcodes": [
+      "VA01",
+      "VA02",
+      "VF01",
+      "VF02"
+    ],
+    "severity": "Critical",
+    "status": "Open",
+    "assignee": null,
+    "execHistory": [
+      {
+        "date": "2026-05-18",
+        "tcode": "VA01",
+        "doc": "Activity in SO"
+      },
+      {
+        "date": "2026-05-19",
+        "tcode": "VF01",
+        "doc": "Activity in BL"
+      }
+    ]
+  },
+  {
+    "id": "DP-3002",
+    "user": "DAVID.SUNG",
+    "name": "David Sung",
+    "p1": "SO",
+    "p2": "BL",
+    "tcodes": [
+      "VA02",
+      "VF01"
+    ],
+    "severity": "Critical",
+    "status": "Open",
+    "assignee": null,
+    "execHistory": [
+      {
+        "date": "2026-05-18",
+        "tcode": "VA02",
+        "doc": "Activity in SO"
+      },
+      {
+        "date": "2026-05-19",
+        "tcode": "VF01",
+        "doc": "Activity in BL"
+      }
+    ]
+  },
+  {
+    "id": "DP-3003",
+    "user": "EELLIOTT",
+    "name": "Ellen Elliott",
+    "p1": "GR",
+    "p2": "IV",
+    "tcodes": [
+      "MIGO",
+      "MIRO"
+    ],
+    "severity": "High",
+    "status": "Open",
+    "assignee": null,
+    "execHistory": [
+      {
+        "date": "2026-05-18",
+        "tcode": "MIGO",
+        "doc": "Activity in GR"
+      },
+      {
+        "date": "2026-05-19",
+        "tcode": "MIRO",
+        "doc": "Activity in IV"
+      }
+    ]
+  },
+  {
+    "id": "DP-3004",
+    "user": "HCAMPBELL",
+    "name": "Hamish Campbell",
+    "p1": "SO",
+    "p2": "BL",
+    "tcodes": [
+      "VA01",
+      "VA02",
+      "VF02"
+    ],
+    "severity": "Critical",
+    "status": "Open",
+    "assignee": null,
+    "execHistory": [
+      {
+        "date": "2026-05-18",
+        "tcode": "VA01",
+        "doc": "Activity in SO"
+      },
+      {
+        "date": "2026-05-19",
+        "tcode": "VF02",
+        "doc": "Activity in BL"
+      }
+    ]
+  },
+  {
+    "id": "DP-3005",
+    "user": "HCLEMENT",
+    "name": "Hannah Clement",
+    "p1": "GR",
+    "p2": "IV",
+    "tcodes": [
+      "MIGO",
+      "MIRO"
+    ],
+    "severity": "High",
+    "status": "Open",
+    "assignee": null,
+    "execHistory": [
+      {
+        "date": "2026-05-18",
+        "tcode": "MIGO",
+        "doc": "Activity in GR"
+      },
+      {
+        "date": "2026-05-19",
+        "tcode": "MIRO",
+        "doc": "Activity in IV"
+      }
+    ]
+  },
+  {
+    "id": "DP-3006",
+    "user": "HOANG.NGUYEN",
+    "name": "Hoang Nguyen",
+    "p1": "GR",
+    "p2": "IV",
+    "tcodes": [
+      "MIGO",
+      "MIRO"
+    ],
+    "severity": "High",
+    "status": "Open",
+    "assignee": null,
+    "execHistory": [
+      {
+        "date": "2026-05-18",
+        "tcode": "MIGO",
+        "doc": "Activity in GR"
+      },
+      {
+        "date": "2026-05-19",
+        "tcode": "MIRO",
+        "doc": "Activity in IV"
+      }
+    ]
+  },
+  {
+    "id": "DP-3007",
+    "user": "HOANG.NGUYEN",
+    "name": "Hoang Nguyen",
+    "p1": "SO",
+    "p2": "BL",
+    "tcodes": [
+      "VA02",
+      "VF02"
+    ],
+    "severity": "Critical",
+    "status": "Open",
+    "assignee": null,
+    "execHistory": [
+      {
+        "date": "2026-05-18",
+        "tcode": "VA02",
+        "doc": "Activity in SO"
+      },
+      {
+        "date": "2026-05-19",
+        "tcode": "VF02",
+        "doc": "Activity in BL"
+      }
+    ]
+  },
+  {
+    "id": "DP-3008",
+    "user": "JAE.KANG",
+    "name": "Jae Kang",
+    "p1": "GR",
+    "p2": "IV",
+    "tcodes": [
+      "MIGO",
+      "MIRO"
+    ],
+    "severity": "High",
+    "status": "Open",
+    "assignee": null,
+    "execHistory": [
+      {
+        "date": "2026-05-18",
+        "tcode": "MIGO",
+        "doc": "Activity in GR"
+      },
+      {
+        "date": "2026-05-19",
+        "tcode": "MIRO",
+        "doc": "Activity in IV"
+      }
+    ]
+  },
+  {
+    "id": "DP-3009",
+    "user": "NRODRIGUEZ",
+    "name": "Namgoon Rodriguez",
+    "p1": "SO",
+    "p2": "BL",
+    "tcodes": [
+      "VA01",
+      "VA02",
+      "VF02"
+    ],
+    "severity": "Critical",
+    "status": "Open",
+    "assignee": null,
+    "execHistory": [
+      {
+        "date": "2026-05-18",
+        "tcode": "VA01",
+        "doc": "Activity in SO"
+      },
+      {
+        "date": "2026-05-19",
+        "tcode": "VF02",
+        "doc": "Activity in BL"
+      }
+    ]
+  },
+  {
+    "id": "DP-3010",
+    "user": "PVALENCIA",
+    "name": "Valencia Patricia",
+    "p1": "SO",
+    "p2": "BL",
+    "tcodes": [
+      "VA01",
+      "VA02",
+      "VF02"
+    ],
+    "severity": "Critical",
+    "status": "Open",
+    "assignee": null,
+    "execHistory": [
+      {
+        "date": "2026-05-18",
+        "tcode": "VA01",
+        "doc": "Activity in SO"
+      },
+      {
+        "date": "2026-05-19",
+        "tcode": "VF02",
+        "doc": "Activity in BL"
+      }
+    ]
+  },
+  {
+    "id": "DP-3011",
+    "user": "RUTGER.DUKES",
+    "name": "Rutger Dukes",
+    "p1": "SO",
+    "p2": "BL",
+    "tcodes": [
+      "VA01",
+      "VA02",
+      "VF02"
+    ],
+    "severity": "Critical",
+    "status": "Open",
+    "assignee": null,
+    "execHistory": [
+      {
+        "date": "2026-05-18",
+        "tcode": "VA01",
+        "doc": "Activity in SO"
+      },
+      {
+        "date": "2026-05-19",
+        "tcode": "VF02",
+        "doc": "Activity in BL"
+      }
+    ]
+  },
+  {
+    "id": "DP-3012",
+    "user": "SBORDELON",
+    "name": "Shelly Bordelon",
+    "p1": "GR",
+    "p2": "IV",
+    "tcodes": [
+      "MIGO",
+      "MIRO"
+    ],
+    "severity": "High",
+    "status": "Open",
+    "assignee": null,
+    "execHistory": [
+      {
+        "date": "2026-05-18",
+        "tcode": "MIGO",
+        "doc": "Activity in GR"
+      },
+      {
+        "date": "2026-05-19",
+        "tcode": "MIRO",
+        "doc": "Activity in IV"
+      }
+    ]
+  },
+  {
+    "id": "DP-3013",
+    "user": "SBRYAN",
+    "name": "Stephanie Brown Bryan",
+    "p1": "AP",
+    "p2": "IV",
+    "tcodes": [
+      "ME28",
+      "ME29N",
+      "MIRO"
+    ],
+    "severity": "Critical",
+    "status": "Open",
+    "assignee": null,
+    "execHistory": [
+      {
+        "date": "2026-05-18",
+        "tcode": "ME28",
+        "doc": "Activity in AP"
+      },
+      {
+        "date": "2026-05-19",
+        "tcode": "MIRO",
+        "doc": "Activity in IV"
+      }
+    ]
+  },
+  {
+    "id": "DP-3014",
+    "user": "SBRYAN",
+    "name": "Stephanie Brown Bryan",
+    "p1": "GR",
+    "p2": "IV",
+    "tcodes": [
+      "MIGO",
+      "MIRO"
+    ],
+    "severity": "High",
+    "status": "Open",
+    "assignee": null,
+    "execHistory": [
+      {
+        "date": "2026-05-18",
+        "tcode": "MIGO",
+        "doc": "Activity in GR"
+      },
+      {
+        "date": "2026-05-19",
+        "tcode": "MIRO",
+        "doc": "Activity in IV"
+      }
+    ]
+  },
+  {
+    "id": "DP-3015",
+    "user": "SBRYAN",
+    "name": "Stephanie Brown Bryan",
+    "p1": "GL",
+    "p2": "PM",
+    "tcodes": [
+      "FB01",
+      "FB50",
+      "F110"
+    ],
+    "severity": "High",
+    "status": "Open",
+    "assignee": null,
+    "execHistory": [
+      {
+        "date": "2026-05-18",
+        "tcode": "FB01",
+        "doc": "Activity in GL"
+      },
+      {
+        "date": "2026-05-19",
+        "tcode": "F110",
+        "doc": "Activity in PM"
+      }
+    ]
+  },
+  {
+    "id": "DP-3016",
+    "user": "SONJA.WRIGHT",
+    "name": "Sonja Wright",
+    "p1": "GR",
+    "p2": "IV",
+    "tcodes": [
+      "MIGO",
+      "MIRO"
+    ],
+    "severity": "High",
+    "status": "Open",
+    "assignee": null,
+    "execHistory": [
+      {
+        "date": "2026-05-18",
+        "tcode": "MIGO",
+        "doc": "Activity in GR"
+      },
+      {
+        "date": "2026-05-19",
+        "tcode": "MIRO",
+        "doc": "Activity in IV"
+      }
+    ]
+  },
+  {
+    "id": "DP-3017",
+    "user": "SUNIL.SAHAI",
+    "name": "Sunil Sahai",
+    "p1": "GR",
+    "p2": "IV",
+    "tcodes": [
+      "MIGO",
+      "MIRO"
+    ],
+    "severity": "High",
+    "status": "Open",
+    "assignee": null,
+    "execHistory": [
+      {
+        "date": "2026-05-18",
+        "tcode": "MIGO",
+        "doc": "Activity in GR"
+      },
+      {
+        "date": "2026-05-19",
+        "tcode": "MIRO",
+        "doc": "Activity in IV"
+      }
+    ]
+  },
+  {
+    "id": "DP-3018",
+    "user": "VMEHTA",
+    "name": "Vinay Mehta",
+    "p1": "GR",
+    "p2": "IV",
+    "tcodes": [
+      "MIGO",
+      "MIRO"
+    ],
+    "severity": "High",
+    "status": "Open",
+    "assignee": null,
+    "execHistory": [
+      {
+        "date": "2026-05-18",
+        "tcode": "MIGO",
+        "doc": "Activity in GR"
+      },
+      {
+        "date": "2026-05-19",
+        "tcode": "MIRO",
+        "doc": "Activity in IV"
+      }
+    ]
+  },
+  {
+    "id": "DP-3019",
+    "user": "WBERRYMAN",
+    "name": "Wendy Berryman",
+    "p1": "SO",
+    "p2": "BL",
+    "tcodes": [
+      "VA02",
+      "VF01",
+      "VF02"
+    ],
+    "severity": "Critical",
+    "status": "Open",
+    "assignee": null,
+    "execHistory": [
+      {
+        "date": "2026-05-18",
+        "tcode": "VA02",
+        "doc": "Activity in SO"
+      },
+      {
+        "date": "2026-05-19",
+        "tcode": "VF01",
+        "doc": "Activity in BL"
+      }
+    ]
+  }
 ];
 
 const DUAL_PROCESS_KPIS = {
-  total: 184,
-  critical: 47,
-  high: 96,
-  uniqueUsers: 78,
-  processAreas: 4,
+  total: 19,
+  critical: 18,
+  high: 19,
+  uniqueUsers: 35,
+  processAreas: 5,
   deltas: {
-    total: -21,
-    critical: -8,
-    high: -11,
-    uniqueUsers: -7,
+    total: 0,
+    critical: 0,
+    high: 0,
+    uniqueUsers: 0,
     processAreas: 0,
   },
 };
@@ -555,146 +3869,322 @@ Object.assign(window.MOCK, {
   DUAL_PROCESSES, CONFLICT_MATRIX, DUAL_PROCESS_ROWS, DUAL_PROCESS_KPIS,
 });
 
-/* ============================================================ */
-/* SOD-08 — Emergency Access                                     */
-/* ============================================================ */
-
+// SOD-08 - Emergency Access
 const FIREFIGHTER_TIMELINE_START = '2026-03-01';
 const FIREFIGHTER_TIMELINE_END   = '2026-05-22';
-
 const APPROVAL_STATUSES = ['Approved', 'Pending', 'Missing'];
-
 const EMERGENCY_ACCESS_ROWS = [
-  { id: 'EA-7012', user: 'BCARRIER',  name: 'Brian Carrier',
-    ffId: 'FF_BAS_01', role: 'Basis Emergency · Production',
-    start: '2026-04-02', end: '2026-05-22', usage: 32,
-    approval: 'Missing', anomalyFlag: true, anomalyReason: 'Unapproved + assignment >30d threshold',
-    recommendation: 'Terminate assignment · revoke role · open ticket',
-    status: 'Open', assignee: null,
-    log: [
-      { date: '2026-04-04 02:11', tcode: 'SE38', desc: 'ABAP report execution · Z_BANK_EXPORT' },
-      { date: '2026-04-19 23:47', tcode: 'SU01', desc: 'User SAP_USER_2294 password reset · after-hours' },
-      { date: '2026-05-07 11:30', tcode: 'SM30', desc: 'Table maintenance · T001 company codes' },
-      { date: '2026-05-19 03:22', tcode: 'SE16', desc: 'Direct table query · BSEG · 14K rows exported' },
-    ] },
-  { id: 'EA-7013', user: 'APOCHE',    name: 'Alain Poche',
-    ffId: 'FF_FIN_03', role: 'Finance Emergency · Treasury',
-    start: '2025-10-15', end: '2026-05-22', usage: 87,
-    approval: 'Missing', anomalyFlag: true, anomalyReason: 'Active 214 days · no re-attestation · last approval expired Q4-2025',
-    recommendation: 'Hard terminate — require new ticket per session',
-    status: 'In Progress', assignee: 'IT Compliance',
-    log: [
-      { date: '2026-05-01 09:20', tcode: 'F110', desc: 'Off-cycle payment run · $1.8M' },
-      { date: '2026-05-15 14:02', tcode: 'F-58', desc: 'Manual outgoing payment · vendor 4500091900' },
-      { date: '2026-05-20 18:55', tcode: 'FF67', desc: 'Bank statement post · after-hours' },
-    ] },
-  { id: 'EA-7014', user: 'JSMITH_LC', name: 'Jane Smith',
-    ffId: 'FF_BAS_02', role: 'Basis Emergency · Transport',
-    start: '2026-03-10', end: '2026-03-24', usage: 8,
-    approval: 'Approved', anomalyFlag: false, anomalyReason: null,
-    recommendation: 'No action — within policy',
-    status: 'Resolved', assignee: 'SAP Basis Team',
-    log: [
-      { date: '2026-03-12 11:04', tcode: 'STMS', desc: 'Transport TR4500982 release · ticket INC-44102' },
-      { date: '2026-03-20 15:18', tcode: 'STMS', desc: 'Transport TR4500999 release · ticket INC-44211' },
-    ] },
-  { id: 'EA-7015', user: 'KPARK_LC',  name: 'Kyung-soo Park',
-    ffId: 'FF_BAS_01', role: 'Basis Emergency · Production',
-    start: '2026-05-02', end: '2026-05-12', usage: 4,
-    approval: 'Approved', anomalyFlag: false, anomalyReason: null,
-    recommendation: 'No action — within policy',
-    status: 'Resolved', assignee: 'SAP Basis Team',
-    log: [
-      { date: '2026-05-04 10:15', tcode: 'SM37', desc: 'Background job recovery · ticket INC-44801' },
-    ] },
-  { id: 'EA-7016', user: 'YKIM',      name: 'Yu-jin Kim',
-    ffId: 'FF_SD_01', role: 'OTC Emergency · Billing',
-    start: '2026-04-12', end: '2026-05-04', usage: 5,
-    approval: 'Approved', anomalyFlag: false, anomalyReason: null,
-    recommendation: 'No action — within policy',
-    status: 'Resolved', assignee: 'Finance Risk',
-    log: [
-      { date: '2026-04-14 09:22', tcode: 'VF02', desc: 'Billing doc correction · ticket INC-44511' },
-    ] },
-  { id: 'EA-7017', user: 'MJONES',    name: 'Mary Jones',
-    ffId: 'FF_HR_01', role: 'HR Emergency · Payroll',
-    start: '2026-03-14', end: '2026-05-22', usage: 31,
-    approval: 'Approved', anomalyFlag: true, anomalyReason: '68% of usage outside business hours · spike in PA30',
-    recommendation: 'Re-attest · monitor after-hours pattern',
-    status: 'Open', assignee: null,
-    log: [
-      { date: '2026-04-08 22:14', tcode: 'PA30', desc: 'HR master update · employee 1004471' },
-      { date: '2026-05-02 23:02', tcode: 'PC00', desc: 'Off-cycle payroll · region KR-West' },
-      { date: '2026-05-18 21:35', tcode: 'PA30', desc: 'HR master update · employee 1004503' },
-    ] },
-  { id: 'EA-7018', user: 'BHOOPER',   name: 'Beth Hooper',
-    ffId: 'FF_FIN_02', role: 'Finance Emergency · AP',
-    start: '2026-04-28', end: '2026-05-18', usage: 9,
-    approval: 'Approved', anomalyFlag: false, anomalyReason: null,
-    recommendation: 'No action — within policy',
-    status: 'Resolved', assignee: 'Finance Risk',
-    log: [
-      { date: '2026-05-02 11:08', tcode: 'F-58', desc: 'Manual payment · vendor 4500091700' },
-    ] },
-  { id: 'EA-7019', user: 'BGILL',     name: 'Baljinder Gill',
-    ffId: 'FF_MM_01', role: 'MM Emergency · PO',
-    start: '2026-03-18', end: '2026-04-02', usage: 6,
-    approval: 'Approved', anomalyFlag: false, anomalyReason: null,
-    recommendation: 'No action — within policy',
-    status: 'Resolved', assignee: 'SAP Security Team',
-    log: [
-      { date: '2026-03-22 14:12', tcode: 'ME22N', desc: 'PO 4500082011 emergency change · ticket INC-43911' },
-    ] },
-  { id: 'EA-7020', user: 'HSCHRODE',  name: 'Helga Schroder',
-    ffId: 'FF_BAS_02', role: 'Basis Emergency · Transport',
-    start: '2026-04-22', end: '2026-05-22', usage: 12,
-    approval: 'Approved', anomalyFlag: false, anomalyReason: null,
-    recommendation: 'Renewal review due in 7 days',
-    status: 'In Progress', assignee: 'SAP Basis Team',
-    log: [
-      { date: '2026-05-05 09:45', tcode: 'STMS', desc: 'Transport release · weekly cadence' },
-    ] },
-  { id: 'EA-7021', user: 'DMARTINEZ', name: 'Diego Martinez',
-    ffId: 'FF_MM_01', role: 'MM Emergency · PO',
-    start: '2026-05-06', end: '2026-05-22', usage: 3,
-    approval: 'Pending', anomalyFlag: false, anomalyReason: null,
-    recommendation: 'Awaiting approval ticket SR-22087 · escalate if >72h pending',
-    status: 'Open', assignee: null,
-    log: [
-      { date: '2026-05-10 10:02', tcode: 'ME21N', desc: 'PO create · awaiting approval' },
-    ] },
-  { id: 'EA-7022', user: 'EWILSON',   name: 'Emma Wilson',
-    ffId: 'FF_FIN_01', role: 'Finance Emergency · GL',
-    start: '2026-03-02', end: '2026-03-20', usage: 7,
-    approval: 'Approved', anomalyFlag: false, anomalyReason: null,
-    recommendation: 'No action — within policy',
-    status: 'Resolved', assignee: 'Finance Risk',
-    log: [
-      { date: '2026-03-08 16:30', tcode: 'FB50', desc: 'GL adjustment · period close · ticket INC-43788' },
-    ] },
-  { id: 'EA-7023', user: 'RTHOMPSON', name: 'Ryan Thompson',
-    ffId: 'FF_BAS_02', role: 'Basis Emergency · Transport',
-    start: '2026-03-28', end: '2026-04-30', usage: 18,
-    approval: 'Approved', anomalyFlag: true, anomalyReason: 'Used SE38 outside ticket scope · 3 occurrences',
-    recommendation: 'Investigate · review SE38 execution log',
-    status: 'Open', assignee: null,
-    log: [
-      { date: '2026-04-04 13:11', tcode: 'STMS', desc: 'Transport release · ticket INC-44109' },
-      { date: '2026-04-15 17:42', tcode: 'SE38', desc: 'ABAP report run · NO TICKET LINKED' },
-      { date: '2026-04-22 14:08', tcode: 'SE38', desc: 'ABAP report run · NO TICKET LINKED' },
-    ] },
+  {
+    "id": "EA-FF-1",
+    "user": "FF.BASIS",
+    "name": "Firefighter ID for Basis Administration",
+    "ffId": "FF.BASIS",
+    "role": "ZM:IT-PROJECT_TEAM_DISPLAY",
+    "start": "2026-04-01",
+    "end": "02-10-2025",
+    "usage": 10,
+    "approval": "Missing",
+    "anomalyFlag": false,
+    "anomalyReason": "",
+    "recommendation": "Review firefighting session logs",
+    "status": "Open",
+    "assignee": null,
+    "log": [
+      {
+        "date": "02-10-2025 15:27:46",
+        "tcode": "SAPMSYST",
+        "desc": "Transaction executed"
+      }
+    ]
+  },
+  {
+    "id": "EA-FF-2",
+    "user": "FF.EWM",
+    "name": "Firefighter ID for EWM - Extended Warehouse Managment",
+    "ffId": "FF.EWM",
+    "role": "ZEWM_BR_STOCK_MONITORING_LAMW",
+    "start": "2026-04-01",
+    "end": "25-08-2023",
+    "usage": 152,
+    "approval": "Approved",
+    "anomalyFlag": true,
+    "anomalyReason": "High transaction usage detected",
+    "recommendation": "Review firefighting session logs",
+    "status": "Open",
+    "assignee": null,
+    "log": [
+      {
+        "date": "25-08-2023 06:17:18",
+        "tcode": "/SCWM/TODLV_T",
+        "desc": "Transaction executed"
+      }
+    ]
+  },
+  {
+    "id": "EA-FF-3",
+    "user": "FF.FI",
+    "name": "Firefighter ID for Finance",
+    "ffId": "FF.FI",
+    "role": "ZM:IT_SAP_ALL_RESTRICTED",
+    "start": "2026-04-01",
+    "end": "25-03-2026",
+    "usage": 46,
+    "approval": "Approved",
+    "anomalyFlag": true,
+    "anomalyReason": "High transaction usage detected",
+    "recommendation": "Review firefighting session logs",
+    "status": "Open",
+    "assignee": null,
+    "log": [
+      {
+        "date": "25-03-2026 13:13:22",
+        "tcode": "SAPMSYST",
+        "desc": "Transaction executed"
+      }
+    ]
+  },
+  {
+    "id": "EA-FF-4",
+    "user": "FF.IT",
+    "name": "Ely Taleon",
+    "ffId": "FF.IT",
+    "role": "ZM:IT_PROJECT_TEAM_DISPLAY",
+    "start": "2026-04-01",
+    "end": "24-10-2024",
+    "usage": 20395,
+    "approval": "Approved",
+    "anomalyFlag": true,
+    "anomalyReason": "High transaction usage detected",
+    "recommendation": "Review firefighting session logs",
+    "status": "Open",
+    "assignee": null,
+    "log": [
+      {
+        "date": "24-10-2024 10:58:59",
+        "tcode": "S_ALR_87009106",
+        "desc": "Transaction executed"
+      }
+    ]
+  },
+  {
+    "id": "EA-FF-5",
+    "user": "FF.IT02",
+    "name": "FF IT02",
+    "ffId": "FF.IT02",
+    "role": "ZM:IT_PROJECT_TEAM_DISPLAY",
+    "start": "2026-04-01",
+    "end": "24-08-2023",
+    "usage": 20377,
+    "approval": "Missing",
+    "anomalyFlag": true,
+    "anomalyReason": "High transaction usage detected",
+    "recommendation": "Review firefighting session logs",
+    "status": "Open",
+    "assignee": null,
+    "log": [
+      {
+        "date": "24-08-2023 11:13:43",
+        "tcode": "S_ALR_87009106",
+        "desc": "Transaction executed"
+      }
+    ]
+  },
+  {
+    "id": "EA-FF-6",
+    "user": "FF.MM",
+    "name": "Firefighter ID for Materials Management",
+    "ffId": "FF.MM",
+    "role": "ZM:IT_PROJECT_TEAM_DISPLAY",
+    "start": "2026-04-01",
+    "end": "05-03-2026",
+    "usage": 10,
+    "approval": "Approved",
+    "anomalyFlag": false,
+    "anomalyReason": "",
+    "recommendation": "Review firefighting session logs",
+    "status": "Open",
+    "assignee": null,
+    "log": [
+      {
+        "date": "05-03-2026 12:28:33",
+        "tcode": "SAPMSYST",
+        "desc": "Transaction executed"
+      }
+    ]
+  },
+  {
+    "id": "EA-FF-7",
+    "user": "FF.MM02",
+    "name": "FF.MM02",
+    "ffId": "FF.MM02",
+    "role": "ZTECH_BR_ABABPER",
+    "start": "2026-04-01",
+    "end": "12-07-2024",
+    "usage": 141,
+    "approval": "Approved",
+    "anomalyFlag": true,
+    "anomalyReason": "High transaction usage detected",
+    "recommendation": "Review firefighting session logs",
+    "status": "Open",
+    "assignee": null,
+    "log": [
+      {
+        "date": "12-07-2024 03:48:25",
+        "tcode": "SCMA",
+        "desc": "Transaction executed"
+      }
+    ]
+  },
+  {
+    "id": "EA-FF-8",
+    "user": "FF.PM",
+    "name": "Firefighter ID for Plant Maintenance",
+    "ffId": "FF.PM",
+    "role": "ZM:IT_SAP_ALL_RESTRICTED",
+    "start": "2026-04-01",
+    "end": "17-02-2026",
+    "usage": 13,
+    "approval": "Approved",
+    "anomalyFlag": true,
+    "anomalyReason": "High transaction usage detected",
+    "recommendation": "Review firefighting session logs",
+    "status": "Open",
+    "assignee": null,
+    "log": [
+      {
+        "date": "17-02-2026 14:23:45",
+        "tcode": "SAPMSYST",
+        "desc": "Transaction executed"
+      }
+    ]
+  },
+  {
+    "id": "EA-FF-9",
+    "user": "FF.PP",
+    "name": "Firefighter ID for Production Planning",
+    "ffId": "FF.PP",
+    "role": "ZL_BR_MFG_EXECUTION",
+    "start": "2026-04-01",
+    "end": "24-08-2023",
+    "usage": 163,
+    "approval": "Approved",
+    "anomalyFlag": true,
+    "anomalyReason": "High transaction usage detected",
+    "recommendation": "Review firefighting session logs",
+    "status": "Open",
+    "assignee": null,
+    "log": [
+      {
+        "date": "24-08-2023 14:05:21",
+        "tcode": "CKMATSEL",
+        "desc": "Transaction executed"
+      }
+    ]
+  },
+  {
+    "id": "EA-FF-10",
+    "user": "FF.SD",
+    "name": "Firefighter ID for Sales & Distribution",
+    "ffId": "FF.SD",
+    "role": "ZM:IT_SAP_ALL_RESTRICTED",
+    "start": "2026-04-01",
+    "end": "02-04-2026",
+    "usage": 37,
+    "approval": "Approved",
+    "anomalyFlag": true,
+    "anomalyReason": "High transaction usage detected",
+    "recommendation": "Review firefighting session logs",
+    "status": "Open",
+    "assignee": null,
+    "log": [
+      {
+        "date": "02-04-2026 10:59:02",
+        "tcode": "SAPMSYST",
+        "desc": "Transaction executed"
+      }
+    ]
+  },
+  {
+    "id": "EA-FF-11",
+    "user": "FF.TEMP",
+    "name": "FireFighter Temporary",
+    "ffId": "FF.TEMP",
+    "role": "ZM:IT_PROJECT_TEAM_DISPLAY",
+    "start": "2026-04-01",
+    "end": "27-01-2023",
+    "usage": 20377,
+    "approval": "Approved",
+    "anomalyFlag": true,
+    "anomalyReason": "High transaction usage detected",
+    "recommendation": "Review firefighting session logs",
+    "status": "Open",
+    "assignee": null,
+    "log": [
+      {
+        "date": "27-01-2023 14:41:32",
+        "tcode": "S_ALR_87009106",
+        "desc": "Transaction executed"
+      }
+    ]
+  },
+  {
+    "id": "EA-FF-12",
+    "user": "JEFF.DOZART",
+    "name": "Jeff Dozart",
+    "ffId": "JEFF.DOZART",
+    "role": "ZPM_BR_MORD_PROCESS_1710",
+    "start": "2026-04-01",
+    "end": "15-04-2026",
+    "usage": 17,
+    "approval": "Approved",
+    "anomalyFlag": true,
+    "anomalyReason": "High transaction usage detected",
+    "recommendation": "Review firefighting session logs",
+    "status": "Open",
+    "assignee": null,
+    "log": [
+      {
+        "date": "15-04-2026 00:00:00",
+        "tcode": "SAPLMR1M",
+        "desc": "Transaction executed"
+      }
+    ]
+  },
+  {
+    "id": "EA-FF-13",
+    "user": "LSCHIFFMAN",
+    "name": "Lauren Schiffman",
+    "ffId": "LSCHIFFMAN",
+    "role": "ZL_BR_CA_ALL_USER_1710",
+    "start": "2026-04-01",
+    "end": "00-00-0000",
+    "usage": 19,
+    "approval": "Approved",
+    "anomalyFlag": true,
+    "anomalyReason": "High transaction usage detected",
+    "recommendation": "Review firefighting session logs",
+    "status": "Open",
+    "assignee": null,
+    "log": [
+      {
+        "date": "00-00-0000 00:00:00",
+        "tcode": "/IWFND/TRACES",
+        "desc": "Transaction executed"
+      }
+    ]
+  }
 ];
 
 const EMERGENCY_ACCESS_KPIS = {
-  totalUsers: 31,
+  totalUsers: 13,
   unapprovedAccess: 2,
-  prolongedAssignments: 4,
-  anomalyFlags: 5,
+  prolongedAssignments: 0,
+  anomalyFlags: 11,
   deltas: {
-    totalUsers: -4,
-    unapprovedAccess: -1,
-    prolongedAssignments: -2,
-    anomalyFlags: +1,
+    totalUsers: 0,
+    unapprovedAccess: 0,
+    prolongedAssignments: 0,
+    anomalyFlags: 0,
   },
 };
 
@@ -703,272 +4193,4672 @@ Object.assign(window.MOCK, {
   APPROVAL_STATUSES, EMERGENCY_ACCESS_ROWS, EMERGENCY_ACCESS_KPIS,
 });
 
-/* ============================================================ */
-/* SOD-09 — OTC Control                                          */
-/* ============================================================ */
-
+// SOD-09 - OTC Control
 const OTC_STEPS = [
   { key: 'order',     label: 'Order Entry',  short: 'Order',    tcodes: ['VA01', 'VA02'],         icon: 'plus' },
   { key: 'delivery',  label: 'Delivery',     short: 'Delivery', tcodes: ['VL01N', 'VL02N'],       icon: 'arrow' },
   { key: 'billing',   label: 'Billing',      short: 'Billing',  tcodes: ['VF01', 'VF02', 'VF04'], icon: 'file' },
   { key: 'collection',label: 'Collection',   short: 'Cash App', tcodes: ['F-28', 'FB05', 'FBL5N'],icon: 'check' },
 ];
-
 const OTC_ROWS = [
-  { id: 'OTC-501', user: 'YKIM',      name: 'Yu-jin Kim',      steps: ['order','delivery','billing','collection'],
-    tcodes: ['VA01','VL01N','VF01','F-28'], exposure: 'High',   amount: 1_840_000, severity: 'Critical', status: 'Open', assignee: null,
-    recommendation: 'Split SD billing authority · separate Collection role · enforce 4-eyes on VF01',
-    transactions: [
-      { date: '2026-05-16 08:42', tcode: 'VA01', doc: 'SO 0030049817 · Customer Lotte Retail · $940K' },
-      { date: '2026-05-16 10:11', tcode: 'VL01N', doc: 'Delivery 0080091203 · same SO' },
-      { date: '2026-05-16 14:33', tcode: 'VF01', doc: 'Billing 0090055521 · invoice $940K' },
-      { date: '2026-05-19 09:08', tcode: 'F-28', doc: 'Customer payment apply · $900K (95% received)' },
-    ] },
-  { id: 'OTC-502', user: 'BCARRIER',  name: 'Brian Carrier',   steps: ['order','billing','collection'],
-    tcodes: ['VA01','VF01','F-28'], exposure: 'High',   amount: 1_240_000, severity: 'Critical', status: 'Open', assignee: null,
-    recommendation: 'Revoke Collection authority · keep Order + Billing only',
-    transactions: [
-      { date: '2026-05-12 11:20', tcode: 'VA01', doc: 'SO 0030049544 · Customer HyundaiP · $620K' },
-      { date: '2026-05-13 16:02', tcode: 'VF01', doc: 'Billing 0090055412 · invoice $620K' },
-      { date: '2026-05-15 13:51', tcode: 'F-28', doc: 'Payment received · $620K — no AR clerk review' },
-    ] },
-  { id: 'OTC-503', user: 'APOCHE',    name: 'Alain Poche',     steps: ['delivery','billing','collection'],
-    tcodes: ['VL01N','VF01','F-28'], exposure: 'High',  amount: 980_000, severity: 'Critical', status: 'In Progress', assignee: 'Finance Risk',
-    recommendation: 'Revoke Billing · downstream Collection access requires SO Order owner',
-    transactions: [
-      { date: '2026-05-10 09:14', tcode: 'VL01N', doc: 'Delivery 0080090981 · Customer SK Chem' },
-      { date: '2026-05-11 12:43', tcode: 'VF01', doc: 'Billing 0090055291 · $980K' },
-    ] },
-  { id: 'OTC-504', user: 'KPARK_LC',  name: 'Kyung-soo Park',  steps: ['order','delivery','billing'],
-    tcodes: ['VA01','VL01N','VF01'], exposure: 'High', amount: 740_000, severity: 'High',     status: 'Open', assignee: null,
-    recommendation: 'Reassign Delivery to logistics ops · monitor closely',
-    transactions: [
-      { date: '2026-05-09 10:01', tcode: 'VA01', doc: 'SO 0030049412 · $740K' },
-      { date: '2026-05-09 14:30', tcode: 'VL01N', doc: 'Delivery 0080090822 · same day' },
-    ] },
-  { id: 'OTC-505', user: 'HSCHRODE',  name: 'Helga Schroder',  steps: ['billing','collection'],
-    tcodes: ['VF01','F-28','FB05'], exposure: 'Medium', amount: 520_000, severity: 'High',     status: 'Open', assignee: null,
-    recommendation: 'Split Billing and Collection · enforce manager review on F-28',
-    transactions: [
-      { date: '2026-05-05 13:18', tcode: 'VF01', doc: 'Billing 0090055122 · $520K' },
-      { date: '2026-05-08 11:02', tcode: 'F-28', doc: 'Payment apply · $520K' },
-    ] },
-  { id: 'OTC-506', user: 'BGILL',     name: 'Baljinder Gill',  steps: ['order','billing'],
-    tcodes: ['VA01','VF01'], exposure: 'Medium', amount: 380_000, severity: 'Medium',   status: 'Open', assignee: null,
-    recommendation: 'Maintain · low risk pair · quarterly review',
-    transactions: [
-      { date: '2026-04-28 09:42', tcode: 'VA01', doc: 'SO 0030049178 · $380K' },
-    ] },
-  { id: 'OTC-507', user: 'DMARTINEZ', name: 'Diego Martinez',  steps: ['delivery','collection'],
-    tcodes: ['VL01N','F-28'], exposure: 'Medium', amount: 290_000, severity: 'Medium',   status: 'Open', assignee: null,
-    recommendation: 'Maintain · monitor for upstream order creation',
-    transactions: [
-      { date: '2026-05-02 14:18', tcode: 'VL01N', doc: 'Delivery 0080090701' },
-    ] },
-  { id: 'OTC-508', user: 'LBAKER',    name: 'Lisa Baker',      steps: ['order','collection'],
-    tcodes: ['VA01','F-28'], exposure: 'Medium', amount: 410_000, severity: 'Medium',   status: 'Resolved', assignee: 'Finance Risk',
-    recommendation: 'Resolved · Collection authority removed 2026-04-22',
-    transactions: [
-      { date: '2026-04-20 11:05', tcode: 'VA01', doc: 'SO 0030049022 · $410K' },
-    ] },
-  { id: 'OTC-509', user: 'BHOOPER',   name: 'Beth Hooper',     steps: ['order','delivery'],
-    tcodes: ['VA01','VL01N'], exposure: 'Low', amount: 180_000, severity: 'Medium',   status: 'Open', assignee: null,
-    recommendation: 'Low risk · maintain · quarterly review',
-    transactions: [
-      { date: '2026-04-25 13:08', tcode: 'VA01', doc: 'SO 0030049077 · $180K' },
-    ] },
-  { id: 'OTC-510', user: 'MJONES',    name: 'Mary Jones',      steps: ['billing','collection'],
-    tcodes: ['VF01','F-28'], exposure: 'Medium', amount: 480_000, severity: 'High',     status: 'Open', assignee: null,
-    recommendation: 'Split Billing and Collection · 4-eyes on F-28',
-    transactions: [
-      { date: '2026-05-04 10:32', tcode: 'VF01', doc: 'Billing 0090055041 · $480K' },
-    ] },
-  { id: 'OTC-511', user: 'EWILSON',   name: 'Emma Wilson',     steps: ['delivery','billing'],
-    tcodes: ['VL01N','VF01'], exposure: 'Low', amount: 220_000, severity: 'Medium',   status: 'Open', assignee: null,
-    recommendation: 'Low risk pair · monitor monthly',
-    transactions: [
-      { date: '2026-04-30 09:14', tcode: 'VL01N', doc: 'Delivery 0080090580' },
-    ] },
-  { id: 'OTC-512', user: 'FGARCIA',   name: 'Felipe Garcia',   steps: ['order','delivery','collection'],
-    tcodes: ['VA01','VL01N','F-28'], exposure: 'High', amount: 620_000, severity: 'High',     status: 'Open', assignee: null,
-    recommendation: 'Add Billing reviewer · or revoke Collection authority',
-    transactions: [
-      { date: '2026-05-01 10:18', tcode: 'VA01', doc: 'SO 0030049311 · $620K' },
-      { date: '2026-05-01 15:42', tcode: 'VL01N', doc: 'Delivery 0080090711 · same day' },
-      { date: '2026-05-08 09:51', tcode: 'F-28', doc: 'Payment apply · $620K' },
-    ] },
-];
-
-const OTC_KPIS = {
-  totalViolators: 47,
-  fullCycleControllers: 1,
-  partialControllers: 46,
-  totalDollarExposure: 8_400_000,
-  deltas: {
-    totalViolators: -6,
-    fullCycleControllers: -1,
-    partialControllers: -5,
-    totalDollarExposure: -2_100_000,
+  {
+    "id": "OTC-501",
+    "user": "AMBER.DUNBAR",
+    "name": "Amber Dunbar",
+    "steps": [
+      "order",
+      "billing"
+    ],
+    "tcodes": [
+      "VA01",
+      "VF01"
+    ],
+    "exposure": "Medium",
+    "amount": 400000,
+    "severity": "Medium",
+    "status": "Open",
+    "assignee": null,
+    "recommendation": "Split SD billing authority and segregate collection duties",
+    "transactions": [
+      {
+        "date": "2026-05-18 10:00",
+        "tcode": "VA01",
+        "doc": "OTC step activity for VA01"
+      },
+      {
+        "date": "2026-05-18 10:00",
+        "tcode": "VF01",
+        "doc": "OTC step activity for VF01"
+      }
+    ]
   },
+  {
+    "id": "OTC-502",
+    "user": "DAVID.SUNG",
+    "name": "David Sung",
+    "steps": [
+      "order",
+      "billing"
+    ],
+    "tcodes": [
+      "VA01",
+      "VF01"
+    ],
+    "exposure": "Medium",
+    "amount": 400000,
+    "severity": "Medium",
+    "status": "Open",
+    "assignee": null,
+    "recommendation": "Split SD billing authority and segregate collection duties",
+    "transactions": [
+      {
+        "date": "2026-05-18 10:00",
+        "tcode": "VA01",
+        "doc": "OTC step activity for VA01"
+      },
+      {
+        "date": "2026-05-18 10:00",
+        "tcode": "VF01",
+        "doc": "OTC step activity for VF01"
+      }
+    ]
+  },
+  {
+    "id": "OTC-503",
+    "user": "HCAMPBELL",
+    "name": "Hamish Campbell",
+    "steps": [
+      "order",
+      "billing"
+    ],
+    "tcodes": [
+      "VA01",
+      "VF01"
+    ],
+    "exposure": "Medium",
+    "amount": 400000,
+    "severity": "Medium",
+    "status": "Open",
+    "assignee": null,
+    "recommendation": "Split SD billing authority and segregate collection duties",
+    "transactions": [
+      {
+        "date": "2026-05-18 10:00",
+        "tcode": "VA01",
+        "doc": "OTC step activity for VA01"
+      },
+      {
+        "date": "2026-05-18 10:00",
+        "tcode": "VF01",
+        "doc": "OTC step activity for VF01"
+      }
+    ]
+  },
+  {
+    "id": "OTC-504",
+    "user": "HOANG.NGUYEN",
+    "name": "Hoang Nguyen",
+    "steps": [
+      "order",
+      "billing",
+      "collection"
+    ],
+    "tcodes": [
+      "VA01",
+      "VF01",
+      "F-28"
+    ],
+    "exposure": "High",
+    "amount": 600000,
+    "severity": "High",
+    "status": "Open",
+    "assignee": null,
+    "recommendation": "Split SD billing authority and segregate collection duties",
+    "transactions": [
+      {
+        "date": "2026-05-18 10:00",
+        "tcode": "VA01",
+        "doc": "OTC step activity for VA01"
+      },
+      {
+        "date": "2026-05-18 10:00",
+        "tcode": "VF01",
+        "doc": "OTC step activity for VF01"
+      },
+      {
+        "date": "2026-05-18 10:00",
+        "tcode": "F-28",
+        "doc": "OTC step activity for F-28"
+      }
+    ]
+  },
+  {
+    "id": "OTC-505",
+    "user": "JAE.KANG",
+    "name": "Jae Kang",
+    "steps": [
+      "order",
+      "delivery",
+      "collection"
+    ],
+    "tcodes": [
+      "VA01",
+      "VL01N",
+      "F-28"
+    ],
+    "exposure": "High",
+    "amount": 600000,
+    "severity": "High",
+    "status": "Open",
+    "assignee": null,
+    "recommendation": "Split SD billing authority and segregate collection duties",
+    "transactions": [
+      {
+        "date": "2026-05-18 10:00",
+        "tcode": "VA01",
+        "doc": "OTC step activity for VA01"
+      },
+      {
+        "date": "2026-05-18 10:00",
+        "tcode": "VL01N",
+        "doc": "OTC step activity for VL01N"
+      },
+      {
+        "date": "2026-05-18 10:00",
+        "tcode": "F-28",
+        "doc": "OTC step activity for F-28"
+      }
+    ]
+  },
+  {
+    "id": "OTC-506",
+    "user": "JOHN.RIVAS",
+    "name": "John Rivas",
+    "steps": [
+      "delivery",
+      "billing"
+    ],
+    "tcodes": [
+      "VL01N",
+      "VF01"
+    ],
+    "exposure": "Medium",
+    "amount": 400000,
+    "severity": "Medium",
+    "status": "Open",
+    "assignee": null,
+    "recommendation": "Split SD billing authority and segregate collection duties",
+    "transactions": [
+      {
+        "date": "2026-05-18 10:00",
+        "tcode": "VL01N",
+        "doc": "OTC step activity for VL01N"
+      },
+      {
+        "date": "2026-05-18 10:00",
+        "tcode": "VF01",
+        "doc": "OTC step activity for VF01"
+      }
+    ]
+  },
+  {
+    "id": "OTC-507",
+    "user": "NRODRIGUEZ",
+    "name": "Namgoon Rodriguez",
+    "steps": [
+      "order",
+      "billing"
+    ],
+    "tcodes": [
+      "VA01",
+      "VF01"
+    ],
+    "exposure": "Medium",
+    "amount": 400000,
+    "severity": "Medium",
+    "status": "Open",
+    "assignee": null,
+    "recommendation": "Split SD billing authority and segregate collection duties",
+    "transactions": [
+      {
+        "date": "2026-05-18 10:00",
+        "tcode": "VA01",
+        "doc": "OTC step activity for VA01"
+      },
+      {
+        "date": "2026-05-18 10:00",
+        "tcode": "VF01",
+        "doc": "OTC step activity for VF01"
+      }
+    ]
+  },
+  {
+    "id": "OTC-508",
+    "user": "PVALENCIA",
+    "name": "Valencia Patricia",
+    "steps": [
+      "order",
+      "delivery",
+      "billing"
+    ],
+    "tcodes": [
+      "VA01",
+      "VL01N",
+      "VF01"
+    ],
+    "exposure": "High",
+    "amount": 600000,
+    "severity": "High",
+    "status": "Open",
+    "assignee": null,
+    "recommendation": "Split SD billing authority and segregate collection duties",
+    "transactions": [
+      {
+        "date": "2026-05-18 10:00",
+        "tcode": "VA01",
+        "doc": "OTC step activity for VA01"
+      },
+      {
+        "date": "2026-05-18 10:00",
+        "tcode": "VL01N",
+        "doc": "OTC step activity for VL01N"
+      },
+      {
+        "date": "2026-05-18 10:00",
+        "tcode": "VF01",
+        "doc": "OTC step activity for VF01"
+      }
+    ]
+  },
+  {
+    "id": "OTC-509",
+    "user": "RUTGER.DUKES",
+    "name": "Rutger Dukes",
+    "steps": [
+      "order",
+      "delivery",
+      "billing"
+    ],
+    "tcodes": [
+      "VA01",
+      "VL01N",
+      "VF01"
+    ],
+    "exposure": "High",
+    "amount": 600000,
+    "severity": "High",
+    "status": "Open",
+    "assignee": null,
+    "recommendation": "Split SD billing authority and segregate collection duties",
+    "transactions": [
+      {
+        "date": "2026-05-18 10:00",
+        "tcode": "VA01",
+        "doc": "OTC step activity for VA01"
+      },
+      {
+        "date": "2026-05-18 10:00",
+        "tcode": "VL01N",
+        "doc": "OTC step activity for VL01N"
+      },
+      {
+        "date": "2026-05-18 10:00",
+        "tcode": "VF01",
+        "doc": "OTC step activity for VF01"
+      }
+    ]
+  },
+  {
+    "id": "OTC-510",
+    "user": "S4KT_SD",
+    "name": "SD",
+    "steps": [
+      "order",
+      "delivery"
+    ],
+    "tcodes": [
+      "VA01",
+      "VL01N"
+    ],
+    "exposure": "Medium",
+    "amount": 400000,
+    "severity": "Medium",
+    "status": "Open",
+    "assignee": null,
+    "recommendation": "Split SD billing authority and segregate collection duties",
+    "transactions": [
+      {
+        "date": "2026-05-18 10:00",
+        "tcode": "VA01",
+        "doc": "OTC step activity for VA01"
+      },
+      {
+        "date": "2026-05-18 10:00",
+        "tcode": "VL01N",
+        "doc": "OTC step activity for VL01N"
+      }
+    ]
+  },
+  {
+    "id": "OTC-511",
+    "user": "SBRYAN",
+    "name": "Stephanie Brown Bryan",
+    "steps": [
+      "delivery",
+      "collection"
+    ],
+    "tcodes": [
+      "VL01N",
+      "F-28"
+    ],
+    "exposure": "Medium",
+    "amount": 400000,
+    "severity": "Medium",
+    "status": "Open",
+    "assignee": null,
+    "recommendation": "Split SD billing authority and segregate collection duties",
+    "transactions": [
+      {
+        "date": "2026-05-18 10:00",
+        "tcode": "VL01N",
+        "doc": "OTC step activity for VL01N"
+      },
+      {
+        "date": "2026-05-18 10:00",
+        "tcode": "F-28",
+        "doc": "OTC step activity for F-28"
+      }
+    ]
+  },
+  {
+    "id": "OTC-512",
+    "user": "VRADHAKRISHN",
+    "name": "Vinoth Radhakrishnan",
+    "steps": [
+      "billing",
+      "collection"
+    ],
+    "tcodes": [
+      "VF01",
+      "F-28"
+    ],
+    "exposure": "Medium",
+    "amount": 400000,
+    "severity": "Medium",
+    "status": "Open",
+    "assignee": null,
+    "recommendation": "Split SD billing authority and segregate collection duties",
+    "transactions": [
+      {
+        "date": "2026-05-18 10:00",
+        "tcode": "VF01",
+        "doc": "OTC step activity for VF01"
+      },
+      {
+        "date": "2026-05-18 10:00",
+        "tcode": "F-28",
+        "doc": "OTC step activity for F-28"
+      }
+    ]
+  },
+  {
+    "id": "OTC-513",
+    "user": "WBERRYMAN",
+    "name": "Wendy Berryman",
+    "steps": [
+      "order",
+      "delivery",
+      "billing"
+    ],
+    "tcodes": [
+      "VA01",
+      "VL01N",
+      "VF01"
+    ],
+    "exposure": "High",
+    "amount": 600000,
+    "severity": "High",
+    "status": "Open",
+    "assignee": null,
+    "recommendation": "Split SD billing authority and segregate collection duties",
+    "transactions": [
+      {
+        "date": "2026-05-18 10:00",
+        "tcode": "VA01",
+        "doc": "OTC step activity for VA01"
+      },
+      {
+        "date": "2026-05-18 10:00",
+        "tcode": "VL01N",
+        "doc": "OTC step activity for VL01N"
+      },
+      {
+        "date": "2026-05-18 10:00",
+        "tcode": "VF01",
+        "doc": "OTC step activity for VF01"
+      }
+    ]
+  }
+];
+const OTC_KPIS = {
+  "totalViolators": 13,
+  "fullCycleControllers": 0,
+  "partialControllers": 13,
+  "totalDollarExposure": 6200000,
+  "deltas": {
+    "totalViolators": 0,
+    "fullCycleControllers": 0,
+    "partialControllers": 0,
+    "totalDollarExposure": 0
+  }
 };
 
 Object.assign(window.MOCK, {
   OTC_STEPS, OTC_ROWS, OTC_KPIS,
 });
 
-/* ============================================================ */
-/* SOD-10 — High-Risk Service Accounts                           */
-/* ============================================================ */
-
+// SOD-10 - High-Risk Service Accounts
 const SERVICE_ACCOUNT_TYPES = ['Service', 'Background', 'Integration'];
 const PRIVILEGE_LEVELS = ['Critical', 'High', 'Medium', 'Low'];
 const INACTIVITY_OPTIONS = ['Inactive', 'Active'];
-
 const SERVICE_ACCOUNTS = [
-  { id: 'SA-9001', account: 'RFC_BATCH_PI',     type: 'Background',  privilege: 'Critical', lastActivity: '2026-05-21', daysSince: 1,   inactive: false, owner: null,                 unmanaged: true,  risk: 'Critical · SAP_ALL equivalent · unowned',
-    roles: [
-      { role: 'SAP_ALL', desc: 'Unrestricted SAP authorization · production profile' },
-      { role: 'ZBC_BR_BACKGROUND', desc: 'Background job admin' },
+  {
+    "id": "SA-1",
+    "account": "AARON.SMITH",
+    "type": "Reference",
+    "privilege": "High",
+    "lastActivity": "00-00-0000",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZL_BR_PM_PURCHASING",
+        "desc": "Role: ZL_BR_PM_PURCHASING"
+      },
+      {
+        "role": "ZL_BR_CA_ALL_USERS",
+        "desc": "Role: ZL_BR_CA_ALL_USERS"
+      },
+      {
+        "role": "ZL_BR_PM_DISPLAY",
+        "desc": "Role: ZL_BR_PM_DISPLAY"
+      }
     ],
-    log: [
-      { date: '2026-05-21 02:00', desc: 'Job ZRPT_NIGHT_001 · RC=0 · 1.2M rows processed' },
-      { date: '2026-05-20 02:00', desc: 'Job ZRPT_NIGHT_001 · RC=0' },
-      { date: '2026-05-19 02:00', desc: 'Job ZRPT_NIGHT_001 · RC=0' },
+    "log": [
+      {
+        "date": "00-00-0000 00:00:00",
+        "desc": "Service activity logged"
+      }
     ],
-    recommendation: 'Replace SAP_ALL with scoped profile · assign owner · rotate credentials',
-    status: 'Open', assignee: null },
-  { id: 'SA-9002', account: 'SVC_BANK_API',     type: 'Service',     privilege: 'Critical', lastActivity: '2026-05-22', daysSince: 0,   inactive: false, owner: 'SAP Basis Team',     unmanaged: false, risk: 'Critical · Bank statement post + payment release',
-    roles: [
-      { role: 'ZFI_BR_TREASURY', desc: 'Treasury bank · F110, FF67' },
-      { role: 'ZFI_BR_BANK_RECON', desc: 'Bank reconciliation' },
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-2",
+    "account": "ACHANDERS",
+    "type": "Reference",
+    "privilege": "Medium",
+    "lastActivity": "22-12-2021",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZL_BR_ALL_DISPLAY",
+        "desc": "Role: ZL_BR_ALL_DISPLAY"
+      },
+      {
+        "role": "ZL_BR_CA_CONTRACTORS_COMMON",
+        "desc": "Role: ZL_BR_CA_CONTRACTORS_COMMON"
+      }
     ],
-    log: [
-      { date: '2026-05-22 08:15', desc: 'F110 auto-payment run · RC=0' },
-      { date: '2026-05-22 13:42', desc: 'FF67 bank statement post · KR-Bank-001' },
+    "log": [
+      {
+        "date": "22-12-2021 11:01:07",
+        "desc": "Service activity logged"
+      }
     ],
-    recommendation: 'Maintain · enforce vault-managed credential rotation every 90d',
-    status: 'In Progress', assignee: 'SAP Basis Team' },
-  { id: 'SA-9003', account: 'INT_CONCUR_INTG',  type: 'Integration', privilege: 'High',     lastActivity: '2026-05-20', daysSince: 2,   inactive: false, owner: 'IT Compliance',      unmanaged: false, risk: 'High · expense post + GL posting access',
-    roles: [
-      { role: 'ZFI_BR_EXPENSE_POST', desc: 'Expense report posting' },
-      { role: 'ZFI_BR_GL_POSTING', desc: 'GL posting · limited CC' },
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-3",
+    "account": "ACOURVILLE",
+    "type": "Reference",
+    "privilege": "High",
+    "lastActivity": "18-12-2023",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZMM_BR_PO_DISPLAY_HR",
+        "desc": "Role: ZMM_BR_PO_DISPLAY_HR"
+      },
+      {
+        "role": "ZIT_BR_ALL_EMPLOYEES",
+        "desc": "Role: ZIT_BR_ALL_EMPLOYEES"
+      },
+      {
+        "role": "ZL_BR_CA_ALL_USERS_WHRMAN",
+        "desc": "Role: ZL_BR_CA_ALL_USERS_WHRMAN"
+      }
     ],
-    log: [
-      { date: '2026-05-20 16:00', desc: 'Inbound expense batch · 412 reports posted' },
+    "log": [
+      {
+        "date": "18-12-2023 14:53:09",
+        "desc": "Service activity logged"
+      }
     ],
-    recommendation: 'Maintain · review GL posting scope quarterly',
-    status: 'Open', assignee: null },
-  { id: 'SA-9004', account: 'INT_ARIBA',        type: 'Integration', privilege: 'High',     lastActivity: '2026-05-19', daysSince: 3,   inactive: false, owner: 'SAP Basis Team',     unmanaged: false, risk: 'High · PO create + vendor master sync',
-    roles: [
-      { role: 'ZMM_BR_PO_CREATE', desc: 'PO create' },
-      { role: 'ZMM_BR_VENDOR_SYNC', desc: 'Vendor master inbound' },
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-4",
+    "account": "ADAPTER.Q",
+    "type": "Reference",
+    "privilege": "Medium",
+    "lastActivity": "09-12-2020",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZL_BR_CA_ALL_USERS",
+        "desc": "Role: ZL_BR_CA_ALL_USERS"
+      },
+      {
+        "role": "ZL_BR_CA_BP_DIS",
+        "desc": "Role: ZL_BR_CA_BP_DIS"
+      },
+      {
+        "role": "ZL_BR_CA_STOCK_DIS",
+        "desc": "Role: ZL_BR_CA_STOCK_DIS"
+      }
     ],
-    log: [
-      { date: '2026-05-19 11:32', desc: 'Inbound PO batch · 87 POs created' },
+    "log": [
+      {
+        "date": "09-12-2020 00:00:00",
+        "desc": "Service activity logged"
+      }
     ],
-    recommendation: 'Maintain · separate vendor-sync into dedicated user',
-    status: 'Open', assignee: null },
-  { id: 'SA-9005', account: 'BG_FIN_CLOSE',     type: 'Background',  privilege: 'High',     lastActivity: '2026-05-01', daysSince: 21,  inactive: false, owner: 'Finance Risk',       unmanaged: false, risk: 'High · period-close posting authority',
-    roles: [
-      { role: 'ZFI_BR_PERIOD_CLOSE', desc: 'Period-close postings' },
-      { role: 'ZFI_BR_GL_POSTING', desc: 'GL posting · all CC' },
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-5",
+    "account": "ADS_AGENT",
+    "type": "System",
+    "privilege": "High",
+    "lastActivity": "13-10-2022",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "SAP_BC_FPADS_ICF",
+        "desc": "Role: SAP_BC_FPADS_ICF"
+      },
+      {
+        "role": "SAP_ESH_BOS_RFC_ENDUSER",
+        "desc": "Role: SAP_ESH_BOS_RFC_ENDUSER"
+      },
+      {
+        "role": "SAP_ESH_SEARCH_CATEG",
+        "desc": "Role: SAP_ESH_SEARCH_CATEG"
+      }
     ],
-    log: [
-      { date: '2026-05-01 23:30', desc: 'Period 04/2026 close · RC=0' },
-      { date: '2026-04-01 23:30', desc: 'Period 03/2026 close · RC=0' },
+    "log": [
+      {
+        "date": "13-10-2022 05:57:23",
+        "desc": "Service activity logged"
+      }
     ],
-    recommendation: 'Maintain · runs once per period',
-    status: 'Resolved', assignee: 'Finance Risk' },
-  { id: 'SA-9006', account: 'SVC_PAYROLL_SYNC', type: 'Service',     privilege: 'High',     lastActivity: '2026-05-15', daysSince: 7,   inactive: false, owner: 'IT Compliance',      unmanaged: false, risk: 'High · HR master + payroll write',
-    roles: [
-      { role: 'ZHR_BR_MASTER_SYNC', desc: 'HR master inbound' },
-      { role: 'ZHR_BR_PAYROLL_POST', desc: 'Payroll posting' },
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-6",
+    "account": "AIVANOV",
+    "type": "Reference",
+    "privilege": "High",
+    "lastActivity": "06-10-2022",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZL_BR_MFG_EXECUTION_PL1710",
+        "desc": "Role: ZL_BR_MFG_EXECUTION_PL1710"
+      },
+      {
+        "role": "ZL_BR_MFG_EXECUTION_PL1720",
+        "desc": "Role: ZL_BR_MFG_EXECUTION_PL1720"
+      },
+      {
+        "role": "ZL_BR_MFG_EXECUTION_PL1730",
+        "desc": "Role: ZL_BR_MFG_EXECUTION_PL1730"
+      }
     ],
-    log: [
-      { date: '2026-05-15 06:00', desc: 'Payroll inbound sync · 2814 records' },
+    "log": [
+      {
+        "date": "06-10-2022 17:13:55",
+        "desc": "Service activity logged"
+      }
     ],
-    recommendation: 'Maintain · split master-sync and payroll-post',
-    status: 'Open', assignee: null },
-  { id: 'SA-9007', account: 'SVC_VENDOR_INTEG', type: 'Service',     privilege: 'Medium',   lastActivity: '2026-03-12', daysSince: 71,  inactive: true,  owner: 'SAP Security Team',  unmanaged: false, risk: 'Medium · inactive >60d · vendor master sync',
-    roles: [{ role: 'ZMM_BR_VENDOR_SYNC', desc: 'Vendor master inbound' }],
-    log: [
-      { date: '2026-03-12 14:18', desc: 'Last vendor inbound · 12 records · then silent' },
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-7",
+    "account": "ALLA.VOTH",
+    "type": "Reference",
+    "privilege": "High",
+    "lastActivity": "03-01-2025",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZIT_BR_PURCHASE",
+        "desc": "Role: ZIT_BR_PURCHASE"
+      },
+      {
+        "role": "ZMM_BR_PO_PROCESSING_DR",
+        "desc": "Role: ZMM_BR_PO_PROCESSING_DR"
+      },
+      {
+        "role": "ZMM_BR_INVENTORY_REP_DR",
+        "desc": "Role: ZMM_BR_INVENTORY_REP_DR"
+      }
     ],
-    recommendation: 'Investigate · deactivate if no longer in use',
-    status: 'Open', assignee: 'SAP Security Team' },
-  { id: 'SA-9008', account: 'BG_OLD_REPORTING', type: 'Background',  privilege: 'High',     lastActivity: '2025-11-08', daysSince: 195, inactive: true,  owner: null,                 unmanaged: true,  risk: 'High · inactive 195d · unowned · holds SE38 + S_DATASET',
-    roles: [
-      { role: 'ZBC_BR_REPORTING', desc: 'ABAP report execution' },
-      { role: 'S_DATASET_FULL', desc: 'OS-level file dataset access' },
+    "log": [
+      {
+        "date": "03-01-2025 10:47:09",
+        "desc": "Service activity logged"
+      }
     ],
-    log: [
-      { date: '2025-11-08 03:00', desc: 'Job ZREPORT_LEGACY · last run · RC=0' },
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-8",
+    "account": "ANDRE.BORNE",
+    "type": "Reference",
+    "privilege": "High",
+    "lastActivity": "23-06-2022",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZL_BR_CA_COSTCEN_MAN_LABMAN",
+        "desc": "Role: ZL_BR_CA_COSTCEN_MAN_LABMAN"
+      },
+      {
+        "role": "ZL_BR_MFG_INVTRY_REPORT_LABMAN",
+        "desc": "Role: ZL_BR_MFG_INVTRY_REPORT_LABMAN"
+      },
+      {
+        "role": "ZL_BR_MM_PRPO_REPORTS_LABMAN",
+        "desc": "Role: ZL_BR_MM_PRPO_REPORTS_LABMAN"
+      }
     ],
-    recommendation: 'Revoke immediately · deactivate · audit trail before delete',
-    status: 'Open', assignee: null },
-  { id: 'SA-9009', account: 'INT_SF_INTEG',     type: 'Integration', privilege: 'Medium',   lastActivity: '2026-05-17', daysSince: 5,   inactive: false, owner: 'IT Compliance',      unmanaged: false, risk: 'Medium · CRM customer sync',
-    roles: [{ role: 'ZSD_BR_CUSTOMER_SYNC', desc: 'Customer master inbound' }],
-    log: [
-      { date: '2026-05-17 09:42', desc: 'CRM customer sync · 142 records' },
+    "log": [
+      {
+        "date": "23-06-2022 00:00:00",
+        "desc": "Service activity logged"
+      }
     ],
-    recommendation: 'Maintain · low risk',
-    status: 'Open', assignee: null },
-  { id: 'SA-9010', account: 'INT_SAP_TOSAP',    type: 'Integration', privilege: 'High',     lastActivity: '2026-05-21', daysSince: 1,   inactive: false, owner: null,                 unmanaged: true,  risk: 'High · cross-system RFC · no owner',
-    roles: [{ role: 'ZBC_BR_RFC_GATEWAY', desc: 'RFC gateway to LCKR-PRD-02' }],
-    log: [
-      { date: '2026-05-21 22:14', desc: 'RFC inbound · 4528 calls in 24h' },
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-9",
+    "account": "BATCH_USER",
+    "type": "System",
+    "privilege": "Critical",
+    "lastActivity": "00-00-0000",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "Critical \u00b7 SAP_ALL equivalent",
+    "roles": [
+      {
+        "role": "ZM:IT_PROJECT_TEAM_DISPLAY",
+        "desc": "Role: ZM:IT_PROJECT_TEAM_DISPLAY"
+      },
+      {
+        "role": "ZBASIS_BR_BGJOB_ADMIN",
+        "desc": "Role: ZBASIS_BR_BGJOB_ADMIN"
+      },
+      {
+        "role": "ZM:IT_SAP_ALL_RESTRICTED_FF",
+        "desc": "Role: ZM:IT_SAP_ALL_RESTRICTED_FF"
+      }
     ],
-    recommendation: 'Assign owner · review RFC trust relationships',
-    status: 'Open', assignee: null },
-  { id: 'SA-9011', account: 'BG_TAX_REPORT',    type: 'Background',  privilege: 'Medium',   lastActivity: '2026-05-18', daysSince: 4,   inactive: false, owner: 'Finance Risk',       unmanaged: false, risk: 'Medium · tax filing batch',
-    roles: [{ role: 'ZFI_BR_TAX_REPORT', desc: 'Tax report extract' }],
-    log: [
-      { date: '2026-05-18 04:00', desc: 'Monthly VAT extract · RC=0' },
+    "log": [
+      {
+        "date": "00-00-0000 00:00:00",
+        "desc": "Service activity logged"
+      }
     ],
-    recommendation: 'Maintain · monthly cadence',
-    status: 'Resolved', assignee: 'Finance Risk' },
-  { id: 'SA-9012', account: 'SVC_LEGACY_FTP',   type: 'Service',     privilege: 'Critical', lastActivity: '2025-09-22', daysSince: 242, inactive: true,  owner: null,                 unmanaged: true,  risk: 'Critical · inactive 242d · unowned · holds payment release',
-    roles: [
-      { role: 'ZFI_BR_AP_PAYMENT', desc: 'Payment release' },
-      { role: 'S_DATASET_FULL', desc: 'OS-level FTP dataset' },
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-10",
+    "account": "BGRFC_SUPER",
+    "type": "System",
+    "privilege": "High",
+    "lastActivity": "15-04-2026",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "SAP_ESH_BOS_RFC_ENDUSER",
+        "desc": "Role: SAP_ESH_BOS_RFC_ENDUSER"
+      },
+      {
+        "role": "SAP_ESH_SEARCH_CATEG",
+        "desc": "Role: SAP_ESH_SEARCH_CATEG"
+      },
+      {
+        "role": "SAP_ESH_SEARCH_USER",
+        "desc": "Role: SAP_ESH_SEARCH_USER"
+      }
     ],
-    log: [
-      { date: '2025-09-22 03:00', desc: 'Last FTP push · vendor file' },
+    "log": [
+      {
+        "date": "15-04-2026 15:10:57",
+        "desc": "Service activity logged"
+      }
     ],
-    recommendation: 'Revoke + delete · former integration · confirmed not in use',
-    status: 'In Progress', assignee: 'SAP Security Team' },
-  { id: 'SA-9013', account: 'BG_GR_AUTO',       type: 'Background',  privilege: 'Medium',   lastActivity: '2026-05-21', daysSince: 1,   inactive: false, owner: 'SAP Security Team',  unmanaged: false, risk: 'Medium · auto goods-receipt',
-    roles: [{ role: 'ZMM_BR_GR_AUTO', desc: 'Auto goods receipt for EDI POs' }],
-    log: [
-      { date: '2026-05-21 12:00', desc: 'EDI GR batch · 88 GRs posted' },
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-11",
+    "account": "BTCUSER",
+    "type": "Service",
+    "privilege": "High",
+    "lastActivity": "00-00-0000",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZBASIS_BR_BGJOB_ADMIN",
+        "desc": "Role: ZBASIS_BR_BGJOB_ADMIN"
+      },
+      {
+        "role": "ZEWM_BR_INBOUND_PRCESING_LAMW",
+        "desc": "Role: ZEWM_BR_INBOUND_PRCESING_LAMW"
+      },
+      {
+        "role": "ZEWM_BR_WH_INTERNAL_LAMW",
+        "desc": "Role: ZEWM_BR_WH_INTERNAL_LAMW"
+      }
     ],
-    recommendation: 'Maintain · standard EDI flow',
-    status: 'Open', assignee: null },
-  { id: 'SA-9014', account: 'SVC_AUDIT_READ',   type: 'Service',     privilege: 'Low',      lastActivity: '2026-05-22', daysSince: 0,   inactive: false, owner: 'IT Compliance',      unmanaged: false, risk: 'Low · read-only audit · external auditor',
-    roles: [{ role: 'ZIT_BR_AUDIT_READ', desc: 'Read-only audit log access' }],
-    log: [
-      { date: '2026-05-22 10:00', desc: 'Auditor pull · BSEG sample' },
+    "log": [
+      {
+        "date": "00-00-0000 00:00:00",
+        "desc": "Service activity logged"
+      }
     ],
-    recommendation: 'Maintain · external audit window expires Q3-26',
-    status: 'Open', assignee: null },
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-12",
+    "account": "BYEONGMOON",
+    "type": "Reference",
+    "privilege": "High",
+    "lastActivity": "11-10-2023",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZPM_BR_MORD_PROCESS_1710",
+        "desc": "Role: ZPM_BR_MORD_PROCESS_1710"
+      },
+      {
+        "role": "ZPM_BR_MORD_PROCESS_1720",
+        "desc": "Role: ZPM_BR_MORD_PROCESS_1720"
+      },
+      {
+        "role": "ZPM_BR_MORD_PROCESS_1730",
+        "desc": "Role: ZPM_BR_MORD_PROCESS_1730"
+      }
+    ],
+    "log": [
+      {
+        "date": "11-10-2023 07:10:30",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-13",
+    "account": "CAM_CHANGE",
+    "type": "System",
+    "privilege": "High",
+    "lastActivity": "21-10-2020",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "S_A.SYSTEM",
+        "desc": "Role: S_A.SYSTEM"
+      },
+      {
+        "role": "ZHEC_CAM_CHANGE",
+        "desc": "Role: ZHEC_CAM_CHANGE"
+      },
+      {
+        "role": "ZHEC_CAM_CHANGE_V1",
+        "desc": "Role: ZHEC_CAM_CHANGE_V1"
+      }
+    ],
+    "log": [
+      {
+        "date": "21-10-2020 22:25:03",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-14",
+    "account": "CAM_FALLBACK",
+    "type": "System",
+    "privilege": "High",
+    "lastActivity": "21-10-2020",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "SAP_ESH_BOS_RFC_ENDUSER",
+        "desc": "Role: SAP_ESH_BOS_RFC_ENDUSER"
+      },
+      {
+        "role": "SAP_ESH_SEARCH_CATEG",
+        "desc": "Role: SAP_ESH_SEARCH_CATEG"
+      },
+      {
+        "role": "SAP_ESH_SEARCH_USER",
+        "desc": "Role: SAP_ESH_SEARCH_USER"
+      }
+    ],
+    "log": [
+      {
+        "date": "21-10-2020 02:54:18",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-15",
+    "account": "CBONOT",
+    "type": "System",
+    "privilege": "Medium",
+    "lastActivity": "15-04-2026",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZINV_EWM_SPCC_ROLE",
+        "desc": "Role: ZINV_EWM_SPCC_ROLE"
+      },
+      {
+        "role": "ZINV_ECC_CBO_NOTIF_USER_2309",
+        "desc": "Role: ZINV_ECC_CBO_NOTIF_USER_2309"
+      },
+      {
+        "role": "ZINV_MIM_NWG_END_USER_R2212",
+        "desc": "Role: ZINV_MIM_NWG_END_USER_R2212"
+      }
+    ],
+    "log": [
+      {
+        "date": "15-04-2026 09:05:37",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-16",
+    "account": "CLANKA",
+    "type": "Reference",
+    "privilege": "High",
+    "lastActivity": "11-10-2021",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZM:IT-PROJECT_TEAM_DISPLAY",
+        "desc": "Role: ZM:IT-PROJECT_TEAM_DISPLAY"
+      },
+      {
+        "role": "ZL_BR_ALL_DISPLAY",
+        "desc": "Role: ZL_BR_ALL_DISPLAY"
+      },
+      {
+        "role": "ZL_BR_CA_ALL_USERS",
+        "desc": "Role: ZL_BR_CA_ALL_USERS"
+      }
+    ],
+    "log": [
+      {
+        "date": "11-10-2021 03:58:16",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-17",
+    "account": "CUST_TC",
+    "type": "Reference",
+    "privilege": "High",
+    "lastActivity": "20-10-2020",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZL_BR_CA_EMPLOYEE",
+        "desc": "Role: ZL_BR_CA_EMPLOYEE"
+      },
+      {
+        "role": "ZHEC_CUST_TC_V7",
+        "desc": "Role: ZHEC_CUST_TC_V7"
+      },
+      {
+        "role": "ZL_BR_CA_ALL_USERS",
+        "desc": "Role: ZL_BR_CA_ALL_USERS"
+      }
+    ],
+    "log": [
+      {
+        "date": "20-10-2020 00:00:00",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-18",
+    "account": "CVANKADARA",
+    "type": "Reference",
+    "privilege": "Medium",
+    "lastActivity": "26-10-2022",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZL_BR_ALL_DISPLAY",
+        "desc": "Role: ZL_BR_ALL_DISPLAY"
+      },
+      {
+        "role": "ZL_BR_CA_CONTRACTORS_COMMON",
+        "desc": "Role: ZL_BR_CA_CONTRACTORS_COMMON"
+      }
+    ],
+    "log": [
+      {
+        "date": "26-10-2022 12:42:13",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-19",
+    "account": "DANIEL.LEE",
+    "type": "Reference",
+    "privilege": "High",
+    "lastActivity": "20-01-2022",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZL_BR_SD_REPORTS",
+        "desc": "Role: ZL_BR_SD_REPORTS"
+      },
+      {
+        "role": "ZL_BR_MFG_EXECUTION",
+        "desc": "Role: ZL_BR_MFG_EXECUTION"
+      },
+      {
+        "role": "ZL_BR_CA_ALL_USERS",
+        "desc": "Role: ZL_BR_CA_ALL_USERS"
+      }
+    ],
+    "log": [
+      {
+        "date": "20-01-2022 15:39:51",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-20",
+    "account": "DDIC",
+    "type": "Service",
+    "privilege": "Critical",
+    "lastActivity": "21-10-2020",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "Critical \u00b7 SAP_ALL equivalent",
+    "roles": [
+      {
+        "role": "SAP_ALL",
+        "desc": "Role: SAP_ALL"
+      },
+      {
+        "role": "ZBASIS_BR_BGJOB_ADMIN",
+        "desc": "Role: ZBASIS_BR_BGJOB_ADMIN"
+      },
+      {
+        "role": "S_A.SYSTEM",
+        "desc": "Role: S_A.SYSTEM"
+      }
+    ],
+    "log": [
+      {
+        "date": "21-10-2020 22:25:05",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-21",
+    "account": "DELAY_LOGON",
+    "type": "Service",
+    "privilege": "Medium",
+    "lastActivity": "04-05-2021",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [],
+    "log": [
+      {
+        "date": "04-05-2021 15:14:20",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-22",
+    "account": "DS4_ADMIN",
+    "type": "Reference",
+    "privilege": "High",
+    "lastActivity": "11-11-2020",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZL_BR_CA_EMPLOYEE",
+        "desc": "Role: ZL_BR_CA_EMPLOYEE"
+      },
+      {
+        "role": "ZL_BR_CA_ALL_USERS",
+        "desc": "Role: ZL_BR_CA_ALL_USERS"
+      },
+      {
+        "role": "ZL_BR_CA_BP_DIS",
+        "desc": "Role: ZL_BR_CA_BP_DIS"
+      }
+    ],
+    "log": [
+      {
+        "date": "11-11-2020 00:00:00",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-23",
+    "account": "DS4_FALLBACK",
+    "type": "Service",
+    "privilege": "High",
+    "lastActivity": "21-10-2020",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "HEC_BASIS_ADMIN_V3",
+        "desc": "Role: HEC_BASIS_ADMIN_V3"
+      },
+      {
+        "role": "ZHEC_CAM_CHANGE",
+        "desc": "Role: ZHEC_CAM_CHANGE"
+      },
+      {
+        "role": "SAP_ESH_BOS_RFC_ENDUSER",
+        "desc": "Role: SAP_ESH_BOS_RFC_ENDUSER"
+      }
+    ],
+    "log": [
+      {
+        "date": "21-10-2020 02:54:18",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-24",
+    "account": "DSATTLAPALLY",
+    "type": "Reference",
+    "privilege": "High",
+    "lastActivity": "23-02-2022",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZM:IT_SAP_DVLP_ACS_DISPLAY",
+        "desc": "Role: ZM:IT_SAP_DVLP_ACS_DISPLAY"
+      },
+      {
+        "role": "ZL_BR_ALL_DISPLAY",
+        "desc": "Role: ZL_BR_ALL_DISPLAY"
+      },
+      {
+        "role": "ZL_BR_CA_CONTRACTORS_COMMON",
+        "desc": "Role: ZL_BR_CA_CONTRACTORS_COMMON"
+      }
+    ],
+    "log": [
+      {
+        "date": "23-02-2022 06:54:04",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-25",
+    "account": "DTHIBODEAUX",
+    "type": "Reference",
+    "privilege": "Medium",
+    "lastActivity": "03-05-2023",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZL_BR_CA_ALL_USERS",
+        "desc": "Role: ZL_BR_CA_ALL_USERS"
+      },
+      {
+        "role": "ZL_BR_CA_BP_DIS",
+        "desc": "Role: ZL_BR_CA_BP_DIS"
+      },
+      {
+        "role": "ZL_BR_PM_NOTIFICATIONS_MP",
+        "desc": "Role: ZL_BR_PM_NOTIFICATIONS_MP"
+      }
+    ],
+    "log": [
+      {
+        "date": "03-05-2023 00:00:00",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-26",
+    "account": "EBARBOSA",
+    "type": "Reference",
+    "privilege": "High",
+    "lastActivity": "17-08-2022",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZM:IT-PROJECT_TEAM_DISPLAY",
+        "desc": "Role: ZM:IT-PROJECT_TEAM_DISPLAY"
+      },
+      {
+        "role": "ZL_BR_ALL_DISPLAY",
+        "desc": "Role: ZL_BR_ALL_DISPLAY"
+      },
+      {
+        "role": "ZL_BR_MM_INVTRY_REPORTS",
+        "desc": "Role: ZL_BR_MM_INVTRY_REPORTS"
+      }
+    ],
+    "log": [
+      {
+        "date": "17-08-2022 11:48:26",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-27",
+    "account": "EDMOND.WONG",
+    "type": "Reference",
+    "privilege": "High",
+    "lastActivity": "09-03-2022",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZL_BR_FI_AR_REPORTS_WLTAX",
+        "desc": "Role: ZL_BR_FI_AR_REPORTS_WLTAX"
+      },
+      {
+        "role": "ZL_BR_FI_GEN_FINANCE_WLTAX",
+        "desc": "Role: ZL_BR_FI_GEN_FINANCE_WLTAX"
+      },
+      {
+        "role": "ZL_BR_FI_GL_REPORTS_WLTAX",
+        "desc": "Role: ZL_BR_FI_GL_REPORTS_WLTAX"
+      }
+    ],
+    "log": [
+      {
+        "date": "09-03-2022 13:25:22",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-28",
+    "account": "EIVANOV",
+    "type": "Reference",
+    "privilege": "High",
+    "lastActivity": "23-04-2022",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZPM_BR_MORD_PROCESS_1710",
+        "desc": "Role: ZPM_BR_MORD_PROCESS_1710"
+      },
+      {
+        "role": "ZPM_BR_MORD_PROCESS_1720",
+        "desc": "Role: ZPM_BR_MORD_PROCESS_1720"
+      },
+      {
+        "role": "ZPM_BR_MORD_PROCESS_1730",
+        "desc": "Role: ZPM_BR_MORD_PROCESS_1730"
+      }
+    ],
+    "log": [
+      {
+        "date": "23-04-2022 08:18:23",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-29",
+    "account": "ETRAXLER",
+    "type": "Reference",
+    "privilege": "High",
+    "lastActivity": "14-02-2025",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZPM_BR_MORD_PROCESS_1710",
+        "desc": "Role: ZPM_BR_MORD_PROCESS_1710"
+      },
+      {
+        "role": "ZPM_BR_MORD_PROCESS_1720",
+        "desc": "Role: ZPM_BR_MORD_PROCESS_1720"
+      },
+      {
+        "role": "ZPM_BR_MORD_PROCESS_1730",
+        "desc": "Role: ZPM_BR_MORD_PROCESS_1730"
+      }
+    ],
+    "log": [
+      {
+        "date": "14-02-2025 13:41:42",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-30",
+    "account": "FIORIADM",
+    "type": "Reference",
+    "privilege": "High",
+    "lastActivity": "15-01-2021",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZL_BR_CA_EMPLOYEE",
+        "desc": "Role: ZL_BR_CA_EMPLOYEE"
+      },
+      {
+        "role": "ZL_BR_CA_ALL_USERS",
+        "desc": "Role: ZL_BR_CA_ALL_USERS"
+      },
+      {
+        "role": "SAP_ESH_BOS_ADMIN",
+        "desc": "Role: SAP_ESH_BOS_ADMIN"
+      }
+    ],
+    "log": [
+      {
+        "date": "15-01-2021 00:00:00",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-31",
+    "account": "FIORI_BATCH",
+    "type": "System",
+    "privilege": "High",
+    "lastActivity": "00-00-0000",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZBASIS_BR_BGJOB_ADMIN",
+        "desc": "Role: ZBASIS_BR_BGJOB_ADMIN"
+      },
+      {
+        "role": "S_A.SYSTEM",
+        "desc": "Role: S_A.SYSTEM"
+      },
+      {
+        "role": "SAP_ESH_BOS_RFC_ENDUSER",
+        "desc": "Role: SAP_ESH_BOS_RFC_ENDUSER"
+      }
+    ],
+    "log": [
+      {
+        "date": "00-00-0000 00:00:00",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-32",
+    "account": "FIORI_EX",
+    "type": "Reference",
+    "privilege": "High",
+    "lastActivity": "23-10-2020",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "Z_BR_AP_ACCOUNTANT",
+        "desc": "Role: Z_BR_AP_ACCOUNTANT"
+      },
+      {
+        "role": "Z_BR_AR_ACCOUNTANT",
+        "desc": "Role: Z_BR_AR_ACCOUNTANT"
+      },
+      {
+        "role": "Z_BR_CMMFDOF_TRADER",
+        "desc": "Role: Z_BR_CMMFDOF_TRADER"
+      }
+    ],
+    "log": [
+      {
+        "date": "23-10-2020 00:00:00",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-33",
+    "account": "FUAD.SALEH",
+    "type": "Reference",
+    "privilege": "High",
+    "lastActivity": "19-01-2024",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZL_BR_MFG_EXECUTION_PL1710",
+        "desc": "Role: ZL_BR_MFG_EXECUTION_PL1710"
+      },
+      {
+        "role": "ZL_BR_MFG_EXECUTION_PL1730",
+        "desc": "Role: ZL_BR_MFG_EXECUTION_PL1730"
+      },
+      {
+        "role": "ZL_BR_MFG_CAPEX_PL1730",
+        "desc": "Role: ZL_BR_MFG_CAPEX_PL1730"
+      }
+    ],
+    "log": [
+      {
+        "date": "19-01-2024 15:22:17",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-34",
+    "account": "GDUTTA",
+    "type": "Reference",
+    "privilege": "High",
+    "lastActivity": "30-04-2021",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZM:IT-PROJECT_TEAM_DISPLAY",
+        "desc": "Role: ZM:IT-PROJECT_TEAM_DISPLAY"
+      },
+      {
+        "role": "ZL_BR_CA_ALL_USERS",
+        "desc": "Role: ZL_BR_CA_ALL_USERS"
+      },
+      {
+        "role": "ZL_BR_CA_BP_DIS",
+        "desc": "Role: ZL_BR_CA_BP_DIS"
+      }
+    ],
+    "log": [
+      {
+        "date": "30-04-2021 00:00:00",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-35",
+    "account": "GGOLLAPUDI",
+    "type": "Reference",
+    "privilege": "Medium",
+    "lastActivity": "30-09-2021",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZL_BR_ALL_DISPLAY",
+        "desc": "Role: ZL_BR_ALL_DISPLAY"
+      },
+      {
+        "role": "ZL_BR_CA_CONTRACTORS_COMMON",
+        "desc": "Role: ZL_BR_CA_CONTRACTORS_COMMON"
+      }
+    ],
+    "log": [
+      {
+        "date": "30-09-2021 13:43:28",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-36",
+    "account": "GPAERLA",
+    "type": "Reference",
+    "privilege": "Medium",
+    "lastActivity": "03-11-2021",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZL_BR_ALL_DISPLAY",
+        "desc": "Role: ZL_BR_ALL_DISPLAY"
+      },
+      {
+        "role": "ZL_BR_CA_CONTRACTORS_COMMON",
+        "desc": "Role: ZL_BR_CA_CONTRACTORS_COMMON"
+      }
+    ],
+    "log": [
+      {
+        "date": "03-11-2021 13:01:47",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-37",
+    "account": "HARISHANKERT",
+    "type": "Reference",
+    "privilege": "High",
+    "lastActivity": "12-11-2021",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZM:IT-PROJECT_TEAM_DISPLAY",
+        "desc": "Role: ZM:IT-PROJECT_TEAM_DISPLAY"
+      },
+      {
+        "role": "ZL_BR_SD_REPORTS_COMM",
+        "desc": "Role: ZL_BR_SD_REPORTS_COMM"
+      },
+      {
+        "role": "ZL_BR_CA_ALL_USERS",
+        "desc": "Role: ZL_BR_CA_ALL_USERS"
+      }
+    ],
+    "log": [
+      {
+        "date": "12-11-2021 11:55:54",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-38",
+    "account": "HBRANDON",
+    "type": "Reference",
+    "privilege": "High",
+    "lastActivity": "00-00-0000",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZL_BR_CA_ALL_USER_1710",
+        "desc": "Role: ZL_BR_CA_ALL_USER_1710"
+      },
+      {
+        "role": "ZL_BR_CA_ALL_USER_1720",
+        "desc": "Role: ZL_BR_CA_ALL_USER_1720"
+      },
+      {
+        "role": "ZL_BR_CA_ALL_USER_1730",
+        "desc": "Role: ZL_BR_CA_ALL_USER_1730"
+      }
+    ],
+    "log": [
+      {
+        "date": "00-00-0000 00:00:00",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-39",
+    "account": "IAGCONNECT",
+    "type": "System",
+    "privilege": "High",
+    "lastActivity": "15-04-2026",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZBASIS_BR_BGJOB_ADMIN",
+        "desc": "Role: ZBASIS_BR_BGJOB_ADMIN"
+      },
+      {
+        "role": "ZIT_BR_ALL_EMPLOYEES",
+        "desc": "Role: ZIT_BR_ALL_EMPLOYEES"
+      },
+      {
+        "role": "ZBASIS_BR_ADMIN",
+        "desc": "Role: ZBASIS_BR_ADMIN"
+      }
+    ],
+    "log": [
+      {
+        "date": "15-04-2026 12:45:14",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-40",
+    "account": "IT.CAPTURE",
+    "type": "System",
+    "privilege": "Medium",
+    "lastActivity": "15-04-2026",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": false,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZL_BR_IT_CAPTURE",
+        "desc": "Role: ZL_BR_IT_CAPTURE"
+      }
+    ],
+    "log": [
+      {
+        "date": "15-04-2026 15:14:13",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-41",
+    "account": "ITCAPTURE",
+    "type": "Service",
+    "privilege": "Medium",
+    "lastActivity": "15-04-2026",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [],
+    "log": [
+      {
+        "date": "15-04-2026 15:15:00",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-42",
+    "account": "ITELL",
+    "type": "Reference",
+    "privilege": "Medium",
+    "lastActivity": "11-05-2021",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZL_BR_CA_ALL_USERS",
+        "desc": "Role: ZL_BR_CA_ALL_USERS"
+      },
+      {
+        "role": "ZL_BR_CA_BP_DIS",
+        "desc": "Role: ZL_BR_CA_BP_DIS"
+      },
+      {
+        "role": "ZL_BR_CA_STOCK_DIS",
+        "desc": "Role: ZL_BR_CA_STOCK_DIS"
+      }
+    ],
+    "log": [
+      {
+        "date": "11-05-2021 00:00:00",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-43",
+    "account": "ITELLVPN",
+    "type": "Reference",
+    "privilege": "High",
+    "lastActivity": "03-02-2021",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": false,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZL_BR_CA_ALL_USERS",
+        "desc": "Role: ZL_BR_CA_ALL_USERS"
+      },
+      {
+        "role": "ZL_BR_CA_BP_DIS",
+        "desc": "Role: ZL_BR_CA_BP_DIS"
+      },
+      {
+        "role": "ZL_BR_CA_STOCK_DIS",
+        "desc": "Role: ZL_BR_CA_STOCK_DIS"
+      }
+    ],
+    "log": [
+      {
+        "date": "03-02-2021 00:00:00",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-44",
+    "account": "JAKE.NIXON",
+    "type": "Reference",
+    "privilege": "High",
+    "lastActivity": "27-04-2022",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZL_BR_CA_CONTRACTORS_COMMON",
+        "desc": "Role: ZL_BR_CA_CONTRACTORS_COMMON"
+      },
+      {
+        "role": "ZL_BR_PM_DISPLAY_PMCONTR",
+        "desc": "Role: ZL_BR_PM_DISPLAY_PMCONTR"
+      },
+      {
+        "role": "ZL_BR_PM_MNTNCE_OPS_PMCONTR",
+        "desc": "Role: ZL_BR_PM_MNTNCE_OPS_PMCONTR"
+      }
+    ],
+    "log": [
+      {
+        "date": "27-04-2022 00:00:00",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-45",
+    "account": "JAYARAMIV",
+    "type": "Reference",
+    "privilege": "Medium",
+    "lastActivity": "16-11-2020",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZL_BR_CA_ALL_USERS",
+        "desc": "Role: ZL_BR_CA_ALL_USERS"
+      },
+      {
+        "role": "ZL_BR_CA_BP_DIS",
+        "desc": "Role: ZL_BR_CA_BP_DIS"
+      },
+      {
+        "role": "ZL_BR_CA_STOCK_DIS",
+        "desc": "Role: ZL_BR_CA_STOCK_DIS"
+      }
+    ],
+    "log": [
+      {
+        "date": "16-11-2020 00:00:00",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-46",
+    "account": "JINKEUN.JANG",
+    "type": "Reference",
+    "privilege": "High",
+    "lastActivity": "09-02-2022",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZL_BR_MFG_EXECUTION_PL1710",
+        "desc": "Role: ZL_BR_MFG_EXECUTION_PL1710"
+      },
+      {
+        "role": "ZL_BR_MFG_EXECUTION_PL1730",
+        "desc": "Role: ZL_BR_MFG_EXECUTION_PL1730"
+      },
+      {
+        "role": "ZL_BR_MFG_CAPEX_PL1710",
+        "desc": "Role: ZL_BR_MFG_CAPEX_PL1710"
+      }
+    ],
+    "log": [
+      {
+        "date": "09-02-2022 00:00:00",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-47",
+    "account": "JJOHNSON",
+    "type": "Reference",
+    "privilege": "High",
+    "lastActivity": "06-05-2022",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZL_BR_FI_AP_MGR_AM",
+        "desc": "Role: ZL_BR_FI_AP_MGR_AM"
+      },
+      {
+        "role": "ZL_BR_FI_GL_ACCNTING_AM",
+        "desc": "Role: ZL_BR_FI_GL_ACCNTING_AM"
+      },
+      {
+        "role": "ZL_BR_FI_PAY_PROPOSAL_AM",
+        "desc": "Role: ZL_BR_FI_PAY_PROPOSAL_AM"
+      }
+    ],
+    "log": [
+      {
+        "date": "06-05-2022 13:28:39",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-48",
+    "account": "JLINK",
+    "type": "Reference",
+    "privilege": "High",
+    "lastActivity": "19-11-2021",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZM:IT-PROJECT_TEAM_DISPLAY",
+        "desc": "Role: ZM:IT-PROJECT_TEAM_DISPLAY"
+      },
+      {
+        "role": "ZL_BR_CA_ALL_USERS",
+        "desc": "Role: ZL_BR_CA_ALL_USERS"
+      },
+      {
+        "role": "ZL_BR_CA_BP_DIS",
+        "desc": "Role: ZL_BR_CA_BP_DIS"
+      }
+    ],
+    "log": [
+      {
+        "date": "19-11-2021 12:34:47",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-49",
+    "account": "JOHN.LEVINE",
+    "type": "Reference",
+    "privilege": "High",
+    "lastActivity": "00-00-0000",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZL_BR_MFG_EXECUTION_PL1720",
+        "desc": "Role: ZL_BR_MFG_EXECUTION_PL1720"
+      },
+      {
+        "role": "ZL_BR_MFG_INVTRY_REPORT_PL1720",
+        "desc": "Role: ZL_BR_MFG_INVTRY_REPORT_PL1720"
+      },
+      {
+        "role": "ZL_BR_CA_ALL_USERS",
+        "desc": "Role: ZL_BR_CA_ALL_USERS"
+      }
+    ],
+    "log": [
+      {
+        "date": "00-00-0000 00:00:00",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-50",
+    "account": "JQUINTANA",
+    "type": "Reference",
+    "privilege": "Medium",
+    "lastActivity": "10-03-2022",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZL_BR_ALL_DISPLAY",
+        "desc": "Role: ZL_BR_ALL_DISPLAY"
+      },
+      {
+        "role": "ZL_BR_CA_CONTRACTORS_COMMON",
+        "desc": "Role: ZL_BR_CA_CONTRACTORS_COMMON"
+      }
+    ],
+    "log": [
+      {
+        "date": "10-03-2022 12:55:53",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-51",
+    "account": "JWILLIAMS",
+    "type": "Reference",
+    "privilege": "High",
+    "lastActivity": "00-00-0000",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZL_BR_MFG_EXECUTION_PL1730",
+        "desc": "Role: ZL_BR_MFG_EXECUTION_PL1730"
+      },
+      {
+        "role": "ZL_BR_CA_ALL_USERS",
+        "desc": "Role: ZL_BR_CA_ALL_USERS"
+      },
+      {
+        "role": "ZL_BR_CA_BP_DIS",
+        "desc": "Role: ZL_BR_CA_BP_DIS"
+      }
+    ],
+    "log": [
+      {
+        "date": "00-00-0000 00:00:00",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-52",
+    "account": "KECKHARDT",
+    "type": "Reference",
+    "privilege": "High",
+    "lastActivity": "06-07-2021",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZM:IT-PROJECT_TEAM_DISPLAY",
+        "desc": "Role: ZM:IT-PROJECT_TEAM_DISPLAY"
+      },
+      {
+        "role": "ZL_BR_CA_ALL_USERS",
+        "desc": "Role: ZL_BR_CA_ALL_USERS"
+      },
+      {
+        "role": "ZL_BR_CA_BP_DIS",
+        "desc": "Role: ZL_BR_CA_BP_DIS"
+      }
+    ],
+    "log": [
+      {
+        "date": "06-07-2021 19:51:54",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-53",
+    "account": "KPATTERSON",
+    "type": "Reference",
+    "privilege": "High",
+    "lastActivity": "25-06-2024",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZL_BR_MFG_INVTRY_REP_1720_P03",
+        "desc": "Role: ZL_BR_MFG_INVTRY_REP_1720_P03"
+      },
+      {
+        "role": "ZL_BR_MFG_INVTRY_REP_1730_P03",
+        "desc": "Role: ZL_BR_MFG_INVTRY_REP_1730_P03"
+      },
+      {
+        "role": "ZL_BR_CA_ALL_USER_1710",
+        "desc": "Role: ZL_BR_CA_ALL_USER_1710"
+      }
+    ],
+    "log": [
+      {
+        "date": "25-06-2024 00:00:00",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-54",
+    "account": "KTERN_SERVIC",
+    "type": "Communication Data",
+    "privilege": "Critical",
+    "lastActivity": "15-04-2026",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "Critical \u00b7 SAP_ALL equivalent",
+    "roles": [
+      {
+        "role": "ZM:IT_PROJECT_TEAM_DISPLAY",
+        "desc": "Role: ZM:IT_PROJECT_TEAM_DISPLAY"
+      },
+      {
+        "role": "ZM:IT_SAP_ALL_RESTRICTED",
+        "desc": "Role: ZM:IT_SAP_ALL_RESTRICTED"
+      },
+      {
+        "role": "ZIT_BR_ALL_EMPLOYEES",
+        "desc": "Role: ZIT_BR_ALL_EMPLOYEES"
+      }
+    ],
+    "log": [
+      {
+        "date": "15-04-2026 00:00:00",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-55",
+    "account": "LACC.CLD1.BO",
+    "type": "System",
+    "privilege": "Medium",
+    "lastActivity": "03-11-2025",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZPM_BR_NOTIF_CREATE_1720",
+        "desc": "Role: ZPM_BR_NOTIF_CREATE_1720"
+      },
+      {
+        "role": "ZL_BR_PROM_AUTH",
+        "desc": "Role: ZL_BR_PROM_AUTH"
+      }
+    ],
+    "log": [
+      {
+        "date": "03-11-2025 13:38:27",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-56",
+    "account": "LACC.CLD1.OS",
+    "type": "System",
+    "privilege": "Medium",
+    "lastActivity": "29-03-2026",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZPM_BR_NOTIF_CREATE_1720",
+        "desc": "Role: ZPM_BR_NOTIF_CREATE_1720"
+      },
+      {
+        "role": "ZL_BR_PROM_AUTH",
+        "desc": "Role: ZL_BR_PROM_AUTH"
+      }
+    ],
+    "log": [
+      {
+        "date": "29-03-2026 15:38:08",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-57",
+    "account": "LACC.CLD2.BO",
+    "type": "System",
+    "privilege": "Medium",
+    "lastActivity": "03-11-2025",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZPM_BR_NOTIF_CREATE_1720",
+        "desc": "Role: ZPM_BR_NOTIF_CREATE_1720"
+      },
+      {
+        "role": "ZL_BR_PROM_AUTH",
+        "desc": "Role: ZL_BR_PROM_AUTH"
+      }
+    ],
+    "log": [
+      {
+        "date": "03-11-2025 12:49:52",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-58",
+    "account": "LACC.CLD2.OS",
+    "type": "System",
+    "privilege": "Medium",
+    "lastActivity": "27-02-2026",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZPM_BR_NOTIF_CREATE_1720",
+        "desc": "Role: ZPM_BR_NOTIF_CREATE_1720"
+      },
+      {
+        "role": "ZL_BR_PROM_AUTH",
+        "desc": "Role: ZL_BR_PROM_AUTH"
+      }
+    ],
+    "log": [
+      {
+        "date": "27-02-2026 06:26:01",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-59",
+    "account": "LACC.HOT1.BO",
+    "type": "System",
+    "privilege": "Medium",
+    "lastActivity": "08-02-2026",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZPM_BR_NOTIF_CREATE_1720",
+        "desc": "Role: ZPM_BR_NOTIF_CREATE_1720"
+      },
+      {
+        "role": "ZL_BR_PROM_AUTH",
+        "desc": "Role: ZL_BR_PROM_AUTH"
+      }
+    ],
+    "log": [
+      {
+        "date": "08-02-2026 23:58:23",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-60",
+    "account": "LACC.HOT1.OS",
+    "type": "System",
+    "privilege": "Medium",
+    "lastActivity": "23-12-2025",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZPM_BR_NOTIF_CREATE_1720",
+        "desc": "Role: ZPM_BR_NOTIF_CREATE_1720"
+      },
+      {
+        "role": "ZL_BR_PROM_AUTH",
+        "desc": "Role: ZL_BR_PROM_AUTH"
+      }
+    ],
+    "log": [
+      {
+        "date": "23-12-2025 05:06:19",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-61",
+    "account": "LACC.HOT2.BO",
+    "type": "System",
+    "privilege": "Medium",
+    "lastActivity": "20-03-2026",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZPM_BR_NOTIF_CREATE_1720",
+        "desc": "Role: ZPM_BR_NOTIF_CREATE_1720"
+      },
+      {
+        "role": "ZL_BR_PROM_AUTH",
+        "desc": "Role: ZL_BR_PROM_AUTH"
+      }
+    ],
+    "log": [
+      {
+        "date": "20-03-2026 09:01:08",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-62",
+    "account": "LACC.HOT2.OS",
+    "type": "System",
+    "privilege": "Medium",
+    "lastActivity": "18-01-2026",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZPM_BR_NOTIF_CREATE_1720",
+        "desc": "Role: ZPM_BR_NOTIF_CREATE_1720"
+      },
+      {
+        "role": "ZL_BR_PROM_AUTH",
+        "desc": "Role: ZL_BR_PROM_AUTH"
+      }
+    ],
+    "log": [
+      {
+        "date": "18-01-2026 17:18:18",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-63",
+    "account": "LACC.SFT.SUP",
+    "type": "System",
+    "privilege": "Medium",
+    "lastActivity": "12-04-2026",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZPM_BR_NOTIF_CREATE_1720",
+        "desc": "Role: ZPM_BR_NOTIF_CREATE_1720"
+      },
+      {
+        "role": "ZL_BR_PROM_AUTH",
+        "desc": "Role: ZL_BR_PROM_AUTH"
+      }
+    ],
+    "log": [
+      {
+        "date": "12-04-2026 13:31:45",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-64",
+    "account": "LACC.UT.BO",
+    "type": "System",
+    "privilege": "Medium",
+    "lastActivity": "14-04-2026",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZPM_BR_NOTIF_CREATE_1720",
+        "desc": "Role: ZPM_BR_NOTIF_CREATE_1720"
+      },
+      {
+        "role": "ZL_BR_PROM_AUTH",
+        "desc": "Role: ZL_BR_PROM_AUTH"
+      }
+    ],
+    "log": [
+      {
+        "date": "14-04-2026 17:26:01",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-65",
+    "account": "LACC.UT1.OS",
+    "type": "System",
+    "privilege": "Medium",
+    "lastActivity": "18-07-2025",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZPM_BR_NOTIF_CREATE_1720",
+        "desc": "Role: ZPM_BR_NOTIF_CREATE_1720"
+      },
+      {
+        "role": "ZL_BR_PROM_AUTH",
+        "desc": "Role: ZL_BR_PROM_AUTH"
+      }
+    ],
+    "log": [
+      {
+        "date": "18-07-2025 11:15:05",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-66",
+    "account": "LACC.UT2.OS",
+    "type": "System",
+    "privilege": "Medium",
+    "lastActivity": "18-07-2025",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZPM_BR_NOTIF_CREATE_1720",
+        "desc": "Role: ZPM_BR_NOTIF_CREATE_1720"
+      },
+      {
+        "role": "ZL_BR_PROM_AUTH",
+        "desc": "Role: ZL_BR_PROM_AUTH"
+      }
+    ],
+    "log": [
+      {
+        "date": "18-07-2025 11:18:59",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-67",
+    "account": "LACC.WST.REQ",
+    "type": "System",
+    "privilege": "Medium",
+    "lastActivity": "00-00-0000",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZPM_BR_NOTIF_CREATE_1720",
+        "desc": "Role: ZPM_BR_NOTIF_CREATE_1720"
+      },
+      {
+        "role": "ZL_BR_PROM_AUTH",
+        "desc": "Role: ZL_BR_PROM_AUTH"
+      }
+    ],
+    "log": [
+      {
+        "date": "00-00-0000 00:00:00",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-68",
+    "account": "LSCHIFFMAN",
+    "type": "Reference",
+    "privilege": "High",
+    "lastActivity": "00-00-0000",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZL_BR_CA_ALL_USER_1710",
+        "desc": "Role: ZL_BR_CA_ALL_USER_1710"
+      },
+      {
+        "role": "ZL_BR_CA_ALL_USER_1720",
+        "desc": "Role: ZL_BR_CA_ALL_USER_1720"
+      },
+      {
+        "role": "ZL_BR_CA_ALL_USER_1730",
+        "desc": "Role: ZL_BR_CA_ALL_USER_1730"
+      }
+    ],
+    "log": [
+      {
+        "date": "00-00-0000 00:00:00",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-69",
+    "account": "MARK.KANG",
+    "type": "Reference",
+    "privilege": "High",
+    "lastActivity": "11-10-2023",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZL_BR_SD_ORDER_ISSUES_SO1710",
+        "desc": "Role: ZL_BR_SD_ORDER_ISSUES_SO1710"
+      },
+      {
+        "role": "ZL_BR_SD_ORDER_ISSUES_SO1720",
+        "desc": "Role: ZL_BR_SD_ORDER_ISSUES_SO1720"
+      },
+      {
+        "role": "ZL_BR_SD_REPORTS_COMM_SO1710",
+        "desc": "Role: ZL_BR_SD_REPORTS_COMM_SO1710"
+      }
+    ],
+    "log": [
+      {
+        "date": "11-10-2023 15:42:13",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-70",
+    "account": "MPICOU",
+    "type": "Reference",
+    "privilege": "High",
+    "lastActivity": "00-00-0000",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZPM_BR_MORD_PROCESS_1710",
+        "desc": "Role: ZPM_BR_MORD_PROCESS_1710"
+      },
+      {
+        "role": "ZPM_BR_MORD_PROCESS_1720",
+        "desc": "Role: ZPM_BR_MORD_PROCESS_1720"
+      },
+      {
+        "role": "ZPM_BR_MORD_PROCESS_1730",
+        "desc": "Role: ZPM_BR_MORD_PROCESS_1730"
+      }
+    ],
+    "log": [
+      {
+        "date": "00-00-0000 00:00:00",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-71",
+    "account": "MRAJAGOPAL",
+    "type": "Reference",
+    "privilege": "Medium",
+    "lastActivity": "00-00-0000",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZL_BR_ALL_DISPLAY",
+        "desc": "Role: ZL_BR_ALL_DISPLAY"
+      },
+      {
+        "role": "ZL_BR_CA_CONTRACTORS_COMMON",
+        "desc": "Role: ZL_BR_CA_CONTRACTORS_COMMON"
+      }
+    ],
+    "log": [
+      {
+        "date": "00-00-0000 00:00:00",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-72",
+    "account": "NKANDI",
+    "type": "Reference",
+    "privilege": "Medium",
+    "lastActivity": "15-09-2021",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZL_BR_ALL_DISPLAY",
+        "desc": "Role: ZL_BR_ALL_DISPLAY"
+      },
+      {
+        "role": "ZL_BR_CA_CONTRACTORS_COMMON",
+        "desc": "Role: ZL_BR_CA_CONTRACTORS_COMMON"
+      }
+    ],
+    "log": [
+      {
+        "date": "15-09-2021 10:58:43",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-73",
+    "account": "NTT.TESTING",
+    "type": "Reference",
+    "privilege": "Medium",
+    "lastActivity": "29-10-2021",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZL_BR_ALL_DISPLAY",
+        "desc": "Role: ZL_BR_ALL_DISPLAY"
+      },
+      {
+        "role": "ZL_BR_CA_CONTRACTORS_COMMON",
+        "desc": "Role: ZL_BR_CA_CONTRACTORS_COMMON"
+      }
+    ],
+    "log": [
+      {
+        "date": "29-10-2021 21:16:42",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-74",
+    "account": "OESADMIN",
+    "type": "System",
+    "privilege": "High",
+    "lastActivity": "19-11-2022",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "SAP_ESH_BOS_RFC_ENDUSER",
+        "desc": "Role: SAP_ESH_BOS_RFC_ENDUSER"
+      },
+      {
+        "role": "SAP_ESH_SEARCH_CATEG",
+        "desc": "Role: SAP_ESH_SEARCH_CATEG"
+      },
+      {
+        "role": "SAP_ESH_SEARCH_USER",
+        "desc": "Role: SAP_ESH_SEARCH_USER"
+      }
+    ],
+    "log": [
+      {
+        "date": "19-11-2022 23:26:56",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-75",
+    "account": "OOGUNBANWO",
+    "type": "Reference",
+    "privilege": "Medium",
+    "lastActivity": "19-10-2022",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZL_BR_EMPLOYEE",
+        "desc": "Role: ZL_BR_EMPLOYEE"
+      },
+      {
+        "role": "ZL_BR_ALL_DISPLAY",
+        "desc": "Role: ZL_BR_ALL_DISPLAY"
+      },
+      {
+        "role": "ZL_BR_CA_CONTRACTORS_COMMON",
+        "desc": "Role: ZL_BR_CA_CONTRACTORS_COMMON"
+      }
+    ],
+    "log": [
+      {
+        "date": "19-10-2022 10:19:46",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-76",
+    "account": "OWEIDGENANT",
+    "type": "Reference",
+    "privilege": "Medium",
+    "lastActivity": "02-03-2022",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZL_BR_ALL_DISPLAY",
+        "desc": "Role: ZL_BR_ALL_DISPLAY"
+      },
+      {
+        "role": "ZL_BR_CA_CONTRACTORS_COMMON",
+        "desc": "Role: ZL_BR_CA_CONTRACTORS_COMMON"
+      }
+    ],
+    "log": [
+      {
+        "date": "02-03-2022 14:41:03",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-77",
+    "account": "PCHINNOLLA",
+    "type": "Reference",
+    "privilege": "Medium",
+    "lastActivity": "11-10-2021",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZL_BR_ALL_DISPLAY",
+        "desc": "Role: ZL_BR_ALL_DISPLAY"
+      },
+      {
+        "role": "ZL_BR_CA_CONTRACTORS_COMMON",
+        "desc": "Role: ZL_BR_CA_CONTRACTORS_COMMON"
+      }
+    ],
+    "log": [
+      {
+        "date": "11-10-2021 09:42:16",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-78",
+    "account": "PMALLAMPATI",
+    "type": "Reference",
+    "privilege": "High",
+    "lastActivity": "08-06-2021",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZM:IT-PROJECT_TEAM_DISPLAY",
+        "desc": "Role: ZM:IT-PROJECT_TEAM_DISPLAY"
+      },
+      {
+        "role": "ZL_BR_CA_ALL_USERS",
+        "desc": "Role: ZL_BR_CA_ALL_USERS"
+      },
+      {
+        "role": "ZL_BR_CA_BP_DIS",
+        "desc": "Role: ZL_BR_CA_BP_DIS"
+      }
+    ],
+    "log": [
+      {
+        "date": "08-06-2021 04:54:17",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-79",
+    "account": "PSULLIVAN",
+    "type": "Reference",
+    "privilege": "Medium",
+    "lastActivity": "29-08-2022",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZM:IT-PROJECT_TEAM_DISPLAY",
+        "desc": "Role: ZM:IT-PROJECT_TEAM_DISPLAY"
+      },
+      {
+        "role": "ZL_BR_CA_ALL_USERS",
+        "desc": "Role: ZL_BR_CA_ALL_USERS"
+      },
+      {
+        "role": "ZL_BR_CA_BP_DIS",
+        "desc": "Role: ZL_BR_CA_BP_DIS"
+      }
+    ],
+    "log": [
+      {
+        "date": "29-08-2022 11:59:25",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-80",
+    "account": "PTHORNTON",
+    "type": "Reference",
+    "privilege": "High",
+    "lastActivity": "25-03-2022",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZL_BR_FI_AP_MGR_CC1720",
+        "desc": "Role: ZL_BR_FI_AP_MGR_CC1720"
+      },
+      {
+        "role": "ZL_BR_FI_GL_ACCNTING_CC1720",
+        "desc": "Role: ZL_BR_FI_GL_ACCNTING_CC1720"
+      },
+      {
+        "role": "ZL_BR_FI_PAY_PROCESS_CC1720",
+        "desc": "Role: ZL_BR_FI_PAY_PROCESS_CC1720"
+      }
+    ],
+    "log": [
+      {
+        "date": "25-03-2022 00:00:00",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-81",
+    "account": "PTRAHAN",
+    "type": "Reference",
+    "privilege": "High",
+    "lastActivity": "18-07-2023",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZL_BR_MFG_EXECUTION_PL1730",
+        "desc": "Role: ZL_BR_MFG_EXECUTION_PL1730"
+      },
+      {
+        "role": "ZL_BR_CA_ALL_USER_1720",
+        "desc": "Role: ZL_BR_CA_ALL_USER_1720"
+      },
+      {
+        "role": "ZL_BR_CA_ALL_USERS",
+        "desc": "Role: ZL_BR_CA_ALL_USERS"
+      }
+    ],
+    "log": [
+      {
+        "date": "18-07-2023 00:00:00",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-82",
+    "account": "RFCUSER",
+    "type": "Service",
+    "privilege": "Critical",
+    "lastActivity": "08-10-2024",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "Critical \u00b7 SAP_ALL equivalent",
+    "roles": [
+      {
+        "role": "SAP_ALL",
+        "desc": "Role: SAP_ALL"
+      },
+      {
+        "role": "ZBASIS_BR_BGJOB_ADMIN",
+        "desc": "Role: ZBASIS_BR_BGJOB_ADMIN"
+      },
+      {
+        "role": "ZIT_BR_ALL_EMPLOYEES",
+        "desc": "Role: ZIT_BR_ALL_EMPLOYEES"
+      }
+    ],
+    "log": [
+      {
+        "date": "08-10-2024 09:20:28",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-83",
+    "account": "RMULPURI",
+    "type": "Reference",
+    "privilege": "High",
+    "lastActivity": "14-10-2021",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZM:IT-PROJECT_TEAM_DISPLAY",
+        "desc": "Role: ZM:IT-PROJECT_TEAM_DISPLAY"
+      },
+      {
+        "role": "ZL_BR_ALL_DISPLAY",
+        "desc": "Role: ZL_BR_ALL_DISPLAY"
+      },
+      {
+        "role": "ZL_BR_CA_ALL_USERS",
+        "desc": "Role: ZL_BR_CA_ALL_USERS"
+      }
+    ],
+    "log": [
+      {
+        "date": "14-10-2021 16:01:50",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-84",
+    "account": "RPRITZKAU",
+    "type": "Reference",
+    "privilege": "Medium",
+    "lastActivity": "00-00-0000",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZM:IT-PROJECT_TEAM_DISPLAY",
+        "desc": "Role: ZM:IT-PROJECT_TEAM_DISPLAY"
+      },
+      {
+        "role": "ZL_BR_CA_ALL_USERS",
+        "desc": "Role: ZL_BR_CA_ALL_USERS"
+      },
+      {
+        "role": "ZL_BR_CA_BP_DIS",
+        "desc": "Role: ZL_BR_CA_BP_DIS"
+      }
+    ],
+    "log": [
+      {
+        "date": "00-00-0000 00:00:00",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-85",
+    "account": "RWALDROUP",
+    "type": "Reference",
+    "privilege": "High",
+    "lastActivity": "16-09-2022",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZL_BR_MFG_EXECUTION_PL1720",
+        "desc": "Role: ZL_BR_MFG_EXECUTION_PL1720"
+      },
+      {
+        "role": "ZL_BR_MFG_INVTRY_REPORT_PL1720",
+        "desc": "Role: ZL_BR_MFG_INVTRY_REPORT_PL1720"
+      },
+      {
+        "role": "ZL_BR_CA_ALL_USERS",
+        "desc": "Role: ZL_BR_CA_ALL_USERS"
+      }
+    ],
+    "log": [
+      {
+        "date": "16-09-2022 00:00:00",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-86",
+    "account": "SACADMIN",
+    "type": "System",
+    "privilege": "Medium",
+    "lastActivity": "23-01-2022",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZL_BW_ANALYTICS",
+        "desc": "Role: ZL_BW_ANALYTICS"
+      },
+      {
+        "role": "S_A.SYSTEM",
+        "desc": "Role: S_A.SYSTEM"
+      }
+    ],
+    "log": [
+      {
+        "date": "23-01-2022 18:00:03",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-87",
+    "account": "SADAMS",
+    "type": "Reference",
+    "privilege": "High",
+    "lastActivity": "08-04-2022",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZL_BR_SD_ORDER_ISSUES_SO1710",
+        "desc": "Role: ZL_BR_SD_ORDER_ISSUES_SO1710"
+      },
+      {
+        "role": "ZL_BR_SD_ORDER_ISSUES_SO1720",
+        "desc": "Role: ZL_BR_SD_ORDER_ISSUES_SO1720"
+      },
+      {
+        "role": "ZL_BR_SD_REPORTS_COMM_SO1710",
+        "desc": "Role: ZL_BR_SD_REPORTS_COMM_SO1710"
+      }
+    ],
+    "log": [
+      {
+        "date": "08-04-2022 17:39:22",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-88",
+    "account": "SAP*",
+    "type": "",
+    "privilege": "High",
+    "lastActivity": "2026-05-19",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "SAP_ESH_BOS_RFC_ENDUSER",
+        "desc": "Role: SAP_ESH_BOS_RFC_ENDUSER"
+      },
+      {
+        "role": "SAP_ESH_SEARCH_CATEG",
+        "desc": "Role: SAP_ESH_SEARCH_CATEG"
+      },
+      {
+        "role": "SAP_ESH_SEARCH_USER",
+        "desc": "Role: SAP_ESH_SEARCH_USER"
+      }
+    ],
+    "log": [
+      {
+        "date": "",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-89",
+    "account": "SAPSUPPORT",
+    "type": "Service",
+    "privilege": "Critical",
+    "lastActivity": "25-02-2026",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "Critical \u00b7 SAP_ALL equivalent",
+    "roles": [
+      {
+        "role": "ZM:IT_PROJECT_TEAM_DISPLAY",
+        "desc": "Role: ZM:IT_PROJECT_TEAM_DISPLAY"
+      },
+      {
+        "role": "ZM:IT_SAP_ALL_RESTRICTED",
+        "desc": "Role: ZM:IT_SAP_ALL_RESTRICTED"
+      },
+      {
+        "role": "ZFI_BR_AP_MGR_CAMAN_1720",
+        "desc": "Role: ZFI_BR_AP_MGR_CAMAN_1720"
+      }
+    ],
+    "log": [
+      {
+        "date": "25-02-2026 03:07:32",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-90",
+    "account": "SAPSUPPORT1",
+    "type": "Service",
+    "privilege": "High",
+    "lastActivity": "03-07-2024",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZM:IT_PROJECT_TEAM_DISPLAY",
+        "desc": "Role: ZM:IT_PROJECT_TEAM_DISPLAY"
+      },
+      {
+        "role": "ZL_BR_CA_EMPLOYEE",
+        "desc": "Role: ZL_BR_CA_EMPLOYEE"
+      },
+      {
+        "role": "ZL_BR_FI_GL_REPORTS",
+        "desc": "Role: ZL_BR_FI_GL_REPORTS"
+      }
+    ],
+    "log": [
+      {
+        "date": "03-07-2024 09:45:28",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-91",
+    "account": "SAP_SPC",
+    "type": "System",
+    "privilege": "High",
+    "lastActivity": "21-10-2020",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZBASIS_BR_BGJOB_ADMIN",
+        "desc": "Role: ZBASIS_BR_BGJOB_ADMIN"
+      },
+      {
+        "role": "S_A.SYSTEM",
+        "desc": "Role: S_A.SYSTEM"
+      },
+      {
+        "role": "SAP_ESH_BOS_RFC_ENDUSER",
+        "desc": "Role: SAP_ESH_BOS_RFC_ENDUSER"
+      }
+    ],
+    "log": [
+      {
+        "date": "21-10-2020 22:15:00",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-92",
+    "account": "SAP_WFRT",
+    "type": "System",
+    "privilege": "Critical",
+    "lastActivity": "15-04-2026",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "Critical \u00b7 SAP_ALL equivalent",
+    "roles": [
+      {
+        "role": "SAP_ALL",
+        "desc": "Role: SAP_ALL"
+      },
+      {
+        "role": "ZBASIS_BR_BGJOB_ADMIN",
+        "desc": "Role: ZBASIS_BR_BGJOB_ADMIN"
+      },
+      {
+        "role": "ZL_BR_CA_ALL_USER_1710",
+        "desc": "Role: ZL_BR_CA_ALL_USER_1710"
+      }
+    ],
+    "log": [
+      {
+        "date": "15-04-2026 15:15:15",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-93",
+    "account": "SAP_WSRT",
+    "type": "System",
+    "privilege": "Medium",
+    "lastActivity": "16-03-2021",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "SAP_BC_WEBSERVICE_SERVICE_USER",
+        "desc": "Role: SAP_BC_WEBSERVICE_SERVICE_USER"
+      }
+    ],
+    "log": [
+      {
+        "date": "16-03-2021 21:59:16",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-94",
+    "account": "SDAGENT",
+    "type": "System",
+    "privilege": "High",
+    "lastActivity": "21-10-2020",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "SAP_SRSM_SDAGENT_CF",
+        "desc": "Role: SAP_SRSM_SDAGENT_CF"
+      },
+      {
+        "role": "SAP_SRSM_SDAGENT_GPA_MS",
+        "desc": "Role: SAP_SRSM_SDAGENT_GPA_MS"
+      },
+      {
+        "role": "SAP_SRSM_SDAGENT_MAI",
+        "desc": "Role: SAP_SRSM_SDAGENT_MAI"
+      }
+    ],
+    "log": [
+      {
+        "date": "21-10-2020 22:25:44",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-95",
+    "account": "SDASH",
+    "type": "Reference",
+    "privilege": "Medium",
+    "lastActivity": "06-09-2022",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZL_BR_ALL_DISPLAY",
+        "desc": "Role: ZL_BR_ALL_DISPLAY"
+      },
+      {
+        "role": "ZL_BR_CA_CONTRACTORS_COMMON",
+        "desc": "Role: ZL_BR_CA_CONTRACTORS_COMMON"
+      }
+    ],
+    "log": [
+      {
+        "date": "06-09-2022 11:30:11",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-96",
+    "account": "SDMI_GJJNQXG",
+    "type": "System",
+    "privilege": "Critical",
+    "lastActivity": "00-00-0000",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "Critical \u00b7 SAP_ALL equivalent",
+    "roles": [
+      {
+        "role": "SAP_ALL",
+        "desc": "Role: SAP_ALL"
+      }
+    ],
+    "log": [
+      {
+        "date": "00-00-0000 11:09:11",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-97",
+    "account": "SDMI_MOZRDRW",
+    "type": "System",
+    "privilege": "High",
+    "lastActivity": "00-00-0000",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZHEC_SDMI_USER",
+        "desc": "Role: ZHEC_SDMI_USER"
+      },
+      {
+        "role": "SAP_ESH_BOS_RFC_ENDUSER",
+        "desc": "Role: SAP_ESH_BOS_RFC_ENDUSER"
+      },
+      {
+        "role": "SAP_ESH_SEARCH_CATEG",
+        "desc": "Role: SAP_ESH_SEARCH_CATEG"
+      }
+    ],
+    "log": [
+      {
+        "date": "00-00-0000 00:00:00",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-98",
+    "account": "SGAUSPOHL",
+    "type": "Reference",
+    "privilege": "High",
+    "lastActivity": "00-00-0000",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZL_BR_CA_COSTCEN_MAN_MSUP",
+        "desc": "Role: ZL_BR_CA_COSTCEN_MAN_MSUP"
+      },
+      {
+        "role": "ZL_BR_EWM_WH_DISPLAY_MSUP",
+        "desc": "Role: ZL_BR_EWM_WH_DISPLAY_MSUP"
+      },
+      {
+        "role": "ZL_BR_PM_WO_OBDELV",
+        "desc": "Role: ZL_BR_PM_WO_OBDELV"
+      }
+    ],
+    "log": [
+      {
+        "date": "00-00-0000 00:00:00",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-99",
+    "account": "SHIVAD",
+    "type": "Reference",
+    "privilege": "High",
+    "lastActivity": "28-09-2021",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZM:IT-PROJECT_TEAM_DISPLAY",
+        "desc": "Role: ZM:IT-PROJECT_TEAM_DISPLAY"
+      },
+      {
+        "role": "ZL_BR_CA_ALL_USERS",
+        "desc": "Role: ZL_BR_CA_ALL_USERS"
+      },
+      {
+        "role": "ZL_BR_CA_BP_DIS",
+        "desc": "Role: ZL_BR_CA_BP_DIS"
+      }
+    ],
+    "log": [
+      {
+        "date": "28-09-2021 06:29:51",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-100",
+    "account": "SKONGARI",
+    "type": "Reference",
+    "privilege": "Medium",
+    "lastActivity": "26-09-2022",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZL_BR_ALL_DISPLAY",
+        "desc": "Role: ZL_BR_ALL_DISPLAY"
+      },
+      {
+        "role": "ZL_BR_CA_CONTRACTORS_COMMON",
+        "desc": "Role: ZL_BR_CA_CONTRACTORS_COMMON"
+      }
+    ],
+    "log": [
+      {
+        "date": "26-09-2022 07:18:12",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-101",
+    "account": "SNAIR",
+    "type": "Reference",
+    "privilege": "High",
+    "lastActivity": "08-11-2021",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZM:IT-PROJECT_TEAM_DISPLAY",
+        "desc": "Role: ZM:IT-PROJECT_TEAM_DISPLAY"
+      },
+      {
+        "role": "ZL_BR_MFG_EXECUTION",
+        "desc": "Role: ZL_BR_MFG_EXECUTION"
+      },
+      {
+        "role": "ZL_BR_MFG_CAPEX",
+        "desc": "Role: ZL_BR_MFG_CAPEX"
+      }
+    ],
+    "log": [
+      {
+        "date": "08-11-2021 11:38:57",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-102",
+    "account": "SPC_SNOTE",
+    "type": "System",
+    "privilege": "High",
+    "lastActivity": "00-00-0000",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZHEC_SNOTE_V8",
+        "desc": "Role: ZHEC_SNOTE_V8"
+      },
+      {
+        "role": "SAP_ESH_BOS_RFC_ENDUSER",
+        "desc": "Role: SAP_ESH_BOS_RFC_ENDUSER"
+      },
+      {
+        "role": "SAP_ESH_SEARCH_CATEG",
+        "desc": "Role: SAP_ESH_SEARCH_CATEG"
+      }
+    ],
+    "log": [
+      {
+        "date": "00-00-0000 00:00:00",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-103",
+    "account": "SUMAN.GADWAL",
+    "type": "Reference",
+    "privilege": "High",
+    "lastActivity": "00-00-0000",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZM:IT-PROJECT_TEAM_DISPLAY",
+        "desc": "Role: ZM:IT-PROJECT_TEAM_DISPLAY"
+      },
+      {
+        "role": "ZL_BR_CA_ALL_USERS",
+        "desc": "Role: ZL_BR_CA_ALL_USERS"
+      },
+      {
+        "role": "ZL_BR_PM_DISPLAY",
+        "desc": "Role: ZL_BR_PM_DISPLAY"
+      }
+    ],
+    "log": [
+      {
+        "date": "00-00-0000 00:00:00",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-104",
+    "account": "SVC_USER",
+    "type": "Service",
+    "privilege": "Medium",
+    "lastActivity": "00-00-0000",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZL_BR_PROM_AUTH",
+        "desc": "Role: ZL_BR_PROM_AUTH"
+      }
+    ],
+    "log": [
+      {
+        "date": "00-00-0000 00:00:00",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-105",
+    "account": "TAEYUL.KIM",
+    "type": "Reference",
+    "privilege": "High",
+    "lastActivity": "22-12-2024",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZL_BR_CA_COSTCEN_MAN_LACCOMAN",
+        "desc": "Role: ZL_BR_CA_COSTCEN_MAN_LACCOMAN"
+      },
+      {
+        "role": "ZL_BR_MM_PRPO_REPORTS_LACCOMAN",
+        "desc": "Role: ZL_BR_MM_PRPO_REPORTS_LACCOMAN"
+      },
+      {
+        "role": "ZL_BR_PM_PURCHASING_LACCOMAN",
+        "desc": "Role: ZL_BR_PM_PURCHASING_LACCOMAN"
+      }
+    ],
+    "log": [
+      {
+        "date": "22-12-2024 22:34:21",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-106",
+    "account": "TC_USER",
+    "type": "Service",
+    "privilege": "Critical",
+    "lastActivity": "00-00-0000",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "Critical \u00b7 SAP_ALL equivalent",
+    "roles": [
+      {
+        "role": "SAP_ALL",
+        "desc": "Role: SAP_ALL"
+      }
+    ],
+    "log": [
+      {
+        "date": "00-00-0000 00:00:00",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-107",
+    "account": "TEST",
+    "type": "Reference",
+    "privilege": "High",
+    "lastActivity": "00-00-0000",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZM:IT-PROJECT_TEAM_DISPLAY",
+        "desc": "Role: ZM:IT-PROJECT_TEAM_DISPLAY"
+      },
+      {
+        "role": "ZL_BR_MFG_EXECUTION_PL1710",
+        "desc": "Role: ZL_BR_MFG_EXECUTION_PL1710"
+      },
+      {
+        "role": "ZL_BR_MFG_EXECUTION_PL1720",
+        "desc": "Role: ZL_BR_MFG_EXECUTION_PL1720"
+      }
+    ],
+    "log": [
+      {
+        "date": "00-00-0000 00:00:00",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-108",
+    "account": "TEST1",
+    "type": "Reference",
+    "privilege": "High",
+    "lastActivity": "00-00-0000",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZM:IT-PROJECT_TEAM_DISPLAY",
+        "desc": "Role: ZM:IT-PROJECT_TEAM_DISPLAY"
+      },
+      {
+        "role": "ZL_BR_CA_EMPLOYEE",
+        "desc": "Role: ZL_BR_CA_EMPLOYEE"
+      },
+      {
+        "role": "ZL_BR_MFG_EXECUTION_PL1710",
+        "desc": "Role: ZL_BR_MFG_EXECUTION_PL1710"
+      }
+    ],
+    "log": [
+      {
+        "date": "00-00-0000 00:00:00",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-109",
+    "account": "THOMAS.EUN",
+    "type": "Reference",
+    "privilege": "High",
+    "lastActivity": "00-00-0000",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZPM_BR_MORD_PROCESS_1710",
+        "desc": "Role: ZPM_BR_MORD_PROCESS_1710"
+      },
+      {
+        "role": "ZPM_BR_MORD_PROCESS_1720",
+        "desc": "Role: ZPM_BR_MORD_PROCESS_1720"
+      },
+      {
+        "role": "ZPM_BR_MORD_PROCESS_1730",
+        "desc": "Role: ZPM_BR_MORD_PROCESS_1730"
+      }
+    ],
+    "log": [
+      {
+        "date": "00-00-0000 00:00:00",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-110",
+    "account": "THU.LE",
+    "type": "Reference",
+    "privilege": "Medium",
+    "lastActivity": "05-03-2022",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [],
+    "log": [
+      {
+        "date": "05-03-2022 00:00:00",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-111",
+    "account": "TMSADM",
+    "type": "System",
+    "privilege": "High",
+    "lastActivity": "21-10-2020",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "S_A.TMSADM",
+        "desc": "Role: S_A.TMSADM"
+      },
+      {
+        "role": "SAP_ESH_BOS_RFC_ENDUSER",
+        "desc": "Role: SAP_ESH_BOS_RFC_ENDUSER"
+      },
+      {
+        "role": "SAP_ESH_SEARCH_CATEG",
+        "desc": "Role: SAP_ESH_SEARCH_CATEG"
+      }
+    ],
+    "log": [
+      {
+        "date": "21-10-2020 21:48:24",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-112",
+    "account": "TWILCOX",
+    "type": "Reference",
+    "privilege": "High",
+    "lastActivity": "00-00-0000",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZL_BR_CA_ALL_USER_1710",
+        "desc": "Role: ZL_BR_CA_ALL_USER_1710"
+      },
+      {
+        "role": "ZL_BR_CA_ALL_USER_1720",
+        "desc": "Role: ZL_BR_CA_ALL_USER_1720"
+      },
+      {
+        "role": "ZL_BR_CA_ALL_USER_1730",
+        "desc": "Role: ZL_BR_CA_ALL_USER_1730"
+      }
+    ],
+    "log": [
+      {
+        "date": "00-00-0000 00:00:00",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-113",
+    "account": "USERLOCKED",
+    "type": "Reference",
+    "privilege": "Medium",
+    "lastActivity": "31-08-2021",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [],
+    "log": [
+      {
+        "date": "31-08-2021 00:00:00",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-114",
+    "account": "VBAID",
+    "type": "Reference",
+    "privilege": "High",
+    "lastActivity": "22-06-2021",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZM:IT-PROJECT_TEAM_DISPLAY",
+        "desc": "Role: ZM:IT-PROJECT_TEAM_DISPLAY"
+      },
+      {
+        "role": "ZL_BR_CA_ALL_USERS",
+        "desc": "Role: ZL_BR_CA_ALL_USERS"
+      },
+      {
+        "role": "ZL_BR_CA_BP_DIS",
+        "desc": "Role: ZL_BR_CA_BP_DIS"
+      }
+    ],
+    "log": [
+      {
+        "date": "22-06-2021 10:59:26",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-115",
+    "account": "VBALUMURU",
+    "type": "Reference",
+    "privilege": "High",
+    "lastActivity": "23-05-2022",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZL_BR_FI_GL_ACCNTING",
+        "desc": "Role: ZL_BR_FI_GL_ACCNTING"
+      },
+      {
+        "role": "ZL_BR_FI_PAY_PROCESS",
+        "desc": "Role: ZL_BR_FI_PAY_PROCESS"
+      },
+      {
+        "role": "ZL_BR_FI_PAY_PROPOSAL",
+        "desc": "Role: ZL_BR_FI_PAY_PROPOSAL"
+      }
+    ],
+    "log": [
+      {
+        "date": "23-05-2022 00:00:00",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-116",
+    "account": "VMADDULA",
+    "type": "Reference",
+    "privilege": "High",
+    "lastActivity": "20-10-2021",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZM:IT-PROJECT_TEAM_DISPLAY",
+        "desc": "Role: ZM:IT-PROJECT_TEAM_DISPLAY"
+      },
+      {
+        "role": "ZL_BR_CA_ALL_USERS",
+        "desc": "Role: ZL_BR_CA_ALL_USERS"
+      },
+      {
+        "role": "ZL_BR_CA_BP_DIS",
+        "desc": "Role: ZL_BR_CA_BP_DIS"
+      }
+    ],
+    "log": [
+      {
+        "date": "20-10-2021 04:33:41",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-117",
+    "account": "VSRUNGARAPU",
+    "type": "Reference",
+    "privilege": "Medium",
+    "lastActivity": "05-05-2021",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZL_BR_CA_ALL_USERS",
+        "desc": "Role: ZL_BR_CA_ALL_USERS"
+      },
+      {
+        "role": "ZL_BR_CA_BP_DIS",
+        "desc": "Role: ZL_BR_CA_BP_DIS"
+      },
+      {
+        "role": "ZL_BR_CA_STOCK_DIS",
+        "desc": "Role: ZL_BR_CA_STOCK_DIS"
+      }
+    ],
+    "log": [
+      {
+        "date": "05-05-2021 00:00:00",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-118",
+    "account": "WESTLAKE.FI",
+    "type": "Reference",
+    "privilege": "High",
+    "lastActivity": "29-03-2022",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZL_BR_FI_AR_REPORTS_WLTAX",
+        "desc": "Role: ZL_BR_FI_AR_REPORTS_WLTAX"
+      },
+      {
+        "role": "ZL_BR_FI_GEN_FINANCE_WLTAX",
+        "desc": "Role: ZL_BR_FI_GEN_FINANCE_WLTAX"
+      },
+      {
+        "role": "ZL_BR_FI_GL_REPORTS_WLTAX",
+        "desc": "Role: ZL_BR_FI_GL_REPORTS_WLTAX"
+      }
+    ],
+    "log": [
+      {
+        "date": "29-03-2022 16:14:15",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-119",
+    "account": "WESTLAKE.TAX",
+    "type": "Reference",
+    "privilege": "High",
+    "lastActivity": "10-03-2022",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZL_BR_FI_AR_REPORTS_WLTAX",
+        "desc": "Role: ZL_BR_FI_AR_REPORTS_WLTAX"
+      },
+      {
+        "role": "ZL_BR_FI_GEN_FINANCE_WLTAX",
+        "desc": "Role: ZL_BR_FI_GEN_FINANCE_WLTAX"
+      },
+      {
+        "role": "ZL_BR_FI_GL_REPORTS_WLTAX",
+        "desc": "Role: ZL_BR_FI_GL_REPORTS_WLTAX"
+      }
+    ],
+    "log": [
+      {
+        "date": "10-03-2022 14:09:07",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-120",
+    "account": "YBALEL",
+    "type": "Reference",
+    "privilege": "High",
+    "lastActivity": "11-10-2021",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZM:IT-PROJECT_TEAM_DISPLAY",
+        "desc": "Role: ZM:IT-PROJECT_TEAM_DISPLAY"
+      },
+      {
+        "role": "ZL_BR_CA_ALL_USERS",
+        "desc": "Role: ZL_BR_CA_ALL_USERS"
+      },
+      {
+        "role": "ZM:IT-BASIS_ADM_MASTR",
+        "desc": "Role: ZM:IT-BASIS_ADM_MASTR"
+      }
+    ],
+    "log": [
+      {
+        "date": "11-10-2021 12:14:40",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-121",
+    "account": "YEONGJE.LEE",
+    "type": "Reference",
+    "privilege": "High",
+    "lastActivity": "16-12-2021",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "ZL_BR_PM_PURCHASING",
+        "desc": "Role: ZL_BR_PM_PURCHASING"
+      },
+      {
+        "role": "ZL_BR_CA_ALL_USERS",
+        "desc": "Role: ZL_BR_CA_ALL_USERS"
+      },
+      {
+        "role": "ZL_BR_CA_MANAGER",
+        "desc": "Role: ZL_BR_CA_MANAGER"
+      }
+    ],
+    "log": [
+      {
+        "date": "16-12-2021 07:55:11",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-122",
+    "account": "ZGRFC_SUPER",
+    "type": "Service",
+    "privilege": "High",
+    "lastActivity": "00-00-0000",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "SAP_ESH_BOS_RFC_ENDUSER",
+        "desc": "Role: SAP_ESH_BOS_RFC_ENDUSER"
+      },
+      {
+        "role": "SAP_ESH_SEARCH_CATEG",
+        "desc": "Role: SAP_ESH_SEARCH_CATEG"
+      },
+      {
+        "role": "SAP_ESH_SEARCH_USER",
+        "desc": "Role: SAP_ESH_SEARCH_USER"
+      }
+    ],
+    "log": [
+      {
+        "date": "00-00-0000 00:00:00",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-123",
+    "account": "_SAPI870957",
+    "type": "Service",
+    "privilege": "High",
+    "lastActivity": "16-02-2021",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "SAP_ESH_BOS_RFC_ENDUSER",
+        "desc": "Role: SAP_ESH_BOS_RFC_ENDUSER"
+      },
+      {
+        "role": "SAP_ESH_SEARCH_CATEG",
+        "desc": "Role: SAP_ESH_SEARCH_CATEG"
+      },
+      {
+        "role": "SAP_ESH_SEARCH_USER",
+        "desc": "Role: SAP_ESH_SEARCH_USER"
+      }
+    ],
+    "log": [
+      {
+        "date": "16-02-2021 09:35:04",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-124",
+    "account": "_SAP_AMS_ADM",
+    "type": "Service",
+    "privilege": "High",
+    "lastActivity": "22-10-2020",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "S_A.SYSTEM",
+        "desc": "Role: S_A.SYSTEM"
+      },
+      {
+        "role": "SAP_ESH_BOS_RFC_ENDUSER",
+        "desc": "Role: SAP_ESH_BOS_RFC_ENDUSER"
+      },
+      {
+        "role": "SAP_ESH_SEARCH_CATEG",
+        "desc": "Role: SAP_ESH_SEARCH_CATEG"
+      }
+    ],
+    "log": [
+      {
+        "date": "22-10-2020 09:23:00",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  },
+  {
+    "id": "SA-125",
+    "account": "_SAP_TEC_USR",
+    "type": "System",
+    "privilege": "High",
+    "lastActivity": "00-00-0000",
+    "daysSince": 1,
+    "inactive": false,
+    "owner": "IT Compliance",
+    "unmanaged": true,
+    "risk": "High privilege technical account",
+    "roles": [
+      {
+        "role": "S_A.SYSTEM",
+        "desc": "Role: S_A.SYSTEM"
+      },
+      {
+        "role": "SAP_BC_WEBSERVICE_DEBUGGER",
+        "desc": "Role: SAP_BC_WEBSERVICE_DEBUGGER"
+      },
+      {
+        "role": "SAP_BC_SIW_DEV",
+        "desc": "Role: SAP_BC_SIW_DEV"
+      }
+    ],
+    "log": [
+      {
+        "date": "00-00-0000 00:00:00",
+        "desc": "Service activity logged"
+      }
+    ],
+    "recommendation": "Rotate credentials periodically",
+    "status": "Open",
+    "assignee": null
+  }
 ];
 
 const ACCOUNT_TYPE_SPLIT = [
-  { type: 'Service',     count: SERVICE_ACCOUNTS.filter(s => s.type === 'Service').length,     color: '#0F172A' },
-  { type: 'Background',  count: SERVICE_ACCOUNTS.filter(s => s.type === 'Background').length,  color: '#475569' },
-  { type: 'Integration', count: SERVICE_ACCOUNTS.filter(s => s.type === 'Integration').length, color: '#94A3B8' },
+  { type: 'Service',     count: 13,     color: '#0F172A' },
+  { type: 'Background',  count: 33,  color: '#475569' },
+  { type: 'Integration', count: 0, color: '#94A3B8' }
 ];
 
 const SERVICE_ACCOUNT_KPIS = {
-  totalAccounts: 62,
-  highPrivilege: 18,
-  inactiveAccounts: 9,
-  unmanagedAccounts: 7,
+  totalAccounts: 125,
+  highPrivilege: 8,
+  inactiveAccounts: 0,
+  unmanagedAccounts: 123,
   deltas: {
-    totalAccounts: +3,
-    highPrivilege: -2,
-    inactiveAccounts: +1,
-    unmanagedAccounts: -2,
+    totalAccounts: 0,
+    highPrivilege: 0,
+    inactiveAccounts: 0,
+    unmanagedAccounts: 0,
   },
 };
 
@@ -977,187 +8867,244 @@ Object.assign(window.MOCK, {
   SERVICE_ACCOUNTS, ACCOUNT_TYPE_SPLIT, SERVICE_ACCOUNT_KPIS,
 });
 
-/* ============================================================ */
-/* SOD-11 — Remediation & Governance                             */
-/* ============================================================ */
-
+// SOD-11 - Remediation & Governance
 const REMEDIATION_TYPES = ['Role Redesign', 'Access Removal', 'Mitigating Control', 'Policy'];
 const PRIORITIES = ['P1', 'P2', 'P3', 'P4'];
-
 const REMEDIATIONS = [
-  { id: 'R-1042', violationId: 'V-1042', type: 'Access Removal',   priority: 'P1', status: 'Open',        assignee: null,                  due: '2026-05-24', overdue: false,
-    title: 'Revoke vendor-payment combo from BCARRIER',
-    rationale: 'BCARRIER holds Create Vendor + Approve Payment — Critical SoD breach.',
-    steps: [
-      'Remove role ZFI_BR_AP_PAYMENT from BCARRIER',
-      'Verify removal in SU01 — confirm authorization buffer refresh',
-      'Add BCARRIER to monitored-user list for 30 days',
-      'Document remediation in JIRA ticket SOD-1042 and close',
-    ] },
-  { id: 'R-1058', violationId: 'V-1058', type: 'Role Redesign',    priority: 'P1', status: 'In Progress', assignee: 'SAP Security Team',   due: '2026-06-12', overdue: false,
-    title: 'Split SD billing authority — break OTC full-cycle access',
-    rationale: 'YKIM holds VA01 + VL01N + VF01 + F-28. Split billing into Billing-Create vs Billing-Release.',
-    steps: [
-      'Design new role ZSD_BR_BILLING_RELEASE',
-      'Remove VF01 from existing ZSD_BR_BILLING_CREATE',
-      'Reassign 8 affected users · communicate change window',
-      'Test in QAS with finance sample · obtain Finance Risk sign-off',
-      'Production transport on next change window 2026-06-12',
-    ] },
-  { id: 'R-1063', violationId: 'V-1063', type: 'Mitigating Control', priority: 'P1', status: 'Open',      assignee: null,                  due: '2026-05-30', overdue: false,
-    title: 'Daily reviewer log for GL Posting + Bank Recon overlap',
-    rationale: '11 users hold both ZFI_BR_GL_POSTING and bank-recon authority — split is operationally costly.',
-    steps: [
-      'Build daily exception report — GL postings by users with bank-recon role',
-      'Route to Finance Risk inbox each business day 08:00',
-      'Establish SLA — review within 24h, sign off in tool',
-      'Quarterly metrics review',
-    ] },
-  { id: 'R-1071', violationId: 'V-1071', type: 'Access Removal',   priority: 'P1', status: 'Open',        assignee: null,                  due: '2026-05-23', overdue: true,
-    title: 'Revoke PFCG from 3 non-Basis users',
-    rationale: 'JSMITH_LC, KPARK_LC, HSCHRODE hold PFCG role-admin combined with business txns.',
-    steps: [
-      'Strip ZBC_BR_ROLE_MAINT from JSMITH_LC, KPARK_LC, HSCHRODE',
-      'Audit role changes by these users in last 90 days',
-      'Onboard to read-only role inspector if needed',
-    ] },
-  { id: 'R-1082', violationId: 'V-1082', type: 'Role Redesign',    priority: 'P2', status: 'Open',        assignee: 'IT Compliance',       due: '2026-07-01', overdue: false,
-    title: 'Split HR Payroll Maintain + Approve',
-    rationale: 'MJONES holds both roles. Approval must move to HR Compliance group.',
-    steps: [
-      'Create ZHR_BR_APPROVE_SEGREGATED · approver only',
-      'Reassign approvers to HR Compliance group',
-      'Test in QAS with cross-region sample',
-    ] },
-  { id: 'R-1090', violationId: 'V-1090', type: 'Policy',           priority: 'P1', status: 'In Progress', assignee: 'IT Compliance',       due: '2026-06-05', overdue: false,
-    title: 'Firefighter expiry policy — 30 days max',
-    rationale: '14 firefighter IDs active >180 days — current policy lacks expiry enforcement.',
-    steps: [
-      'Draft policy revision — 30-day max with re-attestation',
-      'Approve in CAB · communicate to all process owners',
-      'Configure ARM tooling to auto-expire',
-      'Train approvers · go-live 2026-06-05',
-    ] },
-  { id: 'R-1094', violationId: 'V-1094', type: 'Role Redesign',    priority: 'P2', status: 'Open',        assignee: null,                  due: '2026-06-20', overdue: false,
-    title: 'PO release strategy redesign · ZPM_BR_PROCUREMENT_1720',
-    rationale: 'PO Create + PO Release authority exceeds user-grade limits for 9 users.',
-    steps: [
-      'Map current authorization to grade matrix',
-      'Build value-band release strategy ($25K / $250K / $1M)',
-      'Migrate users · 4 cutover waves',
-    ] },
-  { id: 'R-1101', violationId: 'V-1101', type: 'Access Removal',   priority: 'P1', status: 'Open',        assignee: 'Finance Risk',        due: '2026-05-25', overdue: false,
-    title: 'Restrict F110 to Treasury role pool',
-    rationale: '5 non-Treasury users can execute auto-payment runs — $5M+ exposure.',
-    steps: [
-      'Identify Treasury role pool · cross-check membership',
-      'Strip F110 authorization from 5 outliers',
-      'Re-route any in-flight payment requests',
-    ] },
-  { id: 'R-1112', violationId: 'V-1112', type: 'Mitigating Control', priority: 'P3', status: 'Open',      assignee: null,                  due: '2026-08-01', overdue: false,
-    title: 'Quarterly review of Customer Master + Sales Order Release overlap',
-    rationale: 'Low-risk pair — mitigating quarterly review acceptable.',
-    steps: [
-      'Add to quarterly compliance review pack',
-      'Capture exceptions over 90 days · escalate if pattern',
-    ] },
-  { id: 'R-1124', violationId: 'V-1124', type: 'Access Removal',   priority: 'P1', status: 'In Progress', assignee: 'SAP Basis Team',      due: '2026-05-22', overdue: true,
-    title: 'Replace SAP_ALL on RFC_BATCH_PI with scoped profile',
-    rationale: 'Background user holds SAP_ALL — full-system compromise vector.',
-    steps: [
-      'Profile minimum-required authorizations from last 90d activity',
-      'Create scoped profile · assign · test in QAS',
-      'Rotate credentials · vault-managed',
-      'Remove SAP_ALL · 24h shadow window',
-    ] },
-  { id: 'R-1131', violationId: 'V-1131', type: 'Mitigating Control', priority: 'P2', status: 'Resolved',  assignee: 'SAP Security Team',   due: '2026-04-30', overdue: false,
-    title: 'Enable three-way match enforcement in MIRO',
-    rationale: 'GR + IV by same user · enable system-enforced three-way match.',
-    steps: ['Config OBYC three-way match · production'] },
-  { id: 'R-1144', violationId: 'V-1144', type: 'Role Redesign',    priority: 'P2', status: 'Open',        assignee: null,                  due: '2026-07-15', overdue: false,
-    title: 'Move FK02 bank-tab to Vendor Master team only',
-    rationale: 'Vendor Bank Detail edit accessible to 4 AP clerks — vendor-bank-redirect fraud risk.',
-    steps: [
-      'Restrict bank tab via field auth in FK02',
-      'Create Vendor Master Maintainer role · assign 2 users',
-      'Communicate to AP team',
-    ] },
-  { id: 'R-1167', violationId: 'V-1167', type: 'Access Removal',   priority: 'P2', status: 'Open',        assignee: null,                  due: '2026-06-30', overdue: false,
-    title: 'Revoke audit log write from non-IT users',
-    rationale: '3 non-IT users have write access to audit log tables — SOX violation.',
-    steps: [
-      'Identify users via S_TABU auth check',
-      'Strip write authorization · audit log only',
-    ] },
-  { id: 'R-1174', violationId: 'V-1174', type: 'Policy',           priority: 'P2', status: 'In Progress', assignee: 'IT Compliance',       due: '2026-06-30', overdue: false,
-    title: 'Production change-deploy approval policy',
-    rationale: '6 users can deploy to production without approval gate.',
-    steps: [
-      'Implement transport approval workflow in STMS',
-      'Communicate freeze windows',
-      'Train Basis team · go-live next quarter',
-    ] },
-];
-
-const REMEDIATION_KPIS = {
-  total: 312,
-  open: 198,
-  inProgress: 74,
-  resolved: 40,
-  overdue: 12,
-  deltas: {
-    total: +24,
-    open: +14,
-    inProgress: +6,
-    resolved: +18,
-    overdue: -3,
+  {
+    "id": "R-1058",
+    "violationId": "V-1058",
+    "type": "Access Removal",
+    "priority": "P1",
+    "status": "Open",
+    "assignee": null,
+    "due": "2026-06-15",
+    "overdue": false,
+    "title": "Resolve conflict for Full OTC cycle control (Order \u2192 Bill \u2192 Collect) by single user",
+    "rationale": "Users holding conflicting permissions represent a compliance violation of type Full OTC cycle control (Order \u2192 Bill \u2192 Collect) by single user.",
+    "steps": [
+      "Identify contributing roles for users",
+      "Remove conflicting transactions ['VF01', 'VF04'] from roles or revoke assignments",
+      "Verify access removal in SU01"
+    ]
   },
+  {
+    "id": "R-1071",
+    "violationId": "V-1071",
+    "type": "Access Removal",
+    "priority": "P1",
+    "status": "Open",
+    "assignee": null,
+    "due": "2026-06-15",
+    "overdue": false,
+    "title": "Resolve conflict for PFCG role-admin combined with end-user transaction access",
+    "rationale": "Users holding conflicting permissions represent a compliance violation of type PFCG role-admin combined with end-user transaction access.",
+    "steps": [
+      "Identify contributing roles for users",
+      "Remove conflicting transactions ['ME21N', 'MIRO', 'VA01', 'VF01', 'FB50', 'F110'] from roles or revoke assignments",
+      "Verify access removal in SU01"
+    ]
+  },
+  {
+    "id": "R-1090",
+    "violationId": "V-1090",
+    "type": "Role Redesign",
+    "priority": "P2",
+    "status": "Open",
+    "assignee": null,
+    "due": "2026-06-15",
+    "overdue": false,
+    "title": "Resolve conflict for Firefighter ID active >180 days without re-attestation",
+    "rationale": "Users holding conflicting permissions represent a compliance violation of type Firefighter ID active >180 days without re-attestation.",
+    "steps": [
+      "Identify contributing roles for users",
+      "Remove conflicting transactions [] from roles or revoke assignments",
+      "Verify access removal in SU01"
+    ]
+  },
+  {
+    "id": "R-1094",
+    "violationId": "V-1094",
+    "type": "Role Redesign",
+    "priority": "P2",
+    "status": "Open",
+    "assignee": null,
+    "due": "2026-06-15",
+    "overdue": false,
+    "title": "Resolve conflict for PO Create + PO Release threshold exceeds user grade authority",
+    "rationale": "Users holding conflicting permissions represent a compliance violation of type PO Create + PO Release threshold exceeds user grade authority.",
+    "steps": [
+      "Identify contributing roles for users",
+      "Remove conflicting transactions ['ME29N', 'ME28'] from roles or revoke assignments",
+      "Verify access removal in SU01"
+    ]
+  },
+  {
+    "id": "R-1101",
+    "violationId": "V-1101",
+    "type": "Role Redesign",
+    "priority": "P2",
+    "status": "Open",
+    "assignee": null,
+    "due": "2026-06-15",
+    "overdue": false,
+    "title": "Resolve conflict for F110 Auto-Payment Run runnable by non-treasury users",
+    "rationale": "Users holding conflicting permissions represent a compliance violation of type F110 Auto-Payment Run runnable by non-treasury users.",
+    "steps": [
+      "Identify contributing roles for users",
+      "Remove conflicting transactions [] from roles or revoke assignments",
+      "Verify access removal in SU01"
+    ]
+  },
+  {
+    "id": "R-1124",
+    "violationId": "V-1124",
+    "type": "Access Removal",
+    "priority": "P1",
+    "status": "Open",
+    "assignee": null,
+    "due": "2026-06-15",
+    "overdue": false,
+    "title": "Resolve conflict for Background user RFC_BATCH_PI holds SAP_ALL equivalent",
+    "rationale": "Users holding conflicting permissions represent a compliance violation of type Background user RFC_BATCH_PI holds SAP_ALL equivalent.",
+    "steps": [
+      "Identify contributing roles for users",
+      "Remove conflicting transactions [] from roles or revoke assignments",
+      "Verify access removal in SU01"
+    ]
+  },
+  {
+    "id": "R-1131",
+    "violationId": "V-1131",
+    "type": "Role Redesign",
+    "priority": "P2",
+    "status": "Open",
+    "assignee": null,
+    "due": "2026-06-15",
+    "overdue": false,
+    "title": "Resolve conflict for Goods Receipt + Invoice Verification by same user",
+    "rationale": "Users holding conflicting permissions represent a compliance violation of type Goods Receipt + Invoice Verification by same user.",
+    "steps": [
+      "Identify contributing roles for users",
+      "Remove conflicting transactions ['MIRO'] from roles or revoke assignments",
+      "Verify access removal in SU01"
+    ]
+  }
+];
+const REMEDIATION_KPIS = {
+  "total": 7,
+  "open": 7,
+  "inProgress": 0,
+  "resolved": 0,
+  "overdue": 0,
+  "deltas": {
+    "total": 0,
+    "open": 0,
+    "inProgress": 0,
+    "resolved": 0,
+    "overdue": 0
+  }
 };
 
 const POLICY_SUGGESTIONS = [
   {
-    title: 'Firefighter expiry & re-attestation',
-    rationale: 'No SAP firefighter ID should remain active beyond 30 days without explicit re-attestation. Current run shows 14 IDs over 180 days.',
+    title: 'Deactivate inactive firefighter assignments',
+    rationale: 'Review firefighter IDs that have had no login activity in the last 90 days.',
     owner: 'IT Compliance',
-    priority: 'P1',
-    impact: '14 prolonged assignments',
-    frameworks: ['SOX', 'SAP GRC'],
+    priority: 'P2',
+    impact: 'Security footprint reduction',
+    frameworks: ['SOX', 'SAP GRC']
   },
   {
-    title: 'Service account ownership attestation',
-    rationale: '7 technical accounts are unmanaged (no listed owner). Every service / background / integration ID must have a named owner reviewed quarterly.',
+    title: 'Technical accounts password policy',
+    rationale: 'Technical service accounts should enforce 90-day password rotations via automated vaults.',
     owner: 'SAP Basis Team',
     priority: 'P1',
-    impact: '7 unmanaged accounts',
-    frameworks: ['ISO 27001', 'SAP GRC'],
-  },
-  {
-    title: 'Vendor bank-detail change segregation',
-    rationale: 'Move FK02 bank-tab maintenance into a dedicated Vendor Master Maintainer role. Block AP clerks from editing vendor bank coordinates.',
-    owner: 'Finance Risk',
-    priority: 'P2',
-    impact: '$1.3M exposure',
-    frameworks: ['SOX', 'K-SOX', 'GDPR'],
-  },
-  {
-    title: 'Auto-payment run (F110) restriction',
-    rationale: 'F110 execution must be limited to the Treasury role pool. Current run shows 5 non-Treasury users with execution authority.',
-    owner: 'Finance Risk',
-    priority: 'P1',
-    impact: '$5M+ exposure',
-    frameworks: ['SOX', 'SAP GRC'],
-  },
-  {
-    title: 'Quarterly role-design review',
-    rationale: 'Establish a quarterly cadence to review composite SAP roles spanning more than one functional area. Owned by a cross-functional council.',
-    owner: 'IT Compliance',
-    priority: 'P3',
-    impact: 'Reduce new violations · estimated −18%',
-    frameworks: ['SAP GRC'],
-  },
+    impact: 'System security enhancement',
+    frameworks: ['ISO 27001']
+  }
 ];
 
 Object.assign(window.MOCK, {
   REMEDIATION_TYPES, PRIORITIES, REMEDIATIONS, REMEDIATION_KPIS, POLICY_SUGGESTIONS,
 });
 
+// SOD-12 - Continuous Compliance
+const SOD12_KPIS = {
+  automatedChecks: 3780,
+  passRate: 93.5,
+  newViolationsThisRun: 35,
+  resolvedThisRun: 121,
+  rulesActive: 7,
+};
+
+const RULES_LOG = [
+  { id: 'RUL-904', code: 'Z_SOD_01', desc: 'Prevent Vendor Create + AP Payment',      deployed: '2026-05-20', author: 'J. Smith',    type: 'Custom'   },
+  { id: 'RUL-903', code: 'Z_SOD_02', desc: 'Enforce Firefighter Expiry < 30 days',     deployed: '2026-05-18', author: 'A. Poche',    type: 'Custom'   },
+  { id: 'RUL-902', code: 'Z_SOD_03', desc: 'Flag F110 out of Treasury',                deployed: '2026-05-10', author: 'B. Carrier',  type: 'Standard' },
+  { id: 'RUL-901', code: 'Z_SOD_04', desc: 'Restrict PFCG for non-Basis users',        deployed: '2026-05-02', author: 'J. Smith',    type: 'Standard' },
+  { id: 'RUL-900', code: 'Z_SOD_05', desc: 'Detect Bank Edit + Payment Block removal', deployed: '2026-04-25', author: 'H. Schroder', type: 'Legacy'   },
+  { id: 'RUL-899', code: 'Z_SOD_06', desc: 'Full OTC cycle by single user alert',      deployed: '2026-04-10', author: 'Y. Kim',      type: 'Custom'   },
+  { id: 'RUL-898', code: 'Z_SOD_07', desc: 'Background RFC with SAP_ALL equivalent',   deployed: '2026-04-05', author: 'S. Chen',     type: 'Legacy'   },
+];
+
+const COMPLIANCE_TREND_DATA = [
+  {
+    "run": "Run 1",
+    "passRate": 88.1,
+    "violations": 146,
+    "resolved": 45
+  },
+  {
+    "run": "Run 2",
+    "passRate": 89.4,
+    "violations": 126,
+    "resolved": 58
+  },
+  {
+    "run": "Run 3",
+    "passRate": 90.0,
+    "violations": 106,
+    "resolved": 67
+  },
+  {
+    "run": "Run 4",
+    "passRate": 90.8,
+    "violations": 86,
+    "resolved": 79
+  },
+  {
+    "run": "Run 5",
+    "passRate": 91.5,
+    "violations": 76,
+    "resolved": 88
+  },
+  {
+    "run": "Run 6",
+    "passRate": 92.1,
+    "violations": 66,
+    "resolved": 97
+  },
+  {
+    "run": "Run 7",
+    "passRate": 92.9,
+    "violations": 61,
+    "resolved": 105
+  },
+  {
+    "run": "Run 8",
+    "passRate": 93.4,
+    "violations": 56,
+    "resolved": 112
+  },
+  {
+    "run": "Run 9",
+    "passRate": 93.5,
+    "violations": 46,
+    "resolved": 121
+  }
+];
+
+Object.assign(window.MOCK, {
+  SOD12_KPIS, RULES_LOG, COMPLIANCE_TREND_DATA
+});

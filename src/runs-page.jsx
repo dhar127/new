@@ -171,11 +171,11 @@ function RunCard({ run, onNavigate }) {
 
       {/* Header */}
       <div className="border-b border-ink-100 px-5 py-4">
-        <div className="flex items-start justify-between gap-2 mb-2">
-          <span className="inline-flex items-center justify-center h-6 w-6 rounded-md bg-red-100 text-red-700 text-[10px] font-bold">
+        <div className="flex items-center justify-between gap-2 mb-2">
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-red-100 text-red-700 text-[10px] font-bold font-mono whitespace-nowrap shrink-0 leading-tight">
             {run.id}
           </span>
-          <span className={`text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded-md ring-1 ring-inset ${
+          <span className={`text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded-md ring-1 ring-inset whitespace-nowrap shrink-0 ${
             run.status === 'Completed'   ? 'bg-emerald-50 text-emerald-700 ring-emerald-200' :
             run.status === 'In Progress' ? 'bg-amber-50 text-amber-700 ring-amber-200'       :
                                            'bg-rose-50 text-rose-700 ring-rose-200'
