@@ -8868,7 +8868,7 @@ Object.assign(window.MOCK, {
 });
 
 // SOD-11 - Remediation & Governance
-const REMEDIATION_TYPES = ['Role Redesign', 'Access Removal', 'Mitigating Control', 'Policy'];
+const REMEDIATION_TYPES = ['Role Redesign', 'Access Removal'];
 const PRIORITIES = ['P1', 'P2', 'P3', 'P4'];
 const REMEDIATIONS = [
   {

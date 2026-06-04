@@ -9,8 +9,6 @@ const { useState } = React;
 const TYPE_STYLE_11 = {
   'Role Redesign':       { color: '#334155', bg: 'bg-ink-50',   text: 'text-ink-800',  ring: 'ring-ink-200',   icon: 'wrench' },
   'Access Removal':      { color: '#EF4444', bg: 'bg-rose-50',  text: 'text-rose-700', ring: 'ring-rose-200',  icon: 'x' },
-  'Mitigating Control':  { color: '#64748B', bg: 'bg-ink-50',   text: 'text-ink-800',  ring: 'ring-ink-200',   icon: 'shield' },
-  'Policy':              { color: '#0F172A', bg: 'bg-ink-50',   text: 'text-ink-800',  ring: 'ring-ink-200',   icon: 'file' },
 };
 
 const PRIORITY_STYLE = {
@@ -140,7 +138,7 @@ const RemediationTable = () => {
   return (
     <Section title="Remediation Tracker" action={<ExportButton label="Export Master Plan" size="sm" />}>
       <FilterBar onClear={clear} hasFilters={!!(typeFilter || prioFilter || statusFilter || query)}>
-        <Select value={typeFilter} onChange={setTypeFilter} options={REMEDIATION_TYPES} placeholder="All Types" />
+        <Select value={typeFilter} onChange={setTypeFilter} options={Object.keys(TYPE_STYLE_11)} placeholder="All Types" />
         <Select value={prioFilter} onChange={setPrioFilter} options={PRIORITIES} placeholder="All Priorities" />
         <Select value={statusFilter} onChange={setStatusFilter} options={['Open','In Progress','Resolved']} placeholder="All Status" />
         <SearchInput value={query} onChange={setQuery} placeholder="Search by ID or title…" />
@@ -167,8 +165,6 @@ const RemediationTable = () => {
               const assignee = r.assignee || {
                 'Role Redesign':      'SAP Security Team',
                 'Access Removal':     'SAP Basis Team',
-                'Mitigating Control': 'Finance Risk',
-                'Policy':             'IT Compliance',
               }[r.type] || 'SAP Basis Team';
               const st = TEAM_STYLE[assignee] || { bg: 'bg-ink-50 text-ink-700 ring-ink-200', dot: 'bg-ink-400' };
               return (

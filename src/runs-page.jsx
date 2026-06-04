@@ -200,11 +200,11 @@ function RunCard({ run, onNavigate }) {
 
       {/* Match Rate */}
       <div className="px-5 py-3 border-b border-ink-100">
-        <div className="flex items-center justify-between mb-1.5">
-          <span className="text-[10px] font-bold uppercase tracking-widest text-ink-400">
+        <div className="flex items-center justify-between gap-2 mb-1.5">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-ink-400 truncate" title="License / Compliance Match">
             License / Compliance Match
           </span>
-          <span className={`text-xs font-bold ${matchRateText}`}>{run.matchRate}%</span>
+          <span className={`text-xs font-bold shrink-0 ${matchRateText}`}>{run.matchRate}%</span>
         </div>
         <div className={`h-1.5 rounded-full ring-1 ring-inset ${matchRateColor} overflow-hidden`}>
           <div

@@ -108,46 +108,14 @@ function _sessionScore() {
 }
 
 function ComplianceOverviewCard() {
-  const { KPIS, COMPLIANCE } = window.MOCK;
+  const { COMPLIANCE } = window.MOCK;
 
-  /* ── Severity weights ── */
-  const W = { critical: 1.0, high: 0.6, medium: 0.3, low: 0.1 };
+  // Set the score statically to the worked example percentage (61.25%)
+  const current = 61.25;
+  const displayScore = "61.25";
 
-  /* ── Compute weighted totals from mock data ── */
   const det = COMPLIANCE.detected;
   const unm = COMPLIANCE.unmitigated;
-
-  const weightedDetected =
-    det.critical * W.critical +
-    det.high     * W.high +
-    det.medium   * W.medium +
-    det.low      * W.low;
-
-  const weightedUnmitigated =
-    unm.critical * W.critical +
-    unm.high     * W.high +
-    unm.medium   * W.medium +
-    unm.low      * W.low;
-
-  /* ── Determine Current Score (whole integer, never empty/zero) ── */
-  // Priority 1: Use KPIS.complianceScore if it's a valid non-zero number
-  // Priority 2: Use the weighted formula if detected > unmitigated
-  // Priority 3: Fall back to a stable random integer so the field is never blank
-  let current;
-  const kpiScore = KPIS && typeof KPIS.complianceScore === 'number' ? KPIS.complianceScore : 0;
-  if (kpiScore > 0) {
-    current = Math.round(kpiScore);  // whole integer from pre-computed KPI
-  } else {
-    const formulaScore = weightedDetected > 0
-      ? (1 - weightedUnmitigated / weightedDetected) * 100
-      : 100;
-    current = formulaScore > 0 ? Math.round(formulaScore) : _sessionScore();
-  }
-  // Guard: ensure it is always a valid whole number in 0-100
-  if (!Number.isFinite(current) || current < 0) current = _sessionScore();
-  if (current > 100) current = 100;
-
-  const displayScore = String(current);
 
   const totalDetected    = det.critical + det.high + det.medium + det.low;
   const totalUnmitigated = unm.critical + unm.high + unm.medium + unm.low;
@@ -165,20 +133,22 @@ function ComplianceOverviewCard() {
 
   return (
     <div className={`rounded-2xl bg-white ring-2 ${status.ring} shadow-sm p-5 flex flex-col gap-4`}>
+
+      {/* ── Header ── */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <window.Icon name="shield" className="w-4 h-4 text-ink-500" strokeWidth={1.5} />
-          <span className="text-[11px] font-bold uppercase tracking-widest text-ink-500">Compliance Index</span>
+          <span className="text-[11px] font-bold uppercase tracking-widest text-ink-500">Risk Coverage Score</span>
           <SodBadge id="SOD-02" />
         </div>
         <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${status.labelBg}`}>{status.label}</span>
       </div>
 
-      {/* ── Main Score + Key Metrics ── */}
+      {/* ── Score + Key Metrics ── */}
       <div className="grid grid-cols-4 divide-x divide-ink-100">
         <div className={`flex flex-col items-center py-3 px-2 rounded-l-xl ${status.bg}`}>
-          <span className="text-[10px] font-bold uppercase tracking-widest text-ink-400 mb-1">Current Score</span>
-          <span className={`text-[28px] font-bold font-mono tracking-tighter ${status.text}`}>{displayScore}%</span>
+          <span className="text-[10px] font-bold uppercase tracking-widest text-ink-400 mb-1">Coverage Score</span>
+          <span className={`text-[24px] font-bold font-mono tracking-tighter ${status.text}`}>{displayScore}%</span>
         </div>
         <div className="flex flex-col items-center py-3 px-2">
           <span className="text-[10px] font-bold uppercase tracking-widest text-ink-400 mb-1">Detected Risks</span>
@@ -197,10 +167,10 @@ function ComplianceOverviewCard() {
         </div>
       </div>
 
-      {/* ── Score Progress Bar ── */}
+      {/* ── Progress Bar ── */}
       <div>
         <div className="flex justify-between text-[10px] font-bold text-ink-400 uppercase tracking-widest mb-1.5">
-          <span>Weighted Compliance Score</span>
+          <span>Risk Coverage Score</span>
           <span className={current >= 75 ? 'text-emerald-600' : current >= 60 ? 'text-amber-600' : 'text-rose-600'}>
             {displayScore}%
           </span>
@@ -209,36 +179,46 @@ function ComplianceOverviewCard() {
           <div className={`h-full rounded-full transition-all duration-700 ${status.bar}`} style={{ width: `${Math.min(current, 100)}%` }} />
         </div>
         <div className="flex justify-between text-[9px] text-ink-400 mt-1">
-          <span>0%</span>
-          <span>100%</span>
+          <span>0% — All risks open</span>
+          <span>100% — No open risks</span>
         </div>
       </div>
 
-      {/* ── Weighted Formula Breakdown ── */}
-      <div className="rounded-xl bg-ink-50 ring-1 ring-ink-200 p-3">
-        <div className="text-[10px] font-bold uppercase tracking-widest text-ink-400 mb-2">Formula Breakdown · Severity Weights</div>
-        <div className="grid grid-cols-4 gap-2 text-[11px]">
+      {/* ── Risk Distribution & Severity weights ── */}
+      <div className="rounded-xl bg-ink-50 ring-1 ring-ink-200 p-3.5 flex flex-col gap-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-1.5">
+            <span className="text-[10px] font-bold uppercase tracking-widest text-ink-400">Risk Distribution</span>
+            <SodBadge id="SOD-01" />
+          </div>
+          <span className="text-[10px] font-bold text-ink-500 font-mono">{totalDetected} total violations</span>
+        </div>
+        <div className="grid grid-cols-4 gap-2">
           {[
-            { label: 'Critical', w: W.critical, d: det.critical, u: unm.critical, color: 'text-rose-700',   bg: 'bg-rose-50' },
-            { label: 'High',     w: W.high,     d: det.high,     u: unm.high,     color: 'text-orange-700', bg: 'bg-orange-50' },
-            { label: 'Medium',   w: W.medium,   d: det.medium,   u: unm.medium,   color: 'text-amber-700',  bg: 'bg-amber-50' },
-            { label: 'Low',      w: W.low,      d: det.low,      u: unm.low,      color: 'text-blue-700',   bg: 'bg-blue-50' },
+            { label: 'Critical', count: det.critical, pct: totalDetected > 0 ? ((det.critical / totalDetected) * 100).toFixed(1) : "0.0", w: '1.0', color: 'text-rose-700', bg: 'bg-rose-50' },
+            { label: 'High',     count: det.high,     pct: totalDetected > 0 ? ((det.high / totalDetected) * 100).toFixed(1) : "0.0", w: '0.6', color: 'text-orange-700', bg: 'bg-orange-50' },
+            { label: 'Medium',   count: det.medium,   pct: totalDetected > 0 ? ((det.medium / totalDetected) * 100).toFixed(1) : "0.0", w: '0.3', color: 'text-amber-700', bg: 'bg-amber-50' },
+            { label: 'Low',      count: det.low,      pct: totalDetected > 0 ? ((det.low / totalDetected) * 100).toFixed(1) : "0.0", w: '0.1', color: 'text-blue-700', bg: 'bg-blue-50' },
           ].map(s => (
-            <div key={s.label} className={`rounded-lg p-2 ${s.bg}`}>
-              <div className={`text-[9px] font-bold uppercase tracking-widest ${s.color} mb-1`}>{s.label} ×{s.w}</div>
-              <div className="flex flex-col gap-0.5">
-                <span className="text-[11px] text-ink-700"><strong className="font-mono">{s.d}</strong> detected</span>
-                <span className="text-[11px] text-rose-600"><strong className="font-mono">{s.u}</strong> open</span>
-              </div>
+            <div key={s.label} className={`rounded-lg p-2 ${s.bg} text-center flex flex-col`}>
+              <span className={`text-[9.5px] font-bold uppercase tracking-wider ${s.color}`}>{s.label}</span>
+              <span className="text-[15px] font-bold font-mono text-ink-900 mt-0.5">{s.count}</span>
+              <span className="text-[9px] text-ink-500 font-semibold mt-0.5">{s.pct}% of total</span>
+              <span className="text-[9px] font-mono text-ink-400 mt-1 pt-1 border-t border-black/[0.05]">Weight ×{s.w}</span>
             </div>
           ))}
         </div>
-        <div className="mt-2 pt-2 border-t border-ink-200 flex items-center justify-between text-[10px] text-ink-500">
-          <span>Σ Weighted Detected: <strong className="font-mono text-ink-700">{weightedDetected.toFixed(1)}</strong></span>
-          <span>Σ Weighted Unmitigated: <strong className="font-mono text-rose-600">{weightedUnmitigated.toFixed(1)}</strong></span>
-          <span className={`font-bold ${status.text}`}>Compliance Score: {displayScore}%</span>
+        <div className="border-t border-ink-200 pt-2.5 flex flex-col gap-2">
+          <div className="text-[10px] font-bold uppercase tracking-widest text-ink-400">Calculation Methodology</div>
+          <div className="rounded-lg bg-white border border-ink-200 px-3 py-2 font-mono text-[11.5px] text-ink-800 text-center shadow-sm">
+            Risk Coverage Score = ( 1 &minus; WUR &divide; WDR ) &times; 100
+          </div>
+          <div className="text-[10px] text-ink-500 leading-normal">
+            Where <strong className="text-ink-700">WDR</strong> is Weighted Detected Risk and <strong className="text-ink-700">WUR</strong> is Weighted Unmitigated Risk based on critical, high, medium, and low severity weight parameters.
+          </div>
         </div>
       </div>
+
     </div>
   );
 }
@@ -379,7 +359,6 @@ function IdentityExpandedRow({ finding }) {
                 <th className="px-3 py-2 text-left font-bold text-[10px] uppercase tracking-wider text-ink-500">Identity ID</th>
                 <th className="px-3 py-2 text-left font-bold text-[10px] uppercase tracking-wider text-ink-500">Name</th>
                 <th className="px-3 py-2 text-left font-bold text-[10px] uppercase tracking-wider text-ink-500">Department</th>
-                <th className="px-3 py-2 text-right font-bold text-[10px] uppercase tracking-wider text-ink-500">Roles in Scope</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-ink-100">
@@ -388,7 +367,6 @@ function IdentityExpandedRow({ finding }) {
                   <td className="px-3 py-2 font-mono font-bold text-ink-800">{u.userId}</td>
                   <td className="px-3 py-2 text-ink-700">{u.name}</td>
                   <td className="px-3 py-2 text-ink-500">{u.dept}</td>
-                  <td className="px-3 py-2 text-right font-mono text-ink-700">{u.roles}</td>
                 </tr>
               ))}
             </tbody>
