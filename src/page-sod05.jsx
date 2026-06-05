@@ -157,7 +157,6 @@ const ImpactMatrix = () => {
               <Th>Impact Description</Th>
               <Th>Impact Type</Th>
               <Th sortKey="exposure" sort={sort} onSort={k => setSort({ key: k, dir: sort.dir === 'asc' ? 'desc' : 'asc' })}>Severity</Th>
-              <Th>Regulatory Framework</Th>
             </tr>
           </thead>
           <tbody className="divide-y divide-ink-100">
@@ -178,9 +177,9 @@ const ImpactMatrix = () => {
                       <span className={`inline-flex px-1.5 py-0.5 rounded font-bold text-[10px] ring-1 ring-inset ${SEV_STYLE[r.exposure]}`}>{r.exposure}</span>
                     </td>
                     <td className="px-4 py-3.5">
-                      {(r.frameworks || []).includes('SAP GRC') && (
+                      {(r.frameworks || []).includes('') && (
                         <span className="text-[10px] font-bold font-mono px-1.5 py-0.5 rounded bg-brand-50 text-brand-700 ring-1 ring-brand-200">
-                          SAP GRC
+                          
                         </span>
                       )}
                     </td>
