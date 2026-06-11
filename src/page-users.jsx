@@ -399,17 +399,9 @@ function UserExpansionPanel({ user, onNavigate }) {
         <div className="pt-2.5 border-t border-ink-100 flex justify-between gap-2">
           <button
             onClick={() => onNavigate('user-profile', user.userId)}
-            className="flex-1 text-center py-1.5 rounded border border-ink-300 text-ink-700 hover:bg-ink-50 font-bold text-[11px] transition-colors"
+            className="w-full text-center py-1.5 rounded border border-ink-300 text-ink-700 hover:bg-ink-50 font-bold text-[11px] transition-colors"
           >
             View Profile
-          </button>
-          <button
-            onClick={() => {
-              alert(`Exporting audit log for user ${user.userId}...`);
-            }}
-            className="flex-1 text-center py-1.5 rounded bg-ink-900 text-white hover:bg-ink-800 font-bold text-[11px] transition-colors"
-          >
-            Export Log
           </button>
         </div>
       </div>

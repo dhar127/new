@@ -134,7 +134,6 @@ window.TopBar = function({ active, onNavigate, onToggleSidebar }) {
     'sod-09': 'OTC Violations',
     'sod-10': 'Service Accounts',
     'sod-11': 'Remediation Plan',
-    'sod-12': 'Continuous Compliance',
   };
 
   return (

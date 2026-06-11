@@ -12,7 +12,6 @@ const PAGE_TITLES = {
   'sod-09':           ['Order-to-Cash', 'OTC lifecycle control and ownership violations'],
   'sod-10':           ['Service Accounts', 'High-risk service account detection and governance'],
   'sod-11':           ['Remediation', 'Execution tracking and remediation governance'],
-  'sod-12':           ['Continuous Compliance', 'Periodic scan trends and rule deployment log'],
   'users':            ['User Inventory', 'SAP User Master Directory'],
   'risks':            ['Risk Catalog', 'Segregation of Duties Risk Directory'],
   'violation-detail': ['Violation Details', 'Forensic Audit Details for Conflict'],
@@ -32,7 +31,6 @@ const SOD_MODULES = [
   { id: 'sod-09',  code: 'SOD-09', name: 'OTC Control', desc: 'Flags users with end-to-end Order-to-Cash control, combining transactional authority and financial posting privileges across the OTC process cycle.' },
   { id: 'sod-10',  code: 'SOD-10', name: 'Service Accounts', desc: 'Identifies service and technical accounts with excessive or unmanaged privileges, including background job and integration users.' },
   { id: 'sod-11',  code: 'SOD-11', name: 'Remediation Governance', desc: 'Provides AI-backed remediation recommendations including role redesign, access removal, mitigating controls, and governance policy suggestions.' },
-  { id: 'sod-12',  code: 'SOD-12', name: 'Continuous Compliance', desc: 'Supports ongoing monitoring and re-assessment through periodic SoD scans and live dashboards, enabling continuous compliance monitoring.' },
 ];
 
 /* ── Dropdown Helper ────────────────────────────────────────── */
@@ -104,7 +102,7 @@ function ViolationStreamsDropdown({ active, onNavigate, disabled }) {
         <div className="absolute right-0 top-full mt-1.5 z-50 w-[350px] rounded-xl border border-ink-200 bg-white shadow-pop py-1.5 overflow-hidden pop-in">
           <div className="px-3.5 py-2 text-[10px] font-bold uppercase tracking-wider text-ink-400 border-b border-ink-100 bg-ink-50 flex items-center justify-between">
             <span>SoD Compliance Modules</span>
-            <span className="text-[9px] font-mono text-brand-600 bg-brand-50 px-1.5 py-0.5 rounded uppercase font-extrabold">SOD-04 — SOD-12</span>
+            <span className="text-[9px] font-mono text-brand-600 bg-brand-50 px-1.5 py-0.5 rounded uppercase font-extrabold">SOD-04 — SOD-11</span>
           </div>
           <div className="max-h-[380px] overflow-y-auto divide-y divide-ink-100">
             {SOD_MODULES.map(m => {
@@ -414,7 +412,6 @@ const App = () => {
     if (active === 'sod-09')  return <window.Sod09Page onNavigate={handleNavigate} selectedRun={selectedRun} />;
     if (active === 'sod-10')  return <window.Sod10Page onNavigate={handleNavigate} selectedRun={selectedRun} />;
     if (active === 'sod-11')  return <window.Sod11Page onNavigate={handleNavigate} selectedRun={selectedRun} />;
-    if (active === 'sod-12')  return <window.Sod12Page onNavigate={handleNavigate} selectedRun={selectedRun} />;
 
     return (
       <div className="px-4 py-10 text-center">

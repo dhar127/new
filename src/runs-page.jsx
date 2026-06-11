@@ -2,16 +2,95 @@ const { useState, useMemo, useEffect } = React;
 
 /* ─── Runs Page Component ─────────────────────────────────────── */
 window.RunsPage = function ({ onSelectRun, selectedRun }) {
-  const { ANALYSIS_RUNS } = window.MOCK;
+  // Local state initialized with window.MOCK.ANALYSIS_RUNS
+  const [runsList, setRunsList] = useState(() => window.MOCK.ANALYSIS_RUNS);
+
+  // Modals Visibility
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isConnectModalOpen, setIsConnectModalOpen] = useState(false);
+
+  // Create Run Modal States
+  const [runName, setRunName] = useState('LCSOD-2026-Q2-007');
+  const [customRulesFile, setCustomRulesFile] = useState(null);
+
+  // Connected SAP Connection
+  const [sapConnection, setSapConnection] = useState(null);
+
+  // Connect SAP System Form States
+  const [sapName, setSapName] = useState('');
+  const [appServer, setAppServer] = useState('');
+  const [client, setClient] = useState('');
+  const [instanceNumber, setInstanceNumber] = useState('');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [connectionStatus, setConnectionStatus] = useState('idle'); // 'idle' | 'checking' | 'success'
+
+  // Connection handlers
+  const handleCheckConnection = () => {
+    setConnectionStatus('checking');
+    setTimeout(() => {
+      setConnectionStatus('success');
+    }, 1000);
+  };
+
+  const handleConfirmConnection = () => {
+    if (!sapName.trim() || !client.trim()) return;
+    setSapConnection({
+      name: `${sapName.toUpperCase()} (Client ${client})`,
+      client: client,
+    });
+    setConnectionStatus('idle');
+    setIsConnectModalOpen(false);
+    setIsCreateModalOpen(true);
+  };
+
+  const handleCreateRun = () => {
+    const newRunId = runName.trim() || `LCSOD-2026-Q2-${String(window.MOCK.ANALYSIS_RUNS.length + 1).padStart(3, '0')}`;
+    const newRunObj = {
+      id: newRunId,
+      name: `${newRunId.split('-')[1] || 'Q2'} 2026 — Enterprise SoD Assessment`,
+      date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) + ' · ' + new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' }) + ' GMT+9',
+      createdBy: 'Seo-yeon Kim (Lead Audit)',
+      status: 'In Progress',
+      users: '540',
+      roles: '1620',
+      violations: '46',
+      matchRate: 93.5,
+      scopes: ['P2P', 'O2C', 'FI', 'HR', 'Basis'],
+      sapSystem: sapConnection ? sapConnection.name : 'PRD (Client 100)'
+    };
+    
+    // Add to global mock data
+    window.MOCK.ANALYSIS_RUNS = [newRunObj, ...window.MOCK.ANALYSIS_RUNS];
+    setRunsList(window.MOCK.ANALYSIS_RUNS);
+    setIsCreateModalOpen(false);
+
+    // Reset form states
+    setRunName('LCSOD-2026-Q2-007');
+    setSapConnection(null);
+    setSapName('');
+    setAppServer('');
+    setClient('');
+    setInstanceNumber('');
+    setUsername('');
+    setPassword('');
+    setCustomRulesFile(null);
+
+    // Simulate analysis run completion after 5 seconds
+    setTimeout(() => {
+      newRunObj.status = 'Completed';
+      setRunsList([...window.MOCK.ANALYSIS_RUNS]);
+    }, 5000);
+  };
 
   // Process runs to map compliance scores and critical counts
   const processedRuns = useMemo(() => {
-    return ANALYSIS_RUNS.map(run => {
+    return runsList.map(run => {
       const criticalCount = run.id === 'LCSOD-2026-Q2-007' ? 18 : run.id === 'LCSOD-2026-Q1-006' ? 15 : 22;
       return {
         id: run.id,
         name: run.name,
-        sapSystem: 'PRD (Client 100)',
+        sapSystem: run.sapSystem || 'PRD (Client 100)',
         date: run.date,
         status: run.status,
         usersAnalyzed: run.users,
@@ -22,7 +101,7 @@ window.RunsPage = function ({ onSelectRun, selectedRun }) {
         rolesAnalyzed: run.roles
       };
     });
-  }, [ANALYSIS_RUNS]);
+  }, [runsList]);
 
   // States
   const [searchTerm, setSearchTerm] = useState('');
@@ -85,7 +164,7 @@ window.RunsPage = function ({ onSelectRun, selectedRun }) {
           )}
           
           <button
-            onClick={() => alert("Initializing new analysis run scheduler...")}
+            onClick={() => setIsCreateModalOpen(true)}
             className="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white font-bold text-xs transition-colors flex items-center gap-2 shadow-sm"
           >
             <window.Icon name="plus" className="w-3.5 h-3.5 text-white" />
@@ -355,6 +434,415 @@ window.RunsPage = function ({ onSelectRun, selectedRun }) {
 
           </div>
         </div>
+      )}
+
+      {/* ── Create New Run Modal ── */}
+      {isCreateModalOpen && ReactDOM.createPortal(
+        <div className="fixed inset-0 z-50 bg-ink-950/45 backdrop-blur-[2px] flex items-center justify-center p-4 animate-fade-in">
+          {/* Backdrop Click */}
+          <div className="absolute inset-0" onClick={() => setIsCreateModalOpen(false)} />
+          
+          {/* Modal Content */}
+          <div className="bg-white rounded-[20px] w-full max-w-[460px] shadow-pop border border-ink-250 relative z-10 overflow-hidden flex flex-col pop-in text-left">
+            
+            {/* Header */}
+            <div className="px-6 py-5 flex items-start justify-between border-b border-ink-100">
+              <div className="flex items-center gap-3.5">
+                {/* Red play container */}
+                <div className="h-11 w-11 rounded-xl bg-red-50 text-red-650 flex items-center justify-center shrink-0">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-5 h-5 text-red-600 shrink-0">
+                    <polygon points="6,4 20,12 6,20" />
+                  </svg>
+                </div>
+                <div>
+                  <h3 className="text-sm font-black text-ink-900 leading-tight">Create New Run</h3>
+                  <p className="text-[11px] text-ink-450 mt-1">Set up a new license optimization analysis run</p>
+                </div>
+              </div>
+              
+              <button
+                onClick={() => setIsCreateModalOpen(false)}
+                className="p-1 rounded-lg text-ink-400 hover:text-ink-600 hover:bg-ink-50 transition-colors"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-4 h-4 shrink-0">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </button>
+            </div>
+
+            {/* Body */}
+            <div className="px-6 py-5 space-y-4">
+              
+              {/* Run Name */}
+              <div>
+                <label className="block text-[11px] font-bold text-ink-650 uppercase tracking-wider mb-1.5">
+                  Run Name <span className="text-red-500 font-bold">*</span>
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. LCSOD-2026-Q2-007"
+                  value={runName}
+                  onChange={e => setRunName(e.target.value)}
+                  className="w-full px-3.5 py-2.5 bg-white border border-ink-200 rounded-xl text-xs placeholder-ink-400 focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500 transition-all text-ink-900 font-medium shadow-sm"
+                />
+              </div>
+
+              {/* SAP System */}
+              <div>
+                <label className="block text-[11px] font-bold text-ink-650 uppercase tracking-wider mb-1.5">
+                  SAP System <span className="text-red-500 font-bold">*</span>
+                </label>
+                {sapConnection ? (
+                  <div 
+                    onClick={() => {
+                      setIsCreateModalOpen(false);
+                      setIsConnectModalOpen(true);
+                    }}
+                    className="w-full flex items-center justify-between px-4 py-3 bg-emerald-50/20 border border-emerald-300 rounded-xl hover:bg-emerald-50/40 transition-all cursor-pointer group"
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <div className="h-6 w-6 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-4 h-4 text-emerald-600 shrink-0">
+                          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                          <path d="M9 11l2 2 4-4" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                      </div>
+                      <div>
+                        <span className="text-xs font-bold text-emerald-800">{sapConnection.name}</span>
+                        <span className="text-[10px] text-emerald-600 font-bold ml-2 uppercase bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-150">Connected</span>
+                      </div>
+                    </div>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-4 h-4 text-emerald-500 group-hover:translate-x-0.5 transition-transform shrink-0">
+                      <polyline points="9 18 15 12 9 6"></polyline>
+                    </svg>
+                  </div>
+                ) : (
+                  <div 
+                    onClick={() => {
+                      setIsCreateModalOpen(false);
+                      setIsConnectModalOpen(true);
+                    }}
+                    className="w-full flex items-center justify-between px-4 py-3 bg-white border border-dashed border-ink-300 rounded-xl hover:bg-ink-50/50 hover:border-red-400 transition-all cursor-pointer group"
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" className="w-5 h-5 text-ink-450 shrink-0">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                        <path d="M9 11l2 2 4-4" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                      <span className="text-xs font-semibold text-ink-550">Connect SAP System...</span>
+                    </div>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-4 h-4 text-ink-400 group-hover:translate-x-0.5 transition-transform shrink-0">
+                      <polyline points="9 18 15 12 9 6"></polyline>
+                    </svg>
+                  </div>
+                )}
+              </div>
+
+              {/* Custom Rules */}
+              <div className="space-y-2">
+                <label className="block text-[11px] font-bold text-ink-650 uppercase tracking-wider">
+                  Custom Rules
+                </label>
+                
+                {/* Sample xlsx template row */}
+                <div className="flex items-center justify-between p-3 bg-ink-50/50 border border-ink-200 rounded-xl">
+                  <div className="flex items-center gap-2.5">
+                    <div className="p-2 bg-rose-50 text-rose-600 rounded-lg shrink-0">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5 text-red-500 shrink-0">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                        <polyline points="14 2 14 8 20 8" />
+                      </svg>
+                    </div>
+                    <div>
+                      <div className="text-[11.5px] font-bold text-ink-900">rules_sample.xlsx</div>
+                      <div className="text-[10px] text-ink-450">Template · 3 sheets · SoD rule format</div>
+                    </div>
+                  </div>
+                  
+                  <a
+                    href="rules_sample.xlsx"
+                    download
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-ink-200 hover:bg-ink-50 text-ink-700 font-bold text-[11px] rounded-lg transition-all shadow-sm"
+                  >
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-3.5 h-3.5 shrink-0 text-ink-600">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                      <polyline points="7 10 12 15 17 10"></polyline>
+                      <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    <span>Download</span>
+                  </a>
+                </div>
+
+                {/* Upload drag/drop zone */}
+                {customRulesFile ? (
+                  <div className="flex items-center justify-between p-3 bg-emerald-50/10 border border-dashed border-emerald-300 rounded-xl">
+                    <div className="flex items-center gap-2.5">
+                      <div className="p-2 bg-emerald-50 text-emerald-600 rounded-lg shrink-0">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5 text-emerald-600 shrink-0">
+                          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                          <polyline points="14 2 14 8 20 8" />
+                        </svg>
+                      </div>
+                      <div>
+                        <div className="text-[11.5px] font-bold text-emerald-800">{customRulesFile.name}</div>
+                        <div className="text-[10px] text-emerald-650">{customRulesFile.size} · Custom rules ready</div>
+                      </div>
+                    </div>
+                    
+                    <button
+                      onClick={() => setCustomRulesFile(null)}
+                      className="p-1 rounded-lg text-emerald-600 hover:text-rose-600 hover:bg-rose-50 transition-colors"
+                      title="Remove file"
+                    >
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-3.5 h-3.5 shrink-0">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                      </svg>
+                    </button>
+                  </div>
+                ) : (
+                  <div 
+                    onClick={() => {
+                      setCustomRulesFile({ name: 'rules_custom.xlsx', size: '15.8 KB' });
+                    }}
+                    className="w-full border border-dashed border-ink-300 hover:border-red-400 rounded-xl py-6 flex flex-col items-center justify-center bg-white hover:bg-ink-50/30 transition-all cursor-pointer text-center"
+                  >
+                    <span className="text-[11.5px] font-bold text-ink-800">Upload custom rules file</span>
+                    <span className="text-[10px] text-ink-450 mt-1">
+                      or <span className="text-red-600 hover:underline font-semibold">browse files</span> · .xlsx, .csv, .json
+                    </span>
+                  </div>
+                )}
+              </div>
+
+            </div>
+
+            {/* Footer */}
+            <div className="px-6 py-4 bg-ink-50/30 border-t border-ink-100 flex items-center justify-end gap-3">
+              <button
+                onClick={() => setIsCreateModalOpen(false)}
+                className="px-4 py-2 bg-white border border-ink-200 hover:bg-ink-50 text-xs font-bold text-ink-700 rounded-xl transition-all shadow-sm"
+              >
+                Cancel
+              </button>
+              
+              <button
+                onClick={handleCreateRun}
+                disabled={!runName.trim() || !sapConnection}
+                className="px-4 py-2 bg-red-600 hover:bg-red-750 disabled:bg-[#E0E0E0] disabled:text-[#9E9E9E] disabled:cursor-not-allowed text-white text-xs font-bold rounded-xl transition-all shadow-sm flex items-center gap-1.5"
+              >
+                <span>Create Run</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-3.5 h-3.5 shrink-0">
+                  <path d="M5 12H19" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M12 5L19 12L12 19" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </button>
+            </div>
+
+          </div>
+        </div>,
+        document.body
+      )}
+
+      {/* ── Connect SAP System Modal ── */}
+      {isConnectModalOpen && ReactDOM.createPortal(
+        <div className="fixed inset-0 z-50 bg-ink-950/45 backdrop-blur-[2px] flex items-center justify-center p-4 animate-fade-in">
+          {/* Backdrop Click */}
+          <div className="absolute inset-0" onClick={() => setIsConnectModalOpen(false)} />
+          
+          {/* Modal Content */}
+          <div className="bg-white rounded-[20px] w-full max-w-[460px] shadow-pop border border-ink-250 relative z-10 overflow-hidden flex flex-col pop-in text-left">
+            
+            {/* Header */}
+            <div className="px-6 py-5 flex items-start justify-between border-b border-ink-100">
+              <div className="flex items-center gap-3.5">
+                {/* Red shield container */}
+                <div className="h-11 w-11 rounded-xl bg-red-50 text-red-650 flex items-center justify-center shrink-0">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-5 h-5 text-red-600 shrink-0">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                    <path d="M9 11l2 2 4-4" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </div>
+                <div>
+                  <h3 className="text-sm font-black text-ink-900 leading-tight">Connect SAP System</h3>
+                  <p className="text-[11px] text-ink-450 mt-1">Enter credentials and verify the connection</p>
+                </div>
+              </div>
+              
+              <button
+                onClick={() => setIsConnectModalOpen(false)}
+                className="p-1 rounded-lg text-ink-400 hover:text-ink-600 hover:bg-ink-50 transition-colors"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-4 h-4 shrink-0">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </button>
+            </div>
+
+            {/* Body */}
+            <div className="px-6 py-5 space-y-4">
+              
+              {/* SAP Name */}
+              <div>
+                <label className="block text-[11px] font-bold text-ink-650 uppercase tracking-wider mb-1.5">
+                  SAP Name <span className="text-red-500 font-bold">*</span>
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. PRD, Production ERP"
+                  value={sapName}
+                  onChange={e => setSapName(e.target.value)}
+                  className="w-full px-3.5 py-2.5 bg-white border border-ink-200 rounded-xl text-xs placeholder-ink-400 focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500 transition-all text-ink-900 font-medium shadow-sm"
+                />
+              </div>
+
+              {/* Application Server & Client */}
+              <div className="grid grid-cols-3 gap-3">
+                <div className="col-span-2">
+                  <label className="block text-[11px] font-bold text-ink-650 uppercase tracking-wider mb-1.5">
+                    Application Server <span className="text-red-500 font-bold">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="sap-prd.company.com"
+                    value={appServer}
+                    onChange={e => setAppServer(e.target.value)}
+                    className="w-full px-3.5 py-2.5 bg-white border border-ink-200 rounded-xl text-xs placeholder-ink-400 focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500 transition-all text-ink-900 font-medium shadow-sm"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[11px] font-bold text-ink-650 uppercase tracking-wider mb-1.5">
+                    Client <span className="text-red-500 font-bold">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="100"
+                    value={client}
+                    onChange={e => setClient(e.target.value)}
+                    className="w-full px-3.5 py-2.5 bg-white border border-ink-200 rounded-xl text-xs placeholder-ink-400 focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500 transition-all text-ink-900 font-medium shadow-sm"
+                  />
+                </div>
+              </div>
+
+              {/* Instance Number */}
+              <div>
+                <label className="block text-[11px] font-bold text-ink-650 uppercase tracking-wider mb-1.5">
+                  Instance Number <span className="text-red-500 font-bold">*</span>
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. 00"
+                  value={instanceNumber}
+                  onChange={e => setInstanceNumber(e.target.value)}
+                  className="w-full px-3.5 py-2.5 bg-white border border-ink-200 rounded-xl text-xs placeholder-ink-400 focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500 transition-all text-ink-900 font-medium shadow-sm"
+                />
+              </div>
+
+              {/* Username & Password */}
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-[11px] font-bold text-ink-650 uppercase tracking-wider mb-1.5">
+                    Username <span className="text-red-500 font-bold">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="SAP username"
+                    value={username}
+                    onChange={e => setUsername(e.target.value)}
+                    className="w-full px-3.5 py-2.5 bg-white border border-ink-200 rounded-xl text-xs placeholder-ink-400 focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500 transition-all text-ink-900 font-medium shadow-sm"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[11px] font-bold text-ink-650 uppercase tracking-wider mb-1.5">
+                    Password <span className="text-red-500 font-bold">*</span>
+                  </label>
+                  <div className="relative flex items-center">
+                    <input
+                      type="password"
+                      placeholder="SAP password"
+                      value={password}
+                      onChange={e => setPassword(e.target.value)}
+                      className="w-full px-3.5 py-2.5 bg-white border border-ink-200 rounded-xl text-xs placeholder-ink-400 focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500 transition-all text-ink-900 font-medium pr-10 shadow-sm"
+                    />
+                    <div className="absolute right-3 text-ink-400 flex items-center justify-center">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-3.5 h-3.5 shrink-0 cursor-help">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="16" x2="12" y2="12"></line>
+                        <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Connection Status Feedback Banner */}
+              {connectionStatus === 'checking' && (
+                <div className="bg-blue-50 border border-blue-100 text-blue-800 rounded-xl px-4 py-2.5 text-xs flex items-center gap-2.5 animate-pulse">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="w-4 h-4 animate-spin text-blue-600 shrink-0">
+                    <circle cx="12" cy="12" r="9" strokeOpacity="0.2" />
+                    <path d="M21 12a9 9 0 0 0-9-9" />
+                  </svg>
+                  <span>Verifying RFC connection to SAP system...</span>
+                </div>
+              )}
+              {connectionStatus === 'success' && (
+                <div className="bg-emerald-50 border border-emerald-150 text-emerald-850 rounded-xl px-4 py-2.5 text-xs flex items-center gap-2">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-4 h-4 text-emerald-600 shrink-0">
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                  <span className="font-semibold">RFC Connection verified successfully! Latency: 38ms.</span>
+                </div>
+              )}
+
+            </div>
+
+            {/* Footer */}
+            <div className="px-6 py-4 bg-ink-50/30 border-t border-ink-100 flex items-center justify-between gap-2">
+              <button
+                onClick={() => {
+                  setIsConnectModalOpen(false);
+                  setIsCreateModalOpen(true);
+                }}
+                className="px-4 py-2 bg-white border border-ink-200 hover:bg-ink-50 text-xs font-bold text-ink-700 rounded-xl transition-all shadow-sm flex items-center gap-1.5"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-3.5 h-3.5 text-ink-700 shrink-0">
+                  <polyline points="18 15 12 9 6 15" />
+                </svg>
+                <span>Back</span>
+              </button>
+
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={handleCheckConnection}
+                  disabled={connectionStatus === 'checking'}
+                  className="px-4 py-2 bg-white border border-red-200 hover:bg-red-50/20 text-red-650 text-xs font-bold rounded-xl transition-all shadow-sm flex items-center gap-1.5 disabled:opacity-50"
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-3.5 h-3.5 text-red-600 shrink-0">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                    <path d="M9 11l2 2 4-4" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                  <span>{connectionStatus === 'success' ? 'Verified' : 'Check Connection'}</span>
+                </button>
+
+                <button
+                  onClick={handleConfirmConnection}
+                  disabled={!sapName.trim() || !appServer.trim() || !client.trim() || !instanceNumber.trim() || !username.trim() || !password.trim()}
+                  className="px-4 py-2 bg-red-600 hover:bg-red-750 disabled:bg-[#E0E0E0] disabled:text-[#9E9E9E] disabled:cursor-not-allowed text-white text-xs font-bold rounded-xl transition-all shadow-sm flex items-center gap-1.5"
+                >
+                  <span>Confirm</span>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-3.5 h-3.5 shrink-0">
+                    <path d="M5 12H19" strokeLinecap="round" strokeLinejoin="round" />
+                    <path d="M12 5L19 12L12 19" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>,
+        document.body
       )}
 
     </div>

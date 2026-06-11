@@ -566,7 +566,6 @@ const CATEGORY_CARDS = [
   { key: 'sod-09', code: 'SOD-09', title: 'OTC Control Violations',   count: 13,  severity: 'Critical', blurb: 'Order-to-Cash process conflicts', icon: 'cycle' },
   { key: 'sod-10', code: 'SOD-10', title: 'High-Risk Service Accounts', count: 125, severity: 'High',   blurb: 'Service accounts with excessive privileges', icon: 'bot' },
   { key: 'sod-11', code: 'SOD-11', title: 'Remediation & Governance', count: 7, severity: 'Medium',   blurb: 'Open remediation recommendations', icon: 'wrench' },
-  { key: 'sod-12', code: 'SOD-12', title: 'Continuous Compliance',    count: 540, severity: 'Low',      blurb: 'Automated scans and rule execution metrics', icon: 'shield' },
 ];
 
 window.MOCK = {
@@ -9015,82 +9014,4 @@ Object.assign(window.MOCK, {
   REMEDIATION_TYPES, PRIORITIES, REMEDIATIONS, REMEDIATION_KPIS, POLICY_SUGGESTIONS,
 });
 
-// SOD-12 - Continuous Compliance
-const SOD12_KPIS = {
-  automatedChecks: 3780,
-  passRate: 93.5,
-  newViolationsThisRun: 35,
-  resolvedThisRun: 121,
-  rulesActive: 7,
-};
 
-const RULES_LOG = [
-  { id: 'RUL-904', code: 'Z_SOD_01', desc: 'Prevent Vendor Create + AP Payment',      deployed: '2026-05-20', author: 'J. Smith',    type: 'Custom'   },
-  { id: 'RUL-903', code: 'Z_SOD_02', desc: 'Enforce Firefighter Expiry < 30 days',     deployed: '2026-05-18', author: 'A. Poche',    type: 'Custom'   },
-  { id: 'RUL-902', code: 'Z_SOD_03', desc: 'Flag F110 out of Treasury',                deployed: '2026-05-10', author: 'B. Carrier',  type: 'Standard' },
-  { id: 'RUL-901', code: 'Z_SOD_04', desc: 'Restrict PFCG for non-Basis users',        deployed: '2026-05-02', author: 'J. Smith',    type: 'Standard' },
-  { id: 'RUL-900', code: 'Z_SOD_05', desc: 'Detect Bank Edit + Payment Block removal', deployed: '2026-04-25', author: 'H. Schroder', type: 'Legacy'   },
-  { id: 'RUL-899', code: 'Z_SOD_06', desc: 'Full OTC cycle by single user alert',      deployed: '2026-04-10', author: 'Y. Kim',      type: 'Custom'   },
-  { id: 'RUL-898', code: 'Z_SOD_07', desc: 'Background RFC with SAP_ALL equivalent',   deployed: '2026-04-05', author: 'S. Chen',     type: 'Legacy'   },
-];
-
-const COMPLIANCE_TREND_DATA = [
-  {
-    "run": "Run 1",
-    "passRate": 88.1,
-    "violations": 146,
-    "resolved": 45
-  },
-  {
-    "run": "Run 2",
-    "passRate": 89.4,
-    "violations": 126,
-    "resolved": 58
-  },
-  {
-    "run": "Run 3",
-    "passRate": 90.0,
-    "violations": 106,
-    "resolved": 67
-  },
-  {
-    "run": "Run 4",
-    "passRate": 90.8,
-    "violations": 86,
-    "resolved": 79
-  },
-  {
-    "run": "Run 5",
-    "passRate": 91.5,
-    "violations": 76,
-    "resolved": 88
-  },
-  {
-    "run": "Run 6",
-    "passRate": 92.1,
-    "violations": 66,
-    "resolved": 97
-  },
-  {
-    "run": "Run 7",
-    "passRate": 92.9,
-    "violations": 61,
-    "resolved": 105
-  },
-  {
-    "run": "Run 8",
-    "passRate": 93.4,
-    "violations": 56,
-    "resolved": 112
-  },
-  {
-    "run": "Run 9",
-    "passRate": 93.5,
-    "violations": 46,
-    "resolved": 121
-  }
-];
-
-Object.assign(window.MOCK, {
-  SOD12_KPIS, RULES_LOG, COMPLIANCE_TREND_DATA
-});

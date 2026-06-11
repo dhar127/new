@@ -119,9 +119,6 @@ const RemediationTable = () => {
     const next = new Set(s); next.has(id) ? next.delete(id) : next.add(id); return next;
   });
 
-  const updateStatus = (id, newStatus) =>
-    setRows(rs => rs.map(r => r.id === id ? { ...r, status: newStatus } : r));
-
   const filtered = rows
     .filter(r => !typeFilter || r.type === typeFilter)
     .filter(r => !prioFilter || r.priority === prioFilter)
@@ -191,20 +188,14 @@ const RemediationTable = () => {
                         {assignee}
                       </span>
                     </td>
-                    <td className="px-4 py-3.5" onClick={e => e.stopPropagation()}>
-                      <select
-                        value={r.status}
-                        onChange={e => updateStatus(r.id, e.target.value)}
-                        className={`text-[11px] font-bold uppercase tracking-widest p-1.5 rounded ring-1 ring-inset border-none outline-none focus:ring-2 cursor-pointer ${
-                          r.status === 'Resolved'    ? 'bg-emerald-50 text-emerald-700 ring-emerald-200' :
-                          r.status === 'In Progress' ? 'bg-blue-50 text-blue-700 ring-blue-200' :
-                                                       'bg-ink-50 text-ink-600 ring-ink-200'
-                        }`}
-                      >
-                        <option value="Open">Open</option>
-                        <option value="In Progress">In Progress</option>
-                        <option value="Resolved">Resolved</option>
-                      </select>
+                    <td className="px-4 py-3.5">
+                      <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider ring-1 ring-inset ${
+                        r.status === 'Resolved'    ? 'bg-emerald-50 text-emerald-700 ring-emerald-250' :
+                        r.status === 'In Progress' ? 'bg-blue-50 text-blue-750 ring-blue-200' :
+                                                     'bg-ink-50 text-ink-600 ring-ink-200'
+                      }`}>
+                        {r.status}
+                      </span>
                     </td>
                   </tr>
                   {isOpen && (

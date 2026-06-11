@@ -160,39 +160,11 @@ window.SeverityBadge = function({ value, size = 'sm' }) {
   );
 };
 
-window.StatusBadge = function({ value, onChange, className = '' }) {
-  const [open, setOpen] = React.useState(false);
-  const ref = React.useRef(null);
-  React.useEffect(() => {
-    const h = e => { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
-    document.addEventListener('mousedown', h); return () => document.removeEventListener('mousedown', h);
-  }, []);
-  if (!onChange) {
-    return <span className={`inline-flex items-center rounded-md px-2 py-1 text-[11px] font-bold uppercase tracking-wide ring-1 ring-inset ${window.STATUS_STYLE[value]} ${className}`}>{value}</span>;
-  }
+window.StatusBadge = function({ value, className = '' }) {
   return (
-    <div className="relative inline-block" ref={ref}>
-      <button
-        onClick={() => setOpen(o => !o)}
-        className={`inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-[11px] font-bold uppercase tracking-wide ring-1 ring-inset ${window.STATUS_STYLE[value]} hover:brightness-95 transition-all ${className}`}>
-        {value}<window.Icon name="chevronDown" className="w-3 h-3 opacity-60" />
-      </button>
-      {open && (
-        <div className="absolute left-0 z-30 mt-1 w-40 overflow-hidden rounded-xl border border-ink-200 bg-white shadow-pop">
-          {Object.keys(window.STATUS_STYLE).map(s => (
-            <button key={s}
-              onClick={() => { onChange(s); setOpen(false); }}
-              className="flex w-full items-center justify-between px-3.5 py-2.5 text-[11px] font-semibold hover:bg-ink-50 transition-colors">
-              <span className="flex items-center gap-2">
-                <span className={`h-1.5 w-1.5 rounded-full ${s === 'Resolved' ? 'bg-sev-good' : s === 'In Progress' ? 'bg-sev-low' : 'bg-ink-400'}`} />
-                {s}
-              </span>
-              {s === value && <window.Icon name="check" className="w-3.5 h-3.5 text-brand-600" />}
-            </button>
-          ))}
-        </div>
-      )}
-    </div>
+    <span className={`inline-flex items-center rounded-md px-2 py-1 text-[11px] font-bold uppercase tracking-wide ring-1 ring-inset ${window.STATUS_STYLE[value] || 'bg-ink-100 text-ink-700 ring-ink-200'} ${className}`}>
+      {value}
+    </span>
   );
 };
 
@@ -759,18 +731,6 @@ window.GRC_METRIC_METADATA = {
     run: 'LCSOD-2026-Q2-007',
     date: 'May 19, 2026',
     formula: 'Count(Remediation actions where Status != Resolved)'
-  },
-  'continuousCompliance': {
-    name: 'Continuous Compliance Check (SOD-12)',
-    means: 'Pass rate percentage of periodic automated compliance scans.',
-    calculated: 'Count of passing rules divided by total active audit checks.',
-    fields: 'KTern Rule Execution Engine Logs',
-    ruleset: 'Continuous Monitoring Rule set',
-    filters: 'None',
-    exclusions: 'None',
-    run: 'LCSOD-2026-Q2-007',
-    date: 'May 19, 2026',
-    formula: 'Pass Rate = (Passed Checks / Total Checks) * 100'
   }
 };
 

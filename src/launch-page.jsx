@@ -562,15 +562,15 @@ function RemediationTrackingGrid() {
                             </div>
                           </div>
 
-                          {/* Right: Compliance Benefit & Audit Impact */}
+                          {/* Right: Audit Benefit & Audit Impact */}
                           <div className="space-y-3 bg-white p-4 rounded-xl border border-ink-200 shadow-sm">
                             <div>
-                              <span className="text-[10px] font-bold uppercase tracking-wider text-ink-400 block mb-1">Compliance Benefit</span>
+                              <span className="text-[10px] font-bold uppercase tracking-wider text-ink-400 block mb-1">Audit Benefit</span>
                               <p className="text-xs text-ink-800 leading-relaxed font-medium">{t.expanded.benefit}</p>
                             </div>
                             <div className="pt-2.5 border-t border-ink-100">
                               <span className="text-[10.5px] font-bold uppercase tracking-wider text-ink-400 block mb-1">Audit Impact</span>
-                              <p className="text-xs font-bold text-brand-700 leading-relaxed">{t.expanded.benefit}</p>
+                              <p className="text-xs font-bold text-brand-700 leading-relaxed">{t.expanded.auditImpact}</p>
                             </div>
                           </div>
 
