@@ -16,8 +16,11 @@ const NAV = [
   { key: 'sod-p2p',    label: 'P2P Violations',        icon: 'package', badge: '89',   severity: 'Critical' },
   { key: 'sod-09',     label: 'O2C Violations',        icon: 'cycle',   badge: '47'   },
   { key: 'sod-10',     label: 'Service Accounts',      icon: 'bot',     badge: '62'   },
-  { key: 'sod-11',     label: 'Remediation',           icon: 'wrench',  badge: '312'  },
-  { key: 'sod-12',     label: 'Continuous Compliance', icon: 'shield',  badge: null   },
+  // Master Data & Catalog
+  { section: 'Catalog & Master Data', divider: true },
+  { key: 'violation-explorer', label: 'Violation Explorer', icon: 'database', badge: 'NEW' },
+  { key: 'risks',      label: 'SoD Risks Catalog',     icon: 'database', badge: null },
+  { key: 'users',      label: 'User Inventory',        icon: 'users',    badge: null },
 ];
 
 window.Sidebar = function({ active, onNavigate, isOpen, onClose }) {

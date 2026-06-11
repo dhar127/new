@@ -216,23 +216,7 @@ window.ViolationDetailPage = function({ violationId, onNavigate }) {
             </div>
           </window.Section>
 
-          <window.Section title="Audit & Investigation Log">
-            <div className="p-5 text-xs text-ink-700 space-y-3">
-              <p className="leading-relaxed bg-ink-50 rounded p-2.5 border border-ink-200">
-                {details.auditNotes}
-              </p>
-              <textarea 
-                placeholder="Enter audit comments or mitigating logs..." 
-                className="w-full p-2 border border-ink-200 rounded-lg placeholder-ink-400 text-xs focus:outline-none focus:ring-1 focus:ring-brand-500 focus:border-brand-500 h-20"
-              />
-              <button 
-                onClick={() => alert('Audit notes saved.')}
-                className="w-full py-1.5 text-center bg-white border border-ink-300 hover:bg-ink-50 text-ink-750 font-semibold rounded-lg transition-all"
-              >
-                Save Comment
-              </button>
-            </div>
-          </window.Section>
+
         </div>
       </div>
     </div>

@@ -23,6 +23,7 @@ const PAGE_TITLES = {
 
 // Selectable modules start from SOD-04 onwards, as SOD-01, SOD-02, and SOD-03 are displayed on the dashboard
 const SOD_MODULES = [
+  { id: 'violation-explorer', code: 'EXPLORER', name: 'Violation Explorer', desc: 'Interactive Master-Detail analysis of all SoD conflicts. Group by User or Risk to drill down into the forensic details of roles and T-Codes.' },
   { id: 'sod-04',  code: 'SOD-04', name: 'Immediate Actions', desc: 'KTern.AI identifies violations requiring urgent remediation and provides specific actionable steps such as access revocation, role redesign, or emergency access governance.' },
   { id: 'sod-05',  code: 'SOD-05', name: 'Compliance Impact', desc: 'Maps identified SoD violations to their potential operational and regulatory impact using rule-based and AI-assisted analysis.' },
   { id: 'sod-06',  code: 'SOD-06', name: 'Super Administrators', desc: 'Detects users with unrestricted or near-unrestricted access across SAP systems, highlighting concentration-of-power risks and non-compliant access patterns.' },
@@ -247,6 +248,17 @@ function GrcTopHeader({ active, onNavigate, selectedRun, onRunChange, hasSelecte
           />
 
           <button
+            onClick={() => onNavigate('violation-explorer')}
+            className={`hidden md:flex px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+              active === 'violation-explorer'
+                ? 'bg-ink-900 text-white shadow-sm'
+                : 'text-ink-600 hover:text-ink-900 hover:bg-ink-50'
+            }`}
+          >
+            Explorer
+          </button>
+
+          <button
             onClick={() => onNavigate('home')}
             className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
               active === 'home' || active.startsWith('sod-')
@@ -384,6 +396,7 @@ const App = () => {
 
     // 3. Render loaded pages
     if (active === 'home')             return <window.LaunchPage onNavigate={handleNavigate} onFilterApply={handleFilterApply} selectedRun={selectedRun} />;
+    if (active === 'violation-explorer') return <window.ViolationExplorerPage onNavigate={handleNavigate} globalFilters={globalFilters} selectedRun={selectedRun} />;
     if (active === 'users')            return <window.UsersPage onNavigate={handleNavigate} globalFilters={globalFilters} selectedRun={selectedRun} />;
     if (active === 'risks')            return <window.RisksPage onNavigate={handleNavigate} globalFilters={globalFilters} selectedRun={selectedRun} />;
     if (active === 'violation-detail') return <window.ViolationDetailPage violationId={detailId} onNavigate={handleNavigate} selectedRun={selectedRun} />;
