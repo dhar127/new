@@ -213,9 +213,9 @@ window.ViolationExplorerPage = function({ onNavigate, globalFilters }) {
             <p className="text-xs text-ink-500 font-medium mt-0.5">Interactive Master-Detail analysis of SoD conflicts.</p>
           </div>
           
-          <div className="flex items-center gap-4">
+          <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto justify-end">
               {/* Mode Toggle */}
-              <div className="flex bg-ink-100 rounded-lg p-1 border border-ink-200 shadow-inner">
+              <div className="flex bg-ink-100 rounded-lg p-1 border border-ink-200 shadow-inner shrink-0">
                   <button 
                     onClick={() => handleViewModeChange('user')}
                     className={`px-4 py-1.5 rounded-md text-xs font-bold transition-all ${viewMode === 'user' ? 'bg-white text-ink-900 shadow-sm ring-1 ring-ink-200' : 'text-ink-500 hover:text-ink-700'}`}
@@ -230,12 +230,23 @@ window.ViolationExplorerPage = function({ onNavigate, globalFilters }) {
                   </button>
               </div>
 
-              <div className="w-64">
-                <window.SearchInput
-                    value={searchTerm}
-                    onChange={val => { setSearchTerm(val); setPage(1); }}
-                    placeholder={`Search ${viewMode === 'user' ? 'users...' : 'risks...'}`}
-                />
+              {/* Search filter and Dashboard button row */}
+              <div className="flex items-center gap-2.5 w-full sm:w-auto">
+                <div className="flex-1 sm:flex-initial sm:w-64">
+                  <window.SearchInput
+                      value={searchTerm}
+                      onChange={val => { setSearchTerm(val); setPage(1); }}
+                      placeholder={`Search ${viewMode === 'user' ? 'users...' : 'risks...'}`}
+                  />
+                </div>
+                
+                <button
+                  onClick={() => onNavigate('home')}
+                  className="flex items-center gap-1.5 px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-bold text-xs rounded-lg transition-colors shadow-sm shrink-0 whitespace-nowrap"
+                >
+                  <window.Icon name="home" className="w-3.5 h-3.5" />
+                  <span>Dashboard</span>
+                </button>
               </div>
           </div>
       </div>

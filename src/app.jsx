@@ -179,11 +179,8 @@ function GrcTopHeader({ active, onNavigate, selectedRun, onRunChange, hasSelecte
             onClick={() => onNavigate('runs')}
             className="flex items-center gap-2 mr-3 hover:opacity-90 transition-all shrink-0"
           >
-            <div className="grid h-7 w-7 place-items-center rounded bg-red-600 text-white font-bold">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-4.5 h-4.5">
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                <path d="M9 11l2 2 4-4" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
+            <div className="h-7 w-7 rounded-lg overflow-hidden shrink-0 flex items-center justify-center bg-white shadow-sm border border-ink-150">
+              <img src="kternai.png" alt="KTern Logo" className="w-full h-full object-cover" />
             </div>
             <span className="text-sm font-black tracking-tight text-ink-900 font-sans">
               KTern SoD
@@ -256,16 +253,7 @@ function GrcTopHeader({ active, onNavigate, selectedRun, onRunChange, hasSelecte
             Explorer
           </button>
 
-          <button
-            onClick={() => onNavigate('home')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
-              active === 'home' || active.startsWith('sod-')
-                ? 'bg-ink-900 text-white shadow-sm'
-                : 'text-ink-600 hover:text-ink-900 hover:bg-ink-50'
-            }`}
-          >
-            Dashboard
-          </button>
+          {/* Dashboard tab button removed to enforce flow */}
           
           <button
             onClick={() => onNavigate('runs')}
@@ -370,8 +358,8 @@ const App = () => {
   const handleSelectRun = (run) => {
     setSelectedRun(run);
     setHasSelectedRun(true);
-    // Transition to dashboard upon selection
-    setActive('home');
+    // Transition to explorer upon selection
+    setActive('violation-explorer');
     window.scrollTo(0, 0);
   };
 
