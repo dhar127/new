@@ -606,6 +606,19 @@ window.LaunchPage = function({ onNavigate, selectedRun }) {
   return (
     <div data-screen-label="Dashboard Overview" className="space-y-6 px-4 md:px-7 py-6 text-left">
       
+      {/* Back to Explorer */}
+      <div className="flex justify-start">
+        <button
+          onClick={() => onNavigate('violation-explorer')}
+          className="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-ink-200 hover:bg-ink-50 text-ink-700 font-bold text-xs rounded-lg transition-colors shadow-sm"
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-3.5 h-3.5 text-ink-700 shrink-0">
+            <polyline points="15 18 9 12 15 6" />
+          </svg>
+          <span>Back to Explorer</span>
+        </button>
+      </div>
+      
       {/* Dashboard Top Banner */}
       <div className="bg-white rounded-xl p-5 border border-ink-200 shadow-sm flex flex-wrap items-center justify-between gap-4">
         <div>

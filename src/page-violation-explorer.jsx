@@ -208,9 +208,20 @@ window.ViolationExplorerPage = function({ onNavigate, globalFilters }) {
         
       {/* 1. TOP CONTROL BAR */}
       <div className="flex-none bg-white border-b border-ink-200 px-6 py-4 flex flex-col sm:flex-row gap-4 items-center justify-between z-10 shadow-sm">
-          <div>
-            <h1 className="text-lg font-extrabold text-ink-950 tracking-tight">Violation Explorer</h1>
-            <p className="text-xs text-ink-500 font-medium mt-0.5">Interactive Master-Detail analysis of SoD conflicts.</p>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => onNavigate('runs')}
+              className="p-1.5 rounded-lg border border-ink-200 bg-white hover:bg-ink-50 text-ink-500 hover:text-ink-700 transition-colors shadow-sm shrink-0 flex items-center justify-center"
+              title="Back to Analysis Runs"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-4 h-4">
+                <polyline points="15 18 9 12 15 6" />
+              </svg>
+            </button>
+            <div>
+              <h1 className="text-lg font-extrabold text-ink-955 tracking-tight">Violation Explorer</h1>
+              <p className="text-xs text-ink-500 font-medium mt-0.5">Interactive Master-Detail analysis of SoD conflicts.</p>
+            </div>
           </div>
           
           <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto justify-end">
