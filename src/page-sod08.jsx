@@ -74,10 +74,10 @@ const Sod08Kpis = () => {
   const k = window.MOCK.EMERGENCY_ACCESS_KPIS;
   return (
     <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-      <StatCard label="Active Firefighters" value={k.totalUsers} delta={k.deltas.totalUsers} deltaInvertGood />
-      <StatCard severity="Critical" label="Unapproved Access" value={k.unapprovedAccess} delta={k.deltas.unapprovedAccess} deltaInvertGood />
-      <StatCard severity="High" label="Over 30 Days" value={k.prolongedAssignments} delta={k.deltas.prolongedAssignments} deltaInvertGood />
-      <StatCard severity="Medium" label="AI Anomaly Flags" value={k.anomalyFlags} delta={k.deltas.anomalyFlags} deltaInvertGood />
+      <StatCard label="Active Firefighters" value={k.totalUsers} delta={k.deltas.totalUsers} deltaInvertGood metricKey="emergencyAccess" />
+      <StatCard severity="Critical" label="Unapproved Access" value={k.unapprovedAccess} delta={k.deltas.unapprovedAccess} deltaInvertGood metricKey="criticalViolations" />
+      <StatCard severity="High" label="Over 30 Days" value={k.prolongedAssignments} delta={k.deltas.prolongedAssignments} deltaInvertGood metricKey="highViolations" />
+      <StatCard severity="Medium" label="AI Anomaly Flags" value={k.anomalyFlags} delta={k.deltas.anomalyFlags} deltaInvertGood metricKey="mediumViolations" />
     </div>
   );
 };

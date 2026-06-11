@@ -19,11 +19,11 @@ const Sod07Kpis = () => {
   const k = window.MOCK.DUAL_PROCESS_KPIS;
   return (
     <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
-      <StatCard label="Cross-Process Sets" value={k.total} delta={k.deltas.total} deltaInvertGood />
-      <StatCard severity="Critical" label="Critical Pairings" value={k.critical} delta={k.deltas.critical} deltaInvertGood />
-      <StatCard severity="High" label="High Priority" value={k.high} delta={k.deltas.high} deltaInvertGood />
-      <StatCard label="Unique Users" value={k.uniqueUsers} delta={k.deltas.uniqueUsers} deltaInvertGood />
-      <StatCard label="Impacted Areas" value={k.processAreas} />
+      <StatCard label="Cross-Process Sets" value={k.total} delta={k.deltas.total} deltaInvertGood metricKey="dualControl" />
+      <StatCard severity="Critical" label="Critical Pairings" value={k.critical} delta={k.deltas.critical} deltaInvertGood metricKey="criticalViolations" />
+      <StatCard severity="High" label="High Priority" value={k.high} delta={k.deltas.high} deltaInvertGood metricKey="highViolations" />
+      <StatCard label="Unique Users" value={k.uniqueUsers} delta={k.deltas.uniqueUsers} deltaInvertGood metricKey="totalUsers" />
+      <StatCard label="Impacted Areas" value={k.processAreas} metricKey="totalViolations" />
     </div>
   );
 };

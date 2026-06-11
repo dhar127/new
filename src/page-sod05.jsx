@@ -11,10 +11,10 @@ const Sod05Kpis = () => {
   const k = window.MOCK.IMPACT_KPIS;
   return (
     <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-      <StatCard label="MAPPED VIOLATIONS" value={k.totalMapped.toLocaleString()} delta={k.deltas.totalMapped} deltaInvertGood />
-      <StatCard severity="Critical" label="CRITICAL" value="324" icon="alert" />
-      <StatCard severity="High" label="HIGH" value="567" icon="bell" />
-      <StatCard severity="Medium" label="MEDIUM" value="256" icon="exclamation" />
+      <StatCard label="MAPPED VIOLATIONS" value={k.totalMapped.toLocaleString()} delta={k.deltas.totalMapped} deltaInvertGood metricKey="totalViolations" />
+      <StatCard severity="Critical" label="CRITICAL" value="324" icon="alert" metricKey="criticalViolations" />
+      <StatCard severity="High" label="HIGH" value="567" icon="bell" metricKey="highViolations" />
+      <StatCard severity="Medium" label="MEDIUM" value="256" icon="exclamation" metricKey="mediumViolations" />
     </div>
   );
 };
@@ -45,7 +45,7 @@ const RiskQuantification = () => {
   return (
     <Section
       title="Quantitative Impact Analysis"
-      subtitle="Financial and operational risk distribution across the enterprise landscape."
+      subtitle="Operational and regulatory risk distribution across the enterprise landscape."
     >
       <div className="p-6">
         {/* Chart header */}
@@ -227,8 +227,8 @@ const Sod05Page = () => {
     <div data-screen-label="05 Compliance Impact" className="space-y-6 px-7 py-6">
       <DetailHeader
         code="SOD-05 · Impact Stream"
-        title="Business Exposure Analysis"
-        subtitle="Mapping identified SoD violations to quantifiable financial, operational, and regulatory risks."
+        title="Business Impact Analysis"
+        subtitle="Mapping identified SoD violations to operational and regulatory risks."
       />
       <Sod05Kpis />
       <RiskQuantification />

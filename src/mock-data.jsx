@@ -465,7 +465,7 @@ const IMMEDIATE_ACTIONS = [
     "urgency": "P1 \u00b7 24h",
     "user": "HOANG.NGUYEN",
     "action": "Split SD billing authority \u2014 redesign role ZSD_BR_BILLING_CREATE",
-    "risk": "Potential financial exposure of $1,800,000",
+    "risk": "Unmitigated dual custody violation across critical transactions",
     "status": "Open",
     "assignee": null
   },
@@ -475,7 +475,7 @@ const IMMEDIATE_ACTIONS = [
     "urgency": "P1 \u00b7 24h",
     "user": "JAE.KANG",
     "action": "Split SD billing authority \u2014 redesign role ZSD_BR_BILLING_CREATE",
-    "risk": "Potential financial exposure of $1,800,000",
+    "risk": "Unmitigated dual custody violation across critical transactions",
     "status": "Open",
     "assignee": null
   },
@@ -485,7 +485,7 @@ const IMMEDIATE_ACTIONS = [
     "urgency": "P1 \u00b7 24h",
     "user": "PVALENCIA",
     "action": "Split SD billing authority \u2014 redesign role ZSD_BR_BILLING_CREATE",
-    "risk": "Potential financial exposure of $1,800,000",
+    "risk": "Unmitigated dual custody violation across critical transactions",
     "status": "Open",
     "assignee": null
   },
@@ -559,7 +559,7 @@ const RUN_TREND = [
 
 const CATEGORY_CARDS = [
   { key: 'sod-04', code: 'SOD-04', title: 'Immediate Actions',        count: 9,   severity: 'Critical', blurb: 'P1 violations needing remediation within 24-48 hours', icon: 'flame' },
-  { key: 'sod-05', code: 'SOD-05', title: 'Risk Exposure & Impact',   count: 46,  severity: 'Critical', blurb: 'Financial & regulatory exposure assessment', icon: 'impact' },
+  { key: 'sod-05', code: 'SOD-05', title: 'Risk Severity & Impact',   count: 46,  severity: 'Critical', blurb: 'Operational & regulatory severity assessment', icon: 'impact' },
   { key: 'sod-06', code: 'SOD-06', title: 'Super Administrators',     count: 32,  severity: 'Critical', blurb: 'Concentration of administrative authority', icon: 'shield' },
   { key: 'sod-07', code: 'SOD-07', title: 'Dual Process Control',     count: 19, severity: 'Critical', blurb: 'Cross-process authorization overlaps', icon: 'split' },
   { key: 'sod-08', code: 'SOD-08', title: 'Emergency Access',         count: 13,  severity: 'High',     blurb: 'Firefighter usage and anomaly flags', icon: 'flame' },
@@ -585,19 +585,16 @@ const IMPACT_SPLIT = [
   {
     "category": "Financial",
     "count": 19,
-    "dollars": 41880000,
     "color": "#EF4444"
   },
   {
     "category": "Operational",
     "count": 14,
-    "dollars": 0,
     "color": "#475569"
   },
   {
     "category": "Regulatory",
     "count": 13,
-    "dollars": 0,
     "color": "#94A3B8"
   }
 ];
@@ -636,7 +633,6 @@ const IMPACT_ROWS = [
     "desc": "Full OTC cycle control (Order \u2192 Bill \u2192 Collect) by single user",
     "category": "Financial",
     "exposure": "High",
-    "dollars": 1800000,
     "areas": [
       "OTC"
     ],
@@ -652,7 +648,6 @@ const IMPACT_ROWS = [
     "desc": "PFCG role-admin combined with end-user transaction access",
     "category": "Operational",
     "exposure": "High",
-    "dollars": null,
     "areas": [
       "IT"
     ],
@@ -668,7 +663,6 @@ const IMPACT_ROWS = [
     "desc": "Firefighter ID active >180 days without re-attestation",
     "category": "Regulatory",
     "exposure": "High",
-    "dollars": null,
     "areas": [
       "IT"
     ],
@@ -684,7 +678,6 @@ const IMPACT_ROWS = [
     "desc": "PO Create + PO Release threshold exceeds user grade authority",
     "category": "Operational",
     "exposure": "Medium",
-    "dollars": 640000,
     "areas": [
       "Procurement"
     ],
@@ -699,7 +692,6 @@ const IMPACT_ROWS = [
     "desc": "F110 Auto-Payment Run runnable by non-treasury users",
     "category": "Financial",
     "exposure": "High",
-    "dollars": 5100000,
     "areas": [
       "Finance"
     ],
@@ -716,7 +708,6 @@ const IMPACT_ROWS = [
     "desc": "Background user RFC_BATCH_PI holds SAP_ALL equivalent",
     "category": "Operational",
     "exposure": "High",
-    "dollars": null,
     "areas": [
       "IT"
     ],
@@ -732,7 +723,6 @@ const IMPACT_ROWS = [
     "desc": "Goods Receipt + Invoice Verification by same user",
     "category": "Financial",
     "exposure": "Medium",
-    "dollars": 820000,
     "areas": [
       "Procurement"
     ],
@@ -750,12 +740,10 @@ const IMPACT_KPIS = {
   financialExposureHigh: 18,
   financialExposureMed: 19,
   financialExposureLow: 9,
-  totalDollarExposure: 42520000,
   frameworksAffected: 5,
   deltas: {
     totalMapped: 0,
     financialExposureHigh: 0,
-    totalDollarExposure: 0,
   },
 };
 
@@ -4644,12 +4632,10 @@ const OTC_KPIS = {
   "totalViolators": 13,
   "fullCycleControllers": 0,
   "partialControllers": 13,
-  "totalDollarExposure": 6200000,
   "deltas": {
     "totalViolators": 0,
     "fullCycleControllers": 0,
-    "partialControllers": 0,
-    "totalDollarExposure": 0
+    "partialControllers": 0
   }
 };
 

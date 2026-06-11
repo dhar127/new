@@ -72,27 +72,16 @@ const Sod09Kpis = () => {
   const k = window.MOCK.OTC_KPIS;
   return (
     <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
-      <StatCard label="Cross-Step Users" value={k.totalViolators} delta={k.deltas.totalViolators} deltaInvertGood />
+      <StatCard label="Cross-Step Users" value={k.totalViolators} delta={k.deltas.totalViolators} deltaInvertGood metricKey="otcControl" />
       <StatCard 
         severity="Critical" 
-        label={
-          <span className="inline-flex items-center">
-            Full-Cycle Control
-            <InfoTooltip content={
-              <div className="space-y-1.5">
-                <div className="font-bold text-ink-900 mb-1 text-[10px] uppercase tracking-wider">Full-Cycle Control:</div>
-                <p className="text-[11px] text-ink-600 leading-normal normal-case font-medium">
-                  A critical security violation where a single user has authorization for all 4 stages of the OTC cycle (Order Entry, Delivery, Billing, and Cash Collection).
-                </p>
-              </div>
-            } maxWidth={240} />
-          </span>
-        } 
+        label="Full-Cycle Control" 
         value={k.fullCycleControllers} 
         delta={k.deltas.fullCycleControllers} 
         deltaInvertGood 
+        metricKey="criticalViolations"
       />
-      <StatCard severity="High" label="Partial Overlap" value={k.partialControllers} delta={k.deltas.partialControllers} deltaInvertGood />
+      <StatCard severity="High" label="Partial Overlap" value={k.partialControllers} delta={k.deltas.partialControllers} deltaInvertGood metricKey="highViolations" />
     </div>
   );
 };

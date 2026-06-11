@@ -198,9 +198,9 @@ const Sod06Kpis = () => {
   const k = window.MOCK.SUPER_ADMIN_KPIS;
   return (
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-      <StatCard label="Total Super-Admins" value={k.totalSuperAdmins} delta={k.deltas.totalSuperAdmins} deltaInvertGood />
-      <StatCard severity="Critical" label="Critical Severity" value={k.critical} delta={k.deltas.critical} deltaInvertGood />
-      <StatCard label="Source Roles" value={k.rolesContributing} sub="contributing" delta={k.deltas.rolesContributing} deltaInvertGood />
+      <StatCard label="Total Super-Admins" value={k.totalSuperAdmins} delta={k.deltas.totalSuperAdmins} deltaInvertGood metricKey="superAdmins" />
+      <StatCard severity="Critical" label="Critical Severity" value={k.critical} delta={k.deltas.critical} deltaInvertGood metricKey="criticalViolations" />
+      <StatCard label="Source Roles" value={k.rolesContributing} sub="contributing" delta={k.deltas.rolesContributing} deltaInvertGood metricKey="totalViolations" />
     </div>
   );
 };

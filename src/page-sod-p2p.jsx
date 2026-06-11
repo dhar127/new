@@ -119,7 +119,7 @@ window.SodP2pPage = function() {
       <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
         <window.StatCard label="Total P2P Violations" value={P2P_KPIS.totalViolations} delta={P2P_KPIS.deltas.totalViolations} deltaInvertGood />
         <window.StatCard severity="Critical" label="High-Risk Combos" value={P2P_KPIS.highRiskCombos} delta={P2P_KPIS.deltas.highRiskCombos} deltaInvertGood />
-        <window.StatCard label="Affected Vendors" value={P2P_KPIS.affectedVendors} delta={P2P_KPIS.deltas.affectedVendors} deltaInvertGood />
+        <window.StatCard label="Affected Users" value={P2P_KPIS.affectedVendors} delta={P2P_KPIS.deltas.affectedVendors} deltaInvertGood />
       </div>
 
       {/* Search & Filter */}

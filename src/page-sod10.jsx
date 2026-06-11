@@ -11,10 +11,10 @@ const Sod10Kpis = () => {
   const k = window.MOCK.SERVICE_ACCOUNT_KPIS;
   return (
     <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-      <StatCard label="Total Identities" value={k.totalAccounts} delta={k.deltas.totalAccounts} />
-      <StatCard severity="Critical" label="Elevated Privilege" value={k.highPrivilege} delta={k.deltas.highPrivilege} deltaInvertGood />
-      <StatCard severity="High" label="Dormant (60d+)" value={k.inactiveAccounts} delta={k.deltas.inactiveAccounts} deltaInvertGood />
-      <StatCard severity="Critical" label="No Owner Assigned" value={k.unmanagedAccounts} delta={k.deltas.unmanagedAccounts} deltaInvertGood />
+      <StatCard label="Total Identities" value={k.totalAccounts} delta={k.deltas.totalAccounts} metricKey="serviceAccounts" />
+      <StatCard severity="Critical" label="Elevated Privilege" value={k.highPrivilege} delta={k.deltas.highPrivilege} deltaInvertGood metricKey="criticalViolations" />
+      <StatCard severity="High" label="Dormant (60d+)" value={k.inactiveAccounts} delta={k.deltas.inactiveAccounts} deltaInvertGood metricKey="highViolations" />
+      <StatCard severity="Critical" label="No Owner Assigned" value={k.unmanagedAccounts} delta={k.deltas.unmanagedAccounts} deltaInvertGood metricKey="mediumViolations" />
     </div>
   );
 };

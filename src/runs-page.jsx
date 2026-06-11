@@ -1,60 +1,100 @@
-const { useState, useMemo, useEffect, useRef } = React;
+const { useState, useMemo, useEffect } = React;
 
-/* ─── Portal helper ─────────────────────────────────────────── */
-function Portal({ children }) {
-  const el = useRef(document.createElement('div'));
-  useEffect(() => {
-    document.body.appendChild(el.current);
-    return () => document.body.removeChild(el.current);
-  }, []);
-  return ReactDOM.createPortal(children, el.current);
-}
-
-/* ─── Runs Page ─────────────────────────────────────────────── */
-const RUNS_PER_PAGE = 6;
-
-window.RunsPage = function ({ onNavigate }) {
+/* ─── Runs Page Component ─────────────────────────────────────── */
+window.RunsPage = function ({ onSelectRun, selectedRun }) {
   const { ANALYSIS_RUNS } = window.MOCK;
-  const [searchTerm, setSearchTerm]       = useState('');
-  const [statusFilter, setStatusFilter]   = useState('All');
-  const [showCreateRun, setShowCreateRun] = useState(false);
-  const [visibleCount, setVisibleCount]   = useState(RUNS_PER_PAGE);
 
+  // Process runs to map compliance scores and critical counts
+  const processedRuns = useMemo(() => {
+    return ANALYSIS_RUNS.map(run => {
+      const criticalCount = run.id === 'LCSOD-2026-Q2-007' ? 18 : run.id === 'LCSOD-2026-Q1-006' ? 15 : 22;
+      return {
+        id: run.id,
+        name: run.name,
+        sapSystem: 'PRD (Client 100)',
+        date: run.date,
+        status: run.status,
+        usersAnalyzed: run.users,
+        violationsFound: run.violations,
+        complianceScore: run.matchRate, // map matchRate to complianceScore
+        criticalViolationsCount: criticalCount,
+        createdBy: run.createdBy,
+        rolesAnalyzed: run.roles
+      };
+    });
+  }, [ANALYSIS_RUNS]);
+
+  // States
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('All');
+  const [selectedForCompare, setSelectedForCompare] = useState([]);
+  const [showCompareDrawer, setShowCompareDrawer] = useState(false);
+
+  // Filters
   const filteredRuns = useMemo(() => {
-    return ANALYSIS_RUNS.filter(run => {
-      const matchesSearch = run.name.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesStatus = statusFilter === 'All' || run.status === statusFilter;
+    return processedRuns.filter(run => {
+      const matchesSearch = run.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                            run.id.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesStatus = statusFilter === 'All' || run.status === statusFilter || 
+                            (statusFilter === 'Failed' && run.status === 'Failed');
       return matchesSearch && matchesStatus;
     });
-  }, [searchTerm, statusFilter, ANALYSIS_RUNS]);
+  }, [processedRuns, searchTerm, statusFilter]);
 
-  const visibleRuns = filteredRuns.slice(0, visibleCount);
-  const hasMore     = visibleCount < filteredRuns.length;
-  const remaining   = filteredRuns.length - visibleCount;
+  // Checkbox comparisons
+  const handleToggleCheck = (runId) => {
+    setSelectedForCompare(prev => {
+      if (prev.includes(runId)) {
+        return prev.filter(id => id !== runId);
+      } else {
+        if (prev.length >= 3) {
+          alert("You can compare up to 3 runs at a time.");
+          return prev;
+        }
+        return [...prev, runId];
+      }
+    });
+  };
 
-  useEffect(() => { setVisibleCount(RUNS_PER_PAGE); }, [searchTerm, statusFilter]);
+  const selectedRunObjects = useMemo(() => {
+    return processedRuns.filter(r => selectedForCompare.includes(r.id));
+  }, [processedRuns, selectedForCompare]);
 
   return (
-    <div className="space-y-6 px-4 md:px-7 py-6">
-
-      {/* ── Header ── */}
-      <div className="flex items-start justify-between gap-6">
+    <div className="space-y-6 px-4 md:px-7 py-6 animate-fade-in relative text-left">
+      
+      {/* ── Page Header ── */}
+      <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-ink-900 tracking-tight">Analysis Runs</h1>
-          <p className="mt-1 text-sm text-ink-500">
+          <h1 className="text-3xl font-black text-ink-900 tracking-tight">Analysis Runs</h1>
+          <p className="text-xs text-ink-500 mt-1">
             Select a completed run to explore its SoD report and user-level insights.
           </p>
         </div>
-        <button
-          onClick={() => setShowCreateRun(true)}
-          className="px-4 py-2.5 rounded-lg bg-red-600 text-white hover:bg-red-700 font-medium text-sm transition-colors flex items-center gap-2 whitespace-nowrap"
-        >
-          <window.Icon name="plus" className="w-4 h-4" strokeWidth={2} />
-          Create Run
-        </button>
+        
+        {/* Header Action Controls */}
+        <div className="flex items-center gap-2">
+          {selectedForCompare.length >= 2 && (
+            <button
+              onClick={() => setShowCompareDrawer(true)}
+              className="px-4 py-2 rounded-lg bg-brand-600 text-white hover:bg-brand-700 font-bold text-xs transition-all flex items-center gap-2 shadow-sm"
+            >
+              <window.Icon name="split" className="w-3.5 h-3.5" />
+              Compare Selected ({selectedForCompare.length})
+            </button>
+          )}
+          
+          <button
+            onClick={() => alert("Initializing new analysis run scheduler...")}
+            className="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white font-bold text-xs transition-colors flex items-center gap-2 shadow-sm"
+          >
+            <window.Icon name="plus" className="w-3.5 h-3.5 text-white" />
+            Create Run
+          </button>
+        </div>
       </div>
 
-      {/* ── Search ── */}
+      {/* ── Search Input (Full Width Block) ── */}
       <div className="relative">
         <window.Icon name="search" className="absolute left-3 top-3 w-4 h-4 text-ink-400" />
         <input
@@ -62,489 +102,261 @@ window.RunsPage = function ({ onNavigate }) {
           placeholder="Search runs by name..."
           value={searchTerm}
           onChange={e => setSearchTerm(e.target.value)}
-          className="w-full pl-10 pr-4 py-2 rounded-lg border border-ink-200 text-ink-900 placeholder-ink-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+          className="w-full pl-10 pr-4 py-2 bg-white border border-ink-200 rounded-lg text-xs placeholder-ink-400 focus:outline-none focus:ring-1 focus:ring-rose-500 focus:border-rose-500 transition-all text-ink-900 shadow-sm"
         />
       </div>
 
-      {/* ── Filters ── */}
-      <div className="flex flex-wrap items-center gap-2">
-        <span className="text-xs font-bold uppercase tracking-widest text-ink-400">Filters:</span>
-        <div className="flex gap-2">
-          {['All', 'Completed', 'In Progress', 'Failed'].map(s => (
-            <button
-              key={s}
-              onClick={() => setStatusFilter(s)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                statusFilter === s
-                  ? 'bg-red-600 text-white'
-                  : 'bg-white text-ink-600 ring-1 ring-ink-200 hover:bg-ink-50'
+      {/* ── Filter Pills & Telemetry Row ── */}
+      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-ink-150 pb-3">
+        <div className="flex items-center gap-2 text-xs">
+          <span className="text-ink-400 font-bold uppercase tracking-wider text-[10px] mr-1">Filters:</span>
+          <div className="flex gap-1.5">
+            {['All', 'Completed', 'In Progress', 'Failed'].map(s => {
+              const isActive = statusFilter === s;
+              return (
+                <button
+                  key={s}
+                  onClick={() => setStatusFilter(s)}
+                  className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                    isActive
+                      ? 'bg-red-600 text-white shadow-sm'
+                      : 'bg-white text-ink-600 border border-ink-200 hover:bg-ink-50'
+                  }`}
+                >
+                  {s}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="text-[11px] text-ink-400 font-bold uppercase tracking-wider">
+          {filteredRuns.length} run{filteredRuns.length !== 1 ? 's' : ''} found
+        </div>
+      </div>
+
+      {/* ── Card Grid ── */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {filteredRuns.map(run => {
+          const isChecked = selectedForCompare.includes(run.id);
+          const scoreColor = 'text-emerald-500';
+          const scoreBg = 'bg-emerald-500';
+
+          return (
+            <div 
+              key={run.id} 
+              className={`rounded-2xl bg-white shadow-card border border-ink-200 overflow-hidden hover:shadow-lg transition-shadow flex flex-col justify-between relative ${
+                selectedRun && selectedRun.id === run.id ? 'ring-2 ring-red-500 border-transparent' : ''
               }`}
             >
-              {s}
-            </button>
-          ))}
-        </div>
-        <span className="ml-auto text-[11px] text-ink-400 font-medium">
-          {filteredRuns.length} run{filteredRuns.length !== 1 ? 's' : ''} found
-        </span>
-      </div>
-
-      {/* ── Grid ── */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {visibleRuns.length > 0 ? (
-          visibleRuns.map(run => (
-            <RunCard key={run.id} run={run} onNavigate={onNavigate} />
-          ))
-        ) : (
-          <div className="col-span-full rounded-2xl bg-white shadow-card ring-1 ring-ink-200 p-12 text-center">
-            <div className="mx-auto grid h-12 w-12 place-items-center rounded-xl bg-ink-50 text-ink-400 ring-1 ring-ink-200">
-              <window.Icon name="file" className="w-6 h-6" />
-            </div>
-            <h3 className="mt-4 text-sm font-semibold text-ink-900">No runs found</h3>
-            <p className="mt-1 text-xs text-ink-500">Try adjusting your filters or create a new run.</p>
-          </div>
-        )}
-      </div>
-
-      {/* ── Show More ── */}
-      {hasMore && (
-        <div className="flex flex-col items-center gap-2 pt-2">
-          <button
-            onClick={() => setVisibleCount(c => c + RUNS_PER_PAGE)}
-            className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-white ring-1 ring-ink-200 text-sm font-semibold text-ink-700 hover:bg-ink-50 hover:ring-ink-300 transition-all shadow-sm"
-          >
-            <window.Icon name="chevron" className="w-4 h-4 rotate-90" strokeWidth={2} />
-            Show {Math.min(RUNS_PER_PAGE, remaining)} more
-            <span className="ml-1 rounded-full bg-ink-100 px-2 py-0.5 text-[10px] font-bold text-ink-500">
-              {remaining} left
-            </span>
-          </button>
-          <button
-            onClick={() => setVisibleCount(filteredRuns.length)}
-            className="text-[11px] font-medium text-red-600 hover:underline"
-          >
-            Show all {filteredRuns.length} runs
-          </button>
-        </div>
-      )}
-
-      {/* ── Show Less ── */}
-      {!hasMore && visibleCount > RUNS_PER_PAGE && filteredRuns.length > RUNS_PER_PAGE && (
-        <div className="flex justify-center pt-2">
-          <button
-            onClick={() => { setVisibleCount(RUNS_PER_PAGE); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-            className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-white ring-1 ring-ink-200 text-sm font-semibold text-ink-700 hover:bg-ink-50 transition-all shadow-sm"
-          >
-            <window.Icon name="chevron" className="w-4 h-4 -rotate-90" strokeWidth={2} />
-            Show less
-          </button>
-        </div>
-      )}
-
-      {/* ── Modal via Portal ── */}
-      {showCreateRun && (
-        <Portal>
-          <window.CreateRunModal
-            onClose={() => setShowCreateRun(false)}
-            onNavigate={key => { setShowCreateRun(false); onNavigate(key); }}
-          />
-        </Portal>
-      )}
-    </div>
-  );
-};
-
-/* ─── Run Card ──────────────────────────────────────────────── */
-function RunCard({ run, onNavigate }) {
-  const matchRateColor =
-    run.matchRate >= 70 ? 'bg-emerald-100 ring-emerald-200' :
-    run.matchRate >= 50 ? 'bg-amber-100 ring-amber-200'    :
-                          'bg-rose-100 ring-rose-200';
-
-  const matchRateText =
-    run.matchRate >= 70 ? 'text-emerald-700' :
-    run.matchRate >= 50 ? 'text-amber-700'   :
-                          'text-rose-700';
-
-  return (
-    <div className="rounded-2xl bg-white shadow-card ring-1 ring-ink-200 overflow-hidden hover:shadow-lg transition-shadow flex flex-col">
-
-      {/* Header */}
-      <div className="border-b border-ink-100 px-5 py-4">
-        <div className="flex items-center justify-between gap-2 mb-2">
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-red-100 text-red-700 text-[10px] font-bold font-mono whitespace-nowrap shrink-0 leading-tight">
-            {run.id}
-          </span>
-          <span className={`text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded-md ring-1 ring-inset whitespace-nowrap shrink-0 ${
-            run.status === 'Completed'   ? 'bg-emerald-50 text-emerald-700 ring-emerald-200' :
-            run.status === 'In Progress' ? 'bg-amber-50 text-amber-700 ring-amber-200'       :
-                                           'bg-rose-50 text-rose-700 ring-rose-200'
-          }`}>
-            {run.status}
-          </span>
-        </div>
-        <h3 className="text-sm font-bold text-ink-900 line-clamp-2">{run.name}</h3>
-        <p className="mt-1 text-[11px] text-ink-500">{run.date}</p>
-        <p className="text-[10px] text-ink-400 font-medium mt-0.5">{run.createdBy}</p>
-      </div>
-
-      {/* Stats */}
-      <div className="px-5 py-3 border-b border-ink-100 flex items-center gap-4">
-        {[['Users', run.users], ['Roles', run.roles], ['Violations', run.violations]].map(([label, val], i) => (
-          <div key={label} className={`flex-1 text-center ${i > 0 ? 'border-l border-ink-100' : ''}`}>
-            <div className="text-[10px] font-bold uppercase tracking-widest text-ink-400">{label}</div>
-            <div className="text-xs font-bold text-ink-900 font-mono">{val}</div>
-          </div>
-        ))}
-      </div>
-
-      {/* Match Rate */}
-      <div className="px-5 py-3 border-b border-ink-100">
-        <div className="flex items-center justify-between gap-2 mb-1.5">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-ink-400 truncate" title="License / Compliance Match">
-            License / Compliance Match
-          </span>
-          <span className={`text-xs font-bold shrink-0 ${matchRateText}`}>{run.matchRate}%</span>
-        </div>
-        <div className={`h-1.5 rounded-full ring-1 ring-inset ${matchRateColor} overflow-hidden`}>
-          <div
-            className={`h-full transition-all ${
-              run.matchRate >= 70 ? 'bg-emerald-500' :
-              run.matchRate >= 50 ? 'bg-amber-500'   : 'bg-rose-500'
-            }`}
-            style={{ width: `${run.matchRate}%` }}
-          />
-        </div>
-      </div>
-
-      {/* Scope Tags
-      <div className="px-5 py-3 border-b border-ink-100 flex flex-wrap gap-1">
-        {run.scopes.map(scope => (
-          <span key={scope} className="inline-flex items-center px-2 py-1 rounded-md bg-ink-100 text-ink-600 text-[9px] font-bold uppercase tracking-wider">
-            {scope}
-          </span>
-        ))}
-      </div> */}
-
-      {/* Action */}
-      <div className="px-5 py-3 mt-auto">
-        <button
-          onClick={() => onNavigate('home')}
-          className="w-full rounded-lg bg-red-600 text-white text-xs font-bold py-2 hover:bg-red-500 transition-colors"
-        >
-          Open Report
-        </button>
-      </div>
-    </div>
-  );
-}
-
-/* ─── Create Run Modal ──────────────────────────────────────── */
-window.CreateRunModal = function ({ onClose, onNavigate }) {
-  // Steps: 'run' | 'sap' | 'done'
-  const [step, setStep]                     = useState('run');
-
-  // Run fields
-  const [runName, setRunName]               = useState('LCSOD-2026-Q2-007');
-  const [uploadedFile, setUploadedFile]     = useState(null);
-  const fileInputRef                        = useRef(null);
-
-  // SAP fields
-  const [sapName, setSapName]               = useState('');
-  const [appServer, setAppServer]           = useState('');
-  const [instanceNum, setInstanceNum]       = useState('');
-  const [client, setClient]                 = useState('');
-  const [username, setUsername]             = useState('');
-  const [password, setPassword]             = useState('');
-  const [showPassword, setShowPassword]     = useState(false);
-  const [checking, setChecking]             = useState(false);
-  const [checkResult, setCheckResult]       = useState(null); // null | 'success' | 'error'
-
-  const handleFileChange = (e) => {
-    const file = e.target.files?.[0];
-    if (file) setUploadedFile(file);
-  };
-
-  const handleCheckConnection = () => {
-    if (!sapName || !appServer || !instanceNum || !client || !username || !password) {
-      alert('Please fill in all SAP fields'); return;
-    }
-    setChecking(true);
-    setCheckResult(null);
-    setTimeout(() => {
-      setChecking(false);
-      setCheckResult('success');
-    }, 1500);
-  };
-
-  const handleCreate = () => {
-    if (!runName) { alert('Please enter a run name'); return; }
-    onClose();
-    if (onNavigate) onNavigate('home');
-  };
-
-  /* ── Step: Run Details ── */
-  const RunStep = (
-    <>
-      <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3">
-        {/* Run Name */}
-        <div>
-          <label className="text-xs font-semibold text-gray-900 block mb-1.5">
-            Run Name <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="text" value={runName}
-            onChange={e => setRunName(e.target.value)}
-            placeholder="e.g. LCSOD-2026-Q2-007"
-            className="w-full px-3 py-2 rounded-lg border-2 border-gray-200 text-gray-900 text-xs focus:outline-none focus:border-red-500 transition-colors"
-          />
-        </div>
-
-        {/* SAP System — inline connect trigger */}
-        <div>
-          <label className="text-xs font-semibold text-gray-900 block mb-1.5">
-            SAP System <span className="text-red-500">*</span>
-          </label>
-          <button
-            onClick={() => setStep('sap')}
-            className="w-full flex items-center justify-between px-3 py-2 rounded-lg border-2 border-dashed border-gray-300 hover:border-red-400 hover:bg-red-50 transition-colors group"
-          >
-            <span className="flex items-center gap-2 text-xs text-gray-500 group-hover:text-red-600">
-              <window.Icon name="shield" className="w-4 h-4" strokeWidth={1.5} />
-              {checkResult === 'success'
-                ? <span className="text-emerald-700 font-semibold">{sapName} — {appServer} (client {client}) ✓</span>
-                : 'Connect SAP System…'}
-            </span>
-            <window.Icon name="arrow" className="w-3.5 h-3.5 text-gray-400 group-hover:text-red-500" strokeWidth={2} />
-          </button>
-        </div>
-
-        {/* Custom Rules */}
-        <div>
-          <label className="text-xs font-semibold text-gray-900 block mb-1.5">Custom Rules</label>
-          <div className="flex flex-col gap-2">
-            {/* Sample download */}
-            <div className="flex items-center justify-between bg-gray-50 border border-gray-200 rounded-lg px-3 py-2">
-              <div className="flex items-center gap-2">
-                <window.Icon name="file" className="w-4 h-4 text-red-500" strokeWidth={1.5} />
-                <div>
-                  <p className="text-[11px] font-semibold text-gray-900">rules_sample.xlsx</p>
-                  <p className="text-[10px] text-gray-400">Template · 3 sheets · SoD rule format</p>
+              {/* Header */}
+              <div className="px-5 py-4 border-b border-ink-100 space-y-3">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      checked={isChecked}
+                      onChange={() => handleToggleCheck(run.id)}
+                      disabled={run.status !== 'Completed'}
+                      className="rounded border-ink-300 text-red-600 focus:ring-red-500 h-4 w-4 cursor-pointer disabled:cursor-not-allowed"
+                    />
+                    <span className="inline-flex items-center px-2 py-0.5 rounded bg-red-50 border border-red-100 text-red-700 text-[10px] font-bold font-mono whitespace-nowrap leading-tight">
+                      {run.id}
+                    </span>
+                  </div>
+                  <span className={`text-[10px] font-extrabold uppercase tracking-widest px-2 py-0.5 rounded ring-1 ring-inset ${
+                    run.status === 'Completed' 
+                      ? 'bg-emerald-50 text-emerald-700 ring-emerald-200' 
+                      : run.status === 'In Progress'
+                        ? 'bg-amber-50 text-amber-700 ring-amber-250'
+                        : 'bg-rose-50 text-rose-700 ring-rose-250'
+                  }`}>
+                    {run.status}
+                  </span>
                 </div>
+                <div>
+                  <h3 className="text-base font-black text-ink-900 leading-snug">{run.name}</h3>
+                  <p className="text-[10.5px] text-ink-500 mt-1">{run.date}</p>
+                  <p className="text-[10px] text-ink-400 font-semibold mt-0.5">Creator: {run.createdBy}</p>
+                </div>
+              </div>
+
+              {/* Stats Block (3 Columns) */}
+              <div className="px-5 py-3 border-b border-ink-100 grid grid-cols-3 gap-2 text-center bg-ink-50/30">
+                <div className="border-r border-ink-100">
+                  <div className="text-[9px] font-bold uppercase tracking-widest text-ink-400">Users</div>
+                  <div className="text-xs font-black text-ink-900 font-mono mt-0.5">{run.usersAnalyzed}</div>
+                </div>
+                <div className="border-r border-ink-100">
+                  <div className="text-[9px] font-bold uppercase tracking-widest text-ink-400">Roles</div>
+                  <div className="text-xs font-black text-ink-900 font-mono mt-0.5">{run.rolesAnalyzed}</div>
+                </div>
+                <div>
+                  <div className="text-[9px] font-bold uppercase tracking-widest text-ink-400">Violations</div>
+                  <div className="text-xs font-black text-ink-900 font-mono mt-0.5">{run.violationsFound}</div>
+                </div>
+              </div>
+
+              {/* Progress bar (Compliance Match) */}
+              <div className="px-5 py-3.5 border-b border-ink-100 space-y-1.5">
+                <div className="flex items-center justify-between text-[10.5px] font-extrabold uppercase tracking-wider">
+                  <span className="text-ink-450">License / Compliance Match</span>
+                  <span className={scoreColor}>{run.complianceScore}%</span>
+                </div>
+                <div className="h-1.5 rounded-full bg-ink-100 overflow-hidden">
+                  <div className={`h-full ${scoreBg}`} style={{ width: `${run.complianceScore}%` }} />
+                </div>
+              </div>
+
+              {/* Action Button */}
+              <div className="px-5 py-3.5">
+                {run.status === 'Completed' ? (
+                  <button
+                    onClick={() => onSelectRun(run)}
+                    className="w-full text-center py-2 bg-red-600 hover:bg-red-700 text-white font-bold text-xs rounded-lg transition-colors uppercase tracking-widest"
+                  >
+                    Open Report
+                  </button>
+                ) : (
+                  <button
+                    disabled
+                    className="w-full text-center py-2 bg-ink-100 text-ink-400 font-semibold text-xs rounded-lg cursor-not-allowed"
+                  >
+                    Analysis In Progress...
+                  </button>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* ── Historical Comparison Drawer ── */}
+      {showCompareDrawer && selectedRunObjects.length >= 2 && (
+        <div className="fixed inset-0 z-50 bg-ink-950/45 backdrop-blur-[2px] flex justify-end">
+          <div className="w-full max-w-2xl bg-white h-full shadow-2xl flex flex-col p-6 overflow-y-auto pop-in">
+            
+            {/* Header */}
+            <div className="flex items-start justify-between border-b border-ink-150 pb-4 mb-6">
+              <div>
+                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-brand-600">GRC Comparator</span>
+                <h3 className="text-xl font-black text-ink-900 mt-0.5">Historical Run Comparison</h3>
+                <p className="text-xs text-ink-500 mt-1">Drift analysis between selected compliance runs.</p>
               </div>
               <button
                 onClick={() => {
-                  const a = document.createElement('a');
-                  a.href = 'rules_sample.xlsx';
-                  a.download = 'rules_sample.xlsx';
-                  a.click();
+                  setShowCompareDrawer(false);
+                  setSelectedForCompare([]);
                 }}
-                className="flex items-center gap-1 px-2.5 py-1 text-[11px] font-semibold text-gray-600 bg-white border border-gray-200 rounded-md hover:bg-gray-100 transition-colors whitespace-nowrap"
+                className="p-1.5 rounded-lg border border-ink-200 bg-ink-50 hover:bg-ink-100 text-ink-500 transition-colors"
               >
-                <window.Icon name="download" className="w-3 h-3" strokeWidth={2} />
-                Download
+                <window.Icon name="x" className="w-4 h-4" />
               </button>
             </div>
 
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept=".xlsx,.csv,.json"
-              style={{ display: 'none' }}
-              onChange={handleFileChange}
-            />
+            {/* Comparison Grid */}
+            <div className="space-y-6 flex-1 text-left">
+              
+              {/* Metrics Table */}
+              <div className="border border-ink-200 rounded-xl overflow-hidden shadow-sm">
+                <table className="w-full text-xs text-left">
+                  <thead>
+                    <tr className="bg-ink-50 border-b border-ink-200 font-bold uppercase text-[10px] text-ink-500">
+                      <th className="px-4 py-3">Metric</th>
+                      {selectedRunObjects.map(r => (
+                        <th key={r.id} className="px-4 py-3 text-right font-mono">{r.id}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-ink-150">
+                    <tr>
+                      <td className="px-4 py-3 font-semibold text-ink-800">Compliance Score</td>
+                      {selectedRunObjects.map(r => (
+                        <td key={r.id} className="px-4 py-3 text-right font-mono font-bold text-emerald-600">{r.complianceScore}%</td>
+                      ))}
+                    </tr>
+                    <tr>
+                      <td className="px-4 py-3 font-semibold text-ink-800">Total Violations</td>
+                      {selectedRunObjects.map(r => (
+                        <td key={r.id} className="px-4 py-3 text-right font-mono font-bold text-ink-900">{r.violationsFound}</td>
+                      ))}
+                    </tr>
+                    <tr>
+                      <td className="px-4 py-3 font-semibold text-ink-800">Critical Risks</td>
+                      {selectedRunObjects.map(r => (
+                        <td key={r.id} className="px-4 py-3 text-right font-mono font-bold text-rose-600">{r.criticalViolationsCount}</td>
+                      ))}
+                    </tr>
+                    <tr>
+                      <td className="px-4 py-3 font-semibold text-ink-800">Users Scanned</td>
+                      {selectedRunObjects.map(r => (
+                        <td key={r.id} className="px-4 py-3 text-right font-mono">{r.usersAnalyzed}</td>
+                      ))}
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
 
-            {uploadedFile ? (
-              <div className="flex items-center justify-between bg-red-50 border border-red-200 rounded-lg px-3 py-2">
-                <div className="flex items-center gap-2">
-                  <window.Icon name="file" className="w-4 h-4 text-red-500" strokeWidth={1.5} />
-                  <div>
-                    <p className="text-[11px] font-semibold text-gray-900 truncate max-w-[170px]">{uploadedFile.name}</p>
-                    <p className="text-[10px] text-gray-400">{(uploadedFile.size / 1024).toFixed(1)} KB · ready to upload</p>
+              {/* Drift Summary */}
+              <div className="space-y-4">
+                <h4 className="text-sm font-bold text-ink-900">Drift Breakdown</h4>
+                <div className="grid grid-cols-3 gap-3">
+                  <div className="bg-rose-50 border border-rose-200 rounded-xl p-3.5">
+                    <span className="text-[10px] font-bold uppercase text-rose-700 block">New Risks</span>
+                    <div className="text-xl font-bold font-mono text-rose-800 mt-1">+8</div>
+                  </div>
+                  <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-3.5">
+                    <span className="text-[10px] font-bold uppercase text-emerald-700 block">Resolved</span>
+                    <div className="text-xl font-bold font-mono text-emerald-800 mt-1">-10</div>
+                  </div>
+                  <div className="bg-ink-50 border border-ink-250 rounded-xl p-3.5">
+                    <span className="text-[10px] font-bold uppercase text-ink-650 block">Persistent</span>
+                    <div className="text-xl font-bold font-mono text-ink-800 mt-1">38</div>
                   </div>
                 </div>
-                <button
-                  onClick={() => { setUploadedFile(null); if (fileInputRef.current) fileInputRef.current.value = ''; }}
-                  className="p-1 hover:bg-red-100 rounded-md text-red-400 transition-colors"
-                >
-                  <window.Icon name="x" className="w-3.5 h-3.5" strokeWidth={2} />
-                </button>
-              </div>
-            ) : (
-              <div
-                className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-red-400 hover:bg-red-50 transition-colors cursor-pointer"
-                onClick={() => fileInputRef.current?.click()}
-              >
-                <div className="flex justify-center mb-1.5">
-                  <window.Icon name="upload" className="w-6 h-6 text-red-300" strokeWidth={1.5} />
+
+                <div className="bg-white border border-ink-200 rounded-xl p-4 space-y-3 shadow-sm text-xs">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-ink-400 block border-b border-ink-100 pb-1.5">Drift Logs</span>
+                  <div className="space-y-2">
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <b className="text-rose-700 font-bold mr-1.5">[NEW]</b>
+                        <span className="font-mono font-bold text-ink-900">V-1071</span>
+                        <p className="text-ink-500 text-[10px]">SU01 + PFCG assigned to BASIS_AMS</p>
+                      </div>
+                      <span className="text-[10px] font-semibold text-rose-600 bg-rose-50 px-1.5 py-0.5 rounded font-mono">Critical</span>
+                    </div>
+                    <div className="flex items-start justify-between gap-4 border-t border-ink-100 pt-2">
+                      <div>
+                        <b className="text-emerald-700 font-bold mr-1.5">[RESOLVED]</b>
+                        <span className="font-mono font-bold text-ink-900">V-1042</span>
+                        <p className="text-ink-500 text-[10px]">PO Create separated from LIV Posting</p>
+                      </div>
+                      <span className="text-[10px] font-semibold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded font-mono">High</span>
+                    </div>
+                  </div>
                 </div>
-                <p className="text-xs font-semibold text-gray-900">Upload custom rules file</p>
-                <p className="text-[10px] text-gray-500 mt-0.5">
-                  or <span className="text-red-600 font-medium">browse files</span>
-                  {' '}· .xlsx, .csv, .json
-                </p>
               </div>
-            )}
-          </div>
-        </div>
-      </div>
 
-      <div className="border-t border-gray-200 px-5 py-3 flex gap-2 justify-end bg-gray-50 rounded-b-2xl">
-        <button onClick={onClose}
-          className="px-4 py-1.5 rounded-lg bg-white text-gray-900 border border-gray-300 hover:bg-gray-100 font-medium text-xs transition-colors">
-          Cancel
-        </button>
-        <button onClick={handleCreate}
-          className="px-4 py-1.5 rounded-lg bg-red-600 text-white hover:bg-red-700 font-medium text-xs transition-colors flex items-center gap-1.5">
-          Create Run
-          <window.Icon name="arrow" className="w-3.5 h-3.5" strokeWidth={2} />
-        </button>
-      </div>
-    </>
-  );
+            </div>
 
-  /* ── Step: SAP Connection ── */
-  const SapStep = (
-    <>
-      <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3">
-        <div>
-          <label className="text-xs font-semibold text-gray-900 block mb-1.5">
-            SAP Name <span className="text-red-500">*</span>
-          </label>
-          <input type="text" value={sapName} onChange={e => setSapName(e.target.value)}
-            placeholder="e.g. PRD, Production ERP"
-            className="w-full px-3 py-2 rounded-lg border-2 border-gray-200 text-gray-900 text-xs focus:outline-none focus:border-red-500 transition-colors" />
-        </div>
-
-        <div className="grid grid-cols-3 gap-3">
-          <div className="col-span-2">
-            <label className="text-xs font-semibold text-gray-900 block mb-1.5">
-              Application Server <span className="text-red-500">*</span>
-            </label>
-            <input type="text" value={appServer} onChange={e => setAppServer(e.target.value)}
-              placeholder="sap-prd.company.com"
-              className="w-full px-3 py-2 rounded-lg border-2 border-gray-200 text-gray-900 text-xs focus:outline-none focus:border-red-500 transition-colors" />
-          </div>
-          <div>
-            <label className="text-xs font-semibold text-gray-900 block mb-1.5">
-              Client <span className="text-red-500">*</span>
-            </label>
-            <input type="text" value={client} onChange={e => setClient(e.target.value)}
-              placeholder="100"
-              className="w-full px-3 py-2 rounded-lg border-2 border-gray-200 text-gray-900 text-xs focus:outline-none focus:border-red-500 transition-colors" />
-          </div>
-        </div>
-
-        <div>
-          <label className="text-xs font-semibold text-gray-900 block mb-1.5">
-            Instance Number <span className="text-red-500">*</span>
-          </label>
-          <input type="text" value={instanceNum} onChange={e => setInstanceNum(e.target.value)}
-            placeholder="e.g. 00"
-            className="w-full px-3 py-2 rounded-lg border-2 border-gray-200 text-gray-900 text-xs focus:outline-none focus:border-red-500 transition-colors" />
-        </div>
-
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <label className="text-xs font-semibold text-gray-900 block mb-1.5">
-              Username <span className="text-red-500">*</span>
-            </label>
-            <input type="text" value={username} onChange={e => setUsername(e.target.value)}
-              placeholder="SAP username"
-              className="w-full px-3 py-2 rounded-lg border-2 border-gray-200 text-gray-900 text-xs focus:outline-none focus:border-red-500 transition-colors" />
-          </div>
-          <div>
-            <label className="text-xs font-semibold text-gray-900 block mb-1.5">
-              Password <span className="text-red-500">*</span>
-            </label>
-            <div className="relative">
-              <input type={showPassword ? 'text' : 'password'} value={password} onChange={e => setPassword(e.target.value)}
-                placeholder="SAP password"
-                className="w-full px-3 py-2 pr-8 rounded-lg border-2 border-gray-200 text-gray-900 text-xs focus:outline-none focus:border-red-500 transition-colors" />
-              <button onClick={() => setShowPassword(p => !p)}
-                className="absolute right-2.5 top-2 text-gray-400 hover:text-gray-600 transition-colors">
-                <window.Icon name="info" className="w-4 h-4" strokeWidth={2} />
+            {/* Footer */}
+            <div className="border-t border-ink-200 pt-4 mt-6 flex gap-2 justify-end">
+              <button
+                onClick={() => {
+                  setShowCompareDrawer(false);
+                  setSelectedForCompare([]);
+                }}
+                className="px-4 py-2 rounded-lg border border-ink-300 bg-white hover:bg-ink-50 text-xs font-bold text-ink-700 transition-all"
+              >
+                Close
               </button>
             </div>
+
           </div>
         </div>
+      )}
 
-        {/* Connection result */}
-        {checkResult === 'success' && (
-          <div className="flex items-center gap-2 px-3 py-2.5 rounded-lg bg-emerald-50 border border-emerald-200">
-            <div className="flex items-center justify-center h-5 w-5 rounded-full bg-emerald-500 text-white flex-shrink-0">
-              <window.Icon name="check" className="w-3 h-3" strokeWidth={3} />
-            </div>
-            <p className="text-xs font-semibold text-emerald-800">Connection successful — {sapName} is reachable</p>
-          </div>
-        )}
-        {checkResult === 'error' && (
-          <div className="flex items-center gap-2 px-3 py-2.5 rounded-lg bg-rose-50 border border-rose-200">
-            <window.Icon name="x" className="w-4 h-4 text-rose-500 flex-shrink-0" strokeWidth={2} />
-            <p className="text-xs font-semibold text-rose-700">Connection failed — check your credentials and try again</p>
-          </div>
-        )}
-      </div>
-
-      <div className="border-t border-gray-200 px-5 py-3 flex gap-2 justify-between bg-gray-50 rounded-b-2xl">
-        <button onClick={() => { setCheckResult(null); setStep('run'); }}
-          className="px-4 py-1.5 rounded-lg bg-white text-gray-900 border border-gray-300 hover:bg-gray-100 font-medium text-xs transition-colors flex items-center gap-1.5">
-          <window.Icon name="chevron" className="w-3.5 h-3.5 -rotate-90" strokeWidth={2} />
-          Back
-        </button>
-        <div className="flex gap-2">
-          <button onClick={handleCheckConnection} disabled={checking}
-            className="px-4 py-1.5 rounded-lg bg-white text-red-600 border-2 border-red-200 hover:bg-red-50 font-medium text-xs transition-colors disabled:opacity-50 flex items-center gap-1.5">
-            {checking ? (
-              <>
-                <span className="inline-block w-3 h-3 border-2 border-red-500 border-t-transparent rounded-full animate-spin" />
-                Checking…
-              </>
-            ) : (
-              <>
-                <window.Icon name="shield" className="w-3.5 h-3.5" strokeWidth={2} />
-                Check Connection
-              </>
-            )}
-          </button>
-          <button
-            onClick={() => { if (checkResult === 'success') setStep('run'); else alert('Please check connection first'); }}
-            className="px-4 py-1.5 rounded-lg bg-red-600 text-white hover:bg-red-700 font-medium text-xs transition-colors flex items-center gap-1.5"
-          >
-            Confirm
-            <window.Icon name="arrow" className="w-3.5 h-3.5" strokeWidth={2} />
-          </button>
-        </div>
-      </div>
-    </>
-  );
-
-  const stepTitle = step === 'sap' ? 'Connect SAP System' : 'Create New Run';
-  const stepDesc  = step === 'sap'
-    ? 'Enter credentials and verify the connection'
-    : 'Set up a new license optimization analysis run';
-  const stepIcon  = step === 'sap' ? 'shield' : 'play';
-
-  return (
-    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.45)', zIndex: 99999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <div className="rounded-2xl bg-white shadow-2xl flex flex-col" style={{ width: 370, maxWidth: '95vw', maxHeight: '90vh' }}>
-
-        {/* Header */}
-        <div className="border-b border-gray-200 px-5 py-4 flex items-start gap-3">
-          <div className="flex items-center justify-center h-9 w-9 rounded-lg bg-red-50 flex-shrink-0">
-            <window.Icon name={stepIcon} className="w-5 h-5 text-red-600" strokeWidth={1.5} />
-          </div>
-          <div className="flex-1 min-w-0">
-            <h2 className="text-sm font-bold text-gray-900">{stepTitle}</h2>
-            <p className="text-[11px] text-gray-500 mt-0.5">{stepDesc}</p>
-          </div>
-          <button onClick={onClose} className="p-1 hover:bg-gray-100 rounded-md text-gray-400 transition-colors">
-            <window.Icon name="x" className="w-4 h-4" strokeWidth={2} />
-          </button>
-        </div>
-
-        {step === 'run' ? RunStep : SapStep}
-      </div>
     </div>
   );
 };

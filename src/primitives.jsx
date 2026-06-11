@@ -517,13 +517,20 @@ window.Pagination = function({ page, pageSize, total, onPage }) {
   );
 };
 
-window.Tooltip = function({ tip, children, align = 'top', className = '' }) {
+window.Tooltip = function({ tip, children, align = 'top', className = '', tooltipClassName = '' }) {
   if (!tip) return <>{children}</>;
-  const placement = { top: 'bottom-full left-1/2 -translate-x-1/2 mb-1.5', bottom: 'top-full left-1/2 -translate-x-1/2 mt-1.5', left: 'right-full top-1/2 -translate-y-1/2 mr-1.5', right: 'left-full top-1/2 -translate-y-1/2 ml-1.5' };
+  const placement = { 
+    top: 'bottom-full left-1/2 -translate-x-1/2 mb-1.5', 
+    'top-left': 'bottom-full left-0 mb-1.5',
+    'top-right': 'bottom-full right-0 mb-1.5',
+    bottom: 'top-full left-1/2 -translate-x-1/2 mt-1.5', 
+    left: 'right-full top-1/2 -translate-y-1/2 mr-1.5', 
+    right: 'left-full top-1/2 -translate-y-1/2 ml-1.5' 
+  };
   return (
     <span className={`group/tt relative inline-flex ${className}`}>
       {children}
-      <span className={`pointer-events-none absolute z-50 ${placement[align]} max-w-[260px] whitespace-normal rounded-md bg-ink-900 px-2.5 py-1.5 text-[11px] font-normal leading-snug text-white shadow-pop opacity-0 transition-opacity duration-150 group-hover/tt:opacity-100`}>{tip}</span>
+      <span className={`pointer-events-none absolute z-50 ${placement[align]} shadow-pop opacity-0 transition-opacity duration-150 group-hover/tt:opacity-100 rounded-lg p-2.5 text-[11px] leading-snug ${tooltipClassName || 'max-w-[260px] bg-ink-900 text-white font-normal'}`}>{tip}</span>
     </span>
   );
 };
@@ -553,13 +560,19 @@ window.CodeWithExplain = function({ code, type = 'tcode' }) {
   );
 };
 
-window.StatCard = function({ label, value, sub, delta, deltaInvertGood = false, severity, icon, footer }) {
+window.StatCard = function({ label, value, sub, delta, deltaInvertGood, severity, icon, footer, metricKey, onClick }) {
   const accent = severity ? window.SEV_HEX[severity] : null;
   return (
-    <div className="relative overflow-hidden rounded-xl bg-white px-4 py-4 ring-1 ring-ink-200 shadow-sm hover:shadow-md transition-shadow">
+    <div 
+      onClick={onClick}
+      className={`relative overflow-hidden rounded-xl bg-white px-4 py-4 ring-1 ring-ink-200 shadow-sm hover:shadow-md transition-shadow ${onClick ? 'cursor-pointer' : ''}`}
+    >
       {accent && <span className="absolute inset-y-0 left-0 w-1" style={{ background: accent }} />}
       <div className="flex items-start justify-between gap-2">
-        <div className="text-[10px] font-bold uppercase tracking-wider text-ink-500">{label}</div>
+        <div className="text-[10px] font-bold uppercase tracking-wider text-ink-500 flex items-center gap-1">
+          {label}
+          {metricKey && <window.GRCInfoTooltip metricKey={metricKey} />}
+        </div>
         {icon && <window.Icon name={icon} className="w-4 h-4 text-ink-400" />}
       </div>
       <div className="mt-2 flex items-baseline gap-2 text-wrap-balance">
@@ -573,6 +586,285 @@ window.StatCard = function({ label, value, sub, delta, deltaInvertGood = false, 
         </div>
       )}
       {footer && <div className="mt-2">{footer}</div>}
+    </div>
+  );
+};
+
+/* ── GRC Click-to-View Metadata Registry ────────────────────── */
+window.GRC_METRIC_METADATA = {
+  'complianceScore': {
+    name: 'Compliance Score (Risk Coverage)',
+    means: 'Measures the overall security coverage of defined segregation of duties checks against unmitigated risk exposure.',
+    calculated: 'Calculates risk coverage based on weighted unmitigated risks against weighted defined risks.',
+    fields: 'USR02 (User Master), AGR_USERS (User Role Assignments), AGR_TCODES (Transactions in Roles)',
+    ruleset: 'SAP GRC Global SoD Matrix v4.2',
+    filters: 'Active dialog users in client 100',
+    exclusions: 'Locked and technical service accounts',
+    run: 'LCSOD-2026-Q2-007',
+    date: 'May 19, 2026',
+    formula: 'Risk Coverage Score = ( 1 - WUR / WDR ) * 100. SOD-01: Critical: 18 (Weight *1.0), High: 19 (Weight *0.6), Medium: 9 (Weight *0.3), Low: 0 (Weight *0.1)'
+  },
+  'totalUsers': {
+    name: 'Total Users Scanned',
+    means: 'The total count of dialogue and technical SAP users evaluated during this assessment run.',
+    calculated: 'Select Count(*) from USR02 where Client = :selected_client.',
+    fields: 'USR02 (SAP User Master Table)',
+    ruleset: 'SAP Standard Rule Set',
+    filters: 'All user types (Dialog, System, Service, Reference, Background)',
+    exclusions: 'None',
+    run: 'LCSOD-2026-Q2-007',
+    date: 'May 19, 2026',
+    formula: 'Count(unique UserIDs)'
+  },
+  'totalViolations': {
+    name: 'Total Violations',
+    means: 'Total count of active transaction-level or authorization-level conflicts flagged across the system.',
+    calculated: 'Sum of all matched conflicting transaction codes present in user roles.',
+    fields: 'AGR_USERS, AGR_1251 (Authorizations), UST04 (User Profiles)',
+    ruleset: 'SAP GRC Global SoD Matrix v4.2',
+    filters: 'Production client only',
+    exclusions: 'Mitigated risks with active control assignments',
+    run: 'LCSOD-2026-Q2-007',
+    date: 'May 19, 2026',
+    formula: 'Sum(flagged conflicts)'
+  },
+  'criticalViolations': {
+    name: 'Critical Violations',
+    means: 'High-severity conflicts representing immediate financial threat or complete system control breakdown.',
+    calculated: 'Violations where severity weight is flagged as CRITICAL.',
+    fields: 'AGR_1251, USR02, SAP Rule Matrix Severity',
+    ruleset: 'SOX Compliance Ruleset',
+    filters: 'Active users only',
+    exclusions: 'None',
+    run: 'LCSOD-2026-Q2-007',
+    date: 'May 19, 2026',
+    formula: 'Count(violations where severity = Critical)'
+  },
+  'highViolations': {
+    name: 'High Violations',
+    means: 'Conflicts that bypass dual control or violate core segregation policies in procurement/finance.',
+    calculated: 'Violations where severity weight is flagged as HIGH.',
+    fields: 'AGR_1251, USR02, SAP Rule Matrix Severity',
+    ruleset: 'SOX Compliance Ruleset',
+    filters: 'Active users only',
+    exclusions: 'None',
+    run: 'LCSOD-2026-Q2-007',
+    date: 'May 19, 2026',
+    formula: 'Count(violations where severity = High)'
+  },
+  'mediumViolations': {
+    name: 'Medium Violations',
+    means: 'Minor authorization overlaps requiring periodic review or operational mitigation.',
+    calculated: 'Violations where severity weight is flagged as MEDIUM.',
+    fields: 'AGR_1251, USR02, SAP Rule Matrix Severity',
+    ruleset: 'SAP GRC Standard ruleset',
+    filters: 'None',
+    exclusions: 'None',
+    run: 'LCSOD-2026-Q2-007',
+    date: 'May 19, 2026',
+    formula: 'Count(violations where severity = Medium)'
+  },
+  'lowViolations': {
+    name: 'Low Violations',
+    means: 'Low-impact authorization overlaps representing procedural inefficiencies rather than audit failure.',
+    calculated: 'Violations where severity weight is flagged as LOW.',
+    fields: 'AGR_1251, USR02, SAP Rule Matrix Severity',
+    ruleset: 'SAP GRC Standard ruleset',
+    filters: 'None',
+    exclusions: 'None',
+    run: 'LCSOD-2026-Q2-007',
+    date: 'May 19, 2026',
+    formula: 'Count(violations where severity = Low)'
+  },
+  'sapGrcBaseline': {
+    name: 'SAP GRC Baseline Score',
+    means: 'The target baseline standard score defined by SAP GRC Best Practices for this industry sector.',
+    calculated: 'Statistically aggregated compliance score from standard SAP audits.',
+    fields: 'SAP GRC Standard Sector Reports',
+    ruleset: 'SAP GRC Best Practice Benchmarks v10',
+    filters: 'Chemical Manufacturing sector peer group',
+    exclusions: 'None',
+    run: 'Reference Baseline',
+    date: 'Jan 2026',
+    formula: 'Weighted average of peer compliance metrics'
+  },
+  'superAdmins': {
+    name: 'Super Administrators (SOD-06)',
+    means: 'Count of user accounts containing the SAP_ALL profile or combinations of SU01 and PFCG.',
+    calculated: 'Accounts with SAP_ALL/SAP_NEW profiles or active transactions SU01 + PFCG.',
+    fields: 'UST04 (User Profiles), AGR_TCODES (Role T-codes)',
+    ruleset: 'SAP GRC Administrator Audit Rules',
+    filters: 'Production systems only',
+    exclusions: 'Temporary emergency IDs (tracked under SOD-08)',
+    run: 'LCSOD-2026-Q2-007',
+    date: 'May 19, 2026',
+    formula: 'Count(Users with SU01 & PFCG) + Count(Users with SAP_ALL)'
+  },
+  'dualControl': {
+    name: 'Dual Process Control (SOD-07)',
+    means: 'Violations involving cross-process overlaps such as vendor creation combined with payment approval.',
+    calculated: 'Accounts holding both Process A and Process B transaction sets.',
+    fields: 'AGR_USERS, AGR_TCODES',
+    ruleset: 'Cross-Process Segregation Matrix',
+    filters: 'Client 100 active dialogs',
+    exclusions: 'None',
+    run: 'LCSOD-2026-Q2-007',
+    date: 'May 19, 2026',
+    formula: 'Intersection(Users with Process A, Users with Process B)'
+  },
+  'emergencyAccess': {
+    name: 'Emergency Access (SOD-08)',
+    means: 'Privileged emergency firefighter sessions active or unapproved beyond the SLA window.',
+    calculated: 'Sessions exceeding 15 days or lacking official manager signature approval.',
+    fields: '/GRCPI/GRIA_FFLOG (Firefighter Session Log)',
+    ruleset: 'Lotte Emergency Access Policy',
+    filters: 'Production environment only',
+    exclusions: 'Mitigated emergency accounts',
+    run: 'LCSOD-2026-Q2-007',
+    date: 'May 19, 2026',
+    formula: 'Count(Sessions > 15 days) + Count(Unapproved activations)'
+  },
+  'otcControl': {
+    name: 'OTC Control (SOD-09)',
+    means: 'Order-to-Cash cycle overlaps where a single identity controls multiple steps from order entry to payment collection.',
+    calculated: 'Users holding combinations of VA01, VL01N, VF01, and F-28 authorizations.',
+    fields: 'AGR_USERS, AGR_TCODES',
+    ruleset: 'OTC Lifecycle Segregation Rules',
+    filters: 'Production client only',
+    exclusions: 'None',
+    run: 'LCSOD-2026-Q2-007',
+    date: 'May 19, 2026',
+    formula: 'Count(Users with >=2 OTC steps)'
+  },
+  'serviceAccounts': {
+    name: 'High-Risk Service Accounts (SOD-10)',
+    means: 'Non-human technical accounts with excessive authorizations or dormant activity profiles.',
+    calculated: 'System/Service accounts holding critical roles or inactive for more than 60 days.',
+    fields: 'USR02 (User Type & Last Login)',
+    ruleset: 'Service Account Governance Rule',
+    filters: 'UserType != Dialog',
+    exclusions: 'None',
+    run: 'LCSOD-2026-Q2-007',
+    date: 'May 19, 2026',
+    formula: 'Count(Technical accounts where Privilege = Critical OR Inactivity > 60d)'
+  },
+  'remediation': {
+    name: 'Remediation Tasks (SOD-11)',
+    means: 'Open roles or user mappings currently assigned for redesign or access removal.',
+    calculated: 'Open tasks logged in the GRC remediation tracker.',
+    fields: 'KTern Governance logs, Remediation master table',
+    ruleset: 'Remediation Policy Rules',
+    filters: 'Open and in-progress tasks',
+    exclusions: 'Closed / verified tasks',
+    run: 'LCSOD-2026-Q2-007',
+    date: 'May 19, 2026',
+    formula: 'Count(Remediation actions where Status != Resolved)'
+  },
+  'continuousCompliance': {
+    name: 'Continuous Compliance Check (SOD-12)',
+    means: 'Pass rate percentage of periodic automated compliance scans.',
+    calculated: 'Count of passing rules divided by total active audit checks.',
+    fields: 'KTern Rule Execution Engine Logs',
+    ruleset: 'Continuous Monitoring Rule set',
+    filters: 'None',
+    exclusions: 'None',
+    run: 'LCSOD-2026-Q2-007',
+    date: 'May 19, 2026',
+    formula: 'Pass Rate = (Passed Checks / Total Checks) * 100'
+  }
+};
+
+/* ── GRC Click-to-View Info Tooltip Component ───────────────── */
+window.GRCInfoTooltip = function({ metricKey }) {
+  const [open, setOpen] = React.useState(false);
+  const ref = React.useRef(null);
+  
+  React.useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (ref.current && !ref.current.contains(e.target)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const meta = window.GRC_METRIC_METADATA[metricKey];
+  if (!meta) return null;
+
+  return (
+    <div className="relative inline-block ml-1" ref={ref}>
+      <button
+        type="button"
+        onClick={(e) => {
+          e.stopPropagation();
+          setOpen(!open);
+        }}
+        className="text-ink-400 hover:text-brand-600 transition-colors p-0.5 rounded focus:outline-none focus:ring-1 focus:ring-brand-500"
+        title="View metric details"
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5">
+          <circle cx="12" cy="12" r="10" />
+          <line x1="12" y1="16" x2="12" y2="12" />
+          <line x1="12" y1="8" x2="12.01" y2="8" />
+        </svg>
+      </button>
+
+      {open && (
+        <div 
+          className="absolute z-50 mt-2 p-4 bg-white border border-ink-200 rounded-xl shadow-pop text-left text-xs text-ink-800"
+          style={{
+            width: '320px',
+            right: window.innerWidth - (ref.current?.getBoundingClientRect().right || 0) < 160 ? '0px' : 'auto',
+            left: window.innerWidth - (ref.current?.getBoundingClientRect().right || 0) < 160 ? 'auto' : '0px',
+            top: '100%',
+          }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="font-bold text-ink-900 border-b border-ink-100 pb-1.5 mb-2 text-sm flex items-center justify-between">
+            <span>{meta.name}</span>
+            <span className="text-[9px] font-mono bg-brand-50 text-brand-600 px-1.5 py-0.5 rounded">GRC Metric</span>
+          </div>
+          <div className="space-y-2 max-h-[260px] overflow-y-auto pr-1">
+            <div>
+              <span className="font-bold text-ink-500 block text-[9.5px] uppercase">Description</span>
+              <p className="text-ink-700 leading-snug">{meta.means}</p>
+            </div>
+            <div>
+              <span className="font-bold text-ink-500 block text-[9.5px] uppercase">How Calculated</span>
+              <p className="text-ink-700 leading-snug">{meta.calculated}</p>
+            </div>
+            <div>
+              <span className="font-bold text-ink-500 block text-[9.5px] uppercase">Formula</span>
+              <code className="block bg-ink-50 p-1.5 rounded font-mono text-[10px] text-ink-800 border border-ink-150 leading-snug whitespace-pre-wrap">{meta.formula}</code>
+            </div>
+            <div className="grid grid-cols-2 gap-2 pt-1 border-t border-ink-100">
+              <div>
+                <span className="font-bold text-ink-500 block text-[9px] uppercase">SAP Fields</span>
+                <span className="text-ink-700 text-[10px] leading-tight font-mono">{meta.fields}</span>
+              </div>
+              <div>
+                <span className="font-bold text-ink-500 block text-[9px] uppercase">Rule Set</span>
+                <span className="text-ink-700 text-[10px] leading-tight">{meta.ruleset}</span>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-2 pt-1 border-t border-ink-100">
+              <div>
+                <span className="font-bold text-ink-500 block text-[9px] uppercase">Filters</span>
+                <span className="text-ink-700 text-[10px] leading-tight">{meta.filters}</span>
+              </div>
+              <div>
+                <span className="font-bold text-ink-500 block text-[9px] uppercase">Exclusions</span>
+                <span className="text-ink-700 text-[10px] leading-tight">{meta.exclusions}</span>
+              </div>
+            </div>
+            <div className="pt-2 border-t border-ink-100 flex items-center justify-between text-[10px] text-ink-400">
+              <span>Run: <b>{meta.run}</b></span>
+              <span>Date: <b>{meta.date}</b></span>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

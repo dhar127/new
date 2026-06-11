@@ -38,11 +38,11 @@ const Sod11Kpis = () => {
   const k = window.MOCK.REMEDIATION_KPIS;
   return (
     <div className="grid grid-cols-2 gap-3 md:grid-cols-4 lg:grid-cols-5">
-      <StatCard label="Total Tasks" value={k.total} delta={k.deltas.total} />
-      <StatCard severity="Critical" label="Overdue" value={k.overdue} delta={k.deltas.overdue} deltaInvertGood />
-      <StatCard label="Open" value={k.open} sub="unassigned" delta={k.deltas.open} deltaInvertGood />
-      <StatCard label="In Progress" value={k.inProgress} delta={k.deltas.inProgress} />
-      <StatCard severity="Good" label="Closed" value={k.resolved} sub="this run" delta={k.deltas.resolved} />
+      <StatCard label="Total Tasks" value={k.total} delta={k.deltas.total} metricKey="remediation" />
+      <StatCard severity="Critical" label="Overdue" value={k.overdue} delta={k.deltas.overdue} deltaInvertGood metricKey="criticalViolations" />
+      <StatCard label="Open" value={k.open} sub="unassigned" delta={k.deltas.open} deltaInvertGood metricKey="highViolations" />
+      <StatCard label="In Progress" value={k.inProgress} delta={k.deltas.inProgress} metricKey="mediumViolations" />
+      <StatCard severity="Good" label="Closed" value={k.resolved} sub="this run" delta={k.deltas.resolved} metricKey="complianceScore" />
     </div>
   );
 };

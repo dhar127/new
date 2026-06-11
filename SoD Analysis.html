@@ -52,10 +52,15 @@
 </script>
 <style>
   html, body, #root { height: 100%; }
+  *, button, input, select, textarea {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+  .font-mono, code, pre {
+    font-family: 'JetBrains Mono', ui-monospace, monospace !important;
+  }
   body {
     background: #F8FAFC;
     color: #0F172A;
-    font-family: 'Inter', system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
   }
@@ -69,6 +74,8 @@
   /* Animated number entrance */
   @keyframes pop-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
   .pop-in { animation: pop-in .4s ease-out both; }
+  @keyframes slide-in { from { transform: translateX(100%); } to { transform: translateX(0); } }
+  .animate-slide-in { animation: slide-in 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
   details > summary { list-style: none; }
   details > summary::-webkit-details-marker { display: none; }
 </style>
@@ -110,6 +117,8 @@
 <script type="text/babel" src="src/sidebar.jsx"></script>
 <script type="text/babel" src="src/launch-page.jsx"></script>
 <script type="text/babel" src="src/runs-page.jsx"></script>
+<script type="text/babel" src="src/page-sod02.jsx"></script>
+
 <script type="text/babel" src="src/page-sod04.jsx"></script>
 <script type="text/babel" src="src/page-sod05.jsx"></script>
 <script type="text/babel" src="src/page-sod06.jsx"></script>
@@ -120,6 +129,9 @@
 <script type="text/babel" src="src/page-sod10.jsx"></script>
 <script type="text/babel" src="src/page-sod11.jsx"></script>
 <script type="text/babel" src="src/page-sod12.jsx"></script>
+<script type="text/babel" src="src/page-users.jsx"></script>
+<script type="text/babel" src="src/page-risks.jsx"></script>
+<script type="text/babel" src="src/page-details.jsx"></script>
 <script type="text/babel" src="src/app.jsx"></script>
 </body>
 </html>
