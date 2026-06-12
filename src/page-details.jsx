@@ -546,19 +546,7 @@ window.UserProfilePage = function({ userId, onNavigate, inline, onBack }) {
             </div>
           </window.Section>
 
-          <window.Section title="Role Exemption & Approvals">
-            <div className="p-5 text-xs text-ink-700 space-y-3">
-              <div className="bg-ink-50 border border-ink-200 rounded p-3 leading-relaxed font-medium">
-                No active audit approvals or policy exceptions have been registered for this account. System requires role redesign to maintain compliant score baseline.
-              </div>
-              <button
-                onClick={() => alert('Redirecting to exception request workflow...')}
-                className="w-full text-center py-2 rounded-lg bg-ink-900 text-white hover:bg-ink-800 font-bold text-xs transition-colors"
-              >
-                Request Access Exception
-              </button>
-            </div>
-          </window.Section>
+
         </div>
       </div>
     </div>
