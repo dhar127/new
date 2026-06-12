@@ -80,6 +80,15 @@
   .pop-in { animation: pop-in .4s ease-out both; }
   @keyframes slide-in { from { transform: translateX(100%); } to { transform: translateX(0); } }
   .animate-slide-in { animation: slide-in 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+  @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+  .animate-fade-in { animation: fade-in 0.2s ease-out forwards; }
+  /* Prevent Flash of Unstyled Tooltips (Tailwind CDN parsing lag) */
+  .group\/tt > span:last-child {
+    opacity: 0;
+    pointer-events: none;
+    position: absolute;
+    z-index: 50;
+  }
   details > summary { list-style: none; }
   details > summary::-webkit-details-marker { display: none; }
 </style>
