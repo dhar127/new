@@ -376,7 +376,7 @@ const App = () => {
   };
 
   return (
-    <div className="min-h-screen bg-ink-50 text-ink-900 overflow-x-hidden flex flex-col font-sans relative">
+    <div className="min-h-screen bg-ink-50 text-ink-900 flex flex-col font-sans relative">
       <GrcTopHeader
         active={active}
         onNavigate={handleNavigate}
@@ -384,7 +384,7 @@ const App = () => {
         onRunChange={handleSelectRun}
         hasSelectedRun={hasSelectedRun}
       />
-      <main className="flex-1 overflow-x-hidden">
+      <main className="flex-1">
         {renderPage()}
       </main>
 
