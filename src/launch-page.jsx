@@ -1,4 +1,4 @@
-const { useState, useMemo } = React;
+const { useState, useMemo, useEffect } = React;
 
 /* ─── Segmented Severity Distribution Line ─────────────────────── */
 function EnterpriseSeverityDistributionLine({ critical, high, medium, low }) {
@@ -96,7 +96,6 @@ function EnterpriseSeverityDistributionLine({ critical, high, medium, low }) {
   );
 }
 
-/* ─── Violation Investigation Grid (Material Risk Inventory) ──── */
 const MATERIAL_VIOLATIONS = [
   {
     userId: 'HOANG.NGUYEN',
@@ -261,7 +260,7 @@ function MaterialRiskInventoryGrid({ onNavigate }) {
             className="w-full pl-8 pr-3 py-1.5 bg-white border border-ink-200 rounded-lg text-xs placeholder-ink-450 focus:outline-none focus:ring-1 focus:ring-rose-500 focus:border-rose-500 transition-all text-ink-900"
           />
         </div>
-        <span className="text-[11px] font-bold text-ink-400 uppercase tracking-wider flex items-center gap-1">
+        <span className="text-[11px] font-bold text-ink-450 uppercase tracking-wider flex items-center gap-1">
           {filtered.length} active violations
           <window.GRCInfoTooltip metricKey="totalViolations" />
         </span>
@@ -419,178 +418,127 @@ function MaterialRiskInventoryGrid({ onNavigate }) {
   );
 }
 
-/* ─── Remediation Tracking Grid ────────────────────────────────── */
-const REMEDIATION_TASKS = [
-  {
-    violationId: 'V-1058',
-    recType: 'Role Redesign',
-    priority: 'P1 - Immediate',
-    owner: 'Finance Systems Manager',
-    dueDate: '2026-06-25',
-    status: 'In Progress',
-    expanded: {
-      steps: '1. Review transaction logs for VF01. 2. Redesign ZSD_BR_BILLING_CREATE to split order entry and billing release scopes. 3. Deploy and verify role utilization.',
-      justification: 'Removes billing authorization overlaps that bypass dual authorization controls.',
-      benefit: 'Aligns revenue processes with SOX §404 compliance guidelines.',
-      auditImpact: 'Addresses key audit deficiencies identified by lead compliance auditors.'
-    }
-  },
-  {
-    violationId: 'V-1071',
-    recType: 'Access Removal',
-    priority: 'P1 - Immediate',
-    owner: 'Basis Security Lead',
-    dueDate: '2026-06-18',
-    status: 'Open',
-    expanded: {
-      steps: '1. Revoke direct SU01 accesses from secondary administrator logins. 2. Restrict user maintenance tools to emergency firefighters only.',
-      justification: 'Prevents untraceable privilege creation.',
-      benefit: 'Eliminates technical backdoor accesses, reinforcing ISO 27001 policies.',
-      auditImpact: 'Prevents security audit failure for platform user controls.'
-    }
-  },
-  {
-    violationId: 'V-1042',
-    recType: 'Access Removal',
-    priority: 'P2 - High',
-    owner: 'SAP Security Architect',
-    dueDate: '2026-07-10',
-    status: 'In Progress',
-    expanded: {
-      steps: '1. Identify all accountants holding FK01 (create vendor) and F110 (approve payments). 2. Revoke FK01 from payables clerks. 3. Enforce secondary reviews.',
-      justification: 'Closes key fraud vector where payouts could be sent to self-created vendor accounts.',
-      benefit: 'Eliminates high-risk embezzlement exposure vectors.',
-      auditImpact: 'Ensures compliance with standard Segregation of Duties guidelines.'
-    }
-  },
-  {
-    violationId: 'V-1124',
-    recType: 'Role Redesign',
-    priority: 'P1 - Immediate',
-    owner: 'IT Security Manager',
-    dueDate: '2026-06-20',
-    status: 'Open',
-    expanded: {
-      steps: '1. Map execution tasks triggered by the job account. 2. Remove default SAP_ALL assignment. 3. Assign custom least-privilege batch role.',
-      justification: 'Background system integration users must not hold unmonitored global admin profiles.',
-      benefit: 'Reduces threat profile for automated integrations.',
-      auditImpact: 'Resolves critical security deficiency highlighted in prior quarterly audit report.'
-    }
-  },
-  {
-    violationId: 'V-1101',
-    recType: 'Mitigating Control',
-    priority: 'P3 - Medium',
-    owner: 'Treasury Controller',
-    dueDate: '2026-08-01',
-    status: 'Open',
-    expanded: {
-      steps: '1. Deploy automated verification workflow for manual ledger edits. 2. Maintain dual signature authorization on all outgoing disbursements.',
-      justification: 'Establishes compensating controls while long-term role redesigns are implemented.',
-      benefit: 'Lowers operational vulnerability during restructuring transitions.',
-      auditImpact: 'Enables compliant GRC exception listing with auditor approval.'
-    }
-  }
-];
+window.MaterialRiskInventoryGrid = MaterialRiskInventoryGrid;
 
-function RemediationTrackingGrid() {
-  const [expandedRow, setExpandedRow] = useState(null);
+/* ─── SOD-12 Continuous Compliance Component ─── */
+function Sod12ContinuousComplianceView() {
+  const rules = [
+    { id: 'RUL-904', code: 'Z_SOD_01', desc: 'Prevent Vendor Create + AP Payment', deployed: '2026-05-20', status: 'Active', author: 'J. Smith' },
+    { id: 'RUL-903', code: 'Z_SOD_02', desc: 'Enforce Firefighter Expiry < 30 days', deployed: '2026-05-18', status: 'Active', author: 'A. Poche' },
+    { id: 'RUL-902', code: 'Z_SOD_03', desc: 'Flag F110 out of Treasury group', deployed: '2026-05-10', status: 'Active', author: 'B. Carrier' },
+    { id: 'RUL-901', code: 'Z_SOD_04', desc: 'Restrict PFCG for non-Basis users', deployed: '2026-05-02', status: 'Active', author: 'J. Smith' },
+    { id: 'RUL-900', code: 'Z_SOD_05', desc: 'Detect Bank Edit + Payment Block removal', deployed: '2026-04-25', status: 'Active', author: 'H. Schroder' },
+    { id: 'RUL-899', code: 'Z_SOD_06', desc: 'Full OTC cycle by single user alert', deployed: '2026-04-10', status: 'Pending', author: 'Y. Kim' },
+    { id: 'RUL-898', code: 'Z_SOD_07', desc: 'Background RFC with SAP_ALL equivalent', deployed: '2026-04-05', status: 'Pending', author: 'S. Chen' },
+  ];
 
   return (
-    <window.Section 
-      title="Remediation Tracking [SOD-11]" 
-      subtitle="Remediation governance logs. Click any row to expand remediation details, justification, and audit benefits."
-    >
-      <div className="overflow-x-auto">
-        <table className="w-full text-[13px] border-collapse">
-          <thead>
-            <tr className="border-b border-ink-200 bg-ink-50/50">
-              <th className="w-8 px-4 py-3"></th>
-              <window.Th className="w-32">Violation ID</window.Th>
-              <window.Th className="w-44">Recommendation Type</window.Th>
-              <window.Th className="w-36">Priority</window.Th>
-              <window.Th className="w-56">Owner</window.Th>
-              <window.Th className="w-36">Due Date</window.Th>
-              <window.Th className="w-32">Status</window.Th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-ink-100">
-            {REMEDIATION_TASKS.map(t => {
-              const isExpanded = expandedRow === t.violationId;
-              const priorityColor = t.priority.startsWith('P1') ? 'text-rose-600' : t.priority.startsWith('P2') ? 'text-orange-600' : 'text-amber-600';
-              const statusColor = t.status === 'Resolved' ? 'bg-emerald-50 text-emerald-700 ring-emerald-250' : t.status === 'In Progress' ? 'bg-blue-50 text-blue-750 ring-blue-200' : 'bg-ink-50 text-ink-600 ring-ink-200';
-
-              return (
-                <React.Fragment key={t.violationId}>
-                  <tr 
-                    onClick={() => setExpandedRow(isExpanded ? null : t.violationId)}
-                    className={`row-hover cursor-pointer align-middle ${isExpanded ? 'bg-rose-50/10' : ''}`}
-                  >
-                    <td className="px-4 py-3 text-center">
-                      <window.Icon 
-                        name="chevron" 
-                        className={`w-3.5 h-3.5 text-ink-400 transition-transform ${isExpanded ? 'rotate-90' : ''}`} 
-                      />
-                    </td>
-                    <td className="px-4 py-3 font-mono font-bold text-ink-900">{t.violationId}</td>
-                    <td className="px-4 py-3 font-semibold text-ink-800">{t.recType}</td>
-                    <td className={`px-4 py-3 font-bold text-xs ${priorityColor}`}>{t.priority}</td>
-                    <td className="px-4 py-3 font-medium text-ink-700">{t.owner}</td>
-                    <td className="px-4 py-3 font-mono text-ink-600 text-xs">{t.dueDate}</td>
-                    <td className="px-4 py-3">
-                      <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider ring-1 ring-inset ${statusColor}`}>
-                        {t.status}
-                      </span>
-                    </td>
-                  </tr>
-
-                  {/* Expandable row content */}
-                  {isExpanded && (
-                    <tr className="bg-ink-50/40">
-                      <td colSpan={7} className="px-8 py-4 border-b border-ink-150">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pl-4 border-l-4 border-brand-500 text-left">
-                          
-                          {/* Left: Action Steps & Justification */}
-                          <div className="space-y-3">
-                            <div>
-                              <span className="text-[10px] font-bold uppercase tracking-wider text-ink-400 block mb-1">Remediation Action Steps</span>
-                              <p className="text-xs text-ink-800 leading-relaxed font-semibold">{t.expanded.steps}</p>
-                            </div>
-                            <div>
-                              <span className="text-[10px] font-bold uppercase tracking-wider text-ink-400 block mb-1">Business Justification</span>
-                              <p className="text-xs text-ink-650 font-medium leading-relaxed italic">"{t.expanded.justification}"</p>
-                            </div>
-                          </div>
-
-                          {/* Right: Audit Benefit & Audit Impact */}
-                          <div className="space-y-3 bg-white p-4 rounded-xl border border-ink-200 shadow-sm">
-                            <div>
-                              <span className="text-[10px] font-bold uppercase tracking-wider text-ink-400 block mb-1">Audit Benefit</span>
-                              <p className="text-xs text-ink-800 leading-relaxed font-medium">{t.expanded.benefit}</p>
-                            </div>
-                            <div className="pt-2.5 border-t border-ink-100">
-                              <span className="text-[10.5px] font-bold uppercase tracking-wider text-ink-400 block mb-1">Audit Impact</span>
-                              <p className="text-xs font-bold text-brand-700 leading-relaxed">{t.expanded.auditImpact}</p>
-                            </div>
-                          </div>
-
-                        </div>
-                      </td>
-                    </tr>
-                  )}
-                </React.Fragment>
-              );
-            })}
-          </tbody>
-        </table>
+    <div className="space-y-6 text-left">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <window.StatCard label="Automated Check Rules" value="7 Deployed" icon="shield" />
+        <window.StatCard label="Active Status" value="5 Active" tone="good" />
+        <window.StatCard label="Pending Review" value="2 Pending" severity="High" />
+        <window.StatCard label="Rule Coverage Rate" value="95%" tone="good" />
       </div>
-    </window.Section>
+
+      <window.Section 
+        title="Continuous Rules Deployment Log"
+        subtitle="Automated checks deployed in background engines to monitor access changes between quarterly scans."
+      >
+        <div className="overflow-x-auto">
+          <table className="w-full text-[13px] border-collapse">
+            <thead>
+              <tr className="border-b border-ink-200 bg-ink-50/50">
+                <window.Th className="px-4 py-3 text-left">Rule ID</window.Th>
+                <window.Th className="px-4 py-3 text-left">Rule Code</window.Th>
+                <window.Th className="px-4 py-3 text-left">Description</window.Th>
+                <window.Th className="px-4 py-3 text-left">Deployed Date</window.Th>
+                <window.Th className="px-4 py-3 text-left">Status</window.Th>
+                <window.Th className="px-4 py-3 text-left">Author</window.Th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-ink-100">
+              {rules.map(r => (
+                <tr key={r.id} className="row-hover">
+                  <td className="px-4 py-3 font-mono font-bold text-ink-900">{r.id}</td>
+                  <td className="px-4 py-3 font-mono font-bold text-brand-600">{r.code}</td>
+                  <td className="px-4 py-3 font-semibold text-ink-800">{r.desc}</td>
+                  <td className="px-4 py-3 font-mono text-ink-600">{r.deployed}</td>
+                  <td className="px-4 py-3">
+                    <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase ${
+                      r.status === 'Active' ? 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200' : 'bg-amber-50 text-amber-700 ring-1 ring-amber-200'
+                    }`}>
+                      {r.status}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 text-ink-500 font-semibold">{r.author}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </window.Section>
+    </div>
   );
 }
 
-/* ─── Executive GRC Dashboard Assembly ────────────────────────── */
-window.LaunchPage = function({ onNavigate, selectedRun }) {
-  // Process counts dynamically based on active run or seed defaults
+const getSodStreamForUser = (u) => {
+  if (u.firefighterId && u.firefighterId !== 'N/A') return 'SOD-08';
+  if (u.accountType === 'Service' || u.accountType === 'System') return 'SOD-10';
+  if (u.role && u.role.includes('SYSTEM')) return 'SOD-06';
+  if (u.violationId === 'V-1058') return 'SOD-09';
+  if (u.violationId === 'V-1042') return 'SOD-07';
+  if (u.violationId === 'V-1101') return 'SOD-04';
+  if (u.violationId === 'V-1090') return 'SOD-08';
+  if (u.violationId === 'V-1131') return 'SOD-05';
+  if (u.riskViolation === 'Yes') return 'SOD-03';
+  return 'SOD-11';
+};
+
+const getSodStreamForRisk = (r) => {
+  if (r.riskId === 'V-1058') return 'SOD-09';
+  if (r.riskId === 'V-1042') return 'SOD-07';
+  if (r.riskId === 'V-1101') return 'SOD-04';
+  if (r.riskId === 'V-1090') return 'SOD-08';
+  if (r.riskId === 'V-1131') return 'SOD-05';
+  if (r.level === 'Critical') return 'SOD-03';
+  if (r.level === 'High') return 'SOD-06';
+  return 'SOD-11';
+};
+
+window.LaunchPage = function({ 
+  onNavigate, 
+  selectedRun,
+  activeStream,
+  setActiveStream,
+  userSearch,
+  setUserSearch,
+  userDept,
+  setUserDept,
+  userRisk,
+  setUserRisk,
+  userSodFilter,
+  setUserSodFilter,
+  userPage,
+  setUserPage,
+  userSort,
+  setUserSort,
+  riskSearch,
+  setRiskSearch,
+  riskProcess,
+  setRiskProcess,
+  riskLevel,
+  setRiskLevel,
+  riskSodFilter,
+  setRiskSodFilter,
+  riskPage,
+  setRiskPage,
+  riskSort,
+  setRiskSort,
+  preservedScrollY,
+  setPreservedScrollY,
+  setActiveModalRisk
+}) {
   const runId = selectedRun ? selectedRun.id : 'LCSOD-2026-Q2-007';
   const totalUsers = selectedRun ? selectedRun.usersAnalyzed : '540';
   const totalViolations = selectedRun ? selectedRun.violationsFound : '46';
@@ -598,126 +546,872 @@ window.LaunchPage = function({ onNavigate, selectedRun }) {
   const criticalCount = selectedRun ? selectedRun.criticalViolationsCount : 18;
   const runDate = selectedRun ? selectedRun.date : 'May 19, 2026';
 
-  // Seed relative breakdowns
   const highCount = runId === 'LCSOD-2026-Q2-007' ? 19 : runId === 'LCSOD-2026-Q1-006' ? 15 : 22;
   const mediumCount = runId === 'LCSOD-2026-Q2-007' ? 9 : runId === 'LCSOD-2026-Q1-006' ? 8 : 4;
   const lowCount = 0;
 
+  const totalRoles = selectedRun ? selectedRun.rolesAnalyzed : '450';
+  const totalAuthObjects = runId === 'LCSOD-2026-Q2-007' ? '27,819' : runId === 'LCSOD-2026-Q1-006' ? '26,450' : '25,120';
+
+  // Restore scroll position
+  useEffect(() => {
+    if (preservedScrollY > 0) {
+      const timer = setTimeout(() => {
+        window.scrollTo(0, preservedScrollY);
+      }, 80);
+      return () => clearTimeout(timer);
+    }
+  }, [preservedScrollY]);
+
+  // Master Users pagination & filtering logic
+  const filteredUsers = useMemo(() => {
+    return (window.MOCK.ALL_USERS || []).filter(u => {
+      const q = userSearch.toLowerCase();
+      const matchesSearch = !userSearch || 
+        u.userId.toLowerCase().includes(q) || 
+        u.fullName.toLowerCase().includes(q) ||
+        u.role.toLowerCase().includes(q) ||
+        u.violationId.toLowerCase().includes(q) ||
+        u.violationDesc.toLowerCase().includes(q);
+
+      const matchesDept = userDept === 'All' || u.processArea === userDept;
+      const matchesRisk = userRisk === 'All' || 
+        (userRisk === 'Violators' && u.riskViolation === 'Yes') ||
+        (userRisk === 'Compliant' && u.riskViolation === 'No') ||
+        (userRisk === 'Critical' && u.severity === 'Critical') ||
+        (userRisk === 'High' && u.severity === 'High');
+
+      const stream = getSodStreamForUser(u);
+      const matchesSod = !userSodFilter || userSodFilter === 'All' || stream === userSodFilter;
+
+      return matchesSearch && matchesDept && matchesRisk && matchesSod;
+    }).sort((a, b) => {
+      const dir = userSort.dir === 'asc' ? 1 : -1;
+      const key = userSort.key;
+      if (key === 'sodStream') {
+        return getSodStreamForUser(a).localeCompare(getSodStreamForUser(b)) * dir;
+      }
+      return String(a[key] || '').localeCompare(String(b[key] || '')) * dir;
+    });
+  }, [userSearch, userDept, userRisk, userSort, userSodFilter]);
+
+  const pagedUsers = useMemo(() => {
+    const size = 10;
+    return filteredUsers.slice((userPage - 1) * size, userPage * size);
+  }, [filteredUsers, userPage]);
+
+  // Master Risks pagination & filtering logic
+  const filteredRisks = useMemo(() => {
+    return (window.MOCK.ALL_RISKS || []).filter(r => {
+      const q = riskSearch.toLowerCase();
+      const matchesSearch = !riskSearch ||
+        r.riskId.toLowerCase().includes(q) ||
+        r.title.toLowerCase().includes(q) ||
+        r.category.toLowerCase().includes(q) ||
+        r.grcMapping.toLowerCase().includes(q);
+
+      const matchesProcess = riskProcess === 'All' || r.process === riskProcess;
+      const matchesLevel = riskLevel === 'All' || r.level === riskLevel;
+
+      const stream = getSodStreamForRisk(r);
+      const matchesSod = !riskSodFilter || riskSodFilter === 'All' || stream === riskSodFilter;
+
+      return matchesSearch && matchesProcess && matchesLevel && matchesSod;
+    }).sort((a, b) => {
+      const dir = riskSort.dir === 'asc' ? 1 : -1;
+      const key = riskSort.key;
+      if (key === 'userCount') {
+        return (a.userCount - b.userCount) * dir;
+      }
+      if (key === 'sodStream') {
+        return getSodStreamForRisk(a).localeCompare(getSodStreamForRisk(b)) * dir;
+      }
+      return String(a[key] || '').localeCompare(String(b[key] || '')) * dir;
+    });
+  }, [riskSearch, riskProcess, riskLevel, riskSort, riskSodFilter]);
+
+  const pagedRisks = useMemo(() => {
+    const size = 5;
+    return filteredRisks.slice((riskPage - 1) * size, riskPage * size);
+  }, [filteredRisks, riskPage]);
+
+  const getUserCountForStream = (streamKey) => {
+    if (streamKey === 'All') return (window.MOCK.ALL_USERS || []).length;
+    return (window.MOCK.ALL_USERS || []).filter(u => getSodStreamForUser(u) === streamKey).length;
+  };
+
+  const getRiskCountForStream = (streamKey) => {
+    if (streamKey === 'All') return (window.MOCK.ALL_RISKS || []).length;
+    return (window.MOCK.ALL_RISKS || []).filter(r => getSodStreamForRisk(r) === streamKey).length;
+  };
+
   return (
-    <div data-screen-label="Dashboard Overview" className="space-y-6 px-4 md:px-7 py-6 text-left">
+    <div data-screen-label="Dashboard Overview" className="space-y-6 px-4 md:px-7 py-6 text-left animate-fade-in">
       
-      {/* Back to Explorer */}
-      <div className="flex justify-start">
-        <button
-          onClick={() => onNavigate('violation-explorer')}
-          className="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-ink-200 hover:bg-ink-50 text-ink-700 font-bold text-xs rounded-lg transition-colors shadow-sm"
-        >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-3.5 h-3.5 text-ink-700 shrink-0">
-            <polyline points="15 18 9 12 15 6" />
-          </svg>
-          <span>Back to Explorer</span>
-        </button>
+      {/* Breadcrumb Navigation */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2 text-xs font-semibold text-ink-500">
+          <window.Icon name="home" className="w-3.5 h-3.5" />
+          <span>Home</span>
+          <span className="text-ink-300">/</span>
+          <span>Analysis Runs</span>
+          <span className="text-ink-300">/</span>
+          <span className="text-ink-900 font-bold">SoD Analysis</span>
+        </div>
+        <div className="flex items-center gap-1.5 px-3 py-1 bg-blue-50 text-blue-700 ring-1 ring-inset ring-blue-200 rounded-full text-[10px] font-bold uppercase tracking-wider">
+          <span className="h-1.5 w-1.5 rounded-full bg-blue-600 animate-pulse" />
+          PRD — Production
+        </div>
       </div>
-      
-      {/* Dashboard Top Banner */}
-      <div className="bg-white rounded-xl p-5 border border-ink-200 shadow-sm flex flex-wrap items-center justify-between gap-4">
+
+      {/* Page Title Header */}
+      <div className="flex items-start gap-4">
+        <div className="h-12 w-12 rounded-xl bg-blue-50 text-brand-600 flex items-center justify-center shadow-sm border border-blue-100 shrink-0">
+          <window.Icon name="shield" className="w-6 h-6" />
+        </div>
         <div>
-          <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-brand-600">Executive Dashboard</span>
-          <h2 className="text-xl font-black text-ink-900 mt-0.5">KTern.AI SoD Compliance Command Center</h2>
-          <p className="text-xs text-ink-500 mt-1">
-            Real-time Segregation of Duties metrics and remediation tracking for Lotte Chemical ERP systems.
+          <h1 className="text-2xl font-bold tracking-tight text-ink-900">SoD Analysis</h1>
+          <p className="text-sm text-ink-500 mt-1">
+            Analyze and optimize SAP user segregation of duties checks and unmitigated risk controls across your organization.
           </p>
         </div>
-        
-        <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-ink-700 bg-ink-50 px-4 py-2.5 rounded-xl border border-ink-200">
-          <span>Active Run: <b className="font-mono text-brand-700">{runId}</b></span>
-          <span className="text-ink-300">|</span>
-          <span>System: <b>PRD · S/4HANA</b></span>
-          <span className="text-ink-300">|</span>
-          <span>Scan Date: <b>{runDate}</b></span>
-        </div>
       </div>
 
-      {/* SECTION 1: Compliance Overview (Exactly 4 Main KPIs only) */}
-      <div className="space-y-3">
-        <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-ink-400">
-          <span>Compliance Overview [SOD-01 / SOD-02]</span>
-        </div>
-        
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <window.StatCard label="Total Users Scanned" value={totalUsers} metricKey="totalUsers" />
-          <window.StatCard severity="Critical" label="Total SoD Violations" value={totalViolations} metricKey="totalViolations" />
-          <window.StatCard label="Compliance Score" value={`${complianceScore}%`} tone="good" metricKey="complianceScore" onClick={() => onNavigate('compliance-detail')} />
-          <window.StatCard severity="Critical" label="Critical Risks" value={criticalCount} metricKey="criticalViolations" />
-        </div>
-      </div>
-
-      {/* SECTION 2: Risk Overview */}
-      <div className="space-y-3">
-        <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-ink-400">
-          <span>Risk Overview [SOD-05]</span>
-        </div>
-        
-        <window.Section 
-          title={
-            <div className="flex items-center gap-1.5">
-              <span>Enterprise Risk Severity Distribution Line</span>
-              <window.Tooltip 
-                align="top-left"
-                tooltipClassName="w-[450px] bg-white border border-ink-200 shadow-pop p-3 text-ink-800 font-medium"
-                tip={
-                  <div className="space-y-2 text-left">
-                    <div className="font-bold text-ink-900 text-[12px] border-b border-ink-100 pb-1.5">
-                      Risk Coverage Score Formula
-                    </div>
-                    <code className="block bg-ink-50 p-2 rounded font-mono text-[11px] text-brand-700 border border-ink-150 leading-snug whitespace-nowrap">
-                      Score = ( 1 - WUR / WDR ) * 100
-                    </code>
-                    <p className="text-ink-500 text-[10.5px] leading-relaxed">
-                      Where <b>WDR</b> is Weighted Detected Risk and <b>WUR</b> is Weighted Unmitigated Risk based on critical, high, medium, and low severity weight parameters.
-                    </p>
-                  </div>
-                }
-              >
-                <button type="button" className="text-ink-400 hover:text-brand-600 transition-colors p-0.5 rounded cursor-help focus:outline-none">
-                  <window.Icon name="info" className="w-3.5 h-3.5" />
-                </button>
-              </window.Tooltip>
+      {/* Redesigned 4 KPI Cards Grid */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Card 1: No. of Users */}
+        <div className="bg-white rounded-xl shadow-card ring-1 ring-ink-200 overflow-hidden border-t-4 border-blue-500 p-4">
+          <div className="flex items-center gap-2">
+            <div className="h-8 w-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
+              <window.Icon name="user" className="w-4 h-4" />
             </div>
-          }
-          subtitle="Linear progression chart mapping unmitigated access conflicts across severity classifications. Bar chart excluded in favor of progression lines."
-        >
-          <div className="p-6">
-            <EnterpriseSeverityDistributionLine 
-              critical={criticalCount} 
-              high={highCount} 
-              medium={mediumCount} 
-              low={lowCount} 
-            />
+            <span className="text-[10px] font-bold uppercase tracking-wider text-ink-500">NO. OF USERS</span>
           </div>
-        </window.Section>
+          <div className="mt-3">
+            <span className="text-[28px] font-bold leading-none text-ink-900 font-mono">{totalUsers}</span>
+          </div>
+          <div className="mt-2 text-xs text-ink-450 font-medium">
+            Total SAP users analyzed
+          </div>
+        </div>
+
+        {/* Card 2: Total Roles Scanned */}
+        <div className="bg-white rounded-xl shadow-card ring-1 ring-ink-200 overflow-hidden border-t-4 border-orange-500 p-4">
+          <div className="flex items-center gap-2">
+            <div className="h-8 w-8 rounded-lg bg-orange-50 text-orange-600 flex items-center justify-center">
+              <window.Icon name="table" className="w-4 h-4" />
+            </div>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-ink-500">TOTAL ROLES SCANNED</span>
+          </div>
+          <div className="mt-3">
+            <span className="text-[28px] font-bold leading-none text-ink-900 font-mono">{totalRoles}</span>
+          </div>
+          <div className="mt-2 text-xs text-ink-450 font-medium">
+            {totalRoles} active role mappings
+          </div>
+        </div>
+
+        {/* Card 3: Total Auth Objects */}
+        <div className="bg-white rounded-xl shadow-card ring-1 ring-ink-200 overflow-hidden border-t-4 border-yellow-500 p-4">
+          <div className="flex items-center gap-2">
+            <div className="h-8 w-8 rounded-lg bg-yellow-50 text-yellow-600 flex items-center justify-center">
+              <window.Icon name="package" className="w-4 h-4" />
+            </div>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-ink-500">TOTAL AUTH OBJECTS</span>
+          </div>
+          <div className="mt-3">
+            <span className="text-[28px] font-bold leading-none text-ink-900 font-mono">{totalAuthObjects}</span>
+          </div>
+          <div className="mt-2 text-xs text-ink-450 font-medium">
+            {totalAuthObjects} assigned auth Objects
+          </div>
+        </div>
+
+        {/* Card 4: Risk Severity Classification */}
+        <div className="bg-white rounded-xl shadow-card ring-1 ring-ink-200 overflow-hidden border-t-4 border-purple-500 p-4 flex flex-col justify-between">
+          <div>
+            <div className="flex items-center gap-2">
+              <div className="h-8 w-8 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center">
+                <window.Icon name="flame" className="w-4 h-4" />
+              </div>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-ink-500">RISK SEVERITIES</span>
+            </div>
+
+            <div className="mt-3.5">
+              <div className="h-2 w-full bg-ink-100 rounded-full overflow-hidden flex">
+                <div className="bg-red-500 h-full" style={{ width: '39.1%' }} />
+                <div className="bg-orange-500 h-full" style={{ width: '41.3%' }} />
+                <div className="bg-yellow-500 h-full" style={{ width: '19.6%' }} />
+              </div>
+            </div>
+
+            <div className="mt-3 flex items-center justify-between text-[9px] font-bold text-ink-800">
+              <div className="flex items-center gap-0.5">
+                <span className="h-1.5 w-1.5 rounded-full bg-red-500" />
+                <span>CRIT <b className="font-mono">{criticalCount}</b></span>
+              </div>
+              <div className="flex items-center gap-0.5">
+                <span className="h-1.5 w-1.5 rounded-full bg-orange-500" />
+                <span>HIGH <b className="font-mono">{highCount}</b></span>
+              </div>
+              <div className="flex items-center gap-0.5">
+                <span className="h-1.5 w-1.5 rounded-full bg-yellow-500" />
+                <span>MED <b className="font-mono">{mediumCount}</b></span>
+              </div>
+            </div>
+          </div>
+          <div className="mt-3 text-xs text-ink-450 font-medium">
+            By unmitigated violations
+          </div>
+        </div>
       </div>
 
-      {/* SECTION 3: Violation Investigation */}
-      <div className="space-y-3">
-        <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-ink-400">
-          <span>Violation Investigation [SOD-03]</span>
+      {/* Combined SoD Risk Distribution & Coverage Assessment [SOD-01 & SOD-02] */}
+      <div className="bg-white rounded-2xl border border-ink-200 shadow-card p-6 text-left">
+        <div className="flex flex-wrap items-center justify-between pb-4 border-b border-ink-100 mb-6">
+          <div>
+            <h3 className="text-base font-extrabold text-ink-900 uppercase tracking-tight flex items-center gap-2">
+              <span>SoD Risk Distribution & Coverage Assessment [SOD-01 & SOD-02]</span>
+              <span className="px-2.5 py-0.5 bg-purple-50 text-purple-700 text-[10px] font-mono font-bold rounded-full border border-purple-200">Executive Summary</span>
+            </h3>
+            <p className="text-xs text-ink-500 mt-0.5 font-semibold">Unified severity distribution matrix and compliance coverage calculation.</p>
+          </div>
+          <window.ExportButton label="Export Analysis (Excel)" size="sm" />
         </div>
-        <MaterialRiskInventoryGrid onNavigate={onNavigate} />
+
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          {/* Left Column: SoD Risk Distribution Table (SOD-01) */}
+          <div className="lg:col-span-8 space-y-4">
+            <h4 className="text-xs font-bold text-ink-700 uppercase tracking-wider">Unified Risk Severity Matrix</h4>
+            <table className="w-full text-xs text-left border-collapse">
+              <thead>
+                <tr className="border-b border-ink-200 text-ink-500 font-bold">
+                  <th className="py-2.5 flex items-center">
+                    SEVERITY TIER
+                    <window.HeaderTooltip tip="The classified severity level of the risk rule definition." />
+                  </th>
+                  <th className="py-2.5">
+                    <span className="flex items-center">
+                      ACTIVE VIOLATIONS
+                      <window.HeaderTooltip tip="The number of active user logins currently triggering this severity level." />
+                    </span>
+                  </th>
+                  <th className="py-2.5">
+                    <span className="flex items-center">
+                      SEVERITY WEIGHT
+                      <window.HeaderTooltip tip="Weight coefficient applied to this severity in risk score calculations." />
+                    </span>
+                  </th>
+                  <th className="py-2.5 w-1/3">
+                    <span className="flex items-center">
+                      RISK DISTRIBUTION
+                      <window.HeaderTooltip tip="Percentage share and visual representation of this severity against total violations." />
+                    </span>
+                  </th>
+                  <th className="py-2.5 text-right">
+                    <span className="flex items-center justify-end">
+                      BUSINESS IMPACT
+                      <window.HeaderTooltip tip="Operational, financial, or regulatory impact classification." />
+                    </span>
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-ink-100 font-medium">
+                {/* Critical */}
+                <tr className="row-hover">
+                  <td className="py-3.5 flex items-center gap-2">
+                    <span className="h-2.5 w-2.5 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.4)]" />
+                    <span className="font-bold text-ink-900">Critical Severity</span>
+                  </td>
+                  <td className="py-3.5">
+                    <div className="text-sm font-bold text-ink-900">{criticalCount} <span className="text-[10px] text-ink-450 font-normal">users</span></div>
+                  </td>
+                  <td className="py-3.5">
+                    <span className="px-2 py-0.5 bg-rose-50 text-rose-700 ring-1 ring-inset ring-rose-200 rounded font-mono text-[10px] font-bold">Weight ×1.0</span>
+                  </td>
+                  <td className="py-3.5">
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono font-bold text-ink-700 w-10 shrink-0">{((criticalCount / (Number(totalViolations) || 1)) * 100).toFixed(1)}%</span>
+                      <div className="h-2 w-full bg-ink-100 rounded-full overflow-hidden">
+                        <div className="bg-red-500 h-full rounded-full" style={{ width: `${((criticalCount / (Number(totalViolations) || 1)) * 100).toFixed(1)}%` }} />
+                      </div>
+                    </div>
+                  </td>
+                  <td className="py-3.5 text-right text-rose-600 font-bold">High Risk (P1)</td>
+                </tr>
+                {/* High */}
+                <tr className="row-hover">
+                  <td className="py-3.5 flex items-center gap-2">
+                    <span className="h-2.5 w-2.5 rounded-full bg-orange-500 shadow-[0_0_8px_rgba(249,115,22,0.4)]" />
+                    <span className="font-bold text-ink-900">High Severity</span>
+                  </td>
+                  <td className="py-3.5">
+                    <div className="text-sm font-bold text-ink-900">{highCount} <span className="text-[10px] text-ink-450 font-normal">users</span></div>
+                  </td>
+                  <td className="py-3.5">
+                    <span className="px-2 py-0.5 bg-orange-50 text-orange-700 ring-1 ring-inset ring-orange-200 rounded font-mono text-[10px] font-bold">Weight ×0.6</span>
+                  </td>
+                  <td className="py-3.5">
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono font-bold text-ink-700 w-10 shrink-0">{((highCount / (Number(totalViolations) || 1)) * 100).toFixed(1)}%</span>
+                      <div className="h-2 w-full bg-ink-100 rounded-full overflow-hidden">
+                        <div className="bg-orange-500 h-full rounded-full" style={{ width: `${((highCount / (Number(totalViolations) || 1)) * 100).toFixed(1)}%` }} />
+                      </div>
+                    </div>
+                  </td>
+                  <td className="py-3.5 text-right text-orange-600 font-bold">Medium Risk (P2)</td>
+                </tr>
+                {/* Medium */}
+                <tr className="row-hover">
+                  <td className="py-3.5 flex items-center gap-2">
+                    <span className="h-2.5 w-2.5 rounded-full bg-yellow-500 shadow-[0_0_8px_rgba(234,179,8,0.4)]" />
+                    <span className="font-bold text-ink-900">Medium Severity</span>
+                  </td>
+                  <td className="py-3.5">
+                    <div className="text-sm font-bold text-ink-900">{mediumCount} <span className="text-[10px] text-ink-450 font-normal">users</span></div>
+                  </td>
+                  <td className="py-3.5">
+                    <span className="px-2 py-0.5 bg-amber-50 text-amber-700 ring-1 ring-inset ring-amber-200 rounded font-mono text-[10px] font-bold">Weight ×0.3</span>
+                  </td>
+                  <td className="py-3.5">
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono font-bold text-ink-700 w-10 shrink-0">{((mediumCount / (Number(totalViolations) || 1)) * 100).toFixed(1)}%</span>
+                      <div className="h-2 w-full bg-ink-100 rounded-full overflow-hidden">
+                        <div className="bg-yellow-500 h-full rounded-full" style={{ width: `${((mediumCount / (Number(totalViolations) || 1)) * 100).toFixed(1)}%` }} />
+                      </div>
+                    </div>
+                  </td>
+                  <td className="py-3.5 text-right text-yellow-600 font-bold">Low Risk (P3)</td>
+                </tr>
+                {/* Low */}
+                <tr className="row-hover">
+                  <td className="py-3.5 flex items-center gap-2">
+                    <span className="h-2.5 w-2.5 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.4)]" />
+                    <span className="font-bold text-ink-900">Low Severity</span>
+                  </td>
+                  <td className="py-3.5">
+                    <div className="text-sm font-bold text-ink-900">{lowCount} <span className="text-[10px] text-ink-450 font-normal">users</span></div>
+                  </td>
+                  <td className="py-3.5">
+                    <span className="px-2 py-0.5 bg-blue-50 text-blue-700 ring-1 ring-inset ring-blue-200 rounded font-mono text-[10px] font-bold">Weight ×0.1</span>
+                  </td>
+                  <td className="py-3.5">
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono font-bold text-ink-700 w-10 shrink-0">{((lowCount / (Number(totalViolations) || 1)) * 100).toFixed(1)}%</span>
+                      <div className="h-2 w-full bg-ink-100 rounded-full overflow-hidden">
+                        <div className="bg-blue-500 h-full rounded-full" style={{ width: `${((lowCount / (Number(totalViolations) || 1)) * 100).toFixed(1)}%` }} />
+                      </div>
+                    </div>
+                  </td>
+                  <td className="py-3.5 text-right text-blue-600 font-bold">Minimal Risk (P4)</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          {/* Right Column: Risk Coverage Score & Weights (SOD-02) */}
+          <div className="lg:col-span-4 border-t lg:border-t-0 lg:border-l border-ink-150 pt-6 lg:pt-0 lg:pl-8 flex flex-col justify-between space-y-6">
+            <div>
+              <div className="flex items-center justify-between pb-2 border-b border-ink-100 mb-4">
+                <span className="text-xs font-bold text-ink-700 uppercase tracking-wider">Compliance Assessment</span>
+                <span className="text-xs text-ink-550 font-mono font-bold">{totalViolations} total violations</span>
+              </div>
+              
+              {/* Large Score Callout */}
+              <div className="bg-slate-50 border border-ink-200 rounded-2xl p-5 text-center flex flex-col items-center justify-center shadow-sm">
+                <span className="text-xs font-bold uppercase tracking-wider text-ink-500">Risk Coverage Score</span>
+                <div className="text-4xl font-black text-ink-900 tracking-tight mt-1.5 font-mono">
+                  {complianceScore}%
+                </div>
+                <div className="mt-2.5 px-3 py-1 bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-200 rounded-full text-[10px] font-bold uppercase tracking-wider">
+                  Target Baseline: 95.0% - 98.0%
+                </div>
+              </div>
+            </div>
+
+            {/* Calculation Methodology Section */}
+            <div className="space-y-3 pt-2">
+              <span className="text-[10px] font-extrabold uppercase tracking-wider text-ink-450 block">CALCULATION METHODOLOGY</span>
+              <div className="bg-white rounded-xl border border-ink-200 shadow-sm p-3.5 text-center">
+                <span className="text-xs font-bold text-ink-850 tracking-wide font-mono block">
+                  Risk Coverage Score = ( 1 - WUR ÷ WDR ) × 100
+                </span>
+              </div>
+              <p className="text-[11px] text-ink-550 leading-relaxed font-medium">
+                Where <span className="font-bold text-ink-850">WDR</span> is Weighted Detected Risk and <span className="font-bold text-ink-850">WUR</span> is Weighted Unmitigated Risk based on critical, high, medium, and low severity weight parameters.
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* SECTION 4: Remediation Tracking */}
-      <div className="space-y-3">
-        <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-ink-400">
-          <span>Remediation Tracking [SOD-11]</span>
+      {/* Master User-wise Table */}
+      <div className="space-y-3 pt-6">
+        <div className="flex items-center justify-between border-b border-ink-200 pb-2">
+          <div>
+            <h3 className="text-base font-extrabold text-ink-900">Master User-wise Compliance Registry</h3>
+            <p className="text-xs text-ink-500 mt-0.5 font-semibold">Comprehensive grid containing all dialog and firefighter identities and unmitigated authorization check flags.</p>
+          </div>
+          <window.ExportButton label="Export Users (Excel)" size="sm" />
         </div>
-        <RemediationTrackingGrid />
+
+        {/* Scrollable SoD Stream Pills Navigation */}
+        <div className="flex gap-2 overflow-x-auto pb-3 pt-1 scrollbar-none snap-x whitespace-nowrap border-b border-ink-100">
+          {[
+            { key: 'All', label: 'All Streams' },
+            { key: 'SOD-03', label: 'SOD-03: Critical' },
+            { key: 'SOD-04', label: 'SOD-04: Immediate' },
+            { key: 'SOD-05', label: 'SOD-05: Compliance' },
+            { key: 'SOD-06', label: 'SOD-06: Super Admin' },
+            { key: 'SOD-07', label: 'SOD-07: Cross Process' },
+            { key: 'SOD-08', label: 'SOD-08: Emergency Access' },
+            { key: 'SOD-09', label: 'SOD-09: OTC Control' },
+            { key: 'SOD-10', label: 'SOD-10: Service Accounts' },
+            { key: 'SOD-11', label: 'SOD-11: Remediation' }
+          ].map(s => {
+            const isSelected = userSodFilter === s.key;
+            const count = getUserCountForStream(s.key);
+            return (
+              <button
+                key={s.key}
+                onClick={() => {
+                  setUserSodFilter(s.key);
+                  setUserPage(1);
+                }}
+                className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all border shrink-0 snap-center ${
+                  isSelected
+                    ? 'bg-ink-900 border-ink-900 text-white shadow-sm ring-1 ring-ink-900'
+                    : 'bg-white border-ink-200 text-ink-650 hover:bg-ink-50 hover:text-ink-900'
+                }`}
+              >
+                <span>{s.label}</span>
+                <span className={`px-1.5 py-0.5 rounded-md text-[10px] font-mono font-bold ${
+                  isSelected ? 'bg-white/20 text-white' : 'bg-ink-100 text-ink-600'
+                }`}>
+                  {count}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* User Filter Controls */}
+        <window.FilterBar 
+          onClear={() => { 
+            setUserSearch(''); 
+            setUserDept('All'); 
+            setUserRisk('All'); 
+            setUserSodFilter('All');
+            setUserPage(1); 
+          }} 
+          hasFilters={userSearch !== '' || userDept !== 'All' || userRisk !== 'All' || userSodFilter !== 'All'}
+        >
+          <div className="flex flex-wrap gap-2 items-center w-full">
+            <window.Select 
+              value={userDept} 
+              onChange={val => { setUserDept(val); setUserPage(1); }} 
+              options={['All', 'Finance', 'Procurement', 'OTC', 'HR', 'IT Basis', 'Sales', 'Treasury']}
+              placeholder="All Areas" 
+            />
+            <window.Select 
+              value={userRisk} 
+              onChange={val => { setUserRisk(val); setUserPage(1); }} 
+              options={['All', 'Violators', 'Compliant', 'Critical', 'High']} 
+              placeholder="All Violations"
+            />
+            <div className="w-72">
+              <window.SearchInput 
+                value={userSearch} 
+                onChange={val => { setUserSearch(val); setUserPage(1); }} 
+                placeholder="Search user ID, name, role..." 
+              />
+            </div>
+            <span className="ml-auto text-[11px] font-mono text-ink-400 font-bold">
+              {filteredUsers.length} Users found
+            </span>
+          </div>
+        </window.FilterBar>
+
+        {/* User Grid with Horizontal Scroll */}
+        <div className="overflow-x-auto border border-ink-200 rounded-xl shadow-sm bg-white min-h-[180px]">
+          <table className="w-full text-[12.5px] border-collapse min-w-[2000px] table-fixed">
+            <thead className="sticky top-0 bg-ink-50 z-10">
+              <tr className="border-b border-ink-250">
+                <window.Th className="w-24 px-4 py-3" sortKey="userId" sort={userSort} onSort={k => setUserSort({ key: k, dir: userSort.dir === 'asc' ? 'desc' : 'asc' })}>
+                  User ID
+                  <window.HeaderTooltip tip="Unique identification code of the user in the SAP system." />
+                </window.Th>
+                <window.Th className="w-36 px-4 py-3" sortKey="fullName" sort={userSort} onSort={k => setUserSort({ key: k, dir: userSort.dir === 'asc' ? 'desc' : 'asc' })}>
+                  Full Name
+                  <window.HeaderTooltip tip="First and last name of the user." />
+                </window.Th>
+                <window.Th className="w-24 px-4 py-3" sortKey="riskViolation" sort={userSort} onSort={k => setUserSort({ key: k, dir: userSort.dir === 'asc' ? 'desc' : 'asc' })}>
+                  Violator
+                  <window.HeaderTooltip tip="Indicates if the user has any active unmitigated SoD conflicts." />
+                </window.Th>
+                <window.Th className="w-24 px-4 py-3" sortKey="violationId" sort={userSort} onSort={k => setUserSort({ key: k, dir: userSort.dir === 'asc' ? 'desc' : 'asc' })}>
+                  Violation ID
+                  <window.HeaderTooltip tip="The specific conflict rule ID violated by this user." />
+                </window.Th>
+
+                <th className="w-64 px-4 py-3 text-left font-bold text-ink-600 uppercase text-[10px]">
+                  <span className="flex items-center">
+                    Violation Description
+                    <window.HeaderTooltip tip="Details of the incompatible permissions or transaction codes." />
+                  </span>
+                </th>
+                <window.Th className="w-24 px-4 py-3" sortKey="severity" sort={userSort} onSort={k => setUserSort({ key: k, dir: userSort.dir === 'asc' ? 'desc' : 'asc' })}>
+                  Severity
+                  <window.HeaderTooltip tip="Risk classification of the conflict (Critical, High, Medium, Low)." />
+                </window.Th>
+                <window.Th className="w-28 px-4 py-3" sortKey="processArea" sort={userSort} onSort={k => setUserSort({ key: k, dir: userSort.dir === 'asc' ? 'desc' : 'asc' })}>
+                  Process Area
+                  <window.HeaderTooltip tip="The business department or functional area of the conflict (e.g. Finance, OTC)." />
+                </window.Th>
+                <th className="w-48 px-4 py-3 text-left font-bold text-ink-600 uppercase text-[10px]">
+                  <span className="flex items-center">
+                    Conflicting Transactions
+                    <window.HeaderTooltip tip="Incompatible SAP transaction codes assigned to the user." />
+                  </span>
+                </th>
+                <th className="w-64 px-4 py-3 text-left font-bold text-ink-600 uppercase text-[10px]">
+                  <span className="flex items-center">
+                    Business Impact
+                    <window.HeaderTooltip tip="Potential risk or financial impact of this authorization overlap." />
+                  </span>
+                </th>
+                <th className="w-64 px-4 py-3 text-left font-bold text-ink-600 uppercase text-[10px]">
+                  <span className="flex items-center">
+                    Recommended Action
+                    <window.HeaderTooltip tip="Proposed remediation steps to resolve the conflict." />
+                  </span>
+                </th>
+                <th className="w-64 px-4 py-3 text-left font-bold text-ink-600 uppercase text-[10px]">
+                  <span className="flex items-center">
+                    Recommendation Type
+                    <window.HeaderTooltip tip="Type of mitigation (e.g. Role Redesign, Privilege Revocation)." />
+                  </span>
+                </th>
+                <th className="w-28 px-4 py-3 text-left font-bold text-ink-600 uppercase text-[10px]">
+                  <span className="flex items-center">
+                    Priority
+                    <window.HeaderTooltip tip="Urgency mapping for the remediation task." />
+                  </span>
+                </th>
+                <window.Th className="w-28 px-4 py-3" sortKey="status" sort={userSort} onSort={k => setUserSort({ key: k, dir: userSort.dir === 'asc' ? 'desc' : 'asc' })}>
+                  Status
+                  <window.HeaderTooltip tip="Current mitigation status (Open, In Progress, Resolved)." />
+                </window.Th>
+                <th className="w-36 px-4 py-3 text-left font-bold text-ink-600 uppercase text-[10px]">
+                  <span className="flex items-center">
+                    Assignee Suggestion
+                    <window.HeaderTooltip tip="Recommended internal team to resolve the conflict." />
+                  </span>
+                </th>
+                <th className="w-28 px-4 py-3 text-left font-bold text-ink-600 uppercase text-[10px]">
+                  <span className="flex items-center">
+                    Account Type
+                    <window.HeaderTooltip tip="Type of SAP account (Dialog, Service, System)." />
+                  </span>
+                </th>
+                <th className="w-24 px-4 py-3 text-right font-bold text-ink-600 uppercase text-[10px]">
+                  <span className="flex items-center justify-end">
+                    Actions
+                    <window.HeaderTooltip tip="Interactive drill-down and analysis actions." />
+                  </span>
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-ink-100">
+              {pagedUsers.map(u => {
+                return (
+                  <tr key={u.userId} className="row-hover cursor-pointer transition-colors" onClick={() => onNavigate('user-profile', u.userId)}>
+                    <td className="px-4 py-2.5 font-mono font-bold text-ink-900 truncate">{u.userId}</td>
+                    <td className="px-4 py-2.5 font-semibold text-ink-800 truncate">{u.fullName}</td>
+                    <td className="px-4 py-2.5">
+                      <span className={`font-bold uppercase text-[10px] ${u.riskViolation === 'Yes' ? 'text-rose-600' : 'text-emerald-600'}`}>
+                        {u.riskViolation}
+                      </span>
+                    </td>
+                    <td className="px-4 py-2.5 font-mono text-brand-600 font-bold truncate">{u.violationId}</td>
+ 
+                    <td className="px-4 py-2.5 text-ink-700 truncate" title={u.violationDesc}>{u.violationDesc}</td>
+                    <td className="px-4 py-2.5"><window.SeverityBadge value={u.severity} /></td>
+                    <td className="px-4 py-2.5 font-semibold text-ink-600">{u.processArea}</td>
+                    <td className="px-4 py-2.5 font-mono text-xs text-ink-600 truncate" title={u.conflictingTransactions}>{u.conflictingTransactions}</td>
+                    <td className="px-4 py-2.5 text-ink-500 truncate text-xs" title={u.businessImpact}>{u.businessImpact}</td>
+                    <td className="px-4 py-2.5 text-ink-600 truncate text-xs" title={u.recommendedAction}>{u.recommendedAction}</td>
+                    <td className="px-4 py-2.5 text-ink-700 truncate font-semibold">{u.recommendationType}</td>
+                    <td className="px-4 py-2.5 font-bold text-ink-700">{u.priority}</td>
+                    <td className="px-4 py-2.5">
+                      <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ring-1 ring-inset ${
+                        u.status === 'Resolved' ? 'bg-emerald-50 text-emerald-700 ring-emerald-250' : 'bg-rose-50 text-rose-700 ring-rose-250'
+                      }`}>
+                        {u.status}
+                      </span>
+                    </td>
+                    <td className="px-4 py-2.5 text-ink-600 font-semibold truncate">{u.assignee}</td>
+                    <td className="px-4 py-2.5 text-ink-600">{u.accountType}</td>
+                    <td className="px-4 py-2.5 text-right">
+                      <button 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onNavigate('user-profile', u.userId);
+                        }}
+                        className="px-2.5 py-1 rounded font-bold text-[11px] bg-brand-50 text-brand-700 hover:bg-brand-100 transition-colors"
+                      >
+                        View
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
+              {pagedUsers.length === 0 && (
+                <tr>
+                  <td colSpan={16} className="py-12 text-center text-sm font-bold text-ink-400 uppercase tracking-widest">
+                    No users found matching filters
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+        <window.Pagination page={userPage} pageSize={10} total={filteredUsers.length} onPage={setUserPage} />
+      </div>
+
+      {/* Master Risk-wise Table */}
+      <div className="space-y-3 pt-6">
+        <div className="flex items-center justify-between border-b border-ink-200 pb-2">
+          <div>
+            <h3 className="text-base font-extrabold text-ink-900">Master SoD Risks Ruleset Catalog</h3>
+            <p className="text-xs text-ink-500 mt-0.5 font-semibold">Global definitions of Segregation of Duties checks, conflict pairs, and business impact parameters.</p>
+          </div>
+          <window.ExportButton label="Export Ruleset" size="sm" />
+        </div>
+
+        {/* Scrollable SoD Stream Pills Navigation */}
+        <div className="flex gap-2 overflow-x-auto pb-3 pt-1 scrollbar-none snap-x whitespace-nowrap border-b border-ink-100">
+          {[
+            { key: 'All', label: 'All Streams' },
+            { key: 'SOD-03', label: 'SOD-03: Critical' },
+            { key: 'SOD-04', label: 'SOD-04: Immediate' },
+            { key: 'SOD-05', label: 'SOD-05: Compliance' },
+            { key: 'SOD-06', label: 'SOD-06: Super Admin' },
+            { key: 'SOD-07', label: 'SOD-07: Cross Process' },
+            { key: 'SOD-08', label: 'SOD-08: Emergency Access' },
+            { key: 'SOD-09', label: 'SOD-09: OTC Control' },
+            { key: 'SOD-10', label: 'SOD-10: Service Accounts' },
+            { key: 'SOD-11', label: 'SOD-11: Remediation' }
+          ].map(s => {
+            const isSelected = riskSodFilter === s.key;
+            const count = getRiskCountForStream(s.key);
+            return (
+              <button
+                key={s.key}
+                onClick={() => {
+                  setRiskSodFilter(s.key);
+                  setRiskPage(1);
+                }}
+                className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all border shrink-0 snap-center ${
+                  isSelected
+                    ? 'bg-ink-900 border-ink-900 text-white shadow-sm ring-1 ring-ink-900'
+                    : 'bg-white border-ink-200 text-ink-650 hover:bg-ink-50 hover:text-ink-900'
+                }`}
+              >
+                <span>{s.label}</span>
+                <span className={`px-1.5 py-0.5 rounded-md text-[10px] font-mono font-bold ${
+                  isSelected ? 'bg-white/20 text-white' : 'bg-ink-100 text-ink-600'
+                }`}>
+                  {count}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Risk Filter Controls */}
+        <window.FilterBar 
+          onClear={() => { 
+            setRiskSearch(''); 
+            setRiskProcess('All'); 
+            setRiskLevel('All'); 
+            setRiskSodFilter('All');
+            setRiskPage(1); 
+          }} 
+          hasFilters={riskSearch !== '' || riskProcess !== 'All' || riskLevel !== 'All' || riskSodFilter !== 'All'}
+        >
+          <div className="flex flex-wrap gap-2 items-center w-full">
+            <window.Select 
+              value={riskProcess} 
+              onChange={val => { setRiskProcess(val); setRiskPage(1); }} 
+              options={['All', 'Finance', 'Procurement', 'OTC', 'HR', 'IT']} 
+              placeholder="All Processes" 
+            />
+            <window.Select 
+              value={riskLevel} 
+              onChange={val => { setRiskLevel(val); setRiskPage(1); }} 
+              options={['All', 'Critical', 'High', 'Medium', 'Low']} 
+              placeholder="All Levels" 
+            />
+            <div className="w-72">
+              <window.SearchInput 
+                value={riskSearch} 
+                onChange={val => { setRiskSearch(val); setRiskPage(1); }} 
+                placeholder="Search risk ID, title, grc code..." 
+              />
+            </div>
+            <span className="ml-auto text-[11px] font-mono text-ink-400 font-bold">
+              {filteredRisks.length} Risks found
+            </span>
+          </div>
+        </window.FilterBar>
+
+        {/* Risk Grid with Horizontal Scroll */}
+        <div className="overflow-x-auto border border-ink-200 rounded-xl shadow-sm bg-white min-h-[180px]">
+          <table className="w-full text-[12.5px] border-collapse min-w-[1600px] table-fixed">
+            <thead className="sticky top-0 bg-ink-50 z-10">
+              <tr className="border-b border-ink-250">
+                <window.Th className="w-24 px-4 py-3" sortKey="riskId" sort={riskSort} onSort={k => setRiskSort({ key: k, dir: riskSort.dir === 'asc' ? 'desc' : 'asc' })}>
+                  Risk ID
+                  <window.HeaderTooltip tip="Global identifier for the Segregation of Duties check rule." />
+                </window.Th>
+                <window.Th className="w-48 px-4 py-3" sortKey="title" sort={riskSort} onSort={k => setRiskSort({ key: k, dir: riskSort.dir === 'asc' ? 'desc' : 'asc' })}>
+                  Risk Title
+                  <window.HeaderTooltip tip="Descriptive name of the SoD check rule." />
+                </window.Th>
+                <window.Th className="w-32 px-4 py-3" sortKey="category" sort={riskSort} onSort={k => setRiskSort({ key: k, dir: riskSort.dir === 'asc' ? 'desc' : 'asc' })}>
+                  Risk Category
+                  <window.HeaderTooltip tip="Business control domain (e.g., Financial, Operational)." />
+                </window.Th>
+
+                <window.Th className="w-24 px-4 py-3" sortKey="level" sort={riskSort} onSort={k => setRiskSort({ key: k, dir: riskSort.dir === 'asc' ? 'desc' : 'asc' })}>
+                  Severity
+                  <window.HeaderTooltip tip="Severity level of the risk if violated (Critical, High, Medium, Low)." />
+                </window.Th>
+                <window.Th className="w-28 px-4 py-3" sortKey="userCount" sort={riskSort} onSort={k => setRiskSort({ key: k, dir: riskSort.dir === 'asc' ? 'desc' : 'asc' })}>
+                  Affected Users
+                  <window.HeaderTooltip tip="Number of active user accounts violating this specific rule." />
+                </window.Th>
+                <th className="w-48 px-4 py-3 text-left font-bold text-ink-600 uppercase text-[10px]">
+                  <span className="flex items-center">
+                    Affected Roles
+                    <window.HeaderTooltip tip="Count of SAP roles carrying the incompatible transaction codes." />
+                  </span>
+                </th>
+                <window.Th className="w-28 px-4 py-3" sortKey="process" sort={riskSort} onSort={k => setRiskSort({ key: k, dir: riskSort.dir === 'asc' ? 'desc' : 'asc' })}>
+                  Process Area
+                  <window.HeaderTooltip tip="SAP module or business process area monitored." />
+                </window.Th>
+                <th className="w-64 px-4 py-3 text-left font-bold text-ink-600 uppercase text-[10px]">
+                  <span className="flex items-center">
+                    Regulatory / Business Impact
+                    <window.HeaderTooltip tip="Compliance frameworks (SOX, ISO) and business risks." />
+                  </span>
+                </th>
+                <th className="w-64 px-4 py-3 text-left font-bold text-ink-600 uppercase text-[10px]">
+                  <span className="flex items-center">
+                    Recommended Action
+                    <window.HeaderTooltip tip="Audit-approved remediation recommendations." />
+                  </span>
+                </th>
+                <th className="w-24 px-4 py-3 text-left font-bold text-ink-600 uppercase text-[10px]">
+                  <span className="flex items-center">
+                    Priority
+                    <window.HeaderTooltip tip="Triage priority for resolving violations of this rule." />
+                  </span>
+                </th>
+                <th className="w-24 px-4 py-3 text-left font-bold text-ink-600 uppercase text-[10px]">
+                  <span className="flex items-center">
+                    Status
+                    <window.HeaderTooltip tip="Status of the risk rule in the active ruleset." />
+                  </span>
+                </th>
+                <th className="w-36 px-4 py-3 text-left font-bold text-ink-600 uppercase text-[10px]">
+                  <span className="flex items-center">
+                    Assignee
+                    <window.HeaderTooltip tip="Accountable compliance or security team." />
+                  </span>
+                </th>
+                <th className="w-24 px-4 py-3 text-right font-bold text-ink-600 uppercase text-[10px]">
+                  <span className="flex items-center justify-end">
+                    Actions
+                    <window.HeaderTooltip tip="Drill-down to view rule blueprints." />
+                  </span>
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-ink-100">
+              {pagedRisks.map(r => {
+                const priority = r.level === 'Critical' ? 'P1 - Urgent' : r.level === 'High' ? 'P2 - High' : 'P3 - Medium';
+                return (
+                  <tr key={r.riskId} className="row-hover cursor-pointer transition-colors" onClick={() => onNavigate('risk-detail', r.riskId)}>
+                    <td className="px-4 py-2.5 font-mono font-bold text-ink-900 truncate">{r.riskId}</td>
+                    <td className="px-4 py-2.5 font-semibold text-ink-800 truncate" title={r.title}>{r.title}</td>
+                    <td className="px-4 py-2.5 text-ink-600 font-semibold">{r.category}</td>
+ 
+                    <td className="px-4 py-2.5"><window.SeverityBadge value={r.level} /></td>
+                    <td className="px-4 py-2.5">
+                      {r.userCount > 0 ? (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setActiveModalRisk(r);
+                          }}
+                          className="font-mono font-bold text-brand-600 hover:text-brand-850 underline cursor-pointer focus:outline-none"
+                        >
+                          {r.userCount}
+                        </button>
+                      ) : (
+                        <span className="font-mono font-bold text-ink-700">{r.userCount}</span>
+                      )}
+                    </td>
+                    <td className="px-4 py-2.5 font-mono text-xs text-ink-600 truncate" title={r.roles.join(', ')}>{r.roles.join(', ')}</td>
+                    <td className="px-4 py-2.5 font-semibold text-ink-600">{r.process}</td>
+                    <td className="px-4 py-2.5 text-ink-500 truncate text-xs" title={`${r.businessImpact} ${r.complianceImpact}`}>
+                      {r.businessImpact} {r.complianceImpact}
+                    </td>
+                    <td className="px-4 py-2.5 text-ink-650 truncate text-xs" title={r.recommendations}>{r.recommendations}</td>
+                    <td className="px-4 py-2.5 font-bold text-ink-700">{priority}</td>
+                    <td className="px-4 py-2.5">
+                      <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ring-1 ring-inset ${
+                        r.status === 'Active' ? 'bg-rose-50 text-rose-700 ring-rose-200' : 'bg-amber-50 text-amber-700 ring-amber-200'
+                      }`}>
+                        {r.status}
+                      </span>
+                    </td>
+                    <td className="px-4 py-2.5 text-ink-600 font-semibold truncate">{r.assignee || 'IT Compliance Lead'}</td>
+                    <td className="px-4 py-2.5 text-right">
+                      <button 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onNavigate('risk-detail', r.riskId);
+                        }}
+                        className="px-2.5 py-1 rounded font-bold text-[11px] bg-brand-50 text-brand-700 hover:bg-brand-100 transition-colors"
+                      >
+                        View
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
+              {pagedRisks.length === 0 && (
+                <tr>
+                  <td colSpan={13} className="py-12 text-center text-sm font-bold text-ink-400 uppercase tracking-widest">
+                    No risks found matching filters
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+        <window.Pagination page={riskPage} pageSize={5} total={filteredRisks.length} onPage={setRiskPage} />
       </div>
 
       {/* Footer */}
-      <footer className="pt-8 pb-4 text-center border-t border-ink-200 text-[10px] font-bold uppercase tracking-[0.2em] text-ink-400">
+      <footer className="pt-8 pb-4 text-center border-t border-ink-200 text-[10px] font-bold uppercase tracking-[0.2em] text-ink-400 animate-fade-in">
         KTern.AI SoD Auditor · v2.4 · Lotte Chemical Compliance Protocol
       </footer>
+
     </div>
   );
 };

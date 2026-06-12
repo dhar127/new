@@ -241,14 +241,16 @@ const ActionStepsPanel = ({ row }) => (
 /* ------------------------------------------------------------ */
 /* Main page                                                     */
 /* ------------------------------------------------------------ */
-const Sod11Page = () => {
+const Sod11Page = ({ onNavigate, inline }) => {
   return (
-    <div data-screen-label="11 Remediation" className="space-y-6 px-7 py-6">
-      <DetailHeader
-        code="SOD-11 · Remediation Stream"
-        title="Execution & Accountability"
-        subtitle="The central control plane for access risk remediation. Every finding is mapped to a dated task and a named owner."
-      />
+    <div data-screen-label="11 Remediation" className={inline ? "space-y-6 text-left animate-fade-in" : "space-y-6 px-7 py-6 text-left"}>
+      {!inline && (
+        <DetailHeader
+          code="SOD-11 · Remediation Stream"
+          title="Execution & Accountability"
+          subtitle="The central control plane for access risk remediation. Every finding is mapped to a dated task and a named owner."
+        />
+      )}
       <Sod11Kpis />
       <RemediationSummary />
       <RemediationTable />

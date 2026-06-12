@@ -204,14 +204,16 @@ const AccountDrilldown = ({ row }) => (
   </div>
 );
 
-const Sod10Page = () => {
+const Sod10Page = ({ onNavigate, inline }) => {
   return (
-    <div data-screen-label="10 Service Accounts" className="space-y-6 px-7 py-6">
-      <DetailHeader
-        code="SOD-10 · Identity Stream"
-        title="Non-Human Access Control"
-        subtitle="Monitoring the authorization footprint and lifecycle of service, batch, and integration IDs."
-      />
+    <div data-screen-label="10 Service Accounts" className={inline ? "space-y-6 text-left animate-fade-in" : "space-y-6 px-7 py-6 text-left"}>
+      {!inline && (
+        <DetailHeader
+          code="SOD-10 · Identity Stream"
+          title="Non-Human Access Control"
+          subtitle="Monitoring the authorization footprint and lifecycle of service, batch, and integration IDs."
+        />
+      )}
       <Sod10Kpis />
       <AccountDistribution />
       <ServiceAccountTable />

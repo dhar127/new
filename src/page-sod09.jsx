@@ -247,7 +247,7 @@ const OtcDrilldown = ({ row }) => (
   </div>
 );
 
-const Sod09Page = () => {
+const Sod09Page = ({ onNavigate, inline }) => {
   const [activeStepFilter, setActiveStepFilter] = useState(null);
 
   const handleStepClick = (stepKey) => {
@@ -255,12 +255,14 @@ const Sod09Page = () => {
   };
 
   return (
-    <div data-screen-label="09 OTC Control" className="space-y-6 px-7 py-6">
-      <DetailHeader
-        code="SOD-09 · Revenue Stream"
-        title="OTC Lifecycle Control"
-        subtitle="End-to-end monitoring of the Order-to-Cash process to detect high-risk ownership consolidation."
-      />
+    <div data-screen-label="09 OTC Control" className={inline ? "space-y-6 text-left animate-fade-in" : "space-y-6 px-7 py-6 text-left"}>
+      {!inline && (
+        <DetailHeader
+          code="SOD-09 · Revenue Stream"
+          title="OTC Lifecycle Control"
+          subtitle="End-to-end monitoring of the Order-to-Cash process to detect high-risk ownership consolidation."
+        />
+      )}
       <Sod09Kpis />
       <OTCStepper activeStepFilter={activeStepFilter} onStepClick={handleStepClick} />
       <OtcTable activeStepFilter={activeStepFilter} />

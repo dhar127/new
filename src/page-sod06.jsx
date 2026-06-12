@@ -441,14 +441,16 @@ const SuperAdminTable = () => {
 /* ─────────────────────────────────────────────
    PAGE
 ───────────────────────────────────────────── */
-const Sod06Page = () => {
+const Sod06Page = ({ onNavigate, inline }) => {
   return (
-    <div data-screen-label="06 Super Administrators" className="space-y-6 px-7 py-6">
-      <DetailHeader
-        code="SOD-06 · Admin Stream"
-        title="Super-Administrator Inventory"
-        subtitle="Detection of accounts holding global unrestricted authorization profiles across the SAP landscape."
-      />
+    <div data-screen-label="06 Super Administrators" className={inline ? "space-y-6 text-left animate-fade-in" : "space-y-6 px-7 py-6 text-left"}>
+      {!inline && (
+        <DetailHeader
+          code="SOD-06 · Admin Stream"
+          title="Super-Administrator Inventory"
+          subtitle="Detection of accounts holding global unrestricted authorization profiles across the SAP landscape."
+        />
+      )}
       <Sod06Kpis />
       <RoleConcentrationChart />
       <SuperAdminTable />

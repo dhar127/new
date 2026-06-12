@@ -6,25 +6,27 @@ const {
 
 const { useState } = React;
 
-window.Sod02Page = function({ onNavigate }) {
+window.Sod02Page = function({ onNavigate, inline }) {
   const { COMPLIANCE, RUN_TREND } = window.MOCK;
 
   // Set the score statically to the worked example percentage (61.25%)
   const currentScore = 61.25;
 
   return (
-    <div data-screen-label="Overall Compliance Assessment" className="space-y-6 px-4 md:px-7 py-6">
+    <div data-screen-label="Overall Compliance Assessment" className={inline ? "space-y-6 text-left animate-fade-in" : "space-y-6 px-4 md:px-7 py-6 text-left"}>
       
       {/* Header */}
-      <window.DetailHeader
-        code="SOD-02 · Compliance Assessment"
-        title="Overall Compliance Assessment"
-        subtitle="Maturity benchmarks, sector peer scoring, and calculated risk coverage scores for active analysis cycles."
-      />
+      {!inline && (
+        <window.DetailHeader
+          code="SOD-02 · Compliance Assessment"
+          title="Overall Compliance Assessment"
+          subtitle="Maturity benchmarks, sector peer scoring, and calculated risk coverage scores for active analysis cycles."
+        />
+      )}
 
       {/* Compliance Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <window.StatCard label="Compliance Score" value={`${currentScore}%`} tone="good" metricKey="complianceScore" onClick={() => onNavigate('compliance-detail')} />
+        <window.StatCard label="Compliance Score" value={`${currentScore}%`} tone="good" metricKey="complianceScore" />
         <window.StatCard label="Industry Peer Average" value="78.0%" metricKey="sapGrcBaseline" />
         <window.StatCard severity="High" label="Risk Maturity Level" value="Managed" icon="shield" />
         <window.StatCard severity="Critical" label="Unmitigated Violations" value="46 Risks" metricKey="totalViolations" />

@@ -1,6 +1,6 @@
 const { useState, useMemo } = React;
 
-window.Sod04Page = function({ onNavigate }) {
+window.Sod04Page = function({ onNavigate, inline }) {
   const { IMMEDIATE_ACTIONS, CRITICAL_FINDINGS } = window.MOCK;
 
   // Enhance immediate actions to map back to their source rule IDs (e.g. V-1058, V-1071)
@@ -49,14 +49,16 @@ window.Sod04Page = function({ onNavigate }) {
   };
 
   return (
-    <div data-screen-label="Immediate Actions Required" className="space-y-6 px-4 md:px-7 py-6">
+    <div data-screen-label="Immediate Actions Required" className={inline ? "space-y-6 text-left animate-fade-in" : "space-y-6 px-4 md:px-7 py-6 text-left"}>
       
       {/* Header */}
-      <window.DetailHeader
-        code="SOD-04 · Urgent Mitigations"
-        title="Immediate Actions Required"
-        subtitle="Critical and High severity Segregation of Duties conflicts requiring urgent action. Status columns and editable workflow states have been removed for compliance audit transparency."
-      />
+      {!inline && (
+        <window.DetailHeader
+          code="SOD-04 · Urgent Mitigations"
+          title="Immediate Actions Required"
+          subtitle="Critical and High severity Segregation of Duties conflicts requiring urgent action. Status columns and editable workflow states have been removed for compliance audit transparency."
+        />
+      )}
 
       {/* KPI Stats Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">

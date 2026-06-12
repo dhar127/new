@@ -19,20 +19,6 @@ const PAGE_TITLES = {
   'role-detail':      ['Role Profile', 'SAP Role Transaction Scope'],
   'risk-detail':      ['Risk Blueprint', 'SoD Rule Definition Mapping'],
 };
-
-// Selectable modules start from SOD-04 onwards, as SOD-01, SOD-02, and SOD-03 are displayed on the dashboard
-const SOD_MODULES = [
-  { id: 'violation-explorer', code: 'EXPLORER', name: 'Violation Explorer', desc: 'Interactive Master-Detail analysis of all SoD conflicts. Group by User or Risk to drill down into the forensic details of roles and T-Codes.' },
-  { id: 'sod-04',  code: 'SOD-04', name: 'Immediate Actions', desc: 'KTern.AI identifies violations requiring urgent remediation and provides specific actionable steps such as access revocation, role redesign, or emergency access governance.' },
-  { id: 'sod-05',  code: 'SOD-05', name: 'Compliance Impact', desc: 'Maps identified SoD violations to their potential operational and regulatory impact using rule-based and AI-assisted analysis.' },
-  { id: 'sod-06',  code: 'SOD-06', name: 'Super Administrators', desc: 'Detects users with unrestricted or near-unrestricted access across SAP systems, highlighting concentration-of-power risks and non-compliant access patterns.' },
-  { id: 'sod-07',  code: 'SOD-07', name: 'Dual Process Control', desc: 'Identifies users controlling multiple end-to-end business processes through cross-role and transaction analysis based on SAP standard dual process control violations.' },
-  { id: 'sod-08',  code: 'SOD-08', name: 'Emergency Access', desc: 'Analyzes firefighter and emergency access usage patterns, detecting excessive access, prolonged assignments, and missing approvals.' },
-  { id: 'sod-09',  code: 'SOD-09', name: 'OTC Control', desc: 'Flags users with end-to-end Order-to-Cash control, combining transactional authority and financial posting privileges across the OTC process cycle.' },
-  { id: 'sod-10',  code: 'SOD-10', name: 'Service Accounts', desc: 'Identifies service and technical accounts with excessive or unmanaged privileges, including background job and integration users.' },
-  { id: 'sod-11',  code: 'SOD-11', name: 'Remediation Governance', desc: 'Provides AI-backed remediation recommendations including role redesign, access removal, mitigating controls, and governance policy suggestions.' },
-];
-
 /* ── Dropdown Helper ────────────────────────────────────────── */
 function Dropdown({ trigger, children, align = 'left' }) {
   const [open, setOpen] = useState(false);
@@ -55,101 +41,6 @@ function Dropdown({ trigger, children, align = 'left' }) {
           onClick={() => setOpen(false)}
         >
           {children}
-        </div>
-      )}
-    </div>
-  );
-}
-
-/* ── Premium Dropdown component for SoD Modules (Violation Streams) ── */
-function ViolationStreamsDropdown({ active, onNavigate, disabled }) {
-  const [open, setOpen] = useState(false);
-  const [activeDesc, setActiveDesc] = useState(null);
-  const ref = useRef(null);
-
-  useEffect(() => {
-    const handleOutsideClick = (e) => {
-      if (ref.current && !ref.current.contains(e.target)) {
-        setOpen(false);
-        setActiveDesc(null);
-      }
-    };
-    document.addEventListener('mousedown', handleOutsideClick);
-    return () => document.removeEventListener('mousedown', handleOutsideClick);
-  }, []);
-
-  return (
-    <div className="relative inline-block text-left" ref={ref}>
-      <button
-        onClick={() => {
-          if (disabled) return;
-          setOpen(o => !o);
-        }}
-        disabled={disabled}
-        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all border ring-1 ring-inset ${
-          disabled 
-            ? 'opacity-55 cursor-not-allowed bg-ink-50 text-ink-400 border-ink-100 ring-transparent'
-            : open 
-              ? 'bg-ink-100 border-ink-300 text-ink-900 ring-transparent' 
-              : 'bg-white border-ink-200 text-ink-700 hover:bg-ink-50 ring-ink-150'
-        }`}
-      >
-        <window.Icon name="table" className={`w-3.5 h-3.5 ${disabled ? 'text-ink-300' : 'text-brand-600'}`} />
-        <span>Violation Streams</span>
-        <window.Icon name="chevronDown" className="w-3 h-3 opacity-60" />
-      </button>
-      {open && (
-        <div className="absolute right-0 top-full mt-1.5 z-50 w-[350px] rounded-xl border border-ink-200 bg-white shadow-pop py-1.5 overflow-hidden pop-in">
-          <div className="px-3.5 py-2 text-[10px] font-bold uppercase tracking-wider text-ink-400 border-b border-ink-100 bg-ink-50 flex items-center justify-between">
-            <span>SoD Compliance Modules</span>
-            <span className="text-[9px] font-mono text-brand-600 bg-brand-50 px-1.5 py-0.5 rounded uppercase font-extrabold">SOD-04 — SOD-11</span>
-          </div>
-          <div className="max-h-[380px] overflow-y-auto divide-y divide-ink-100">
-            {SOD_MODULES.map(m => {
-              const isSelected = active === m.id;
-              const hasDescOpen = activeDesc === m.code;
-              return (
-                <div key={m.code} className={`transition-colors ${isSelected ? 'bg-brand-50/20' : 'hover:bg-ink-50/50'}`}>
-                  <div className="flex items-center justify-between px-3.5 py-2.5">
-                    <button
-                      onClick={() => {
-                        onNavigate(m.id);
-                        setOpen(false);
-                        setActiveDesc(null);
-                      }}
-                      className={`flex-1 text-left text-xs font-medium flex items-center gap-1.5 ${
-                        isSelected ? 'text-brand-700 font-bold' : 'text-ink-850'
-                      }`}
-                    >
-                      <span className={`font-mono text-[10.5px] font-bold px-1.5 py-0.5 rounded ${
-                        isSelected ? 'bg-brand-100 text-brand-700' : 'bg-ink-100 text-ink-600'
-                      }`}>
-                        {m.code}
-                      </span>
-                      <span>{m.name}</span>
-                    </button>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setActiveDesc(hasDescOpen ? null : m.code);
-                      }}
-                      className={`p-1.5 rounded transition-colors ${
-                        hasDescOpen ? 'text-brand-600 bg-brand-50' : 'text-ink-400 hover:text-brand-600 hover:bg-ink-100'
-                      }`}
-                      title="Show PRD description"
-                    >
-                      <window.Icon name="info" className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-                  {hasDescOpen && (
-                    <div className="px-5 pb-3 pt-0.5 text-[11px] text-ink-600 font-medium leading-relaxed bg-brand-50/10 border-l-4 border-brand-500">
-                      "{m.desc}"
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
         </div>
       )}
     </div>
@@ -236,25 +127,19 @@ function GrcTopHeader({ active, onNavigate, selectedRun, onRunChange, hasSelecte
 
         {/* Right Tab Pills */}
         <div className="flex items-center gap-1.5">
-          <ViolationStreamsDropdown 
-            active={active} 
-            onNavigate={onNavigate} 
-            disabled={!hasSelectedRun} 
-          />
+          {hasSelectedRun && (
+            <button
+              onClick={() => onNavigate('home')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                active === 'home'
+                  ? 'bg-ink-900 text-white shadow-sm'
+                  : 'text-ink-600 hover:text-ink-900 hover:bg-ink-50'
+              }`}
+            >
+              Dashboard
+            </button>
+          )}
 
-          <button
-            onClick={() => onNavigate('violation-explorer')}
-            className={`hidden md:flex px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
-              active === 'violation-explorer'
-                ? 'bg-ink-900 text-white shadow-sm'
-                : 'text-ink-600 hover:text-ink-900 hover:bg-ink-50'
-            }`}
-          >
-            Explorer
-          </button>
-
-          {/* Dashboard tab button removed to enforce flow */}
-          
           <button
             onClick={() => onNavigate('runs')}
             className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
@@ -337,29 +222,86 @@ const App = () => {
   const [selectedRun, setSelectedRun] = useState(null);
   const [hasSelectedRun, setHasSelectedRun] = useState(false);
   const [detailId, setDetailId] = useState(null);
-  const [globalFilters, setGlobalFilters] = useState({ severity: 'All', department: 'All', process: 'All' });
   const [drawerContent, setDrawerContent] = useState(null);
 
+  const [activeModalRisk, setActiveModalRisk] = useState(null);
+
+  const modalUsers = useMemo(() => {
+    if (!activeModalRisk || !activeModalRisk.affectedUsers) return [];
+    return activeModalRisk.affectedUsers.map(uid => {
+      const matched = (window.MOCK.ALL_USERS || []).find(u => u.userId === uid);
+      if (matched) {
+        return {
+          userId: matched.userId,
+          fullName: matched.fullName,
+          dept: matched.processArea || matched.dept || 'IT Basis',
+          role: matched.role || 'ZFI_BR_GL_POSTING',
+          license: matched.accountType === 'Service' ? 'Service Account' : 'Limited Professional',
+          severity: matched.severity || activeModalRisk.level
+        };
+      }
+      const formattedName = uid.replace(/[._]/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+      return {
+        userId: uid,
+        fullName: formattedName,
+        dept: uid.includes('FF') ? 'IT Basis' : 'Finance',
+        role: 'ZFI_BR_GL_POSTING',
+        license: uid.includes('FF') ? 'Professional' : 'Limited Professional',
+        severity: activeModalRisk.level
+      };
+    });
+  }, [activeModalRisk]);
+
+  // Lifted Dashboard state for preservation
+  const [dashboardStream, setDashboardStream] = useState(null);
+  
+  // Master User table state
+  const [userSearch, setUserSearch] = useState('');
+  const [userDept, setUserDept] = useState('All');
+  const [userRisk, setUserRisk] = useState('All');
+  const [userSodFilter, setUserSodFilter] = useState('All');
+  const [userPage, setUserPage] = useState(1);
+  const [userSort, setUserSort] = useState({ key: 'userId', dir: 'asc' });
+
+  // Master Risk table state
+  const [riskSearch, setRiskSearch] = useState('');
+  const [riskProcess, setRiskProcess] = useState('All');
+  const [riskLevel, setRiskLevel] = useState('All');
+  const [riskSodFilter, setRiskSodFilter] = useState('All');
+  const [riskPage, setRiskPage] = useState(1);
+  const [riskSort, setRiskSort] = useState({ key: 'riskId', dir: 'asc' });
+
+  // Scroll Position
+  const [preservedScrollY, setPreservedScrollY] = useState(0);
+
   const handleNavigate = (key, id = null) => {
-    if (['violation-detail', 'user-profile', 'role-detail', 'risk-detail', 'compliance-detail'].includes(key)) {
+    if (['violation-detail', 'role-detail', 'compliance-detail'].includes(key)) {
       setDrawerContent({ type: key, id: id });
     } else {
-      setActive(key);
-      setDetailId(null);
-      setDrawerContent(null);
-      window.scrollTo(0, 0);
+      if (key === 'user-profile' || key === 'risk-detail') {
+        // Save scroll position before leaving dashboard
+        setPreservedScrollY(window.scrollY);
+        setActive(key);
+        setDetailId(id);
+        setDrawerContent(null);
+        window.scrollTo(0, 0);
+      } else {
+        setActive(key);
+        setDetailId(id);
+        setDrawerContent(null);
+        if (key !== 'home') {
+          window.scrollTo(0, 0);
+          setPreservedScrollY(0); // Reset scroll if not going back to dashboard
+        }
+      }
     }
-  };
-
-  const handleFilterApply = (filters) => {
-    setGlobalFilters(prev => ({ ...prev, ...filters }));
   };
 
   const handleSelectRun = (run) => {
     setSelectedRun(run);
     setHasSelectedRun(true);
-    // Transition to explorer upon selection
-    setActive('violation-explorer');
+    // Transition to Dashboard overview upon selection
+    setActive('home');
     window.scrollTo(0, 0);
   };
 
@@ -375,31 +317,56 @@ const App = () => {
       );
     }
 
-    // 2. Lock dashboard/SoD modules if no run has been loaded yet
+    // 2. Lock dashboard if no run has been loaded yet
     if (!hasSelectedRun) {
       return <NoRunSelectedPrompt onSelectRun={handleSelectRun} />;
     }
 
     // 3. Render loaded pages
-    if (active === 'home')             return <window.LaunchPage onNavigate={handleNavigate} onFilterApply={handleFilterApply} selectedRun={selectedRun} />;
-    if (active === 'violation-explorer') return <window.ViolationExplorerPage onNavigate={handleNavigate} globalFilters={globalFilters} selectedRun={selectedRun} />;
-    if (active === 'users')            return <window.UsersPage onNavigate={handleNavigate} globalFilters={globalFilters} selectedRun={selectedRun} />;
-    if (active === 'risks')            return <window.RisksPage onNavigate={handleNavigate} globalFilters={globalFilters} selectedRun={selectedRun} />;
-    if (active === 'violation-detail') return <window.ViolationDetailPage violationId={detailId} onNavigate={handleNavigate} selectedRun={selectedRun} />;
+    if (active === 'home') {
+      return (
+        <window.LaunchPage 
+          onNavigate={handleNavigate} 
+          selectedRun={selectedRun}
+          
+          activeStream={dashboardStream}
+          setActiveStream={setDashboardStream}
+          
+          userSearch={userSearch}
+          setUserSearch={setUserSearch}
+          userDept={userDept}
+          setUserDept={setUserDept}
+          userRisk={userRisk}
+          setUserRisk={setUserRisk}
+          userSodFilter={userSodFilter}
+          setUserSodFilter={setUserSodFilter}
+          userPage={userPage}
+          setUserPage={setUserPage}
+          userSort={userSort}
+          setUserSort={setUserSort}
+          
+          riskSearch={riskSearch}
+          setRiskSearch={setRiskSearch}
+          riskProcess={riskProcess}
+          setRiskProcess={setRiskProcess}
+          riskLevel={riskLevel}
+          setRiskLevel={setRiskLevel}
+          riskSodFilter={riskSodFilter}
+          setRiskSodFilter={setRiskSodFilter}
+          riskPage={riskPage}
+          setRiskPage={setRiskPage}
+          riskSort={riskSort}
+          setRiskSort={setRiskSort}
+          
+          preservedScrollY={preservedScrollY}
+          setPreservedScrollY={setPreservedScrollY}
+          setActiveModalRisk={setActiveModalRisk}
+        />
+      );
+    }
+    
     if (active === 'user-profile')     return <window.UserProfilePage userId={detailId} onNavigate={handleNavigate} selectedRun={selectedRun} />;
-    if (active === 'role-detail')      return <window.RoleDetailPage roleId={detailId} onNavigate={handleNavigate} selectedRun={selectedRun} />;
     if (active === 'risk-detail')      return <window.RiskDetailPage riskId={detailId} onNavigate={handleNavigate} selectedRun={selectedRun} />;
-
-    // Stream pages (SOD-04 onwards)
-    if (active === 'sod-04')  return <window.Sod04Page onNavigate={handleNavigate} selectedRun={selectedRun} />;
-    if (active === 'sod-05')  return <window.Sod05Page onNavigate={handleNavigate} selectedRun={selectedRun} />;
-    if (active === 'sod-06')  return <window.Sod06Page onNavigate={handleNavigate} selectedRun={selectedRun} />;
-    if (active === 'sod-07')  return <window.Sod07Page onNavigate={handleNavigate} selectedRun={selectedRun} />;
-    if (active === 'sod-p2p') return <window.SodP2pPage onNavigate={handleNavigate} selectedRun={selectedRun} />;
-    if (active === 'sod-08')  return <window.Sod08Page onNavigate={handleNavigate} selectedRun={selectedRun} />;
-    if (active === 'sod-09')  return <window.Sod09Page onNavigate={handleNavigate} selectedRun={selectedRun} />;
-    if (active === 'sod-10')  return <window.Sod10Page onNavigate={handleNavigate} selectedRun={selectedRun} />;
-    if (active === 'sod-11')  return <window.Sod11Page onNavigate={handleNavigate} selectedRun={selectedRun} />;
 
     return (
       <div className="px-4 py-10 text-center">
@@ -421,75 +388,104 @@ const App = () => {
         {renderPage()}
       </main>
 
-      {/* Slide-over Side Drawer for drill-downs */}
-      {drawerContent && (
-        <div className="fixed inset-0 z-50 bg-ink-950/40 backdrop-blur-[2px] flex justify-end">
-          {/* Click overlay to close */}
-          <div className="absolute inset-0" onClick={() => setDrawerContent(null)} />
+      {/* Affected Users Modal */}
+      {activeModalRisk && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          {/* Overlay */}
+          <div 
+            className="absolute inset-0 bg-ink-900/60 backdrop-blur-sm transition-opacity" 
+            onClick={() => setActiveModalRisk(null)}
+          />
           
-          {/* Drawer Panel */}
-          <div className="w-full max-w-5xl bg-ink-50 h-full shadow-2xl flex flex-col relative z-10 border-l border-ink-200 animate-slide-in overflow-y-auto">
-            {/* Sticky Header Row */}
-            <div className="sticky top-0 z-50 bg-white border-b border-ink-200 px-6 py-3 flex items-center justify-between shadow-sm">
-              <div className="flex items-center gap-2">
-                <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-brand-600 font-mono">
-                  {drawerContent.type.replace('-', ' ')}
-                </span>
-                {drawerContent.id && (
-                  <>
-                    <span className="text-ink-300">|</span>
-                    <span className="text-xs font-bold text-ink-900 font-mono">ID: {drawerContent.id}</span>
-                  </>
-                )}
+          {/* Modal Container */}
+          <div className="relative bg-white rounded-2xl shadow-xl ring-1 ring-black/5 overflow-hidden w-full max-w-2xl max-h-[85vh] flex flex-col z-10 border border-ink-150 animate-scale-in">
+            
+            {/* Modal Header */}
+            <div className="px-6 py-5 border-b border-ink-100 flex items-start justify-between bg-ink-50/50">
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="font-mono text-xs font-bold px-2 py-0.5 bg-brand-50 text-brand-700 rounded border border-brand-100">
+                    {activeModalRisk.riskId}
+                  </span>
+                  <span className="font-mono text-xs font-bold px-2 py-0.5 bg-purple-50 text-purple-700 rounded border border-purple-100">
+                    {activeModalRisk.grcMapping || 'GRC Rule'}
+                  </span>
+                  <window.SeverityBadge value={activeModalRisk.level} />
+                </div>
+                <h3 className="text-base font-extrabold text-ink-900 mt-2 pr-6">
+                  {activeModalRisk.title}
+                </h3>
+                <p className="text-xs text-ink-500 font-semibold mt-1">
+                  Active User Accounts violating this Segregation of Duties check.
+                </p>
               </div>
-              
-              <button
-                onClick={() => setDrawerContent(null)}
-                className="p-1.5 rounded-lg border border-ink-200 bg-white hover:bg-ink-100 text-ink-500 hover:text-ink-700 transition-colors shadow-sm flex items-center gap-1.5 text-xs font-bold"
-                title="Close Detail Panel"
+              <button 
+                onClick={() => setActiveModalRisk(null)}
+                className="text-ink-400 hover:text-ink-700 hover:bg-ink-100 p-1.5 rounded-lg transition-colors focus:outline-none"
               >
-                <window.Icon name="x" className="w-3.5 h-3.5" />
-                <span>Close</span>
+                <window.Icon name="x" className="w-5 h-5" />
               </button>
             </div>
 
-            {/* Drawer Body content */}
-            <div className="flex-1">
-              {drawerContent.type === 'violation-detail' && (
-                <window.ViolationDetailPage
-                  violationId={drawerContent.id}
-                  onNavigate={handleNavigate}
-                  selectedRun={selectedRun}
-                />
-              )}
-              {drawerContent.type === 'user-profile' && (
-                <window.UserProfilePage
-                  userId={drawerContent.id}
-                  onNavigate={handleNavigate}
-                  selectedRun={selectedRun}
-                />
-              )}
-              {drawerContent.type === 'role-detail' && (
-                <window.RoleDetailPage
-                  roleId={drawerContent.id}
-                  onNavigate={handleNavigate}
-                  selectedRun={selectedRun}
-                />
-              )}
-              {drawerContent.type === 'risk-detail' && (
-                <window.RiskDetailPage
-                  riskId={drawerContent.id}
-                  onNavigate={handleNavigate}
-                  selectedRun={selectedRun}
-                />
-              )}
-              {drawerContent.type === 'compliance-detail' && (
-                <window.ComplianceDetailPage
-                  onNavigate={handleNavigate}
-                  selectedRun={selectedRun}
-                />
-              )}
+            {/* Modal Body */}
+            <div className="p-6 overflow-y-auto flex-1">
+              <div className="border border-ink-200 rounded-xl overflow-hidden shadow-sm bg-white text-left">
+                <table className="w-full text-[12.5px] border-collapse">
+                  <thead className="bg-ink-50 text-ink-650 font-bold uppercase text-[10px] border-b border-ink-200">
+                    <tr>
+                      <th className="px-4 py-2.5 text-left">User ID</th>
+                      <th className="px-4 py-2.5 text-left">Full Name</th>
+                      <th className="px-4 py-2.5 text-left">Department</th>
+                      <th className="px-4 py-2.5 text-left">Role / Access</th>
+                      <th className="px-4 py-2.5 text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-ink-100 font-medium text-ink-800">
+                    {modalUsers.map(u => (
+                      <tr key={u.userId} className="hover:bg-ink-50/40 transition-colors">
+                        <td className="px-4 py-2.5 font-mono font-bold text-ink-900">{u.userId}</td>
+                        <td className="px-4 py-2.5 font-semibold text-ink-850">{u.fullName}</td>
+                        <td className="px-4 py-2.5 text-ink-600">{u.dept}</td>
+                        <td className="px-4 py-2.5 font-mono text-xs text-ink-500 truncate max-w-[150px]" title={u.role}>{u.role}</td>
+                        <td className="px-4 py-2.5 text-right">
+                          <button 
+                            onClick={() => {
+                              setActiveModalRisk(null);
+                              handleNavigate('user-profile', u.userId);
+                            }}
+                            className="px-2.5 py-1 rounded font-bold text-[11px] bg-brand-50 text-brand-700 hover:bg-brand-100 transition-colors inline-flex items-center gap-1"
+                          >
+                            <span>Profile</span>
+                            <window.Icon name="arrow" className="w-3 h-3" />
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                    {modalUsers.length === 0 && (
+                      <tr>
+                        <td colSpan={5} className="py-8 text-center text-ink-400 font-bold uppercase tracking-wider text-xs">
+                          No violating users found
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
             </div>
+
+            {/* Modal Footer */}
+            <div className="px-6 py-4 border-t border-ink-100 bg-ink-50/30 flex items-center justify-between">
+              <span className="text-xs font-bold text-ink-500">
+                Total Violating Users: <span className="font-mono text-sm text-ink-950 font-black">{modalUsers.length}</span>
+              </span>
+              <button 
+                onClick={() => setActiveModalRisk(null)}
+                className="px-4 py-2 rounded-xl bg-ink-900 hover:bg-ink-800 text-white font-bold text-xs transition-colors shadow-sm focus:outline-none"
+              >
+                Close Dialog
+              </button>
+            </div>
+
           </div>
         </div>
       )}

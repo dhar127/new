@@ -392,14 +392,16 @@ const UsageLog = ({ row }) => {
   );
 };
 
-const Sod08Page = () => {
+const Sod08Page = ({ onNavigate, inline }) => {
   return (
-    <div data-screen-label="08 Emergency Access" className="space-y-6 px-7 py-6">
-      <DetailHeader
-        code="SOD-08 · Emergency Stream"
-        title="Privileged Access Monitoring"
-        subtitle="Tracking the lifecycle and behavioral integrity of Firefighter ID assignments."
-      />
+    <div data-screen-label="08 Emergency Access" className={inline ? "space-y-6 text-left animate-fade-in" : "space-y-6 px-7 py-6 text-left"}>
+      {!inline && (
+        <DetailHeader
+          code="SOD-08 · Emergency Stream"
+          title="Privileged Access Monitoring"
+          subtitle="Tracking the lifecycle and behavioral integrity of Firefighter ID assignments."
+        />
+      )}
       <Sod08Kpis />
       <UsageTimeline />
       <EmergencyAccessTable />

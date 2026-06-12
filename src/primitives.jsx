@@ -496,6 +496,8 @@ window.Tooltip = function({ tip, children, align = 'top', className = '', toolti
     'top-left': 'bottom-full left-0 mb-1.5',
     'top-right': 'bottom-full right-0 mb-1.5',
     bottom: 'top-full left-1/2 -translate-x-1/2 mt-1.5', 
+    'bottom-left': 'top-full left-0 mt-1.5',
+    'bottom-right': 'top-full right-0 mt-1.5',
     left: 'right-full top-1/2 -translate-y-1/2 mr-1.5', 
     right: 'left-full top-1/2 -translate-y-1/2 ml-1.5' 
   };
@@ -828,3 +830,18 @@ window.GRCInfoTooltip = function({ metricKey }) {
     </div>
   );
 };
+
+window.HeaderTooltip = function({ tip, align = 'bottom' }) {
+  return (
+    <window.Tooltip tip={tip} align={align} className="ml-1.5 shrink-0 select-none inline-flex items-center">
+      <span className="inline-flex items-center justify-center text-ink-400 hover:text-ink-700 transition-colors cursor-help p-0.5 rounded focus:outline-none">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5">
+          <circle cx="12" cy="12" r="10" />
+          <line x1="12" y1="16" x2="12" y2="12" />
+          <line x1="12" y1="8" x2="12.01" y2="8" />
+        </svg>
+      </span>
+    </window.Tooltip>
+  );
+};
+

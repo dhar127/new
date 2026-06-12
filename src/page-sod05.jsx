@@ -222,14 +222,16 @@ const DrilldownPanel = ({ row }) => (
   </div>
 );
 
-const Sod05Page = () => {
+const Sod05Page = ({ onNavigate, inline }) => {
   return (
-    <div data-screen-label="05 Compliance Impact" className="space-y-6 px-7 py-6">
-      <DetailHeader
-        code="SOD-05 · Impact Stream"
-        title="Business Impact Analysis"
-        subtitle="Mapping identified SoD violations to operational and regulatory risks."
-      />
+    <div data-screen-label="05 Compliance Impact" className={inline ? "space-y-6 text-left animate-fade-in" : "space-y-6 px-7 py-6 text-left"}>
+      {!inline && (
+        <DetailHeader
+          code="SOD-05 · Impact Stream"
+          title="Business Impact Analysis"
+          subtitle="Mapping identified SoD violations to operational and regulatory risks."
+        />
+      )}
       <Sod05Kpis />
       <RiskQuantification />
       <ImpactMatrix />

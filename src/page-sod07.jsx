@@ -300,15 +300,17 @@ const ExecutionHistory = ({ row, p1, p2 }) => (
   </div>
 );
 
-const Sod07Page = () => {
+const Sod07Page = ({ onNavigate, inline }) => {
   const [matrixFilter, setMatrixFilter] = useState(null);
   return (
-    <div data-screen-label="07 Dual Process Control" className="space-y-6 px-7 py-6">
-      <DetailHeader
-        code="SOD-07 · Process Stream"
-        title="Cross-Process Conflict Analysis"
-        subtitle="Identifying users with incompatible authorizations across split-control workflows."
-      />
+    <div data-screen-label="07 Dual Process Control" className={inline ? "space-y-6 text-left animate-fade-in" : "space-y-6 px-7 py-6 text-left"}>
+      {!inline && (
+        <DetailHeader
+          code="SOD-07 · Process Stream"
+          title="Cross-Process Conflict Analysis"
+          subtitle="Identifying users with incompatible authorizations across split-control workflows."
+        />
+      )}
       <Sod07Kpis />
       <ConflictChart selected={matrixFilter} onSelect={setMatrixFilter} />
       <DualProcessTable matrixFilter={matrixFilter} onClearMatrixFilter={() => setMatrixFilter(null)} />

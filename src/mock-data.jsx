@@ -9014,4 +9014,407 @@ Object.assign(window.MOCK, {
   REMEDIATION_TYPES, PRIORITIES, REMEDIATIONS, REMEDIATION_KPIS, POLICY_SUGGESTIONS,
 });
 
+/* ── Consolidated Master User & Risk Catalog Datasets ── */
+const BASE_USERS = [
+  { userId: 'HOANG.NGUYEN', firstName: 'Hoang', lastName: 'Nguyen', dept: 'Finance', rolesCount: 237, critical: 8, high: 12, medium: 3, low: 0, lastLogin: '2026-05-19 12:44', action: 'Split SD billing authority' },
+  { userId: 'JAE.KANG', firstName: 'Jae', lastName: 'Kang', dept: 'Finance', rolesCount: 148, critical: 6, high: 8, medium: 5, low: 0, lastLogin: '2026-05-18 10:15', action: 'Split SD billing authority' },
+  { userId: 'PVALENCIA', firstName: 'Valencia', lastName: 'Patricia', dept: 'Finance', rolesCount: 107, critical: 4, high: 7, medium: 2, low: 0, lastLogin: '2026-05-19 11:20', action: 'Redesign billing role ZSD_BR_BILLING_CREATE' },
+  { userId: 'RUTGER.DUKES', firstName: 'Rutger', lastName: 'Dukes', dept: 'Finance', rolesCount: 50, critical: 2, high: 4, medium: 1, low: 0, lastLogin: '2026-05-15 08:30', action: 'Revoke SD Billing access' },
+  { userId: 'WBERRYMAN', firstName: 'Wendy', lastName: 'Berryman', dept: 'Finance', rolesCount: 51, critical: 3, high: 3, medium: 2, low: 0, lastLogin: '2026-05-17 14:02', action: 'Revoke SD Billing access' },
+  { userId: 'FF.IT', firstName: 'Ely', lastName: 'Taleon', dept: 'IT Basis', rolesCount: 78, critical: 12, high: 15, medium: 4, low: 0, lastLogin: '2026-05-19 09:12', action: 'Revoke PFCG role admin authority' },
+  { userId: 'JSONNIER', firstName: 'James', lastName: 'Sonnier', dept: 'Finance', rolesCount: 35, critical: 5, high: 4, medium: 0, low: 0, lastLogin: '2026-05-12 16:34', action: 'Revoke PFCG from end-users' },
+  { userId: 'SBRYAN', firstName: 'Stephanie', lastName: 'Bryan', dept: 'Finance', rolesCount: 96, critical: 9, high: 9, medium: 1, low: 0, lastLogin: '2026-05-19 15:45', action: 'Revoke PFCG from end-users' },
+  { userId: 'SUNIL.SAHAI', firstName: 'Sunil', lastName: 'Sahai', dept: 'Finance', rolesCount: 78, critical: 7, high: 8, medium: 2, py: 0.5, low: 0, lastLogin: '2026-05-19 10:10', action: 'Separate administrative profile' },
+  { userId: 'VRADHAKRISHN', firstName: 'Vinoth', lastName: 'Radhakrishnan', dept: 'Finance', rolesCount: 74, critical: 5, high: 6, medium: 1, low: 0, lastLogin: '2026-05-18 09:00', action: 'Revoke PFCG from end-users' },
+  { userId: 'BATCH_USER', firstName: 'Batch', lastName: 'System', dept: 'IT Basis', rolesCount: 44, critical: 15, high: 18, medium: 5, low: 0, lastLogin: '2026-05-19 04:00', action: 'Replace with scoped profile' },
+  { userId: 'DDIC', firstName: 'Data', lastName: 'Dictionary', dept: 'IT Basis', rolesCount: 9, critical: 8, high: 5, medium: 1, low: 0, lastLogin: '2026-05-19 00:01', action: 'Deactivate / restrict DDIC access' },
+  { userId: 'KTERN_SERVIC', firstName: 'KTern', lastName: 'Connection', dept: 'IT Basis', rolesCount: 7, critical: 6, high: 4, medium: 0, low: 0, lastLogin: '2026-05-19 03:00', action: 'Restrict profile authorizations' },
+  { userId: 'RFCUSER', firstName: 'RFC', lastName: 'System User', dept: 'IT Basis', rolesCount: 13, critical: 5, high: 2, medium: 0, low: 0, lastLogin: '2026-05-19 02:15', action: 'Enforce technical user policies' },
+  { userId: 'SAPSUPPORT', firstName: 'SAP', lastName: 'Support Admin', dept: 'IT Basis', rolesCount: 70, critical: 10, high: 12, medium: 4, low: 0, lastLogin: '2026-05-14 11:22', action: 'Revoke SAP_ALL profile' },
+];
+
+const generateMockUsers = () => {
+  const list = [...BASE_USERS];
+  const depts = ['Finance', 'Procurement', 'OTC', 'HR', 'IT Basis', 'Sales', 'Treasury'];
+  const actions = [
+    'Revoke conflicting role',
+    'Split T-code authorizations',
+    'Assign compensating control',
+    'Review firefighter logs',
+    'Perform quarterly attestation',
+    'None - Compliant'
+  ];
+  const firstNames = ['John', 'David', 'Raj', 'Michael', 'Robert', 'William', 'James', 'Linda', 'Mary', 'Patricia', 'Sarah', 'Karthik', 'Sunita', 'Ellen', 'Hannah'];
+  const lastNames = ['Smith', 'Lee', 'Kumar', 'Johnson', 'Williams', 'Brown', 'Jones', 'Miller', 'Davis', 'Wilson', 'Iyer', 'Verma', 'Elliott', 'Clement', 'Nair'];
+
+  for (let i = list.length + 1; i <= 540; i++) {
+    const fn = firstNames[i % firstNames.length];
+    const ln = lastNames[i % lastNames.length];
+    const dept = depts[i % depts.length];
+    const roles = (i % 25) + 3;
+    const critical = i % 19 === 0 ? 1 : 0;
+    const high = i % 13 === 0 ? (i % 3) + 1 : 0;
+    const medium = i % 7 === 0 ? (i % 2) + 1 : 0;
+    const low = i % 11 === 0 ? 1 : 0;
+    const lastDay = (i % 28) + 1;
+    const hr = i % 24;
+    const min = i % 60;
+    
+    list.push({
+      userId: `USR-${1000 + i}`,
+      firstName: fn,
+      lastName: ln,
+      dept,
+      rolesCount: roles,
+      critical,
+      high,
+      medium,
+      low,
+      lastLogin: `2026-05-${lastDay < 10 ? '0' + lastDay : lastDay} ${hr < 10 ? '0' + hr : hr}:${min < 10 ? '0' + min : min}`,
+      action: (critical + high) > 0 ? actions[i % 4] : actions[4 + (i % 2)]
+    });
+  }
+  return list;
+};
+
+const ALL_USERS_RAW = generateMockUsers();
+
+const ALL_USERS = ALL_USERS_RAW.map((user, idx) => {
+  const critical = user.critical || 0;
+  const high = user.high || 0;
+  const medium = user.medium || 0;
+  const low = user.low || 0;
+  const hasViolation = (critical + high + medium + low) > 0;
+  
+  let firefighterId = 'N/A';
+  if (user.userId.includes('FF') || idx % 23 === 0) {
+    firefighterId = `FF-0${(idx % 4) + 1}`;
+  }
+
+  let accountType = 'Dialog';
+  if (user.userId.includes('BATCH') || user.userId.includes('SERVIC') || user.userId.includes('RFC') || idx % 29 === 0) {
+    accountType = user.userId.includes('SERVIC') ? 'Service' : 'System';
+  }
+
+  const roles = [
+    'ZFI_BR_GL_POSTING', 'ZFI_BR_AP_INVOICE', 'ZMM_BR_PO_CREATE', 'ZBC_BR_SYSTEM_ADMIN', 'ZSD_BR_BILLING_CREATE'
+  ].slice(0, (user.rolesCount % 3) + 2);
+  const primaryRole = roles[0];
+  const roleDesc = primaryRole.includes('GL') ? 'General Ledger Posting'
+                 : primaryRole.includes('AP') ? 'Accounts Payable Invoice verification'
+                 : primaryRole.includes('PO') ? 'Purchase Order Creation'
+                 : primaryRole.includes('SYSTEM') ? 'Basis System Administration'
+                 : 'Sales Billing release manager';
+
+  let violationId = 'N/A';
+  let violationDesc = 'N/A';
+  let conflictingTransactions = 'N/A';
+  let businessImpact = 'N/A';
+  let recType = 'None';
+  let priority = 'None';
+  let status = 'Resolved';
+  let assignee = 'N/A';
+  let approvalStatus = 'N/A';
+
+  if (hasViolation) {
+    if (critical > 0) {
+      violationId = idx % 2 === 0 ? 'V-1058' : 'V-1042';
+      violationDesc = violationId === 'V-1058' ? 'Full OTC cycle control by single user' : 'Create Vendor + Approve Payment';
+      conflictingTransactions = violationId === 'V-1058' ? 'VA01, VF01, F-28' : 'FK01, F110';
+      businessImpact = violationId === 'V-1058' ? 'SOX §404 deficiency and revenue leakage potential. Bypasses dual controls.'
+                                                 : 'Enables creation of fictitious suppliers paired with payment releases.';
+      recType = 'Role Redesign';
+      priority = 'P1 - Immediate';
+      status = idx % 3 === 0 ? 'In Progress' : 'Open';
+      assignee = violationId === 'V-1058' ? 'IT Compliance Lead' : 'SAP Security Architect';
+      approvalStatus = idx % 3 === 0 ? 'Pending' : 'N/A';
+    } else if (high > 0) {
+      violationId = idx % 2 === 0 ? 'V-1101' : 'V-1090';
+      violationDesc = violationId === 'V-1101' ? 'F110 Auto-Payment Run by Non-Treasury' : 'Firefighter ID Active >180 Days';
+      conflictingTransactions = violationId === 'V-1101' ? 'F110' : '/GRCPI/GRIA_FFLOG';
+      businessImpact = violationId === 'V-1101' ? 'Unsegregated automatic payment executions can result in unauthorized cash disbursements.'
+                                                 : 'Prolonged emergency access permissions compromise audit accountability.';
+      recType = violationId === 'V-1101' ? 'Access Removal' : 'Mitigating Control';
+      priority = 'P2 - High';
+      status = 'Open';
+      assignee = 'Finance Control Director';
+      approvalStatus = 'N/A';
+    } else {
+      violationId = 'V-1131';
+      violationDesc = 'Goods Receipt + Invoice Verification';
+      conflictingTransactions = 'MIGO, MIRO';
+      businessImpact = 'A clerk can record receiving fictitious goods and approve the invoice, enabling disbursement fraud.';
+      recType = 'Mitigating Control';
+      priority = 'P3 - Medium';
+      status = 'Open';
+      assignee = 'IT Compliance Lead';
+      approvalStatus = 'Approved';
+    }
+  }
+
+  return {
+    ...user,
+    fullName: `${user.firstName} ${user.lastName}`,
+    role: primaryRole,
+    roleDesc,
+    riskViolation: hasViolation ? 'Yes' : 'No',
+    violationId,
+    violationDesc,
+    severity: critical > 0 ? 'Critical' : high > 0 ? 'High' : medium > 0 ? 'Medium' : low > 0 ? 'Low' : 'N/A',
+    processArea: user.dept,
+    conflictingTransactions,
+    businessImpact,
+    recommendedAction: user.action,
+    recommendationType: recType,
+    priority,
+    status,
+    assignee,
+    lastActivity: user.lastLogin,
+    approvalStatus,
+    firefighterId,
+    accountType
+  };
+});
+
+const ALL_RISKS = [
+  {
+    riskId: 'V-1042',
+    title: 'Create Vendor + Approve Payment',
+    status: 'Active',
+    level: 'Critical',
+    category: 'Financial',
+    process: 'Procurement',
+    type: 'SoD Conflict',
+    ruleset: 'SAP GRC Global Matrix v4.2',
+    func: 'F_VENDOR_MAINT, F_PAY_APPROVE',
+    funcDesc: 'Maintain vendor accounts paired with automatic payment execution',
+    funcStatus: 'Enabled',
+    userCount: 3,
+    affectedUsers: ['USR-1087', 'USR-1023', 'SBRYAN'],
+    group: 'P2P Control Pool',
+    recommendations: 'Separate vendor master edit roles from F110 execution profiles',
+    lastRun: 'LCSOD-2026-Q2-007',
+    lastDetected: 'May 19, 2026',
+    roles: ['ZMM_BR_VENDOR_CREATE', 'ZFI_BR_AP_PAYMENT'],
+    tcodes: ['FK01', 'F110'],
+    businessImpact: 'High potential for unauthorized supplier onboarding and payment release without independent audit trail.',
+    complianceImpact: 'SOX §404 deficiency; K-SOX compliance breach.',
+    grcMapping: 'GRC Ruleset ID P2P_SOD_002',
+    auditNotes: 'Identified during periodic Q2 assessment. Compensating controls (daily payment log audits) are currently inactive.',
+    assignee: 'SAP Security Architect'
+  },
+  {
+    riskId: 'V-1058',
+    title: 'Full OTC Cycle Control',
+    status: 'Active',
+    level: 'Critical',
+    category: 'Financial',
+    process: 'OTC',
+    type: 'SoD Conflict',
+    ruleset: 'SAP GRC Global Matrix v4.2',
+    func: 'F_SALES_ORDER, F_CUST_BILL, F_PAY_COLLECT',
+    funcDesc: 'End-to-end sales processing, customer billing, and payment clearing',
+    funcStatus: 'Enabled',
+    userCount: 5,
+    affectedUsers: ['HOANG.NGUYEN', 'JAE.KANG', 'PVALENCIA', 'RUTGER.DUKES', 'WBERRYMAN'],
+    group: 'OTC Control Pool',
+    recommendations: 'Redesign role ZSD_BR_BILLING_CREATE to remove sales order release or ledger clearing rights',
+    lastRun: 'LCSOD-2026-Q2-007',
+    lastDetected: 'May 19, 2026',
+    roles: ['ZSD_BR_SO_CREATE', 'ZSD_BR_BILLING_CREATE', 'ZFI_BR_AR_CLEAR'],
+    tcodes: ['VA01', 'VF01', 'F-28'],
+    businessImpact: 'A single individual can issue sales orders, invoice the customer, and clear payments, facilitating direct revenue leakage.',
+    complianceImpact: 'Critical SOX §302 and §404 audit threat.',
+    grcMapping: 'GRC Ruleset ID OTC_SOD_011',
+    auditNotes: 'Direct table update and clearing authorization issues detected for user profiles.',
+    assignee: 'IT Compliance Lead'
+  },
+  {
+    riskId: 'V-1063',
+    title: 'GL Posting + Bank Reconciliation',
+    status: 'Active',
+    level: 'Critical',
+    category: 'Financial',
+    process: 'Finance',
+    type: 'SoD Conflict',
+    ruleset: 'SAP GRC Global Matrix v4.2',
+    func: 'F_GL_POST, F_BANK_RECON',
+    funcDesc: 'Manual general ledger posting combined with bank statement processing',
+    funcStatus: 'Enabled',
+    userCount: 4,
+    affectedUsers: ['USR-1103', 'USR-1034', 'USR-1082', 'JAE.KANG'],
+    group: 'Finance Control Pool',
+    recommendations: 'Restrict manual general ledger posting ZFI_BR_GL_POSTING from bank statement reconcilers',
+    lastRun: 'LCSOD-2026-Q2-007',
+    lastDetected: 'May 19, 2026',
+    roles: ['ZFI_BR_GL_POSTING', 'ZFI_BR_BANK_RECON'],
+    tcodes: ['FB50', 'FF67'],
+    businessImpact: 'Allows manual journal adjustments to mask discrepancies in bank reconciliations.',
+    complianceImpact: 'Material control weakness under COSO framework.',
+    grcMapping: 'GRC Ruleset ID FI_SOD_005',
+    auditNotes: 'Internal audit noted three manual journal postings by bank reconcilers without supervisor signature.',
+    assignee: 'Finance Risk Lead'
+  },
+  {
+    riskId: 'V-1071',
+    title: 'PFCG Role-Admin + Transaction Access',
+    status: 'Active',
+    level: 'Critical',
+    category: 'Operational',
+    process: 'IT',
+    type: 'Privileged Access',
+    ruleset: 'System Security Ruleset',
+    func: 'F_ROLE_MAINT, F_BUSINESS_TX',
+    funcDesc: 'Maintain user roles and hold operational posting transactions',
+    funcStatus: 'Enabled',
+    userCount: 5,
+    affectedUsers: ['FF.IT', 'JSONNIER', 'SBRYAN', 'SUNIL.SAHAI', 'VRADHAKRISHN'],
+    group: 'Basis Control Pool',
+    recommendations: 'Revoke PFCG role maintenance profiles from business operations users',
+    lastRun: 'LCSOD-2026-Q2-007',
+    lastDetected: 'May 19, 2026',
+    roles: ['ZBC_BR_SYSTEM_ADMIN', 'ZFI_BR_AP_INVOICE'],
+    tcodes: ['PFCG', 'MIRO'],
+    businessImpact: 'Enables users to assign themselves or others additional authorizations to bypass security filters.',
+    complianceImpact: 'Severe IT General Control (ITGC) failure.',
+    grcMapping: 'GRC Ruleset ID SEC_SOD_001',
+    auditNotes: 'Must restrict access to PFCG and SU01 profiles to SAP Basis Team exclusively.',
+    assignee: 'Basis Admin Lead'
+  },
+  {
+    riskId: 'V-1090',
+    title: 'Firefighter ID Active >180 Days',
+    status: 'Review',
+    level: 'High',
+    category: 'Regulatory',
+    process: 'IT',
+    type: 'Critical Access',
+    ruleset: 'IAM Security Ruleset',
+    func: 'F_FIREFIGHT_USAGE',
+    funcDesc: 'Access to Firefighter emergency ID profile without periodic re-attestation',
+    funcStatus: 'Pending',
+    userCount: 13,
+    affectedUsers: ['FF.BASIS', 'FF.EWM', 'FF.FI', 'FF.IT', 'FF.PM', 'FF.SD', 'JEFF.DOZART'],
+    group: 'Emergency Access Pool',
+    recommendations: 'Enforce firefighter ID expiry parameters; force 30-day max assignment',
+    lastRun: 'LCSOD-2026-Q2-007',
+    lastDetected: 'May 19, 2026',
+    roles: ['ZBC_BR_SYSTEM_ADMIN'],
+    tcodes: ['/GRCPI/GRIA_FFLOG'],
+    businessImpact: 'Prolonged emergency access permissions increase the system\'s attack surface and compromise accountability.',
+    complianceImpact: 'Breach of ISO 27001 Access Management policies.',
+    grcMapping: 'GRC Ruleset ID FF_LIFE_003',
+    auditNotes: 'Overdue firefighter authorizations require immediate de-provisioning.',
+    assignee: 'SAP Security Architect'
+  },
+  {
+    riskId: 'V-1094',
+    title: 'PO Create + PO Release Over-Limit',
+    status: 'Active',
+    level: 'High',
+    category: 'Operational',
+    process: 'Procurement',
+    type: 'SoD Conflict',
+    ruleset: 'SAP GRC Global Matrix v4.2',
+    func: 'F_PO_CREATE, F_PO_RELEASE',
+    funcDesc: 'Purchase order creation paired with approval authorization exceeding grade limits',
+    funcStatus: 'Enabled',
+    userCount: 1,
+    affectedUsers: ['SBRYAN'],
+    group: 'P2P Control Pool',
+    recommendations: 'Redesign ZPM_BR_PROCUREMENT_1720 release strategy parameters',
+    lastRun: 'LCSOD-2026-Q2-007',
+    lastDetected: 'May 19, 2026',
+    roles: ['ZMM_BR_PO_CREATE', 'ZMM_BR_PO_RELEASE'],
+    tcodes: ['ME21N', 'ME29N'],
+    businessImpact: 'A single buyer can create and approve their own purchase order, leading to uncontrolled expenditure.',
+    complianceImpact: 'Direct procurement policy audit infraction.',
+    grcMapping: 'GRC Ruleset ID P2P_SOD_015',
+    auditNotes: 'Buyer assigned to release strategy class with limit codes above grade level.',
+    assignee: 'SAP Security Team'
+  },
+  {
+    riskId: 'V-1101',
+    title: 'F110 Auto-Payment Run by Non-Treasury',
+    status: 'Active',
+    level: 'High',
+    category: 'Financial',
+    process: 'Finance',
+    type: 'SoD Conflict',
+    ruleset: 'SAP GRC Global Matrix v4.2',
+    func: 'F_PAY_EXECUTION',
+    funcDesc: 'Run automatic payment programs for vendor invoices',
+    funcStatus: 'Enabled',
+    userCount: 5,
+    affectedUsers: ['FF.FI', 'FF.IT', 'FF.IT02', 'FF.TEMP', 'SBRYAN'],
+    group: 'Treasury Control Pool',
+    recommendations: 'Restrict F110 transaction access to Treasury role pool',
+    lastRun: 'LCSOD-2026-Q2-007',
+    lastDetected: 'May 19, 2026',
+    roles: ['ZFI_BR_AP_PAYMENT', 'ZFI_BR_TREASURY'],
+    tcodes: ['F110'],
+    businessImpact: 'Unsegregated automatic payment executions can result in unauthorized cash disbursements.',
+    complianceImpact: 'SOX Treasury control failure.',
+    grcMapping: 'GRC Ruleset ID FI_SOD_019',
+    auditNotes: 'Access must be restricted immediately to prevent financial exposure.',
+    assignee: 'Finance Risk Lead'
+  },
+  {
+    riskId: 'V-1124',
+    title: 'Technical Account Holds SAP_ALL',
+    status: 'Active',
+    level: 'Critical',
+    category: 'Operational',
+    process: 'IT',
+    type: 'Privileged Access',
+    ruleset: 'System Security Ruleset',
+    func: 'F_SUPER_SYSTEM',
+    funcDesc: 'Technical service or batch account holding unrestricted profile',
+    funcStatus: 'Enabled',
+    userCount: 8,
+    affectedUsers: ['BATCH_USER', 'DDIC', 'KTERN_SERVIC', 'RFCUSER', 'SAPSUPPORT'],
+    group: 'Basis Control Pool',
+    recommendations: 'Replace SAP_ALL profiles on technical connections with scoped roles',
+    lastRun: 'LCSOD-2026-Q2-007',
+    lastDetected: 'May 19, 2026',
+    roles: ['SAP_ALL', 'SAP_NEW'],
+    tcodes: ['*'],
+    businessImpact: 'Technical background accounts carrying SAP_ALL present severe entry-point risks if credential compromise occurs.',
+    complianceImpact: 'ITGC database access violation.',
+    grcMapping: 'GRC Ruleset ID SEC_SOD_009',
+    auditNotes: 'Batch and RFC accounts require immediate profile review and scoped role assignment.',
+    assignee: 'Basis Admin Lead'
+  },
+  {
+    riskId: 'V-1131',
+    title: 'Goods Receipt + Invoice Verification',
+    status: 'Active',
+    level: 'Medium',
+    category: 'Financial',
+    process: 'Procurement',
+    type: 'SoD Conflict',
+    ruleset: 'SAP GRC Global Matrix v4.2',
+    func: 'F_GOODS_RECEIPT, F_INVOICE_VERIFY',
+    funcDesc: 'Record goods receipts paired with posting vendor logistics invoices',
+    funcStatus: 'Enabled',
+    userCount: 9,
+    affectedUsers: ['EELLIOTT', 'HCLEMENT', 'HOANG.NGUYEN', 'JAE.KANG', 'SBORDELON', 'SBRYAN'],
+    group: 'P2P Control Pool',
+    recommendations: 'Enforce three-way match checks in MIRO configuration',
+    lastRun: 'LCSOD-2026-Q2-007',
+    lastDetected: 'May 19, 2026',
+    roles: ['ZMM_BR_GR_AUTO', 'ZFI_BR_AP_INVOICE'],
+    tcodes: ['MIGO', 'MIRO'],
+    businessImpact: 'A clerk can record receiving fictitious goods and approve the invoice, enabling disbursement fraud.',
+    complianceImpact: 'Operational internal control gap.',
+    grcMapping: 'GRC Ruleset ID P2P_SOD_024',
+    auditNotes: 'Recommendation logged to force automated invoice blocking when receipt quantities mismatch.',
+    assignee: 'IT Compliance Lead'
+  }
+];
+
+Object.assign(window.MOCK, {
+  ALL_USERS, ALL_RISKS
+});
+
 
