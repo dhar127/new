@@ -485,13 +485,19 @@ function Sod12ContinuousComplianceView() {
 const getSodStreamsForUser = (u) => {
   const streams = new Set(['SOD-05', 'SOD-11']);
   const riskRows = window.getRiskViolationsForUser ? window.getRiskViolationsForUser(u) : [];
-  if (riskRows.some(r => r.severity === 'High') || u.riskViolation === 'Yes') streams.add('SOD-03');
+  if (riskRows.some(r => r.severity === 'High' || r.severity === 'Critical') || u.riskViolation === 'Yes') streams.add('SOD-03');
   if (u.status === 'Open' || u.status === 'In Progress' || ['P1', 'P2', 'P1 - Immediate', 'P2 - High'].includes(u.priority)) streams.add('SOD-04');
-  if (u.firefighterId && String(u.firefighterId).startsWith('FF')) streams.add('SOD-08');
+  if (u.firefighterId && String(u.firefighterId).toUpperCase().includes('FF')) streams.add('SOD-08');
   if (u.accountType === 'Service' || u.accountType === 'System') streams.add('SOD-10');
-  if ((u.role && u.role.includes('SYSTEM')) || riskRows.some(r => String(r.businessProcess).includes('Basis'))) streams.add('SOD-06');
-  if (riskRows.some(r => String(r.businessProcess).includes('Order to Cash'))) streams.add('SOD-09');
-  if (riskRows.some(r => String(r.businessProcess).includes('Procure to Pay'))) streams.add('SOD-P2P');
+  if ((u.role && u.role.includes('SYSTEM')) || riskRows.some(r => String(r.businessProcess || r.process || '').includes('Basis'))) streams.add('SOD-06');
+  if (riskRows.some(r => {
+    const proc = String(r.businessProcess || r.process || '').toLowerCase();
+    return proc.includes('order to cash') || proc.includes('otc') || r.riskId.startsWith('S');
+  })) streams.add('SOD-09');
+  if (riskRows.some(r => {
+    const proc = String(r.businessProcess || r.process || '').toLowerCase();
+    return proc.includes('procure to pay') || proc.includes('p2p') || r.riskId.startsWith('P');
+  })) streams.add('SOD-P2P');
   if (riskRows.length) streams.add('SOD-07');
   return Array.from(streams);
 };
@@ -500,15 +506,29 @@ const getSodStreamForUser = (u) => getSodStreamsForUser(u)[0] || 'SOD-11';
 
 const getSodStreamsForRisk = (r) => {
   const streams = new Set(['SOD-05', 'SOD-11']);
-  if (r.level === 'Critical') streams.add('SOD-03');
-  if (r.status === 'Open' || r.status === 'In Progress' || r.level === 'Critical' || r.level === 'High') streams.add('SOD-04');
-  if (['V-1071', 'V-1124'].includes(r.riskId)) streams.add('SOD-06');
-  if (['V-1090', 'V-1071'].includes(r.riskId)) streams.add('SOD-08');
-  if (['V-1058', 'V-1101'].includes(r.riskId)) streams.add('SOD-09');
-  if (['V-1124', 'V-1071'].includes(r.riskId)) streams.add('SOD-10');
-  if (r.riskId === 'V-1094' || r.riskId === 'V-1131') streams.add('SOD-P2P');
-  if (r.riskId === 'V-1042' || r.riskId === 'V-1101') streams.add('SOD-07');
-  if (r.riskId === 'V-1058') streams.add('SOD-07');
+  const proc = String(r.businessProcess || r.process || '').toLowerCase();
+  const rId = String(r.riskId || '').toUpperCase();
+  
+  if (r.level === 'Critical' || r.severity === 'Critical' || r.level === 'High' || r.severity === 'High') {
+    streams.add('SOD-03');
+  }
+  if (r.status === 'Open' || r.status === 'In Progress' || r.level === 'Critical' || r.severity === 'Critical' || r.level === 'High' || r.severity === 'High') {
+    streams.add('SOD-04');
+  }
+  if (proc.includes('basis') || rId.startsWith('B')) {
+    streams.add('SOD-06');
+    streams.add('SOD-08');
+    streams.add('SOD-10');
+  }
+  if (proc.includes('order to cash') || proc.includes('otc') || rId.startsWith('S')) {
+    streams.add('SOD-09');
+  }
+  if (proc.includes('procure to pay') || proc.includes('p2p') || rId.startsWith('P')) {
+    streams.add('SOD-P2P');
+  }
+  if (proc.includes('basis') || proc.includes('finance') || proc.includes('procure') || proc.includes('order') || rId.startsWith('B') || rId.startsWith('F') || rId.startsWith('P') || rId.startsWith('S')) {
+    streams.add('SOD-07');
+  }
   return Array.from(streams);
 };
 
@@ -825,17 +845,25 @@ window.LaunchPage = function({
       let exportRisks = filteredRisks;
       let userColSeq = null;
       let riskColSeq = null;
+      let exportSource = null;
+      let activeFilter = 'All';
 
-      if (filteredData && filteredData.length > 0) {
-        if (filteredData[0].userId) {
+      if (orderedColumns && orderedColumns.length > 0) {
+        const isUserTable = orderedColumns.some(col => col.id === 'userId');
+        const cleanCols = orderedColumns.filter(col => col.id !== 'viewAction' && col.id !== 'view');
+        if (isUserTable) {
           exportUsers = filteredData;
-          userColSeq = orderedColumns;
+          userColSeq = cleanCols;
+          exportSource = 'users';
+          activeFilter = userSodFilter || 'All';
         } else {
           exportRisks = filteredData;
-          riskColSeq = orderedColumns;
+          riskColSeq = cleanCols;
+          exportSource = 'risks';
+          activeFilter = riskSodFilter || 'All';
         }
       }
-      window.exportGrcExcel(runId, exportUsers, exportRisks, userColSeq, riskColSeq);
+      window.exportGrcExcel(runId, exportUsers, exportRisks, userColSeq, riskColSeq, exportSource, activeFilter);
     } else {
       console.error('exportGrcExcel function is not loaded');
     }

@@ -1,5 +1,5 @@
 // Multi-sheet Excel Export Utility using SheetJS (XLSX)
-window.exportGrcExcel = function(runId, filteredUsers, filteredRisks, userColSeq, riskColSeq) {
+window.exportGrcExcel = function(runId, filteredUsers, filteredRisks, userColSeq, riskColSeq, exportSource, activeFilter) {
   if (typeof XLSX === 'undefined') {
     alert('SheetJS Excel library is not loaded. Please wait a moment or reload.');
     return;
@@ -11,17 +11,7 @@ window.exportGrcExcel = function(runId, filteredUsers, filteredRisks, userColSeq
   const risksForRun = runData.risks || [];
   const usersForRun = runData.users || [];
   const splitTcodes = value => String(value || '').split(',').map(v => v.trim()).filter(Boolean);
-  const authObjectByTcode = {
-    VA01: ['V_VBAK_AAT', 'Sales order create authorization'],
-    VF01: ['V_VBRK_FKA', 'Billing document create authorization'],
-    'F-28': ['F_BKPF_BUK', 'Customer payment clearing authorization'],
-    FK01: ['F_LFA1_APP', 'Vendor master create authorization'],
-    F110: ['F_REGU_BUK', 'Automatic payment run authorization'],
-    PFCG: ['S_USER_AGR', 'Role administration authorization'],
-    SU01: ['S_USER_GRP', 'User master maintenance authorization'],
-    MIGO: ['M_MSEG_BWA', 'Goods movement posting authorization'],
-    MIRO: ['M_RECH_BUK', 'Invoice verification authorization']
-  };
+  
   const getRiskViolations = u => window.getRiskViolationsForUser ? window.getRiskViolationsForUser(u) : [];
   const getRiskCount = u => window.getRiskCountForUser ? window.getRiskCountForUser(u) : getRiskViolations(u).length;
   const getViolationCount = u => window.getViolationCountForUser ? window.getViolationCountForUser(u) : Math.max(1, splitTcodes(u.conflictingTransactions).length);
@@ -33,6 +23,23 @@ window.exportGrcExcel = function(runId, filteredUsers, filteredRisks, userColSeq
     'Re-run the SoD rule and keep the violation Active until the retest shows no conflict.'
   ].join('\n');
 
+  // Determine active lists based on the export source
+  let activeUsers = [...filteredUsers];
+  let activeRisks = [...filteredRisks];
+  const activeFilterClean = activeFilter || 'All';
+
+  if (exportSource === 'users') {
+    // Export triggered by Users Table
+    // Filter risks to only include those violated by the filtered users
+    const violatedRiskIds = new Set(filteredUsers.flatMap(u => getRiskViolations(u).map(v => v.riskId)));
+    activeRisks = risksForRun.filter(r => violatedRiskIds.has(r.riskId));
+  } else if (exportSource === 'risks') {
+    // Export triggered by Risks Table
+    // Filter users to only include those affected by the filtered risks
+    const activeRiskIds = new Set(filteredRisks.map(r => r.riskId));
+    activeUsers = usersForRun.filter(u => getRiskViolations(u).some(v => activeRiskIds.has(v.riskId)));
+  }
+
   // 1. Executive Summary
   const execSummaryData = [
     { "Metric KPI Parameter": "Assessment Run ID", "Value": runIdClean },
@@ -42,16 +49,22 @@ window.exportGrcExcel = function(runId, filteredUsers, filteredRisks, userColSeq
     { "Metric KPI Parameter": "Total SoD Risks", "Value": risksForRun.length },
     { "Metric KPI Parameter": "System Risk Score (Average)", "Value": kpis.riskScore },
     { "Metric KPI Parameter": "Risk Coverage Score (%)", "Value": kpis.complianceScore + "%" },
-    { "Metric KPI Parameter": "Weighted Detected Risk (WDR)", "Value": kpis.wdr },
-    { "Metric KPI Parameter": "Weighted Unmitigated Risk (WUR)", "Value": kpis.wur },
     { "Metric KPI Parameter": "Audit Framework Scope", "Value": "SOX / K-SOX / ISO 27001" }
   ];
+  if (exportSource) {
+    execSummaryData.push(
+      { "Metric KPI Parameter": "Export Context", "Value": exportSource === 'users' ? "Filtered Users Table" : "Filtered Risks Ruleset Catalog" },
+      { "Metric KPI Parameter": "Active SoD Stream Filter", "Value": activeFilterClean },
+      { "Metric KPI Parameter": "Exported Users Count", "Value": activeUsers.length },
+      { "Metric KPI Parameter": "Exported Risks Count", "Value": activeRisks.length }
+    );
+  }
   const ws1 = XLSX.utils.json_to_sheet(execSummaryData);
 
   // 2. User Wise Violations
   let userWiseData;
   if (userColSeq && userColSeq.length > 0) {
-    userWiseData = filteredUsers.map(u => {
+    userWiseData = activeUsers.map(u => {
       const row = {};
       userColSeq.forEach(col => {
         let val = typeof col.accessor === 'function' ? col.accessor(u) : u[col.id];
@@ -60,7 +73,7 @@ window.exportGrcExcel = function(runId, filteredUsers, filteredRisks, userColSeq
       return row;
     });
   } else {
-    userWiseData = filteredUsers.map(u => ({
+    userWiseData = activeUsers.map(u => ({
       "User ID": u.userId,
       "First Name": u.firstName,
       "Last Name": u.lastName,
@@ -72,7 +85,20 @@ window.exportGrcExcel = function(runId, filteredUsers, filteredRisks, userColSeq
   }
   const ws2 = XLSX.utils.json_to_sheet(userWiseData);
 
-  const userViolationDetailsData = filteredUsers.flatMap(u => getRiskViolations(u).map(risk => ({
+  // User Violation Details (only matching active users and active filter)
+  const activeRiskIdsForDetails = new Set(activeRisks.map(r => r.riskId));
+  const userViolationDetailsData = activeUsers.flatMap(u => getRiskViolations(u)
+    .filter(risk => {
+      // Must match active risks
+      if (!activeRiskIdsForDetails.has(risk.riskId)) return false;
+      // Must match stream filter if exporting from users and filter is active
+      if (exportSource === 'users' && activeFilterClean !== 'All') {
+        const streams = window.getSodStreamsForRisk ? window.getSodStreamsForRisk(risk) : [];
+        return streams.includes(activeFilterClean);
+      }
+      return true;
+    })
+    .map(risk => ({
       "Risk ID": risk.riskId,
       "User ID": u.userId,
       "First Name": u.firstName,
@@ -80,7 +106,7 @@ window.exportGrcExcel = function(runId, filteredUsers, filteredRisks, userColSeq
       "Email": u.email,
       "Function IDs": (risk.functionIds || []).join(", "),
       "Function Names": (risk.functionNames || []).join(" | "),
-      "Role Type": risk.roleType,
+      "Role Type": risk.roleType || 'SoD Conflict',
       "Business Process": risk.businessProcess,
       "Risk Category": risk.riskCategory,
       "Risk Score": risk.riskScore,
@@ -95,13 +121,14 @@ window.exportGrcExcel = function(runId, filteredUsers, filteredRisks, userColSeq
       "Status": "Active",
       "Assignee": risk.assignee,
       "Step-by-step Recommendation": remediationSteps(risk)
-  })));
+    }))
+  );
   const wsUserDetails = XLSX.utils.json_to_sheet(userViolationDetailsData);
 
   // 3. Risk Wise Violations
   let riskWiseData;
   if (riskColSeq && riskColSeq.length > 0) {
-    riskWiseData = filteredRisks.map(r => {
+    riskWiseData = activeRisks.map(r => {
       const row = {};
       riskColSeq.forEach(col => {
         let val = typeof col.accessor === 'function' ? col.accessor(r) : r[col.id];
@@ -110,8 +137,9 @@ window.exportGrcExcel = function(runId, filteredUsers, filteredRisks, userColSeq
       return row;
     });
   } else {
-    riskWiseData = filteredRisks.map(r => ({
+    riskWiseData = activeRisks.map(r => ({
       "Risk ID": r.riskId,
+      "Function IDs": Array.isArray(r.functionIds) ? r.functionIds.join(", ") : '',
       "Risk Name": r.title,
       "Business Process": r.process,
       "Risk Category": r.category,
@@ -127,40 +155,50 @@ window.exportGrcExcel = function(runId, filteredUsers, filteredRisks, userColSeq
   }
   const ws3 = XLSX.utils.json_to_sheet(riskWiseData);
 
-  const riskUserDetailsData = filteredRisks.flatMap(r => {
-    const affected = window.getUsersForRisk ? window.getUsersForRisk(r, usersForRun) : (r.affectedUsers || []).map(uid => usersForRun.find(user => user.userId === uid) || { userId: uid });
+  // Risk User Details (only matching active risks and active users)
+  const activeUserIdsForDetails = new Set(activeUsers.map(u => u.userId));
+  const riskUserDetailsData = activeRisks.flatMap(r => {
+    const affected = window.getUsersForRisk 
+      ? window.getUsersForRisk(r, activeUsers) 
+      : (r.affectedUsers || []).map(uid => activeUsers.find(user => user.userId === uid)).filter(Boolean);
+    
     return affected.map(u => {
-    const mappedRisk = getRiskViolations(u).find(item => item.riskId === r.riskId) || r;
-    return {
-      "Risk ID": r.riskId,
-      "Risk Name": r.title,
-      "Risk Category": r.category,
-      "Risk Score": r.riskScore,
-      "User ID": u.userId || uid,
-      "First Name": u.firstName || 'SAP',
-      "Last Name": u.lastName || 'User',
-      "Email": u.email || `${String(u.userId || 'sap.user').toLowerCase()}@lottechem.com`,
-      "Role Type": mappedRisk.roleType || u.roleType || 'Single',
-      "Violation Count": u.userId ? getViolationCount(u) : 1,
-      "T-Codes": mappedRisk.conflictingTransactions || r.func,
-      "Auth Objects": mappedRisk.authObjects || '',
-      "Status": "Active",
-      "Recommendation": mappedRisk.recommendedAction || r.recommendations,
-      "Priority": mappedRisk.priority || '',
-      "Assignee": mappedRisk.assignee || r.assignee
-    };
-  });
+      const mappedRisk = getRiskViolations(u).find(item => item.riskId === r.riskId) || r;
+      return {
+        "Risk ID": r.riskId,
+        "Risk Name": r.title,
+        "Risk Category": r.category,
+        "Risk Score": r.riskScore,
+        "User ID": u.userId,
+        "First Name": u.firstName || 'SAP',
+        "Last Name": u.lastName || 'User',
+        "Email": u.email,
+        "Standards Violated": 'GRC Ruleset',
+        "Violation Count": getViolationCount(u),
+        "T-Codes": mappedRisk.conflictingTransactions || r.func,
+        "Auth Objects": mappedRisk.authObjects || '',
+        "Status": "Active",
+        "Recommendation": mappedRisk.recommendedAction || r.recommendations,
+        "Priority": mappedRisk.priority || '',
+        "Assignee": mappedRisk.assignee || r.assignee
+      };
+    });
   });
   const wsRiskUsers = XLSX.utils.json_to_sheet(riskUserDetailsData);
 
-  // 4. Severity Distribution
-  const totalViols = kpis.totalViolations || 1;
+  // 4. Severity Distribution (calculated based on active risks)
+  const activeCritical = activeRisks.filter(r => r.severity === 'Critical').length;
+  const activeHigh = activeRisks.filter(r => r.severity === 'High').length;
+  const activeMedium = activeRisks.filter(r => r.severity === 'Medium').length;
+  const activeLow = activeRisks.filter(r => r.severity === 'Low').length;
+  const activeTotal = activeRisks.length || 1;
+
   const severityDistData = [
-    { "Severity Tier": "Critical", "Violations Count": kpis.critical, "Percentage Share": ((kpis.critical / totalViols) * 100).toFixed(1) + "%", "Business Impact Level": "High Risk (P1)" },
-    { "Severity Tier": "High", "Violations Count": kpis.high, "Percentage Share": ((kpis.high / totalViols) * 100).toFixed(1) + "%", "Business Impact Level": "Medium Risk (P2)" },
-    { "Severity Tier": "Medium", "Violations Count": kpis.medium, "Percentage Share": ((kpis.medium / totalViols) * 100).toFixed(1) + "%", "Business Impact Level": "Low Risk (P3)" },
-    { "Severity Tier": "Low", "Violations Count": kpis.low, "Percentage Share": ((kpis.low / totalViols) * 100).toFixed(1) + "%", "Business Impact Level": "Minimal Risk (P4)" },
-    { "Severity Tier": "Total", "Violations Count": kpis.totalViolations, "Percentage Share": "100.0%", "Business Impact Level": "Aggregated Scan Result" }
+    { "Severity Tier": "Critical", "Violations Count": activeCritical, "Percentage Share": ((activeCritical / activeTotal) * 100).toFixed(1) + "%", "Business Impact Level": "High Risk (P1)" },
+    { "Severity Tier": "High", "Violations Count": activeHigh, "Percentage Share": ((activeHigh / activeTotal) * 100).toFixed(1) + "%", "Business Impact Level": "Medium Risk (P2)" },
+    { "Severity Tier": "Medium", "Violations Count": activeMedium, "Percentage Share": ((activeMedium / activeTotal) * 100).toFixed(1) + "%", "Business Impact Level": "Low Risk (P3)" },
+    { "Severity Tier": "Low", "Violations Count": activeLow, "Percentage Share": ((activeLow / activeTotal) * 100).toFixed(1) + "%", "Business Impact Level": "Minimal Risk (P4)" },
+    { "Severity Tier": "Total", "Violations Count": activeRisks.length, "Percentage Share": "100.0%", "Business Impact Level": "Aggregated Scan Result" }
   ];
   const ws4 = XLSX.utils.json_to_sheet(severityDistData);
 
