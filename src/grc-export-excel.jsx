@@ -185,53 +185,6 @@ window.exportGrcExcel = function(runId, filteredUsers, filteredRisks, userColSeq
     });
   });
   const wsRiskUsers = XLSX.utils.json_to_sheet(riskUserDetailsData);
-
-  // 4. Severity Distribution (calculated based on active risks)
-  const activeCritical = activeRisks.filter(r => r.severity === 'Critical').length;
-  const activeHigh = activeRisks.filter(r => r.severity === 'High').length;
-  const activeMedium = activeRisks.filter(r => r.severity === 'Medium').length;
-  const activeLow = activeRisks.filter(r => r.severity === 'Low').length;
-  const activeTotal = activeRisks.length || 1;
-
-  const severityDistData = [
-    { "Severity Tier": "Critical", "Violations Count": activeCritical, "Percentage Share": ((activeCritical / activeTotal) * 100).toFixed(1) + "%", "Business Impact Level": "High Risk (P1)" },
-    { "Severity Tier": "High", "Violations Count": activeHigh, "Percentage Share": ((activeHigh / activeTotal) * 100).toFixed(1) + "%", "Business Impact Level": "Medium Risk (P2)" },
-    { "Severity Tier": "Medium", "Violations Count": activeMedium, "Percentage Share": ((activeMedium / activeTotal) * 100).toFixed(1) + "%", "Business Impact Level": "Low Risk (P3)" },
-    { "Severity Tier": "Low", "Violations Count": activeLow, "Percentage Share": ((activeLow / activeTotal) * 100).toFixed(1) + "%", "Business Impact Level": "Minimal Risk (P4)" },
-    { "Severity Tier": "Total", "Violations Count": activeRisks.length, "Percentage Share": "100.0%", "Business Impact Level": "Aggregated Scan Result" }
-  ];
-  const ws4 = XLSX.utils.json_to_sheet(severityDistData);
-
-  // 5. Business Impact
-  const businessImpactData = [
-    { "Business Process": "Finance", "Impact Domain": "Automatic Payments", "Risk Summary": "Unsegregated automatic payment executions (F110) can result in unauthorized cash disbursements.", "Severity": "High" },
-    { "Business Process": "Procurement", "Impact Domain": "Supplier Master Data", "Risk Summary": "Enables creation of fictitious suppliers paired with payment releases (FK01 + F110).", "Severity": "Critical" },
-    { "Business Process": "OTC", "Impact Domain": "Sales Order Billing", "Risk Summary": "A single individual can issue sales orders, invoice the customer, and clear payments (VA01 + VF01 + F-28), facilitating direct revenue leakage.", "Severity": "Critical" },
-    { "Business Process": "IT Basis", "Impact Domain": "Security Administration", "Risk Summary": "Prolonged emergency access permissions (Firefighter) and PFCG role modification rights compromise audit accountability.", "Severity": "Critical" }
-  ];
-  const ws5 = XLSX.utils.json_to_sheet(businessImpactData);
-
-  // 6. Violation Scenarios
-  const scenariosData = [
-    { "Scenario ID": "S-01", "Scenario Name": "Create Vendor + Approve Payment", "Conflicting T-Codes": "FK01, F110", "Business Process": "Procurement", "Criticality": "Critical" },
-    { "Scenario ID": "S-02", "Scenario Name": "Full Order-to-Cash Cycle Control", "Conflicting T-Codes": "VA01, VF01, F-28", "Business Process": "OTC", "Criticality": "Critical" },
-    { "Scenario ID": "S-03", "Scenario Name": "GL Posting + Bank Reconciliation", "Conflicting T-Codes": "FB50, FF67", "Business Process": "Finance", "Criticality": "Critical" },
-    { "Scenario ID": "S-04", "Scenario Name": "Privileged PFCG Role Administration Overlap", "Conflicting T-Codes": "PFCG, MIRO", "Business Process": "IT Basis", "Criticality": "Critical" },
-    { "Scenario ID": "S-05", "Scenario Name": "F110 Payment Exec by Non-Treasury", "Conflicting T-Codes": "F110", "Business Process": "Treasury", "Criticality": "High" },
-    { "Scenario ID": "S-06", "Scenario Name": "Goods Receipt + Invoice Verification", "Conflicting T-Codes": "MIGO, MIRO", "Business Process": "Procurement", "Criticality": "Medium" }
-  ];
-  const ws6 = XLSX.utils.json_to_sheet(scenariosData);
-
-  // 7. Standards / Controls Violated
-  const standardsData = [
-    { "Control Standard": "SOX §404", "Description": "Management assessment of internal controls. Requires segregation of incompatible transactional roles.", "Applicable Scenarios": "S-01, S-02, S-05, S-06" },
-    { "Control Standard": "SOX §302", "Description": "Corporate responsibility for financial reports. Restricts unilateral entry and ledger clearing.", "Applicable Scenarios": "S-02, S-03" },
-    { "Control Standard": "K-SOX Chapter 4", "Description": "Korean Internal Control Framework. Evaluates automatic journal posting parameters.", "Applicable Scenarios": "S-01, S-03" },
-    { "Control Standard": "ISO 27001 A.9", "Description": "Information Security Access Control. Limits user registration and privilege management.", "Applicable Scenarios": "S-04" },
-    { "Control Standard": "COBIT DSS05.04", "Description": "Manage User Identity and Logical Access. Regulates firefighter emergency profiles.", "Applicable Scenarios": "S-04" }
-  ];
-  const ws7 = XLSX.utils.json_to_sheet(standardsData);
-
   // 8. Remediation Recommendations
   const remediationData = [
     { "Action Type": "Access Removal", "Action Item": "Remove conflicting transaction access from the user.", "Rationale": "Restores single-activity focus and removes access overlap.", "Expected SLA": "48 Hours" },
@@ -243,25 +196,6 @@ window.exportGrcExcel = function(runId, filteredUsers, filteredRisks, userColSeq
   ];
   const ws8 = XLSX.utils.json_to_sheet(remediationData);
 
-  // 9. Assessment Run Details
-  const runDetailsData = [
-    { "Configuration Parameter": "Target SAP System ID", "Value": "PRD" },
-    { "Configuration Parameter": "System Release", "Value": "S/4HANA 2023" },
-    { "Configuration Parameter": "SAP Client ID", "Value": "210" },
-    { "Configuration Parameter": "Assessment Run Date", "Value": runDetailsDate(runIdClean) },
-    { "Configuration Parameter": "Scoping Ruleset Version", "Value": "Global Matrix v4.2" },
-    { "Configuration Parameter": "Scan Duration", "Value": "1h 12m" },
-    { "Configuration Parameter": "Created By Auditor", "Value": "Seo-yeon Kim (Lead Audit)" },
-    { "Configuration Parameter": "Server Host Address", "Value": "172.17.19.18" }
-  ];
-  const ws9 = XLSX.utils.json_to_sheet(runDetailsData);
-
-  function runDetailsDate(rid) {
-    if (rid === 'LCSOD-2026-Q1-006') return 'Feb 12, 2026';
-    if (rid === 'LCSOD-2025-Q4-005') return 'Nov 15, 2025';
-    return 'May 19, 2026';
-  }
-
   // Create workbook and append all worksheets
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws1, "Executive Summary");
@@ -269,12 +203,7 @@ window.exportGrcExcel = function(runId, filteredUsers, filteredRisks, userColSeq
   XLSX.utils.book_append_sheet(wb, wsUserDetails, "User Violation Details");
   XLSX.utils.book_append_sheet(wb, ws3, "Risk Wise Violations");
   XLSX.utils.book_append_sheet(wb, wsRiskUsers, "Risk User Details");
-  XLSX.utils.book_append_sheet(wb, ws4, "Severity Distribution");
-  XLSX.utils.book_append_sheet(wb, ws5, "Business Impact");
-  XLSX.utils.book_append_sheet(wb, ws6, "Violation Scenarios");
-  XLSX.utils.book_append_sheet(wb, ws7, "Standards & Controls Violated");
   XLSX.utils.book_append_sheet(wb, ws8, "Remediation Recommendations");
-  XLSX.utils.book_append_sheet(wb, ws9, "Assessment Run Details");
 
   // Trigger download file
   XLSX.writeFile(wb, `SoD_Audit_Report_${runIdClean}.xlsx`);

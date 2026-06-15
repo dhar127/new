@@ -889,13 +889,20 @@ window.InteractiveGRCTable = function({
 
   useEffect(() => {
     const handleOutsideClick = (e) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+      // Find the open popovers and the trigger buttons
+      const popovers = document.querySelectorAll('.shadow-pop, [class*="shadow-pop"]');
+      const isClickInsidePopover = Array.from(popovers).some(p => p.contains(e.target));
+      
+      const isClickOnFilterBtn = e.target.closest('.grc-filter-toggle-btn');
+      const isClickOnColSettingsBtn = e.target.closest('.grc-col-settings-btn');
+
+      if (!isClickInsidePopover && !isClickOnFilterBtn && !isClickOnColSettingsBtn) {
         setOpenDropdown(null);
         setShowColSettings(false);
       }
     };
-    document.addEventListener('mousedown', handleOutsideClick);
-    return () => document.removeEventListener('mousedown', handleOutsideClick);
+    document.addEventListener('mousedown', handleOutsideClick, true);
+    return () => document.removeEventListener('mousedown', handleOutsideClick, true);
   }, []);
 
   const uniqueValues = useMemo(() => {
@@ -1050,7 +1057,7 @@ window.InteractiveGRCTable = function({
         <div className="flex items-center gap-2 relative">
           <button
             onClick={() => setShowColSettings(o => !o)}
-            className="px-3 py-1.5 bg-white border border-ink-200 text-ink-700 hover:bg-ink-50 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5"
+            className="px-3 py-1.5 bg-white border border-ink-200 text-ink-700 hover:bg-ink-50 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 grc-col-settings-btn"
           >
             <window.Icon name="filter" className="w-3.5 h-3.5" />
             <span>Show/Hide Columns</span>
@@ -1091,7 +1098,7 @@ window.InteractiveGRCTable = function({
         <table className="w-full text-xs text-left border-collapse table-auto min-w-[1200px]">
           <thead className="bg-ink-50 border-b border-ink-200 text-ink-600 font-bold uppercase tracking-wider text-[10px]">
             <tr>
-              {orderedVisibleColumns.map(col => {
+              {orderedVisibleColumns.map((col, colIdx) => {
                 const isFiltered = filters[col.id] && filters[col.id].length > 0;
                 const isDropdownOpen = openDropdown === col.id;
                 
@@ -1120,7 +1127,7 @@ window.InteractiveGRCTable = function({
                           e.stopPropagation();
                           setOpenDropdown(isDropdownOpen ? null : col.id);
                         }}
-                        className={`p-1 rounded hover:bg-ink-200 transition-colors shrink-0 ${isFiltered ? 'text-brand-600' : 'text-ink-400'}`}
+                        className={`p-1 rounded hover:bg-ink-200 transition-colors shrink-0 grc-filter-toggle-btn ${isFiltered ? 'text-brand-600' : 'text-ink-400'}`}
                       >
                         <window.Icon name="filter" className="w-3 h-3" />
                       </button>
@@ -1128,7 +1135,7 @@ window.InteractiveGRCTable = function({
 
                     {isDropdownOpen && (
                       <div
-                        className="absolute left-0 mt-2 z-30 bg-white border border-ink-200 rounded-xl shadow-pop p-3 w-56 text-left normal-case font-medium text-ink-805"
+                        className={`absolute mt-2 z-30 bg-white border border-ink-200 rounded-xl shadow-pop p-3 w-56 text-left normal-case font-medium text-ink-805 ${colIdx >= orderedVisibleColumns.length - 2 ? 'right-0' : 'left-0'}`}
                         onClick={(e) => e.stopPropagation()}
                       >
                         <div className="flex items-center justify-between mb-2">
