@@ -59,8 +59,7 @@ window.exportGrcExcel = function(runId, filteredUsers, filteredRisks, userColSeq
       "Last Name": u.lastName,
       "Email": u.email,
       "Account Type": u.accountType,
-      "Risk Count": getRiskCount(u),
-      "Violation Count": getViolationCount(u)
+      "Violation Count": getRiskCount(u)
     }));
   }
   const ws2 = XLSX.utils.json_to_sheet(userWiseData);

@@ -1094,7 +1094,7 @@ window.InteractiveGRCTable = function({
         </div>
       </div>
 
-      <div className="overflow-x-auto border border-ink-200 rounded-xl shadow-sm bg-white">
+      <div className={`overflow-x-auto border border-ink-200 rounded-xl shadow-sm bg-white transition-all duration-200 ${openDropdown ? 'min-h-[380px]' : ''}`}>
         <table className="w-full text-xs text-left border-collapse table-auto min-w-[1200px]">
           <thead className="bg-ink-50 border-b border-ink-200 text-ink-600 font-bold uppercase tracking-wider text-[10px]">
             <tr>

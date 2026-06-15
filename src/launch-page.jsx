@@ -810,8 +810,7 @@ window.LaunchPage = function({
     { id: 'lastName', label: 'Last Name', accessor: u => u.lastName, tooltip: 'SAP user last name' },
     { id: 'email', label: 'Email', accessor: u => u.email, tooltip: 'SAP user email address' },
     { id: 'accountType', label: 'Account Type', accessor: u => u.accountType, tooltip: 'SAP account type from user master data' },
-    { id: 'riskCount', label: 'Risk Count', accessor: getRiskCount, tooltip: 'Click to expand ruleset-derived risks for this user' },
-    { id: 'violationCount', label: 'Violation Count', accessor: getViolationCount, tooltip: 'Number of active SoD risk violations mapped to this user' },
+    { id: 'riskCount', label: 'Violation Count', accessor: getRiskCount, tooltip: 'Click to expand ruleset-derived risks for this user' },
     { id: 'viewAction', label: 'View', accessor: u => 'View', tooltip: 'Navigate to user profile detail' }
   ], [risks]);
 
@@ -1469,8 +1468,7 @@ window.UserInventoryPage = function({ onNavigate, selectedRun }) {
     { id: 'lastName', label: 'Last Name', accessor: u => u.lastName, tooltip: 'SAP user last name' },
     { id: 'email', label: 'Email', accessor: u => u.email, tooltip: 'SAP user email address' },
     { id: 'accountType', label: 'Account Type', accessor: u => u.accountType, tooltip: 'SAP account type from user master data' },
-    { id: 'riskCount', label: 'Risk Count', accessor: getRiskCount, tooltip: 'Click to expand ruleset-derived risks for this user' },
-    { id: 'violationCount', label: 'Violation Count', accessor: getViolationCount, tooltip: 'Number of active SoD risk violations mapped to this user' },
+    { id: 'riskCount', label: 'Violation Count', accessor: getRiskCount, tooltip: 'Click to expand ruleset-derived risks for this user' },
     { id: 'viewAction', label: 'View', accessor: u => 'View', tooltip: 'Navigate to user profile' }
   ], [risks]);
 
@@ -1658,8 +1656,7 @@ window.ViolationExplorerPage = function({ onNavigate, selectedRun }) {
     { id: 'lastName', label: 'Last Name', accessor: u => u.lastName, tooltip: 'SAP user last name' },
     { id: 'email', label: 'Email', accessor: u => u.email, tooltip: 'SAP user email address' },
     { id: 'accountType', label: 'Account Type', accessor: u => u.accountType, tooltip: 'SAP account type from user master data' },
-    { id: 'riskCount', label: 'Risk Count', accessor: getRiskCount, tooltip: 'Click to expand ruleset-derived risks for this user' },
-    { id: 'violationCount', label: 'Violation Count', accessor: getViolationCount, tooltip: 'Number of active SoD risk violations mapped to this user' },
+    { id: 'riskCount', label: 'Violation Count', accessor: getRiskCount, tooltip: 'Click to expand ruleset-derived risks for this user' },
     { id: 'viewAction', label: 'View', accessor: u => 'View', tooltip: 'Navigate to user profile' }
   ], [risks]);
 
