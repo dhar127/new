@@ -4,8 +4,9 @@ import glob
 import re
 
 USER_DETAILS_DIR = r"C:\Users\dhara\Downloads\user_details 1\user_details"
-MOCK_DATA_JSX = r"C:\Users\dhara\OneDrive\Desktop\mbsod\new\src\mock-data.jsx"
-RUNS_MOCK_DATA_JSX = r"C:\Users\dhara\OneDrive\Desktop\mbsod\new\src\runs-mock-data.jsx"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+MOCK_DATA_JSX = os.path.join(BASE_DIR, "src", "mock-data.jsx")
+RUNS_MOCK_DATA_JSX = os.path.join(BASE_DIR, "src", "runs-mock-data.jsx")
 
 # Rule Definitions
 RULES_DEF = [
@@ -695,6 +696,95 @@ def generate():
         { "run": "Run 9", "passRate": float(f"{compliance_score:.1f}"), "violations": total_violations_count, "resolved": 121 }
     ]
 
+    violations_by_user_id = {}
+    for rule in RULES_DEF:
+        for idx, item in enumerate(violations_by_rule.get(rule["id"], [])):
+            user_id = item["userId"]
+            if user_id not in violations_by_user_id:
+                if rule["severity"] == "Critical":
+                    status = "Resolved" if idx % 5 == 0 else "In Progress" if idx % 3 == 0 else "Open"
+                elif rule["severity"] == "High":
+                    status = "Resolved" if idx % 4 == 0 else "In Progress" if idx % 2 == 0 else "Open"
+                else:
+                    status = "Resolved" if idx % 3 == 0 else "In Progress" if idx % 2 == 0 else "Open"
+                is_financial = rule["area"] in ("Finance", "Procurement", "OTC")
+                violation_desc = "Full OTC cycle control by single user" if rule["id"] == "V-1058" else "Create Vendor + Approve Payment"
+                conflicting_transactions = "VA01, VF01, F-28" if violation_desc.startswith("Full OTC") else "FK01, F110"
+                business_impact = (
+                    "SOX §404 deficiency and revenue leakage potential. Bypasses dual controls."
+                    if violation_desc.startswith("Full OTC")
+                    else "Enables creation of fictitious suppliers paired with payment releases."
+                )
+                violations_by_user_id[user_id] = {
+                    "violationId": rule["id"],
+                    "violationDesc": violation_desc,
+                    "riskCategory": "Financial" if is_financial else "Operational",
+                    "severity": rule["severity"],
+                    "riskScore": item.get("riskScore", 100 if rule["severity"] == "Critical" else 75 if rule["severity"] == "High" else 50),
+                    "conflictingTransactions": conflicting_transactions,
+                    "businessImpact": business_impact,
+                    "standardsViolated": ", ".join(rule["frameworks"]),
+                    "recommendedAction": rule["action"],
+                    "priority": "P1" if rule["severity"] == "Critical" else "P2" if rule["severity"] == "High" else "P3",
+                    "status": status,
+                    "assignee": "SAP Security Team" if rule["area"] == "IT" else "IT Compliance",
+                    "processArea": item.get("dept", rule["area"])
+                }
+    all_scanned_users = []
+    for data in users_data:
+        uinfo = data.get("userInfo", {})
+        username = uinfo.get("username", "")
+        first_name = uinfo.get("firstName", "")
+        last_name = uinfo.get("lastName", "")
+        auth_summary = data.get("authSummary", {})
+        role_breakdown = data.get("roleBreakdown", [])
+        roles = [r.get("role") for r in role_breakdown if r.get("role")]
+        user_type = uinfo.get("userType", "Dialog")
+        violation = violations_by_user_id.get(username)
+        has_full_otc_default = len(all_scanned_users) % 2 == 0
+        default_violation_desc = "Full OTC cycle control by single user" if has_full_otc_default else "Create Vendor + Approve Payment"
+        default_transactions = "VA01, VF01, F-28" if has_full_otc_default else "FK01, F110"
+        default_business_impact = (
+            "SOX §404 deficiency and revenue leakage potential. Bypasses dual controls."
+            if has_full_otc_default
+            else "Enables creation of fictitious suppliers paired with payment releases."
+        )
+        role = roles[0] if roles else "Display Access Role"
+        default_priority = "P3" if has_full_otc_default else "P2"
+        default_risk_category = "Operational" if user_type != "Dialog" else "Financial"
+        default_risk_score = 65 if default_risk_category == "Operational" else 75
+        base = {
+            "userId": username,
+            "firstName": first_name or username.split(".")[0].title(),
+            "lastName": last_name or (" ".join(username.split(".")[1:]).title() if "." in username else ""),
+            "fullName": f"{first_name} {last_name}".strip() or username,
+            "email": uinfo.get("emailId") or f"{username.lower().replace(' ', '.')}@lottechem.com",
+            "sapStatus": uinfo.get("status") or "Not Locked",
+            "license": uinfo.get("license", ""),
+            "role": role,
+            "roleType": "Composite" if len(roles) > 1 else "Single",
+            "rolesCount": auth_summary.get("totalRoles", len(roles)),
+            "processArea": violation["processArea"] if violation else ("IT Basis" if user_type != "Dialog" else "General"),
+            "riskCategory": violation["riskCategory"] if violation else default_risk_category,
+            "riskViolation": "Yes" if violation else "No",
+            "violationId": violation["violationId"] if violation else ("V-1058" if has_full_otc_default else "V-1042"),
+            "violationDesc": violation["violationDesc"] if violation else default_violation_desc,
+            "severity": violation["severity"] if violation else "Low",
+            "riskScore": violation["riskScore"] if violation else default_risk_score,
+            "conflictingTransactions": violation["conflictingTransactions"] if violation else default_transactions,
+            "businessImpact": violation["businessImpact"] if violation else default_business_impact,
+            "standardsViolated": violation["standardsViolated"] if violation else "SAP GRC, SOX",
+            "recommendedAction": violation["recommendedAction"] if violation else ("Split SD billing authority" if has_full_otc_default else "Revoke PFCG role admin authority"),
+            "priority": violation["priority"] if violation else default_priority,
+            "status": violation["status"] if violation else "Resolved",
+            "assignee": violation["assignee"] if violation else ("IT Compliance Lead" if has_full_otc_default else "SAP Security Architect"),
+            "lastAnalyzedDate": "2026-05-19",
+            "lastActivity": uinfo.get("lastLogin") or "00-00-0000 00:00:00",
+            "firefighterId": username if "FF" in username else "Standard Access",
+            "accountType": "Service" if user_type != "Dialog" else "Dialog"
+        }
+        all_scanned_users.append(base)
+
     # Generate javascript code contents
     js_content = f"""// Real data generated from downloads/user_details
 const RUN = {{
@@ -998,6 +1088,125 @@ const COMPLIANCE_TREND_DATA = {json.dumps(compliance_trend_data, indent=2)};
 Object.assign(window.MOCK, {{
   SOD12_KPIS, RULES_LOG, COMPLIANCE_TREND_DATA
 }});
+
+const ALL_USERS = {json.dumps(all_scanned_users, indent=2)};
+const ALL_RISKS = CRITICAL_FINDINGS.map(finding => ({{
+  riskId: finding.id,
+  title: finding.desc,
+  status: 'Active',
+  level: finding.severity,
+  category: finding.area === 'IT' ? 'Operational' : 'Financial',
+  riskScore: Math.min(100, (finding.area === 'IT' ? 65 : 75) + (finding.severity === 'Critical' ? 25 : finding.severity === 'High' ? 15 : finding.severity === 'Medium' ? 8 : 0)),
+  process: finding.area,
+  type: 'SoD Conflict',
+  ruleset: 'SAP GRC Global Matrix v4.2',
+  func: finding.id === 'V-1058' ? 'VA01, VF01, F-28' : finding.id === 'V-1131' ? 'MIGO, MIRO' : 'SU01, PFCG',
+  funcDesc: finding.desc,
+  funcStatus: 'Enabled',
+  userCount: finding.users,
+  affectedUsers: (finding.affectedUsersList || []).map(u => u.userId),
+  group: finding.area === 'IT' ? 'Basis Control Pool' : 'Business Process Pool',
+  recommendations: finding.action,
+  lastRun: 'LCSOD-2026-Q2-007',
+  lastDetected: 'May 19, 2026',
+  roles: [finding.area === 'IT' ? 'ZBC_BR_SYSTEM_ADMIN' : 'ZFI_BR_AP_INVOICE'],
+  tcodes: finding.id === 'V-1058' ? ['VA01', 'VF01', 'F-28'] : finding.id === 'V-1131' ? ['MIGO', 'MIRO'] : ['SU01', 'PFCG'],
+  businessImpact: 'Unmitigated authorizations create potential audit exceptions.',
+  complianceImpact: 'Direct SAP GRC and SOX control impact.',
+  grcMapping: `GRC Ruleset ID ${{finding.id}}`,
+  auditNotes: 'Generated from supplied SAP user detail exports.',
+  assignee: 'SAP Security Team'
+}}));
+
+Object.assign(window.MOCK, {{ ALL_USERS, ALL_RISKS }});
+
+(() => {{
+  const normalizeStatus = (row, idx) => ({{
+    ...row,
+    status: idx % 5 === 0 ? 'Resolved' : idx % 3 === 0 ? 'In Progress' : 'Open'
+  }});
+
+  [
+    'IMMEDIATE_ACTIONS',
+    'SUPER_ADMIN_ROWS',
+    'DUAL_PROCESS_ROWS',
+    'EMERGENCY_ACCESS_ROWS',
+    'OTC_ROWS',
+    'SERVICE_ACCOUNTS',
+    'REMEDIATIONS'
+  ].forEach(key => {{
+    if (Array.isArray(window.MOCK[key])) {{
+      window.MOCK[key] = window.MOCK[key].map(normalizeStatus);
+    }}
+  }});
+
+  if (Array.isArray(window.MOCK.CATEGORY_CARDS) && !window.MOCK.CATEGORY_CARDS.some(card => card.key === 'sod-p2p')) {{
+    window.MOCK.CATEGORY_CARDS.splice(6, 0, {{
+      key: 'sod-p2p',
+      code: 'SOD-P2P',
+      title: 'Procure-to-Pay',
+      count: 10,
+      severity: 'Critical',
+      blurb: 'High-risk authorization combinations in P2P cycle',
+      icon: 'package'
+    }});
+  }}
+
+  const rows = window.MOCK.REMEDIATIONS || [];
+  window.MOCK.REMEDIATION_KPIS = {{
+    ...(window.MOCK.REMEDIATION_KPIS || {{}}),
+    total: rows.length,
+    overdue: rows.filter(r => r.overdue).length,
+    open: rows.filter(r => r.status === 'Open').length,
+    inProgress: rows.filter(r => r.status === 'In Progress').length,
+    resolved: rows.filter(r => r.status === 'Resolved').length,
+    totalRecommendations: rows.length,
+    mitigatedViolations: rows.filter(r => r.status === 'Resolved').length,
+    pendingRemediations: rows.filter(r => r.status === 'Open' || r.status === 'In Progress').length,
+    progressPercentage: Math.round((rows.filter(r => r.status === 'Resolved').length / Math.max(rows.length, 1)) * 100),
+    deltas: {{ total: 0, overdue: 0, open: 0, inProgress: 0, resolved: 0 }}
+  }};
+
+  window.getMockDataForRun = function(runId) {{
+    const runObj = (window.MOCK.ANALYSIS_RUNS || []).find(r => r.id === runId) || window.MOCK.RUN;
+    return {{
+      users: window.MOCK.ALL_USERS || [],
+      risks: window.MOCK.ALL_RISKS || [],
+      kpis: {{
+        totalUsers: Number(runObj?.users || window.MOCK.KPIS.totalUsers || 0),
+        totalRoles: Number(runObj?.roles || 0),
+        totalViolations: Number(runObj?.violations || window.MOCK.KPIS.totalViolations || 0),
+        critical: window.MOCK.KPIS.critical,
+        high: window.MOCK.KPIS.high,
+        medium: window.MOCK.KPIS.medium,
+        low: window.MOCK.KPIS.low,
+        complianceScore: Number(runObj?.matchRate || window.MOCK.KPIS.complianceScore || 0),
+        riskScore: Math.round((window.MOCK.ALL_USERS || []).reduce((sum, u) => sum + (u.riskScore || 0), 0) / Math.max((window.MOCK.ALL_USERS || []).length, 1))
+      }}
+    }};
+  }};
+
+  window.updateMockGlobalsForRun = function(runId) {{
+    const runObj = (window.MOCK.ANALYSIS_RUNS || []).find(r => r.id === runId);
+    if (runObj) {{
+      window.MOCK.RUN = {{
+        ...window.MOCK.RUN,
+        id: runObj.id,
+        name: runObj.name,
+        date: runObj.date,
+        status: runObj.status,
+        scope: `${{runObj.users}} users scanned`
+      }};
+      window.MOCK.KPIS = {{
+        ...window.MOCK.KPIS,
+        totalUsers: Number(runObj.users),
+        totalViolations: Number(runObj.violations),
+        complianceScore: Number(runObj.matchRate)
+      }};
+    }}
+    return window.getMockDataForRun(runId);
+  }};
+}})();
 """
 
     runs_content = f"""/* Real Runs List Data */
@@ -1047,8 +1256,8 @@ const SAP_SYSTEMS = [
 /* P2P (Procure-to-Pay) Violations Data */
 const P2P_VIOLATIONS = [
   {{ id: 'PTP-001', pair: 'ME21N + MIRO',  desc: 'PO Create + LIV Posting',           users: {len(violations_by_rule["V-1094"])}, severity: 'Critical', status: 'Open', exposure: 'High' }},
-  {{ id: 'PTP-002', pair: 'ME21N + ME29N', desc: 'PO Create + PO Approval',           users: {len(violations_by_rule["V-1094"])}, severity: 'Critical', status: 'Open', exposure: 'High' }},
-  {{ id: 'PTP-003', pair: 'MIGO + MIRO',   desc: 'Goods Receipt + Invoice Post',      users: {len(violations_by_rule["V-1131"])}, severity: 'High',     status: 'Open', exposure: 'High' }}
+  {{ id: 'PTP-002', pair: 'ME21N + ME29N', desc: 'PO Create + PO Approval',           users: {len(violations_by_rule["V-1094"])}, severity: 'Critical', status: 'In Progress', exposure: 'High' }},
+  {{ id: 'PTP-003', pair: 'MIGO + MIRO',   desc: 'Goods Receipt + Invoice Post',      users: {len(violations_by_rule["V-1131"])}, severity: 'High',     status: 'Resolved', exposure: 'High' }}
 ];
 
 const P2P_KPIS = {{

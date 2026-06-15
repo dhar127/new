@@ -9,15 +9,15 @@ const PAGE_TITLES = {
   'sod-07':           ['Cross-Process Conflicts', 'Dual process control and conflict analysis'],
   'sod-08':           ['Emergency Access', 'Firefighter ID lifecycle and usage monitoring'],
   'sod-p2p':          ['Procure-to-Pay', 'High-risk authorization combinations in P2P cycle'],
-  'sod-09':           ['Order-to-Cash', 'OTC lifecycle control and ownership violations'],
+  'sod-09':           ['Order-to-Cash', 'OTC lifecycle control and access violations'],
   'sod-10':           ['Service Accounts', 'High-risk service account detection and governance'],
   'sod-11':           ['Remediation', 'Execution tracking and remediation governance'],
   'users':            ['User Inventory', 'SAP User Master Directory'],
   'risks':            ['Risk Catalog', 'Segregation of Duties Risk Directory'],
   'violation-detail': ['Violation Details', 'Forensic Audit Details for Conflict'],
-  'user-profile':     ['User Profile', 'SAP Identity Authorization Blueprint'],
+  'user-profile':     ['User Profile', 'SAP Identity Authorization Scope'],
   'role-detail':      ['Role Profile', 'SAP Role Transaction Scope'],
-  'risk-detail':      ['Risk Blueprint', 'SoD Rule Definition Mapping'],
+  'risk-detail':      ['Access Risk Framework', 'SoD Rule Definition Mapping'],
 };
 /* ── Dropdown Helper ────────────────────────────────────────── */
 function Dropdown({ trigger, children, align = 'left' }) {
@@ -127,17 +127,20 @@ function GrcTopHeader({ active, onNavigate, selectedRun, onRunChange, hasSelecte
 
         {/* Right Tab Pills */}
         <div className="flex items-center gap-1.5">
-          {hasSelectedRun && (
-            <button
-              onClick={() => onNavigate('home')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
-                active === 'home'
-                  ? 'bg-ink-900 text-white shadow-sm'
-                  : 'text-ink-600 hover:text-ink-900 hover:bg-ink-50'
-              }`}
-            >
-              Dashboard
-            </button>
+          {hasSelectedRun && active !== 'runs' && (
+            <>
+              <button
+                onClick={() => onNavigate('home')}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                  active === 'home'
+                    ? 'bg-ink-900 text-white shadow-sm'
+                    : 'text-ink-600 hover:text-ink-900 hover:bg-ink-50'
+                }`}
+              >
+                Dashboard
+              </button>
+
+            </>
           )}
 
           <button
@@ -233,20 +236,21 @@ const App = () => {
       if (matched) {
         return {
           userId: matched.userId,
-          fullName: matched.fullName,
+          firstName: matched.firstName,
+          lastName: matched.lastName,
           dept: matched.processArea || matched.dept || 'IT Basis',
           role: matched.role || 'ZFI_BR_GL_POSTING',
-          license: matched.accountType === 'Service' ? 'Service Account' : 'Limited Professional',
           severity: matched.severity || activeModalRisk.level
         };
       }
       const formattedName = uid.replace(/[._]/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+      const parts = formattedName.split(/\s+/).filter(Boolean);
       return {
         userId: uid,
-        fullName: formattedName,
+        firstName: parts[0] || 'SAP',
+        lastName: parts.slice(1).join(' ') || 'User',
         dept: uid.includes('FF') ? 'IT Basis' : 'Finance',
         role: 'ZFI_BR_GL_POSTING',
-        license: uid.includes('FF') ? 'Professional' : 'Limited Professional',
         severity: activeModalRisk.level
       };
     });
@@ -275,8 +279,12 @@ const App = () => {
   const [preservedScrollY, setPreservedScrollY] = useState(0);
 
   const handleNavigate = (key, id = null) => {
-    if (['violation-detail', 'role-detail', 'compliance-detail'].includes(key)) {
-      setDrawerContent({ type: key, id: id });
+    if (key === 'violation-detail' || key === 'role-detail' || key === 'compliance-detail') {
+      setPreservedScrollY(window.scrollY);
+      setActive(key);
+      setDetailId(id);
+      setDrawerContent(null);
+      window.scrollTo(0, 0);
     } else {
       if (key === 'user-profile' || key === 'risk-detail') {
         // Save scroll position before leaving dashboard
@@ -298,6 +306,9 @@ const App = () => {
   };
 
   const handleSelectRun = (run) => {
+    if (window.updateMockGlobalsForRun) {
+      window.updateMockGlobalsForRun(run.id);
+    }
     setSelectedRun(run);
     setHasSelectedRun(true);
     // Transition to Dashboard overview upon selection
@@ -367,6 +378,23 @@ const App = () => {
     
     if (active === 'user-profile')     return <window.UserProfilePage userId={detailId} onNavigate={handleNavigate} selectedRun={selectedRun} />;
     if (active === 'risk-detail')      return <window.RiskDetailPage riskId={detailId} onNavigate={handleNavigate} selectedRun={selectedRun} />;
+    if (active === 'violation-detail') return <window.ViolationDetailPage violationId={detailId} onNavigate={handleNavigate} selectedRun={selectedRun} />;
+    if (active === 'role-detail')      return <window.RoleDetailPage roleId={detailId} onNavigate={handleNavigate} selectedRun={selectedRun} />;
+    if (active === 'compliance-detail') return <window.ComplianceDetailPage onNavigate={handleNavigate} selectedRun={selectedRun} />;
+
+    if (active === 'sod-04') return <window.Sod04Page onNavigate={handleNavigate} selectedRun={selectedRun} />;
+    if (active === 'sod-05') return <window.Sod05Page onNavigate={handleNavigate} selectedRun={selectedRun} />;
+    if (active === 'sod-06') return <window.Sod06Page onNavigate={handleNavigate} selectedRun={selectedRun} />;
+    if (active === 'sod-07') return <window.Sod07Page onNavigate={handleNavigate} selectedRun={selectedRun} />;
+    if (active === 'sod-08') return <window.Sod08Page onNavigate={handleNavigate} selectedRun={selectedRun} />;
+    if (active === 'sod-p2p') return <window.SodP2pPage onNavigate={handleNavigate} selectedRun={selectedRun} />;
+    if (active === 'sod-09') return <window.Sod09Page onNavigate={handleNavigate} selectedRun={selectedRun} />;
+    if (active === 'sod-10') return <window.Sod10Page onNavigate={handleNavigate} selectedRun={selectedRun} />;
+    if (active === 'sod-11') return <window.Sod11Page onNavigate={handleNavigate} selectedRun={selectedRun} />;
+
+    if (active === 'users') return <window.UserInventoryPage onNavigate={handleNavigate} selectedRun={selectedRun} />;
+    if (active === 'risks') return <window.RiskCatalogPage onNavigate={handleNavigate} selectedRun={selectedRun} />;
+    if (active === 'violation-explorer') return <window.ViolationExplorerPage onNavigate={handleNavigate} selectedRun={selectedRun} />;
 
     return (
       <div className="px-4 py-10 text-center">
@@ -398,7 +426,7 @@ const App = () => {
           />
           
           {/* Modal Container */}
-          <div className="relative bg-white rounded-2xl shadow-xl ring-1 ring-black/5 overflow-hidden w-full max-w-2xl max-h-[85vh] flex flex-col z-10 border border-ink-150 animate-scale-in">
+      <div className="relative bg-white rounded-2xl shadow-xl ring-1 ring-black/5 overflow-hidden w-full max-w-4xl max-h-[85vh] flex flex-col z-10 border border-ink-150 animate-scale-in">
             
             {/* Modal Header */}
             <div className="px-6 py-5 border-b border-ink-100 flex items-start justify-between bg-ink-50/50">
@@ -429,25 +457,27 @@ const App = () => {
 
             {/* Modal Body */}
             <div className="p-6 overflow-y-auto flex-1">
-              <div className="border border-ink-200 rounded-xl overflow-hidden shadow-sm bg-white text-left">
-                <table className="w-full text-[12.5px] border-collapse">
+              <div className="border border-ink-200 rounded-xl overflow-x-auto shadow-sm bg-white text-left">
+                <table className="w-full min-w-[760px] text-[12.5px] border-collapse">
                   <thead className="bg-ink-50 text-ink-650 font-bold uppercase text-[10px] border-b border-ink-200">
                     <tr>
                       <th className="px-4 py-2.5 text-left">User ID</th>
-                      <th className="px-4 py-2.5 text-left">Full Name</th>
-                      <th className="px-4 py-2.5 text-left">Department</th>
+                      <th className="px-4 py-2.5 text-left">First Name</th>
+                      <th className="px-4 py-2.5 text-left">Last Name</th>
+                      <th className="px-4 py-2.5 text-left">Business Process</th>
                       <th className="px-4 py-2.5 text-left">Role / Access</th>
-                      <th className="px-4 py-2.5 text-right">Actions</th>
+                      <th className="px-4 py-2.5 text-right w-28 min-w-[7rem]">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-ink-100 font-medium text-ink-800">
                     {modalUsers.map(u => (
                       <tr key={u.userId} className="hover:bg-ink-50/40 transition-colors">
                         <td className="px-4 py-2.5 font-mono font-bold text-ink-900">{u.userId}</td>
-                        <td className="px-4 py-2.5 font-semibold text-ink-850">{u.fullName}</td>
+                        <td className="px-4 py-2.5 font-semibold text-ink-850">{u.firstName}</td>
+                        <td className="px-4 py-2.5 font-semibold text-ink-850">{u.lastName}</td>
                         <td className="px-4 py-2.5 text-ink-600">{u.dept}</td>
                         <td className="px-4 py-2.5 font-mono text-xs text-ink-500 truncate max-w-[150px]" title={u.role}>{u.role}</td>
-                        <td className="px-4 py-2.5 text-right">
+                        <td className="px-4 py-2.5 text-right w-28 min-w-[7rem] whitespace-nowrap">
                           <button 
                             onClick={() => {
                               setActiveModalRisk(null);
@@ -463,7 +493,7 @@ const App = () => {
                     ))}
                     {modalUsers.length === 0 && (
                       <tr>
-                        <td colSpan={5} className="py-8 text-center text-ink-400 font-bold uppercase tracking-wider text-xs">
+                        <td colSpan={6} className="py-8 text-center text-ink-400 font-bold uppercase tracking-wider text-xs">
                           No violating users found
                         </td>
                       </tr>

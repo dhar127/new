@@ -117,9 +117,9 @@ window.SodP2pPage = function() {
 
       {/* KPI Row */}
       <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
-        <window.StatCard label="Total P2P Violations" value={P2P_KPIS.totalViolations} delta={P2P_KPIS.deltas.totalViolations} deltaInvertGood />
-        <window.StatCard severity="Critical" label="High-Risk Combos" value={P2P_KPIS.highRiskCombos} delta={P2P_KPIS.deltas.highRiskCombos} deltaInvertGood />
-        <window.StatCard label="Affected Users" value={P2P_KPIS.affectedVendors} delta={P2P_KPIS.deltas.affectedVendors} deltaInvertGood />
+        <window.StatCard label="Total P2P Violations" value={P2P_KPIS.totalViolations} delta={P2P_KPIS.deltas?.totalViolations || 0} deltaInvertGood />
+        <window.StatCard severity="Critical" label="High-Risk Combos" value={P2P_KPIS.highRiskCombos} delta={P2P_KPIS.deltas?.highRiskCombos || 0} deltaInvertGood />
+        <window.StatCard label="Affected Users" value={P2P_KPIS.affectedVendors} delta={P2P_KPIS.deltas?.affectedVendors || 0} deltaInvertGood />
       </div>
 
       {/* Search & Filter */}
@@ -179,55 +179,6 @@ window.SodP2pPage = function() {
           </table>
         </div>
       </window.Section>
-    </div>
-  );
-};
-
-window.DetailHeader = function({ code, title, subtitle, icon }) {
-  return (
-    <div className="space-y-2">
-      <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.14em] text-ink-400">
-        {icon && <window.Icon name={icon} className="w-3.5 h-3.5 text-brand-600" />}
-        <span>{code}</span>
-      </div>
-      <h1 className="text-2xl font-bold text-ink-900">{title}</h1>
-      <p className="text-sm text-ink-500">{subtitle}</p>
-    </div>
-  );
-};
-
-window.StatCard = function({ label, value, delta, deltaInvertGood, deltaSuffix = '', severity, icon }) {
-  const tones = {
-    default:  'bg-white',
-    Critical: 'bg-gradient-to-br from-rose-50/70 to-white',
-    High:     'bg-gradient-to-br from-orange-50/70 to-white',
-    Medium:   'bg-gradient-to-br from-amber-50/70 to-white',
-    Low:      'bg-gradient-to-br from-blue-50/70 to-white',
-    Good:     'bg-gradient-to-br from-emerald-50/70 to-white',
-  };
-  const ring = {
-    default:  'ring-ink-200',
-    Critical: 'ring-rose-200',
-    High:     'ring-orange-200',
-    Medium:   'ring-amber-200',
-    Low:      'ring-blue-200',
-    Good:     'ring-emerald-200',
-  };
-  return (
-    <div className={`rounded-xl ${tones[severity] || tones.default} px-4 py-3.5 shadow-card ring-1 ring-inset ${ring[severity] || ring.default}`}>
-      <div className="flex items-start justify-between gap-2">
-        <div className="text-[11px] font-medium uppercase tracking-wider text-ink-500">{label}</div>
-        {icon && <window.Icon name={icon} className="w-4 h-4 text-ink-400" />}
-      </div>
-      <div className="mt-1.5 flex items-baseline gap-2">
-        <span className="text-2xl font-semibold tabular-nums text-ink-900">{value}</span>
-      </div>
-      {delta !== undefined && (
-        <div className="mt-1 flex items-center gap-1.5 text-xs text-ink-500">
-          <window.Delta value={delta} invertGood={deltaInvertGood} suffix={deltaSuffix} />
-          <span className="text-ink-300">vs last run</span>
-        </div>
-      )}
     </div>
   );
 };

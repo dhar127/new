@@ -44,7 +44,7 @@ window.ViolationDetailPage = function({ violationId, onNavigate, inline, onBack 
           onClick={() => setNestedUserId(null)}
           className="px-3 py-1.5 rounded-lg bg-white ring-1 ring-ink-200 hover:bg-ink-50 text-xs font-bold text-ink-700 transition-all flex items-center gap-1.5"
         >
-          ← Back to Violation Blueprint ({violationId})
+          ← Back to Violation Control Mapping ({violationId})
         </button>
         <window.UserProfilePage userId={nestedUserId} onNavigate={onNavigate} inline={true} />
       </div>
@@ -58,7 +58,7 @@ window.ViolationDetailPage = function({ violationId, onNavigate, inline, onBack 
           onClick={() => setNestedRoleId(null)}
           className="px-3 py-1.5 rounded-lg bg-white ring-1 ring-ink-200 hover:bg-ink-50 text-xs font-bold text-ink-700 transition-all flex items-center gap-1.5"
         >
-          ← Back to Violation Blueprint ({violationId})
+          ← Back to Violation Control Mapping ({violationId})
         </button>
         <window.RoleDetailPage roleId={nestedRoleId} onNavigate={onNavigate} inline={true} />
       </div>
@@ -109,7 +109,7 @@ window.ViolationDetailPage = function({ violationId, onNavigate, inline, onBack 
         {/* Left Col: Core Details */}
         <div className="lg:col-span-2 space-y-6">
           
-          <window.Section title="Forensic Violation Blueprint">
+          <window.Section title="Forensic Violation Control Mapping">
             <div className="p-5 space-y-4">
               <div>
                 <span className="text-[10px] font-bold uppercase tracking-wider text-ink-400 block mb-1">Violation Description</span>
@@ -222,7 +222,7 @@ window.ViolationDetailPage = function({ violationId, onNavigate, inline, onBack 
               </div>
               <div className="pt-3 border-t border-ink-100 text-xs space-y-2">
                 <div className="flex justify-between">
-                  <span className="text-ink-450">Department:</span>
+                  <span className="text-ink-450">Business Process:</span>
                   <span className="font-bold text-ink-800">Finance Operations</span>
                 </div>
                 <div className="flex justify-between">
@@ -290,9 +290,8 @@ window.UserProfilePage = function({ userId, onNavigate, inline, onBack }) {
       return {
         userId: existing.userId,
         fullName: existing.fullName,
-        dept: existing.processArea || 'Finance',
+        dept: existing.processArea || existing.dept || 'Finance',
         role: existing.role || 'Senior Analyst',
-        licenseType: existing.accountType === 'Service' ? 'Service Account' : 'Limited Professional',
         lastLogin: existing.lastActivity || '2026-05-19 14:10',
         criticalCount: existing.severity === 'Critical' ? 1 : 0,
         highCount: existing.severity === 'High' ? 1 : 0,
@@ -315,7 +314,6 @@ window.UserProfilePage = function({ userId, onNavigate, inline, onBack }) {
       fullName: nameFormatted,
       dept: userId.includes('FF') ? 'IT Basis' : 'Finance',
       role: userId.includes('FF') ? 'SAP Security Specialist' : 'Senior Analyst',
-      licenseType: userId.includes('FF') ? 'Professional' : 'Limited Professional',
       lastLogin: '2026-05-19 14:10',
       criticalCount: userId.includes('HOANG') ? 1 : userId.includes('FF') ? 2 : 0,
       highCount: userId.includes('HOANG') ? 1 : userId.includes('FF') ? 1 : 0,
@@ -391,18 +389,13 @@ window.UserProfilePage = function({ userId, onNavigate, inline, onBack }) {
             </div>
             <div className="flex flex-wrap gap-x-6 gap-y-3 mt-3 text-xs">
               <div className="flex flex-col gap-0.5">
-                <span className="text-[9px] font-extrabold uppercase tracking-wider text-ink-400">Department</span>
+                <span className="text-[9px] font-extrabold uppercase tracking-wider text-ink-400">Business Process</span>
                 <span className="font-semibold text-ink-800">{user.dept}</span>
               </div>
               <div className="h-8 w-px bg-ink-150 self-center hidden sm:block" />
               <div className="flex flex-col gap-0.5">
                 <span className="text-[9px] font-extrabold uppercase tracking-wider text-ink-400">Role Title</span>
                 <span className="font-mono font-semibold text-brand-650">{user.role}</span>
-              </div>
-              <div className="h-8 w-px bg-ink-150 self-center hidden sm:block" />
-              <div className="flex flex-col gap-0.5">
-                <span className="text-[9px] font-extrabold uppercase tracking-wider text-ink-400">License</span>
-                <span className="font-semibold text-ink-800">{user.licenseType}</span>
               </div>
 
             </div>
@@ -503,6 +496,10 @@ window.UserProfilePage = function({ userId, onNavigate, inline, onBack }) {
                   {user.roles.map(r => (
                     <window.Role key={r} role={r} />
                   ))}
+                </div>
+                <div className="mt-3 text-[11px] text-ink-650 font-semibold bg-amber-50 border border-amber-200 rounded-lg p-2.5 flex items-start gap-2">
+                  <window.Icon name="info" className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                  <span>Listed items represent role authorization groups (indirect access), not direct transactional permissions.</span>
                 </div>
               </div>
               <div className="pt-4 border-t border-ink-100">
@@ -635,7 +632,7 @@ window.RoleDetailPage = function({ roleId, onNavigate, inline, onBack }) {
         <window.DetailHeader
           code="SAP IAM · Role Definition"
           title={`Role Profile: ${details.id}`}
-          subtitle="Detailed configuration blueprint of the role profile, including mapped transaction codes, active authorization objects, and assigned user accounts."
+          subtitle="Detailed configuration specification of the role profile, including mapped transaction codes, active authorization objects, and assigned user accounts."
         />
       )}
 
@@ -807,7 +804,7 @@ window.RiskDetailPage = function({ riskId, onNavigate, inline, onBack }) {
           onClick={() => setNestedUserId(null)}
           className="px-3 py-1.5 rounded-lg bg-white ring-1 ring-ink-200 hover:bg-ink-50 text-xs font-bold text-ink-700 transition-all flex items-center gap-1.5"
         >
-          ← Back to Risk Blueprint ({riskId})
+          ← Back to Access Risk Framework ({riskId})
         </button>
         <window.UserProfilePage userId={nestedUserId} onNavigate={onNavigate} inline={true} />
       </div>
@@ -823,7 +820,7 @@ window.RiskDetailPage = function({ riskId, onNavigate, inline, onBack }) {
           <div className="flex items-center gap-2 text-xs text-ink-500 font-medium">
             <button onClick={() => onNavigate('home')} className="hover:text-brand-600 transition-colors">Dashboard</button>
             <span>/</span>
-            <span className="text-ink-900 font-bold">Risk {details.id} Blueprint</span>
+            <span className="text-ink-900 font-bold">Risk {details.id} Access Risk Framework</span>
           </div>
           <div className="flex gap-2">
             <button 
@@ -848,7 +845,7 @@ window.RiskDetailPage = function({ riskId, onNavigate, inline, onBack }) {
       {!inline && (
         <window.DetailHeader
           code="SAP GRC · SoD Risk Definition"
-          title={`SoD Risk Blueprint: ${details.id}`}
+          title={`SoD Access Risk Framework: ${details.id}`}
           subtitle="Complete ruleset definition for the specified SoD conflict pattern, including core business impacts, frameworks, and active user listings."
         />
       )}

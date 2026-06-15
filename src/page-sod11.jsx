@@ -248,7 +248,7 @@ const Sod11Page = ({ onNavigate, inline }) => {
         <DetailHeader
           code="SOD-11 · Remediation Stream"
           title="Execution & Accountability"
-          subtitle="The central control plane for access risk remediation. Every finding is mapped to a dated task and a named owner."
+          subtitle="The central control plane for access risk remediation. Every finding is mapped to a dated task and a named assignee."
         />
       )}
       <Sod11Kpis />

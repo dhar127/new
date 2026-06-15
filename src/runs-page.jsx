@@ -767,10 +767,9 @@ window.RunsPage = function ({ onSelectRun, selectedRun }) {
                       className="w-full px-3.5 py-2.5 bg-white border border-ink-200 rounded-xl text-xs placeholder-ink-400 focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500 transition-all text-ink-900 font-medium pr-10 shadow-sm"
                     />
                     <div className="absolute right-3 text-ink-400 flex items-center justify-center">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-3.5 h-3.5 shrink-0 cursor-help">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <line x1="12" y1="16" x2="12" y2="12"></line>
-                        <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-3.5 h-3.5 shrink-0 cursor-help">
+                        <circle cx="12" cy="12" r="10" />
+                        <text x="12" y="16.5" fontFamily="Georgia, 'Times New Roman', serif" fontStyle="italic" fontWeight="bold" fontSize="13" textAnchor="middle" fill="currentColor" stroke="none">i</text>
                       </svg>
                     </div>
                   </div>

@@ -45,8 +45,8 @@ const SAP_SYSTEMS = [
 /* P2P (Procure-to-Pay) Violations Data */
 const P2P_VIOLATIONS = [
   { id: 'PTP-001', pair: 'ME21N + MIRO',  desc: 'PO Create + LIV Posting',           users: 1, severity: 'Critical', status: 'Open', exposure: 'High' },
-  { id: 'PTP-002', pair: 'ME21N + ME29N', desc: 'PO Create + PO Approval',           users: 1, severity: 'Critical', status: 'Open', exposure: 'High' },
-  { id: 'PTP-003', pair: 'MIGO + MIRO',   desc: 'Goods Receipt + Invoice Post',      users: 9, severity: 'High',     status: 'Open', exposure: 'High' }
+  { id: 'PTP-002', pair: 'ME21N + ME29N', desc: 'PO Create + PO Approval',           users: 1, severity: 'Critical', status: 'In Progress', exposure: 'High' },
+  { id: 'PTP-003', pair: 'MIGO + MIRO',   desc: 'Goods Receipt + Invoice Post',      users: 9, severity: 'High',     status: 'Resolved', exposure: 'High' }
 ];
 
 const P2P_KPIS = {

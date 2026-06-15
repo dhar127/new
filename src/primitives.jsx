@@ -199,7 +199,19 @@ window.ExportButton = function({ label = 'Export', size = 'md' }) {
       <window.Button size={size} icon="download" iconRight="chevronDown" onClick={() => setOpen(o => !o)}>{label}</window.Button>
       {open && (
         <div className="absolute right-0 z-30 mt-1.5 w-40 overflow-hidden rounded-lg border border-ink-200 bg-white shadow-pop">
-          <button onClick={() => setOpen(false)} className="flex w-full items-center gap-2 px-3 py-2 text-sm text-ink-700 hover:bg-ink-50">
+          <button 
+            onClick={() => {
+              setOpen(false);
+              if (window.exportGrcExcel && window.MOCK && window.MOCK.RUN) {
+                const runId = window.MOCK.RUN.id;
+                const runData = window.getMockDataForRun(runId);
+                window.exportGrcExcel(runId, runData.users, runData.risks);
+              } else {
+                alert("Excel export is not available for this run.");
+              }
+            }}
+            className="flex w-full items-center gap-2 px-3 py-2 text-sm text-ink-700 hover:bg-ink-50"
+          >
             <span className="grid h-6 w-6 place-items-center rounded bg-emerald-50 text-emerald-700 text-[10px] font-bold">XLSX</span>
             Excel
           </button>
@@ -504,7 +516,7 @@ window.Tooltip = function({ tip, children, align = 'top', className = '', toolti
   return (
     <span className={`group/tt relative inline-flex ${className}`}>
       {children}
-      <span className={`pointer-events-none absolute z-50 ${placement[align]} shadow-pop opacity-0 transition-opacity duration-150 group-hover/tt:opacity-100 rounded-lg p-2.5 text-[11px] leading-snug ${tooltipClassName || 'max-w-[260px] bg-ink-900 text-white font-normal'}`}>{tip}</span>
+      <span className={`pointer-events-none absolute z-50 ${placement[align]} shadow-pop opacity-0 transition-opacity duration-150 group-hover/tt:opacity-100 rounded-lg p-2.5 text-[11px] leading-snug ${tooltipClassName || 'w-max max-w-[340px] bg-ink-800 text-white border border-ink-700/50 rounded-xl px-3 py-2 font-medium normal-case'}`}>{tip}</span>
     </span>
   );
 };
@@ -765,10 +777,9 @@ window.GRCInfoTooltip = function({ metricKey }) {
         className="text-ink-400 hover:text-brand-600 transition-colors p-0.5 rounded focus:outline-none focus:ring-1 focus:ring-brand-500"
         title="View metric details"
       >
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-3.5 h-3.5">
           <circle cx="12" cy="12" r="10" />
-          <line x1="12" y1="16" x2="12" y2="12" />
-          <line x1="12" y1="8" x2="12.01" y2="8" />
+          <text x="12" y="16.5" fontFamily="Georgia, 'Times New Roman', serif" fontStyle="italic" fontWeight="bold" fontSize="13" textAnchor="middle" fill="currentColor" stroke="none">i</text>
         </svg>
       </button>
 
@@ -835,13 +846,435 @@ window.HeaderTooltip = function({ tip, align = 'bottom' }) {
   return (
     <window.Tooltip tip={tip} align={align} className="ml-1.5 shrink-0 select-none inline-flex items-center">
       <span className="inline-flex items-center justify-center text-ink-400 hover:text-ink-700 transition-colors cursor-help p-0.5 rounded focus:outline-none">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-3.5 h-3.5">
           <circle cx="12" cy="12" r="10" />
-          <line x1="12" y1="16" x2="12" y2="12" />
-          <line x1="12" y1="8" x2="12.01" y2="8" />
+          <text x="12" y="16.5" fontFamily="Georgia, 'Times New Roman', serif" fontStyle="italic" fontWeight="bold" fontSize="13" textAnchor="middle" fill="currentColor" stroke="none">i</text>
         </svg>
       </span>
     </window.Tooltip>
   );
 };
+
+window.InteractiveGRCTable = function({
+  data,
+  columns,
+  pageSize = 10,
+  onRowClick,
+  exportLabel,
+  onExport
+}) {
+  const [colOrder, setColOrder] = useState([]);
+  const [visibleCols, setVisibleCols] = useState({});
+  const [filters, setFilters] = useState({});
+  const [filterSearch, setFilterSearch] = useState({});
+  const [sortCol, setSortCol] = useState(null);
+  const [sortDir, setSortDir] = useState('asc');
+  const [page, setPage] = useState(1);
+  const [openDropdown, setOpenDropdown] = useState(null);
+  const [showColSettings, setShowColSettings] = useState(false);
+
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    if (columns && columns.length > 0) {
+      setColOrder(columns.map(c => c.id));
+      setVisibleCols(columns.reduce((acc, c) => ({ ...acc, [c.id]: true }), {}));
+    }
+  }, [columns]);
+
+  useEffect(() => {
+    const handleOutsideClick = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setOpenDropdown(null);
+        setShowColSettings(false);
+      }
+    };
+    document.addEventListener('mousedown', handleOutsideClick);
+    return () => document.removeEventListener('mousedown', handleOutsideClick);
+  }, []);
+
+  const uniqueValues = useMemo(() => {
+    const vals = {};
+    columns.forEach(col => {
+      const allVals = data.map(col.accessor).filter(v => v !== undefined && v !== null && v !== '');
+      vals[col.id] = Array.from(new Set(allVals)).sort();
+    });
+    return vals;
+  }, [data, columns]);
+
+  const filteredData = useMemo(() => {
+    let result = [...data];
+
+    Object.keys(filters).forEach(colId => {
+      const selectedVals = filters[colId];
+      if (selectedVals && selectedVals.length > 0) {
+        const colDef = columns.find(c => c.id === colId);
+        if (colDef) {
+          result = result.filter(row => {
+            const val = String(colDef.accessor(row));
+            return selectedVals.includes(val);
+          });
+        }
+      }
+    });
+
+    if (sortCol) {
+      const colDef = columns.find(c => c.id === sortCol);
+      if (colDef) {
+        result.sort((a, b) => {
+          const valA = String(colDef.accessor(a) || '');
+          const valB = String(colDef.accessor(b) || '');
+          const compare = valA.localeCompare(valB, undefined, { numeric: true, sensitivity: 'base' });
+          return sortDir === 'asc' ? compare : -compare;
+        });
+      }
+    }
+
+    return result;
+  }, [data, filters, sortCol, sortDir, columns]);
+
+  const pagedData = useMemo(() => {
+    const start = (page - 1) * pageSize;
+    return filteredData.slice(start, start + pageSize);
+  }, [filteredData, page, pageSize]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [filters]);
+
+  const toggleColumnVisibility = (colId) => {
+    setVisibleCols(prev => ({
+      ...prev,
+      [colId]: !prev[colId]
+    }));
+  };
+
+  const handleSort = (colId) => {
+    if (sortCol === colId) {
+      setSortDir(prev => prev === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortCol(colId);
+      setSortDir('asc');
+    }
+  };
+
+  const toggleFilterValue = (colId, val) => {
+    setFilters(prev => {
+      const current = prev[colId] || [];
+      const updated = current.includes(val) 
+        ? current.filter(v => v !== val)
+        : [...current, val];
+      return { ...prev, [colId]: updated };
+    });
+  };
+
+  const clearColumnFilter = (colId) => {
+    setFilters(prev => {
+      const updated = { ...prev };
+      delete updated[colId];
+      return updated;
+    });
+  };
+
+  const selectAllColumnFilter = (colId) => {
+    setFilters(prev => ({
+      ...prev,
+      [colId]: [...(uniqueValues[colId] || []).map(String)]
+    }));
+  };
+
+  const hasAnyFilters = Object.keys(filters).some(k => filters[k] && filters[k].length > 0);
+
+  const clearAllFilters = () => {
+    setFilters({});
+    setSortCol(null);
+    setPage(1);
+  };
+
+  const handleDragStart = (e, colId) => {
+    e.dataTransfer.setData('text/plain', colId);
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+  };
+
+  const handleDrop = (e, targetColId) => {
+    const sourceColId = e.dataTransfer.getData('text/plain');
+    if (sourceColId && sourceColId !== targetColId) {
+      const newOrder = [...colOrder];
+      const srcIdx = newOrder.indexOf(sourceColId);
+      const tgtIdx = newOrder.indexOf(targetColId);
+      newOrder.splice(srcIdx, 1);
+      newOrder.splice(tgtIdx, 0, sourceColId);
+      setColOrder(newOrder);
+    }
+  };
+
+  const orderedVisibleColumns = colOrder
+    .map(cid => columns.find(c => c.id === cid))
+    .filter(c => c && visibleCols[c.id]);
+
+  return (
+    <div className="space-y-4" ref={dropdownRef}>
+      <div className="flex flex-wrap items-center justify-between gap-3 bg-white p-3 rounded-xl border border-ink-200 shadow-sm text-left">
+        <div className="flex items-center gap-2">
+          {hasAnyFilters && (
+            <button
+              onClick={clearAllFilters}
+              className="px-2.5 py-1.5 bg-rose-50 text-rose-700 hover:bg-rose-100 ring-1 ring-inset ring-rose-200 rounded-lg text-xs font-bold transition-all flex items-center gap-1"
+            >
+              <window.Icon name="x" className="w-3.5 h-3.5" />
+              <span>Clear Filters</span>
+            </button>
+          )}
+          <span className="text-xs text-ink-500 font-semibold">
+            Showing <b>{filteredData.length}</b> of <b>{data.length}</b> violations
+          </span>
+        </div>
+
+        <div className="flex items-center gap-2 relative">
+          <button
+            onClick={() => setShowColSettings(o => !o)}
+            className="px-3 py-1.5 bg-white border border-ink-200 text-ink-700 hover:bg-ink-50 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5"
+          >
+            <window.Icon name="filter" className="w-3.5 h-3.5" />
+            <span>Show/Hide Columns</span>
+          </button>
+
+          {showColSettings && (
+            <div className="absolute right-0 top-full mt-1.5 z-40 bg-white border border-ink-200 rounded-xl shadow-pop p-3 min-w-[200px] text-left max-h-[300px] overflow-y-auto">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-ink-400 block mb-2 pb-1 border-b border-ink-100">Toggle Column Visibility</span>
+              <div className="space-y-2">
+                {columns.map(col => (
+                  <label key={col.id} className="flex items-center gap-2 text-xs font-semibold text-ink-700 cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      checked={!!visibleCols[col.id]}
+                      onChange={() => toggleColumnVisibility(col.id)}
+                      className="rounded border-ink-300 text-brand-600 focus:ring-brand-500 w-3.5 h-3.5"
+                    />
+                    <span>{col.label}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {onExport && (
+            <button
+              onClick={() => onExport(filteredData, orderedVisibleColumns)}
+              className="px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5 shadow-sm"
+            >
+              <window.Icon name="download" className="w-3.5 h-3.5" />
+              <span>{exportLabel || 'Export Excel'}</span>
+            </button>
+          )}
+        </div>
+      </div>
+
+      <div className="overflow-x-auto border border-ink-200 rounded-xl shadow-sm bg-white">
+        <table className="w-full text-xs text-left border-collapse table-auto min-w-[1200px]">
+          <thead className="bg-ink-50 border-b border-ink-200 text-ink-600 font-bold uppercase tracking-wider text-[10px]">
+            <tr>
+              {orderedVisibleColumns.map(col => {
+                const isFiltered = filters[col.id] && filters[col.id].length > 0;
+                const isDropdownOpen = openDropdown === col.id;
+                
+                return (
+                  <th
+                    key={col.id}
+                    className={`p-3 relative select-none hover:bg-ink-100/50 ${col.id === 'viewAction' ? 'w-28 min-w-[7rem] text-right' : ''}`}
+                    draggable
+                    onDragStart={(e) => handleDragStart(e, col.id)}
+                    onDragOver={handleDragOver}
+                    onDrop={(e) => handleDrop(e, col.id)}
+                  >
+                    <div className={`flex items-center justify-between gap-1.5 cursor-move ${col.id === 'viewAction' ? 'justify-end' : ''}`}>
+                      <div className="flex items-center gap-1" onClick={() => handleSort(col.id)}>
+                        <span className="truncate">{col.label}</span>
+                        {col.tooltip && <window.HeaderTooltip tip={col.tooltip} />}
+                        {sortCol === col.id && (
+                          <span className="text-[9px] font-bold text-brand-600">
+                            {sortDir === 'asc' ? '▲' : '▼'}
+                          </span>
+                        )}
+                      </div>
+
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setOpenDropdown(isDropdownOpen ? null : col.id);
+                        }}
+                        className={`p-1 rounded hover:bg-ink-200 transition-colors shrink-0 ${isFiltered ? 'text-brand-600' : 'text-ink-400'}`}
+                      >
+                        <window.Icon name="filter" className="w-3 h-3" />
+                      </button>
+                    </div>
+
+                    {isDropdownOpen && (
+                      <div
+                        className="absolute left-0 mt-2 z-30 bg-white border border-ink-200 rounded-xl shadow-pop p-3 w-56 text-left normal-case font-medium text-ink-805"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-[10px] font-bold text-ink-450 uppercase">Filter values</span>
+                          <button
+                            onClick={() => clearColumnFilter(col.id)}
+                            className="text-[9px] font-bold text-rose-600 hover:underline"
+                          >
+                            Clear
+                          </button>
+                        </div>
+
+                        <div className="mb-2">
+                          <input
+                            type="text"
+                            placeholder="Search values..."
+                            value={filterSearch[col.id] || ''}
+                            onChange={(e) => setFilterSearch({ ...filterSearch, [col.id]: e.target.value })}
+                            className="w-full px-2 py-1 text-xs border border-ink-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-brand-500"
+                          />
+                        </div>
+
+                        <div className="space-y-1.5 max-h-36 overflow-y-auto pr-1">
+                          {uniqueValues[col.id]
+                            ?.filter(val => {
+                              const q = (filterSearch[col.id] || '').toLowerCase();
+                              return String(val).toLowerCase().includes(q);
+                            })
+                            .map(val => {
+                              const isChecked = (filters[col.id] || []).includes(String(val));
+                              return (
+                                <label key={String(val)} className="flex items-center gap-2 text-xs cursor-pointer select-none font-semibold text-ink-700">
+                                  <input
+                                    type="checkbox"
+                                    checked={isChecked}
+                                    onChange={() => toggleFilterValue(col.id, String(val))}
+                                    className="rounded border-ink-300 text-brand-600 focus:ring-brand-500 w-3.5 h-3.5"
+                                  />
+                                  <span className="truncate">{String(val)}</span>
+                                </label>
+                              );
+                            })}
+                        </div>
+                        
+                        <div className="mt-2.5 pt-2.5 border-t border-ink-100 flex items-center justify-between">
+                          <button
+                            onClick={() => selectAllColumnFilter(col.id)}
+                            className="text-[10px] font-bold text-ink-500 hover:underline"
+                          >
+                            Select All
+                          </button>
+                          <button
+                            onClick={() => setOpenDropdown(null)}
+                            className="px-2 py-1 bg-ink-900 hover:bg-ink-800 text-white rounded text-[10px] font-bold"
+                          >
+                            Done
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </th>
+                );
+              })}
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-ink-150">
+            {pagedData.map((row, idx) => {
+              const trClasses = `row-hover transition-colors select-none ${onRowClick ? 'cursor-pointer' : ''}`;
+              return (
+                <tr
+                  key={row.userId ? row.userId + '_' + idx : idx}
+                  className={trClasses}
+                  onClick={() => onRowClick && onRowClick(row)}
+                >
+                  {orderedVisibleColumns.map(col => {
+                    const val = col.accessor(row);
+                    
+                    let content = String(val);
+                    if (col.renderCell) {
+                      content = col.renderCell(row);
+                    } else if (col.id === 'severity') {
+                      content = <window.SeverityBadge value={val} />;
+                    } else if (col.id === 'status') {
+                      content = <window.StatusBadge value={val} className="px-2 py-0.5 text-[10px]" />;
+                    } else if (col.isMono) {
+                      content = <code className="font-mono text-brand-600 font-bold">{val}</code>;
+                    } else if (col.id === 'viewAction') {
+                      content = (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (onRowClick) onRowClick(row);
+                          }}
+                          className="px-2.5 py-1 bg-brand-50 hover:bg-brand-100 text-brand-700 font-bold text-[11px] rounded-lg transition-all inline-flex items-center gap-1 shadow-sm shrink-0"
+                        >
+                          <span>View</span>
+                          <window.Icon name="arrow" className="w-3 h-3" />
+                        </button>
+                      );
+                    }
+                    
+                    return (
+                      <td
+                        key={col.id}
+                        className={`p-3 font-semibold text-ink-800 ${col.id === 'viewAction' ? 'w-28 min-w-[7rem] text-right whitespace-nowrap' : 'truncate max-w-xs'}`}
+                        title={String(val)}
+                      >
+                        {content}
+                      </td>
+                    );
+                  })}
+                </tr>
+              );
+            })}
+            {filteredData.length === 0 && (
+              <tr>
+                <td colSpan={orderedVisibleColumns.length} className="py-12 text-center text-sm font-bold text-ink-400 uppercase tracking-widest">
+                  No records matching filters
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      {filteredData.length > pageSize && (
+        <window.Pagination
+          page={page}
+          pageSize={pageSize}
+          total={filteredData.length}
+          onPage={setPage}
+        />
+      )}
+    </div>
+  );
+};
+
+window.RiskCoverageInfoPanel = function({ isOpen, onClose }) {
+  if (!isOpen) return null;
+  return (
+    <div className="bg-white border border-ink-200 rounded-xl p-5 shadow-sm animate-fade-in text-left mt-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-5">
+      <div className="flex items-center gap-3">
+        <div className="h-8 w-8 rounded-full bg-white border border-ink-200 flex items-center justify-center shrink-0 shadow-sm">
+          <window.Icon name="info" className="w-4 h-4 text-brand-650" />
+        </div>
+        <div>
+          <h4 className="text-xs font-bold text-ink-500 uppercase tracking-wider">Calculation Methodology</h4>
+          <div className="text-sm font-bold text-ink-900 mt-1 font-mono">
+            Risk Coverage Score = ( 1 - WUR ÷ WDR ) × 100
+          </div>
+        </div>
+      </div>
+      <div className="text-xs text-ink-600 leading-relaxed max-w-xl flex-1 border-t md:border-t-0 md:border-l border-ink-150 pt-3 md:pt-0 md:pl-5">
+        Where <b className="text-ink-900 font-bold">WDR</b> is Weighted Detected Risk and <b className="text-ink-900 font-bold">WUR</b> is Weighted Unmitigated Risk based on critical, high, medium, and low severity weight parameters.
+      </div>
+      <button onClick={onClose} className="text-ink-400 hover:text-ink-700 hover:bg-ink-100 p-1.5 rounded-lg transition-colors focus:outline-none self-start md:self-center">
+        <window.Icon name="x" className="w-4 h-4" />
+      </button>
+    </div>
+  );
+};
+
 
