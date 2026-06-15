@@ -20,9 +20,27 @@ const DEFAULT_RULESET_RISK_CATALOG = [
   { riskId: 'H005', functionIds: ['HR04', 'PY04'], functionNames: ['HR04 - Maintain Time Data', 'PY04 - Process Payroll'], businessProcess: 'Human Resources', riskLevel: 1, riskType: '1', scenario: 'Modify time data and process payroll without authority', businessImpact: 'Modify time data and process payroll resulting in fraudulent payments', conflictingTransactions: 'CAT2, CAT2_ISCR, CAT6, PA61, PA03, PA04, PAKG, PAKY', authObjects: 'P_ORGIN, P_PCR, P_TCODE', assignee: null }
 ];
 
-const rulesetSeverity = level => Number(level) === 2 ? 'High' : Number(level) === 1 ? 'Medium' : 'Low';
-const rulesetRiskScore = level => Number(level) === 2 ? 90 : Number(level) === 1 ? 70 : 40;
-const rulesetPriority = level => Number(level) === 2 ? 'P1' : Number(level) === 1 ? 'P2' : 'P3';
+const rulesetSeverity = (level, id) => {
+  const l = Number(level);
+  if (l === 2) return 'Critical';
+  if (l === 1) {
+    if (id && (id.startsWith('B') || id.startsWith('P'))) return 'High';
+    return 'Medium';
+  }
+  return 'Low';
+};
+const rulesetRiskScore = severity => {
+  if (severity === 'Critical') return 95;
+  if (severity === 'High') return 75;
+  if (severity === 'Medium') return 50;
+  return 25;
+};
+const rulesetPriority = severity => {
+  if (severity === 'Critical') return 'P1';
+  if (severity === 'High') return 'P2';
+  if (severity === 'Medium') return 'P3';
+  return 'P4';
+};
 const rulesetCategory = process => {
   const p = String(process || '').toLowerCase();
   if (p.includes('finance') || p.includes('cash') || p.includes('order to cash')) return 'Financial';
@@ -49,24 +67,27 @@ const resolveAssignee = (val, process) => {
   return val || (String(process || '').includes('Basis') ? 'SAP Security Team' : 'IT Compliance');
 };
 
-const normalizeRulesetRisk = row => ({
-  ...row,
-  riskId: row.riskId,
-  title: row.scenario,
-  status: 'Active',
-  level: rulesetSeverity(row.riskLevel),
-  severity: rulesetSeverity(row.riskLevel),
-  riskScore: rulesetRiskScore(row.riskLevel),
-  priority: rulesetPriority(row.riskLevel),
-  category: rulesetCategory(row.businessProcess),
-  riskCategory: rulesetCategory(row.businessProcess),
-  process: row.businessProcess,
-  roleType: row.riskType === '2' ? 'Critical Action' : 'SoD Conflict',
-  standardsViolated: 'SAP GRC Global Ruleset, SOX, Internal Access Control',
-  recommendedAction: `Separate access for ${String((row.functionNames || [])[0] || 'Function A')} and ${String((row.functionNames || [])[1] || 'Function B')}; remove conflicting action or authorization object from one role.`,
-  recommendations: `Separate access for ${String((row.functionNames || [])[0] || 'Function A')} and ${String((row.functionNames || [])[1] || 'Function B')}; remove conflicting action or authorization object from one role.`,
-  assignee: resolveAssignee(row.assignee, row.businessProcess)
-});
+const normalizeRulesetRisk = row => {
+  const severity = rulesetSeverity(row.riskLevel, row.riskId);
+  return {
+    ...row,
+    riskId: row.riskId,
+    title: row.scenario,
+    status: 'Active',
+    level: severity,
+    severity: severity,
+    riskScore: rulesetRiskScore(severity),
+    priority: rulesetPriority(severity),
+    category: rulesetCategory(row.businessProcess),
+    riskCategory: rulesetCategory(row.businessProcess),
+    process: row.businessProcess,
+    roleType: row.riskType === '2' ? 'Critical Action' : 'SoD Conflict',
+    standardsViolated: 'SAP GRC Global Ruleset, SOX, Internal Access Control',
+    recommendedAction: `Separate access for ${String((row.functionNames || [])[0] || 'Function A')} and ${String((row.functionNames || [])[1] || 'Function B')}; remove conflicting action or authorization object from one role.`,
+    recommendations: `Separate access for ${String((row.functionNames || [])[0] || 'Function A')} and ${String((row.functionNames || [])[1] || 'Function B')}; remove conflicting action or authorization object from one role.`,
+    assignee: resolveAssignee(row.assignee, row.businessProcess)
+  };
+};
 
 window.getRiskViolationsForUser = user => Array.isArray(user?.riskViolations) ? user.riskViolations : [];
 window.getRiskCountForUser = user => window.getRiskViolationsForUser(user).length;
@@ -137,6 +158,48 @@ window.applyRulesetDerivedMock = function(mock) {
       auditNotes: 'Ruleset-derived mock row generated from local S4HANAOP content.'
     };
   });
+
+  if (typeof window !== 'undefined' && window.recalculateMockKpis) {
+    window.recalculateMockKpis(mock);
+  }
+};
+
+window.recalculateMockKpis = function(mock) {
+  if (!mock || !Array.isArray(mock.ALL_USERS)) return;
+  
+  let totalViolations = 0;
+  let criticalCount = 0;
+  let highCount = 0;
+  let mediumCount = 0;
+  let lowCount = 0;
+
+  mock.ALL_USERS.forEach(user => {
+    const violations = user.riskViolations || [];
+    totalViolations += violations.length;
+    violations.forEach(v => {
+      const sev = String(v.severity || '').toLowerCase();
+      if (sev === 'critical') criticalCount++;
+      else if (sev === 'high') highCount++;
+      else if (sev === 'medium') mediumCount++;
+      else if (sev === 'low') lowCount++;
+    });
+  });
+
+  mock.KPIS = {
+    ...mock.KPIS,
+    totalUsers: mock.ALL_USERS.length,
+    totalViolations: totalViolations,
+    critical: criticalCount,
+    high: highCount,
+    medium: mediumCount,
+    low: lowCount,
+    severityBreakdown: {
+      critical: criticalCount,
+      high: highCount,
+      medium: mediumCount,
+      low: lowCount
+    }
+  };
 };
 
 window.MOCK = window.MOCK || {};

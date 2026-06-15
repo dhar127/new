@@ -1134,7 +1134,7 @@ window.ComplianceDetailPage = function({ onNavigate, selectedRun }) {
             <div className="p-5 space-y-4">
               <div className="bg-ink-50 p-3 rounded-xl flex items-center justify-between text-xs border border-ink-200">
                 <span className="font-semibold text-ink-500">Total Flagged Violations:</span>
-                <span className="font-mono font-black text-ink-950 text-sm font-bold">46 total violations</span>
+                <span className="font-mono font-black text-ink-950 text-sm font-bold">{window.MOCK.KPIS ? window.MOCK.KPIS.totalViolations : 1800} total violations</span>
               </div>
 
               <div className="overflow-hidden border border-ink-200 rounded-xl shadow-sm bg-white">
@@ -1153,8 +1153,8 @@ window.ComplianceDetailPage = function({ onNavigate, selectedRun }) {
                         <span className="h-2 w-2 rounded-full bg-red-500" />
                         <span className="text-rose-700 font-bold">Critical</span>
                       </td>
-                      <td className="px-4 py-2.5 text-center font-mono font-bold text-ink-900">18</td>
-                      <td className="px-4 py-2.5 text-center font-mono text-ink-500">39.1%</td>
+                      <td className="px-4 py-2.5 text-center font-mono font-bold text-ink-900">{window.MOCK.KPIS ? window.MOCK.KPIS.critical : 0}</td>
+                      <td className="px-4 py-2.5 text-center font-mono text-ink-500">{window.MOCK.KPIS && window.MOCK.KPIS.totalViolations > 0 ? ((window.MOCK.KPIS.critical / window.MOCK.KPIS.totalViolations) * 100).toFixed(1) : '0.0'}%</td>
                       <td className="px-4 py-2.5 text-right font-mono font-bold text-ink-700">Weight x1.0</td>
                     </tr>
                     <tr className="hover:bg-ink-50/30">
@@ -1162,8 +1162,8 @@ window.ComplianceDetailPage = function({ onNavigate, selectedRun }) {
                         <span className="h-2 w-2 rounded-full bg-orange-500" />
                         <span className="text-orange-700 font-bold">High</span>
                       </td>
-                      <td className="px-4 py-2.5 text-center font-mono font-bold text-ink-900">19</td>
-                      <td className="px-4 py-2.5 text-center font-mono text-ink-500">41.3%</td>
+                      <td className="px-4 py-2.5 text-center font-mono font-bold text-ink-900">{window.MOCK.KPIS ? window.MOCK.KPIS.high : 0}</td>
+                      <td className="px-4 py-2.5 text-center font-mono text-ink-500">{window.MOCK.KPIS && window.MOCK.KPIS.totalViolations > 0 ? ((window.MOCK.KPIS.high / window.MOCK.KPIS.totalViolations) * 100).toFixed(1) : '0.0'}%</td>
                       <td className="px-4 py-2.5 text-right font-mono font-bold text-ink-700">Weight x0.6</td>
                     </tr>
                     <tr className="hover:bg-ink-50/30">
@@ -1171,8 +1171,8 @@ window.ComplianceDetailPage = function({ onNavigate, selectedRun }) {
                         <span className="h-2 w-2 rounded-full bg-yellow-500" />
                         <span className="text-amber-700 font-bold">Medium</span>
                       </td>
-                      <td className="px-4 py-2.5 text-center font-mono font-bold text-ink-900">9</td>
-                      <td className="px-4 py-2.5 text-center font-mono text-ink-500">19.6%</td>
+                      <td className="px-4 py-2.5 text-center font-mono font-bold text-ink-900">{window.MOCK.KPIS ? window.MOCK.KPIS.medium : 0}</td>
+                      <td className="px-4 py-2.5 text-center font-mono text-ink-500">{window.MOCK.KPIS && window.MOCK.KPIS.totalViolations > 0 ? ((window.MOCK.KPIS.medium / window.MOCK.KPIS.totalViolations) * 100).toFixed(1) : '0.0'}%</td>
                       <td className="px-4 py-2.5 text-right font-mono font-bold text-ink-700">Weight x0.3</td>
                     </tr>
                     <tr className="hover:bg-ink-50/30">
@@ -1180,8 +1180,8 @@ window.ComplianceDetailPage = function({ onNavigate, selectedRun }) {
                         <span className="h-2 w-2 rounded-full bg-blue-500" />
                         <span className="text-blue-700 font-bold">Low</span>
                       </td>
-                      <td className="px-4 py-2.5 text-center font-mono font-bold text-ink-900">0</td>
-                      <td className="px-4 py-2.5 text-center font-mono text-ink-500">0.0%</td>
+                      <td className="px-4 py-2.5 text-center font-mono font-bold text-ink-900">{window.MOCK.KPIS ? window.MOCK.KPIS.low : 0}</td>
+                      <td className="px-4 py-2.5 text-center font-mono text-ink-500">{window.MOCK.KPIS && window.MOCK.KPIS.totalViolations > 0 ? ((window.MOCK.KPIS.low / window.MOCK.KPIS.totalViolations) * 100).toFixed(1) : '0.0'}%</td>
                       <td className="px-4 py-2.5 text-right font-mono font-bold text-ink-700">Weight x0.1</td>
                     </tr>
                   </tbody>

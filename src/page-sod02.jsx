@@ -9,8 +9,8 @@ const { useState } = React;
 window.Sod02Page = function({ onNavigate, inline }) {
   const { COMPLIANCE, RUN_TREND } = window.MOCK;
 
-  // Set the score statically to the worked example percentage (61.25%)
-  const currentScore = 61.25;
+  // Read dynamic compliance score from global MOCK KPIs
+  const currentScore = window.MOCK.KPIS ? window.MOCK.KPIS.complianceScore : 91.9;
 
   return (
     <div data-screen-label="Overall Compliance Assessment" className={inline ? "space-y-6 text-left animate-fade-in" : "space-y-6 px-4 md:px-7 py-6 text-left"}>
@@ -29,7 +29,7 @@ window.Sod02Page = function({ onNavigate, inline }) {
         <window.StatCard label="Compliance Score" value={`${currentScore}%`} tone="good" metricKey="complianceScore" />
         <window.StatCard label="Industry Peer Average" value="78.0%" metricKey="sapGrcBaseline" />
         <window.StatCard severity="High" label="Risk Maturity Level" value="Managed" icon="shield" />
-        <window.StatCard severity="Critical" label="Unmitigated Violations" value="46 Risks" metricKey="totalViolations" />
+        <window.StatCard severity="Critical" label="Unmitigated Violations" value={`${window.MOCK.KPIS ? window.MOCK.KPIS.totalViolations : 1800} Violations`} metricKey="totalViolations" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -108,10 +108,10 @@ window.Sod02Page = function({ onNavigate, inline }) {
                 <div className="h-[200px]">
                   <P2_ResponsiveContainer width="100%" height="100%">
                     <P2_BarChart data={[
-                      { name: 'Critical', count: 18, color: '#EF4444' },
-                      { name: 'High', count: 19, color: '#F97316' },
-                      { name: 'Medium', count: 9, color: '#EAB308' },
-                      { name: 'Low', count: 0, color: '#3B82F6' },
+                      { name: 'Critical', count: window.MOCK.KPIS ? window.MOCK.KPIS.critical : 0, color: '#EF4444' },
+                      { name: 'High', count: window.MOCK.KPIS ? window.MOCK.KPIS.high : 0, color: '#F97316' },
+                      { name: 'Medium', count: window.MOCK.KPIS ? window.MOCK.KPIS.medium : 0, color: '#EAB308' },
+                      { name: 'Low', count: window.MOCK.KPIS ? window.MOCK.KPIS.low : 0, color: '#3B82F6' },
                     ]} margin={{ top: 10, right: 10, bottom: 0, left: -20 }}>
                       <P2_CartesianGrid stroke="#F1F5F9" strokeDasharray="3 3" />
                       <P2_XAxis dataKey="name" tick={{ fill: '#94A3B8', fontSize: 10 }} axisLine={false} tickLine={false} />

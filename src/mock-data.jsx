@@ -93702,13 +93702,16 @@ Object.assign(window.MOCK, { ALL_USERS, ALL_RISKS });
 
   window.getMockDataForRun = function(runId) {
     const runObj = (window.MOCK.ANALYSIS_RUNS || []).find(r => r.id === runId) || window.MOCK.RUN;
+    if (typeof window !== 'undefined' && window.recalculateMockKpis) {
+      window.recalculateMockKpis(window.MOCK);
+    }
     return {
       users: window.MOCK.ALL_USERS || [],
       risks: window.MOCK.ALL_RISKS || [],
       kpis: {
-        totalUsers: Number(runObj?.users || window.MOCK.KPIS.totalUsers || 0),
+        totalUsers: window.MOCK.KPIS.totalUsers,
         totalRoles: Number(runObj?.roles || 0),
-        totalViolations: Number(runObj?.violations || window.MOCK.KPIS.totalViolations || 0),
+        totalViolations: window.MOCK.KPIS.totalViolations,
         critical: window.MOCK.KPIS.critical,
         high: window.MOCK.KPIS.high,
         medium: window.MOCK.KPIS.medium,
@@ -93730,13 +93733,14 @@ Object.assign(window.MOCK, { ALL_USERS, ALL_RISKS });
         status: runObj.status,
         scope: `${runObj.users} users scanned`
       };
-      window.MOCK.KPIS = {
-        ...window.MOCK.KPIS,
-        totalUsers: Number(runObj.users),
-        totalViolations: Number(runObj.violations),
-        complianceScore: Number(runObj.matchRate)
-      };
+      if (window.MOCK.KPIS) {
+        window.MOCK.KPIS.complianceScore = Number(runObj.matchRate);
+      }
+    }
+    if (typeof window !== 'undefined' && window.recalculateMockKpis) {
+      window.recalculateMockKpis(window.MOCK);
     }
     return window.getMockDataForRun(runId);
   };
+  
 })();
