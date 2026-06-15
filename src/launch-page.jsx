@@ -651,6 +651,7 @@ const UserViolationExpansion = ({ user }) => {
 };
 
 const RiskUsersExpansion = ({ risk, users }) => {
+  const [expandedRemediationRow, setExpandedRemediationRow] = useState(null);
   const affected = window.getUsersForRisk
     ? window.getUsersForRisk(risk, users)
     : (risk.affectedUsers || []).map(uid => users.find(u => u.userId === uid) || (window.MOCK.ALL_USERS || []).find(u => u.userId === uid)).filter(Boolean);
@@ -669,7 +670,7 @@ const RiskUsersExpansion = ({ risk, users }) => {
               <th className="px-3 py-2 text-left">First Name</th>
               <th className="px-3 py-2 text-left">Last Name</th>
               <th className="px-3 py-2 text-left">Email</th>
-              <th className="px-3 py-2 text-left">Role Type</th>
+              <th className="px-3 py-2 text-left">Standards Violated</th>
               <th className="px-3 py-2 text-left">Violation Count</th>
               <th className="px-3 py-2 text-left">T-Codes</th>
               <th className="px-3 py-2 text-left">Auth Objects</th>
@@ -680,7 +681,7 @@ const RiskUsersExpansion = ({ risk, users }) => {
             </tr>
           </thead>
           <tbody className="divide-y divide-ink-100">
-            {affected.map(u => {
+            {affected.map((u, idx) => {
               const mappedRisk = getUserViolationDetails(u).find(item => item.riskId === risk.riskId) || risk;
               return (
                 <tr key={`${risk.riskId}_${u.userId}`}>
@@ -688,12 +689,34 @@ const RiskUsersExpansion = ({ risk, users }) => {
                   <td className="px-3 py-2 font-semibold">{u.firstName}</td>
                   <td className="px-3 py-2 font-semibold">{u.lastName}</td>
                   <td className="px-3 py-2 text-ink-600">{u.email}</td>
-                  <td className="px-3 py-2">{mappedRisk.roleType || u.roleType}</td>
+                  <td className="px-3 py-2">GRC Ruleset</td>
                   <td className="px-3 py-2 font-mono">{getViolationCount(u)}</td>
                   <td className="px-3 py-2 font-mono text-brand-700 min-w-[180px]">{mappedRisk.conflictingTransactions}</td>
                   <td className="px-3 py-2 font-mono text-ink-700 min-w-[160px]">{mappedRisk.authObjects}</td>
                   <td className="px-3 py-2"><span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700">Active</span></td>
-                  <td className="px-3 py-2 text-ink-700 min-w-[260px]">{mappedRisk.recommendedAction || risk.recommendations}</td>
+                  <td className="px-3 py-2 align-top min-w-[360px]">
+                    <button
+                      type="button"
+                      onClick={() => setExpandedRemediationRow(current => current === idx ? null : idx)}
+                      className="inline-flex items-center gap-1.5 rounded-lg bg-brand-50 px-2.5 py-1 text-[11px] font-black text-brand-700 ring-1 ring-brand-100 hover:bg-brand-100 text-left"
+                    >
+                      <window.Icon name="chevron" className={`w-3 h-3 transition-transform ${expandedRemediationRow === idx ? 'rotate-90' : ''}`} />
+                      <span>{mappedRisk.recommendedAction || risk.recommendations}</span>
+                    </button>
+                    {expandedRemediationRow === idx && (
+                      <div className="mt-2 w-full rounded-xl border border-brand-100 bg-brand-50/40 p-3 shadow-sm">
+                        <div className="flex flex-wrap items-center gap-2 mb-2">
+                          <div className="text-[10px] font-black uppercase tracking-wider text-brand-700">Remediation Plan</div>
+                          <span className="font-mono text-[10px] font-bold text-brand-700 bg-white px-2 py-0.5 rounded ring-1 ring-brand-100">{risk.riskId}</span>
+                        </div>
+                        <ol className="list-decimal pl-4 space-y-1.5 text-[11px] font-semibold text-ink-700">
+                          {getRemediationSteps(mappedRisk).map((step, stepIdx) => (
+                            <li key={`${u.userId}_step_${stepIdx}`}>{step}</li>
+                          ))}
+                        </ol>
+                      </div>
+                    )}
+                  </td>
                   <td className="px-3 py-2 font-black text-ink-850">{mappedRisk.priority}</td>
                   <td className="px-3 py-2 font-semibold text-ink-800">{mappedRisk.assignee}</td>
                 </tr>
@@ -775,6 +798,7 @@ window.LaunchPage = function({
   // Define column definitions for risk catalog
   const riskColumns = useMemo(() => [
     { id: 'riskId', label: 'Risk ID', accessor: r => r.riskId, isMono: true, tooltip: 'Unique GRC Risk identifier' },
+    { id: 'functionIds', label: 'Function IDs', accessor: r => Array.isArray(r.functionIds) ? r.functionIds.join(', ') : '', isMono: true, tooltip: 'Conflicting Function IDs from ruleset' },
     { id: 'title', label: 'Risk Name', accessor: r => r.title, tooltip: 'Name of the risk scenario' },
     { id: 'process', label: 'Business Process', accessor: r => r.process, tooltip: 'Business process flow classification' },
     { id: 'category', label: 'Risk Category', accessor: r => r.category, tooltip: 'GRC Risk category' },

@@ -605,6 +605,13 @@ const SUPER_ADMIN_ROWS = [
     "rationale": "User holds SAP_ALL equivalent permissions, granting administrative control over users and authorizations.",
     "roles": [
       {
+        "role": "Z_PR04",
+        "desc": "Role: Z_PR04",
+        "authObjects": [
+          "S_TCODE"
+        ]
+      },
+      {
         "role": "Z_MM03",
         "desc": "Role: Z_MM03",
         "authObjects": [
@@ -612,22 +619,15 @@ const SUPER_ADMIN_ROWS = [
         ]
       },
       {
-        "role": "SAP_ALL",
-        "desc": "Role: SAP_ALL",
+        "role": "Z_AP04",
+        "desc": "Role: Z_AP04",
         "authObjects": [
           "S_TCODE"
         ]
       },
       {
-        "role": "Z_AP02",
-        "desc": "Role: Z_AP02",
-        "authObjects": [
-          "S_TCODE"
-        ]
-      },
-      {
-        "role": "Z_PR04",
-        "desc": "Role: Z_PR04",
+        "role": "Z_PR03",
+        "desc": "Role: Z_PR03",
         "authObjects": [
           "S_TCODE"
         ]
@@ -651,6 +651,20 @@ const SUPER_ADMIN_ROWS = [
     "rationale": "User holds SAP_ALL equivalent permissions, granting administrative control over users and authorizations.",
     "roles": [
       {
+        "role": "Z_FI02",
+        "desc": "Role: Z_FI02",
+        "authObjects": [
+          "S_TCODE"
+        ]
+      },
+      {
+        "role": "ZBC_BR_SPM_FIREFIGHTER",
+        "desc": "Role: ZBC_BR_SPM_FIREFIGHTER",
+        "authObjects": [
+          "S_TCODE"
+        ]
+      },
+      {
         "role": "Z_FI07",
         "desc": "Role: Z_FI07",
         "authObjects": [
@@ -658,22 +672,8 @@ const SUPER_ADMIN_ROWS = [
         ]
       },
       {
-        "role": "Z_GL01",
-        "desc": "Role: Z_GL01",
-        "authObjects": [
-          "S_TCODE"
-        ]
-      },
-      {
-        "role": "Z_AP02",
-        "desc": "Role: Z_AP02",
-        "authObjects": [
-          "S_TCODE"
-        ]
-      },
-      {
-        "role": "Z_FI02",
-        "desc": "Role: Z_FI02",
+        "role": "Z_GL02",
+        "desc": "Role: Z_GL02",
         "authObjects": [
           "S_TCODE"
         ]
@@ -697,29 +697,29 @@ const SUPER_ADMIN_ROWS = [
     "rationale": "User holds SAP_ALL equivalent permissions, granting administrative control over users and authorizations.",
     "roles": [
       {
-        "role": "Z_GL01",
-        "desc": "Role: Z_GL01",
-        "authObjects": [
-          "S_TCODE"
-        ]
-      },
-      {
-        "role": "Z_PS02",
-        "desc": "Role: Z_PS02",
-        "authObjects": [
-          "S_TCODE"
-        ]
-      },
-      {
-        "role": "Z_MM04",
-        "desc": "Role: Z_MM04",
-        "authObjects": [
-          "S_TCODE"
-        ]
-      },
-      {
         "role": "ZBC_BR_SPM_FIREFIGHTER",
         "desc": "Role: ZBC_BR_SPM_FIREFIGHTER",
+        "authObjects": [
+          "S_TCODE"
+        ]
+      },
+      {
+        "role": "Z_FI06",
+        "desc": "Role: Z_FI06",
+        "authObjects": [
+          "S_TCODE"
+        ]
+      },
+      {
+        "role": "Z_AR05",
+        "desc": "Role: Z_AR05",
+        "authObjects": [
+          "S_TCODE"
+        ]
+      },
+      {
+        "role": "Z_AP04",
+        "desc": "Role: Z_AP04",
         "authObjects": [
           "S_TCODE"
         ]
@@ -743,8 +743,22 @@ const SUPER_ADMIN_ROWS = [
     "rationale": "User holds SAP_ALL equivalent permissions, granting administrative control over users and authorizations.",
     "roles": [
       {
-        "role": "Z_FI08",
-        "desc": "Role: Z_FI08",
+        "role": "ZBC_BR_SPM_FIREFIGHTER",
+        "desc": "Role: ZBC_BR_SPM_FIREFIGHTER",
+        "authObjects": [
+          "S_TCODE"
+        ]
+      },
+      {
+        "role": "Z_GL03",
+        "desc": "Role: Z_GL03",
+        "authObjects": [
+          "S_TCODE"
+        ]
+      },
+      {
+        "role": "Z_FI04",
+        "desc": "Role: Z_FI04",
         "authObjects": [
           "S_TCODE"
         ]
@@ -752,20 +766,6 @@ const SUPER_ADMIN_ROWS = [
       {
         "role": "Z_AR01",
         "desc": "Role: Z_AR01",
-        "authObjects": [
-          "S_TCODE"
-        ]
-      },
-      {
-        "role": "Z_GL02",
-        "desc": "Role: Z_GL02",
-        "authObjects": [
-          "S_TCODE"
-        ]
-      },
-      {
-        "role": "ZBC_BR_SPM_FIREFIGHTER",
-        "desc": "Role: ZBC_BR_SPM_FIREFIGHTER",
         "authObjects": [
           "S_TCODE"
         ]
@@ -789,22 +789,22 @@ const SUPER_ADMIN_ROWS = [
     "rationale": "User holds SAP_ALL equivalent permissions, granting administrative control over users and authorizations.",
     "roles": [
       {
+        "role": "Z_SD09",
+        "desc": "Role: Z_SD09",
+        "authObjects": [
+          "S_TCODE"
+        ]
+      },
+      {
+        "role": "Z_BS02",
+        "desc": "Role: Z_BS02",
+        "authObjects": [
+          "S_TCODE"
+        ]
+      },
+      {
         "role": "SAP_ALL",
         "desc": "Role: SAP_ALL",
-        "authObjects": [
-          "S_TCODE"
-        ]
-      },
-      {
-        "role": "Z_AR02",
-        "desc": "Role: Z_AR02",
-        "authObjects": [
-          "S_TCODE"
-        ]
-      },
-      {
-        "role": "Z_AR07",
-        "desc": "Role: Z_AR07",
         "authObjects": [
           "S_TCODE"
         ]
@@ -835,20 +835,6 @@ const SUPER_ADMIN_ROWS = [
     "rationale": "User holds SAP_ALL equivalent permissions, granting administrative control over users and authorizations.",
     "roles": [
       {
-        "role": "Z_PY01",
-        "desc": "Role: Z_PY01",
-        "authObjects": [
-          "S_TCODE"
-        ]
-      },
-      {
-        "role": "SAP_ALL",
-        "desc": "Role: SAP_ALL",
-        "authObjects": [
-          "S_TCODE"
-        ]
-      },
-      {
         "role": "Z_PY03",
         "desc": "Role: Z_PY03",
         "authObjects": [
@@ -858,6 +844,20 @@ const SUPER_ADMIN_ROWS = [
       {
         "role": "Z_HR04",
         "desc": "Role: Z_HR04",
+        "authObjects": [
+          "S_TCODE"
+        ]
+      },
+      {
+        "role": "Z_FI11",
+        "desc": "Role: Z_FI11",
+        "authObjects": [
+          "S_TCODE"
+        ]
+      },
+      {
+        "role": "Z_PY01",
+        "desc": "Role: Z_PY01",
         "authObjects": [
           "S_TCODE"
         ]
@@ -881,15 +881,8 @@ const SUPER_ADMIN_ROWS = [
     "rationale": "User holds SAP_ALL equivalent permissions, granting administrative control over users and authorizations.",
     "roles": [
       {
-        "role": "Z_PR07",
-        "desc": "Role: Z_PR07",
-        "authObjects": [
-          "S_TCODE"
-        ]
-      },
-      {
-        "role": "SAP_ALL",
-        "desc": "Role: SAP_ALL",
+        "role": "Z_PR06",
+        "desc": "Role: Z_PR06",
         "authObjects": [
           "S_TCODE"
         ]
@@ -902,8 +895,15 @@ const SUPER_ADMIN_ROWS = [
         ]
       },
       {
-        "role": "Z_PR06",
-        "desc": "Role: Z_PR06",
+        "role": "Z_PR07",
+        "desc": "Role: Z_PR07",
+        "authObjects": [
+          "S_TCODE"
+        ]
+      },
+      {
+        "role": "Z_PR03",
+        "desc": "Role: Z_PR03",
         "authObjects": [
           "S_TCODE"
         ]
@@ -927,8 +927,8 @@ const SUPER_ADMIN_ROWS = [
     "rationale": "User holds SAP_ALL equivalent permissions, granting administrative control over users and authorizations.",
     "roles": [
       {
-        "role": "Z_AR02",
-        "desc": "Role: Z_AR02",
+        "role": "Z_SD04",
+        "desc": "Role: Z_SD04",
         "authObjects": [
           "S_TCODE"
         ]
@@ -948,8 +948,8 @@ const SUPER_ADMIN_ROWS = [
         ]
       },
       {
-        "role": "Z_AR05",
-        "desc": "Role: Z_AR05",
+        "role": "Z_AR02",
+        "desc": "Role: Z_AR02",
         "authObjects": [
           "S_TCODE"
         ]
@@ -973,20 +973,6 @@ const SUPER_ADMIN_ROWS = [
     "rationale": "User holds SAP_ALL equivalent permissions, granting administrative control over users and authorizations.",
     "roles": [
       {
-        "role": "Z_GL01",
-        "desc": "Role: Z_GL01",
-        "authObjects": [
-          "S_TCODE"
-        ]
-      },
-      {
-        "role": "SAP_ALL",
-        "desc": "Role: SAP_ALL",
-        "authObjects": [
-          "S_TCODE"
-        ]
-      },
-      {
         "role": "Z_BS15",
         "desc": "Role: Z_BS15",
         "authObjects": [
@@ -994,8 +980,22 @@ const SUPER_ADMIN_ROWS = [
         ]
       },
       {
-        "role": "Z_BS19",
-        "desc": "Role: Z_BS19",
+        "role": "Z_CC02",
+        "desc": "Role: Z_CC02",
+        "authObjects": [
+          "S_TCODE"
+        ]
+      },
+      {
+        "role": "Z_CC04",
+        "desc": "Role: Z_CC04",
+        "authObjects": [
+          "S_TCODE"
+        ]
+      },
+      {
+        "role": "Z_GL01",
+        "desc": "Role: Z_GL01",
         "authObjects": [
           "S_TCODE"
         ]
@@ -1019,20 +1019,6 @@ const SUPER_ADMIN_ROWS = [
     "rationale": "User holds SAP_ALL equivalent permissions, granting administrative control over users and authorizations.",
     "roles": [
       {
-        "role": "SAP_ALL",
-        "desc": "Role: SAP_ALL",
-        "authObjects": [
-          "S_TCODE"
-        ]
-      },
-      {
-        "role": "Z_HR03",
-        "desc": "Role: Z_HR03",
-        "authObjects": [
-          "S_TCODE"
-        ]
-      },
-      {
         "role": "Z_HR04",
         "desc": "Role: Z_HR04",
         "authObjects": [
@@ -1040,8 +1026,22 @@ const SUPER_ADMIN_ROWS = [
         ]
       },
       {
+        "role": "Z_PY02",
+        "desc": "Role: Z_PY02",
+        "authObjects": [
+          "S_TCODE"
+        ]
+      },
+      {
         "role": "Z_PY05",
         "desc": "Role: Z_PY05",
+        "authObjects": [
+          "S_TCODE"
+        ]
+      },
+      {
+        "role": "SAP_ALL",
+        "desc": "Role: SAP_ALL",
         "authObjects": [
           "S_TCODE"
         ]
@@ -1065,20 +1065,6 @@ const SUPER_ADMIN_ROWS = [
     "rationale": "User holds SAP_ALL equivalent permissions, granting administrative control over users and authorizations.",
     "roles": [
       {
-        "role": "Z_AR01",
-        "desc": "Role: Z_AR01",
-        "authObjects": [
-          "S_TCODE"
-        ]
-      },
-      {
-        "role": "SAP_ALL",
-        "desc": "Role: SAP_ALL",
-        "authObjects": [
-          "S_TCODE"
-        ]
-      },
-      {
         "role": "Z_AR03",
         "desc": "Role: Z_AR03",
         "authObjects": [
@@ -1088,6 +1074,20 @@ const SUPER_ADMIN_ROWS = [
       {
         "role": "Z_SD06",
         "desc": "Role: Z_SD06",
+        "authObjects": [
+          "S_TCODE"
+        ]
+      },
+      {
+        "role": "Z_SD01",
+        "desc": "Role: Z_SD01",
+        "authObjects": [
+          "S_TCODE"
+        ]
+      },
+      {
+        "role": "Z_AR01",
+        "desc": "Role: Z_AR01",
         "authObjects": [
           "S_TCODE"
         ]
@@ -1253,7 +1253,7 @@ const EMERGENCY_ACCESS_ROWS = [
     "user": "FF.BASIS",
     "name": "Firefighter ID for Basis Administration",
     "ffId": "FF.BASIS",
-    "role": "Z_AP01",
+    "role": "Z_BS16",
     "start": "2026-04-01",
     "end": "2026-05-19",
     "usage": 24,
@@ -1266,7 +1266,7 @@ const EMERGENCY_ACCESS_ROWS = [
     "log": [
       {
         "date": "2026-05-19 12:00:00",
-        "tcode": "BD21",
+        "tcode": "F-06",
         "desc": "Transaction executed"
       }
     ]
@@ -1276,7 +1276,7 @@ const EMERGENCY_ACCESS_ROWS = [
     "user": "FF.EWM",
     "name": "Firefighter ID for EWM - Extended Warehouse Managment",
     "ffId": "FF.EWM",
-    "role": "Z_MM05",
+    "role": "ZBC_BR_SPM_FIREFIGHTER",
     "start": "2026-04-01",
     "end": "2026-05-19",
     "usage": 32,
@@ -1289,7 +1289,7 @@ const EMERGENCY_ACCESS_ROWS = [
     "log": [
       {
         "date": "2026-05-19 12:00:00",
-        "tcode": "CostCenter-displayFactsheet",
+        "tcode": "KB41",
         "desc": "Transaction executed"
       }
     ]
@@ -1299,7 +1299,7 @@ const EMERGENCY_ACCESS_ROWS = [
     "user": "FF.FI",
     "name": "Firefighter ID for Finance",
     "ffId": "FF.FI",
-    "role": "Z_FI07",
+    "role": "Z_FI02",
     "start": "2026-04-01",
     "end": "2026-05-19",
     "usage": 24,
@@ -1312,7 +1312,7 @@ const EMERGENCY_ACCESS_ROWS = [
     "log": [
       {
         "date": "2026-05-19 12:00:00",
-        "tcode": "ABAO",
+        "tcode": "KB24N",
         "desc": "Transaction executed"
       }
     ]
@@ -1322,7 +1322,7 @@ const EMERGENCY_ACCESS_ROWS = [
     "user": "FF.IT",
     "name": "Ely Taleon",
     "ffId": "FF.IT",
-    "role": "Z_GL01",
+    "role": "ZBC_BR_SPM_FIREFIGHTER",
     "start": "2026-04-01",
     "end": "2026-05-19",
     "usage": 20,
@@ -1335,7 +1335,7 @@ const EMERGENCY_ACCESS_ROWS = [
     "log": [
       {
         "date": "2026-05-19 12:00:00",
-        "tcode": "CJ46",
+        "tcode": "KSV2",
         "desc": "Transaction executed"
       }
     ]
@@ -1345,7 +1345,7 @@ const EMERGENCY_ACCESS_ROWS = [
     "user": "FF.IT02",
     "name": "FF IT02",
     "ffId": "FF.IT02",
-    "role": "Z_MM05",
+    "role": "ZBC_BR_SPM_FIREFIGHTER",
     "start": "2026-04-01",
     "end": "2026-05-19",
     "usage": 24,
@@ -1358,7 +1358,7 @@ const EMERGENCY_ACCESS_ROWS = [
     "log": [
       {
         "date": "2026-05-19 12:00:00",
-        "tcode": "AccountingDocument-createSinglePayment",
+        "tcode": "F-06",
         "desc": "Transaction executed"
       }
     ]
@@ -1368,7 +1368,7 @@ const EMERGENCY_ACCESS_ROWS = [
     "user": "FF.MM",
     "name": "Firefighter ID for Materials Management",
     "ffId": "FF.MM",
-    "role": "Z_AR02",
+    "role": "ZBC_BR_SPM_FIREFIGHTER",
     "start": "2026-04-01",
     "end": "2026-05-19",
     "usage": 24,
@@ -1381,7 +1381,7 @@ const EMERGENCY_ACCESS_ROWS = [
     "log": [
       {
         "date": "2026-05-19 12:00:00",
-        "tcode": "KO14",
+        "tcode": "F-06",
         "desc": "Transaction executed"
       }
     ]
@@ -1391,7 +1391,7 @@ const EMERGENCY_ACCESS_ROWS = [
     "user": "FF.MM02",
     "name": "Ff FF.MM02",
     "ffId": "FF.MM02",
-    "role": "Z_MM05",
+    "role": "ZBC_BR_SPM_FIREFIGHTER",
     "start": "2026-04-01",
     "end": "2026-05-19",
     "usage": 24,
@@ -1404,7 +1404,7 @@ const EMERGENCY_ACCESS_ROWS = [
     "log": [
       {
         "date": "2026-05-19 12:00:00",
-        "tcode": "APJ_JOB_MANAGEMENT_SRV",
+        "tcode": "AccountingDocument-postCurrencyAdjustments",
         "desc": "Transaction executed"
       }
     ]
@@ -1414,7 +1414,7 @@ const EMERGENCY_ACCESS_ROWS = [
     "user": "FF.PM",
     "name": "Firefighter ID for Plant Maintenance",
     "ffId": "FF.PM",
-    "role": "Z_GL01",
+    "role": "ZBC_BR_SPM_FIREFIGHTER",
     "start": "2026-04-01",
     "end": "2026-05-19",
     "usage": 31,
@@ -1427,7 +1427,7 @@ const EMERGENCY_ACCESS_ROWS = [
     "log": [
       {
         "date": "2026-05-19 12:00:00",
-        "tcode": "MB1A",
+        "tcode": "AccountingDocument-manageManualclearing",
         "desc": "Transaction executed"
       }
     ]
@@ -1437,7 +1437,7 @@ const EMERGENCY_ACCESS_ROWS = [
     "user": "FF.PP",
     "name": "Firefighter ID for Production Planning",
     "ffId": "FF.PP",
-    "role": "Z_AP01",
+    "role": "ZBC_BR_SPM_FIREFIGHTER",
     "start": "2026-04-01",
     "end": "2026-05-19",
     "usage": 23,
@@ -1450,7 +1450,7 @@ const EMERGENCY_ACCESS_ROWS = [
     "log": [
       {
         "date": "2026-05-19 12:00:00",
-        "tcode": "AccountingDocument-createSinglePayment",
+        "tcode": "F-06",
         "desc": "Transaction executed"
       }
     ]
@@ -1460,7 +1460,7 @@ const EMERGENCY_ACCESS_ROWS = [
     "user": "FF.SD",
     "name": "Firefighter ID for Sales & Distribution",
     "ffId": "FF.SD",
-    "role": "Z_FI08",
+    "role": "ZBC_BR_SPM_FIREFIGHTER",
     "start": "2026-04-01",
     "end": "2026-05-19",
     "usage": 23,
@@ -1473,7 +1473,7 @@ const EMERGENCY_ACCESS_ROWS = [
     "log": [
       {
         "date": "2026-05-19 12:00:00",
-        "tcode": "AccountingDocument-createSinglePayment",
+        "tcode": "AccountingDocument-postCurrencyAdjustments",
         "desc": "Transaction executed"
       }
     ]
@@ -1483,7 +1483,7 @@ const EMERGENCY_ACCESS_ROWS = [
     "user": "FF.TEMP",
     "name": "FireFighter Temporary",
     "ffId": "FF.TEMP",
-    "role": "Z_FI12",
+    "role": "ZBC_BR_SPM_FIREFIGHTER",
     "start": "2026-04-01",
     "end": "2026-05-19",
     "usage": 30,
@@ -1496,7 +1496,7 @@ const EMERGENCY_ACCESS_ROWS = [
     "log": [
       {
         "date": "2026-05-19 12:00:00",
-        "tcode": "Bank-manage",
+        "tcode": "AccountingDocument-manageManualclearing",
         "desc": "Transaction executed"
       }
     ]
@@ -1506,7 +1506,7 @@ const EMERGENCY_ACCESS_ROWS = [
     "user": "JEFF.DOZART",
     "name": "Jeff Dozart",
     "ffId": "JEFF.DOZART",
-    "role": "Z_GL01",
+    "role": "ZBC_BR_SPM_FIREFIGHTER",
     "start": "2026-04-01",
     "end": "2026-05-19",
     "usage": 24,
@@ -1519,7 +1519,7 @@ const EMERGENCY_ACCESS_ROWS = [
     "log": [
       {
         "date": "2026-05-19 12:00:00",
-        "tcode": "/SAPSLL/T000_SPI",
+        "tcode": "DMWB",
         "desc": "Transaction executed"
       }
     ]
@@ -1529,7 +1529,7 @@ const EMERGENCY_ACCESS_ROWS = [
     "user": "LSCHIFFMAN",
     "name": "Lauren Schiffman",
     "ffId": "LSCHIFFMAN",
-    "role": "Z_PP02",
+    "role": "ZBC_BR_SPM_FIREFIGHTER",
     "start": "2026-04-01",
     "end": "2026-05-19",
     "usage": 24,
@@ -1542,7 +1542,7 @@ const EMERGENCY_ACCESS_ROWS = [
     "log": [
       {
         "date": "2026-05-19 12:00:00",
-        "tcode": "MB1A",
+        "tcode": "HUINV05",
         "desc": "Transaction executed"
       }
     ]
@@ -1921,16 +1921,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
+        "role": "Z_BS02",
+        "desc": "Role: Z_BS02"
+      },
+      {
         "role": "ZL_BR_PM_PURCHASING",
         "desc": "Role: ZL_BR_PM_PURCHASING"
       },
       {
-        "role": "Z_BS10",
-        "desc": "Role: Z_BS10"
-      },
-      {
-        "role": "Z_BS06",
-        "desc": "Role: Z_BS06"
+        "role": "Z_BS12",
+        "desc": "Role: Z_BS12"
       }
     ],
     "log": [
@@ -1956,16 +1956,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_BS10",
-        "desc": "Role: Z_BS10"
+        "role": "Z_BS12",
+        "desc": "Role: Z_BS12"
       },
       {
         "role": "Z_BS09",
         "desc": "Role: Z_BS09"
       },
       {
-        "role": "Z_BS07",
-        "desc": "Role: Z_BS07"
+        "role": "Z_BS05",
+        "desc": "Role: Z_BS05"
       }
     ],
     "log": [
@@ -1991,16 +1991,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "ZMM_BR_PO_DISPLAY_HR",
-        "desc": "Role: ZMM_BR_PO_DISPLAY_HR"
+        "role": "Z_BS20",
+        "desc": "Role: Z_BS20"
+      },
+      {
+        "role": "Z_BS05",
+        "desc": "Role: Z_BS05"
       },
       {
         "role": "Z_BS03",
         "desc": "Role: Z_BS03"
-      },
-      {
-        "role": "Z_BS20",
-        "desc": "Role: Z_BS20"
       }
     ],
     "log": [
@@ -2026,12 +2026,12 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_BS08",
-        "desc": "Role: Z_BS08"
-      },
-      {
         "role": "Z_BS16",
         "desc": "Role: Z_BS16"
+      },
+      {
+        "role": "Z_BS08",
+        "desc": "Role: Z_BS08"
       },
       {
         "role": "ZL_BR_CA_ALL_USERS",
@@ -2061,16 +2061,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
+        "role": "Z_BS12",
+        "desc": "Role: Z_BS12"
+      },
+      {
         "role": "Z_BS20",
         "desc": "Role: Z_BS20"
       },
       {
         "role": "Z_BS05",
         "desc": "Role: Z_BS05"
-      },
-      {
-        "role": "Z_BS18",
-        "desc": "Role: Z_BS18"
       }
     ],
     "log": [
@@ -2096,16 +2096,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_MM05",
-        "desc": "Role: Z_MM05"
+        "role": "Z_FA02",
+        "desc": "Role: Z_FA02"
       },
       {
-        "role": "Z_AR02",
-        "desc": "Role: Z_AR02"
+        "role": "Z_CC03",
+        "desc": "Role: Z_CC03"
       },
       {
-        "role": "Z_FI03",
-        "desc": "Role: Z_FI03"
+        "role": "ZL_BR_MFG_EXECUTION_PL1710",
+        "desc": "Role: ZL_BR_MFG_EXECUTION_PL1710"
       }
     ],
     "log": [
@@ -2131,16 +2131,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_GL01",
-        "desc": "Role: Z_GL01"
+        "role": "Z_GL03",
+        "desc": "Role: Z_GL03"
       },
       {
-        "role": "ZIT_BR_PURCHASE",
-        "desc": "Role: ZIT_BR_PURCHASE"
+        "role": "Z_FI06",
+        "desc": "Role: Z_FI06"
       },
       {
-        "role": "Z_AP02",
-        "desc": "Role: Z_AP02"
+        "role": "Z_FI10",
+        "desc": "Role: Z_FI10"
       }
     ],
     "log": [
@@ -2166,16 +2166,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_HR02",
-        "desc": "Role: Z_HR02"
-      },
-      {
         "role": "ZL_BR_CA_COSTCEN_MAN_LABMAN",
         "desc": "Role: ZL_BR_CA_COSTCEN_MAN_LABMAN"
       },
       {
-        "role": "Z_HR03",
-        "desc": "Role: Z_HR03"
+        "role": "Z_HR05",
+        "desc": "Role: Z_HR05"
+      },
+      {
+        "role": "Z_HR02",
+        "desc": "Role: Z_HR02"
       }
     ],
     "log": [
@@ -2201,12 +2201,12 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_AP01",
-        "desc": "Role: Z_AP01"
+        "role": "Z_PR06",
+        "desc": "Role: Z_PR06"
       },
       {
-        "role": "Z_AP02",
-        "desc": "Role: Z_AP02"
+        "role": "Z_PR04",
+        "desc": "Role: Z_PR04"
       },
       {
         "role": "Z_PR08",
@@ -2236,16 +2236,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_PR11",
-        "desc": "Role: Z_PR11"
-      },
-      {
         "role": "Z_AP03",
         "desc": "Role: Z_AP03"
       },
       {
         "role": "Z_FI03",
         "desc": "Role: Z_FI03"
+      },
+      {
+        "role": "SAP_ESH_BOS_RFC_ENDUSER",
+        "desc": "Role: SAP_ESH_BOS_RFC_ENDUSER"
       }
     ],
     "log": [
@@ -2271,16 +2271,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "ZBASIS_BR_BGJOB_ADMIN",
-        "desc": "Role: ZBASIS_BR_BGJOB_ADMIN"
+        "role": "Z_BS05",
+        "desc": "Role: Z_BS05"
       },
       {
         "role": "Z_BS03",
         "desc": "Role: Z_BS03"
       },
       {
-        "role": "Z_BS05",
-        "desc": "Role: Z_BS05"
+        "role": "Z_BS01",
+        "desc": "Role: Z_BS01"
       }
     ],
     "log": [
@@ -2306,16 +2306,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_BS05",
-        "desc": "Role: Z_BS05"
+        "role": "Z_BS02",
+        "desc": "Role: Z_BS02"
       },
       {
         "role": "Z_BS12",
         "desc": "Role: Z_BS12"
       },
       {
-        "role": "Z_BS11",
-        "desc": "Role: Z_BS11"
+        "role": "Z_BS05",
+        "desc": "Role: Z_BS05"
       }
     ],
     "log": [
@@ -2341,16 +2341,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_BS10",
-        "desc": "Role: Z_BS10"
+        "role": "Z_BS12",
+        "desc": "Role: Z_BS12"
       },
       {
-        "role": "Z_BS06",
-        "desc": "Role: Z_BS06"
+        "role": "Z_BS05",
+        "desc": "Role: Z_BS05"
       },
       {
-        "role": "S_A.SYSTEM",
-        "desc": "Role: S_A.SYSTEM"
+        "role": "Z_BS01",
+        "desc": "Role: Z_BS01"
       }
     ],
     "log": [
@@ -2376,16 +2376,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_BS13",
-        "desc": "Role: Z_BS13"
+        "role": "Z_BS17",
+        "desc": "Role: Z_BS17"
       },
       {
         "role": "Z_BS03",
         "desc": "Role: Z_BS03"
       },
       {
-        "role": "SAP_ESH_BOS_RFC_ENDUSER",
-        "desc": "Role: SAP_ESH_BOS_RFC_ENDUSER"
+        "role": "Z_BS01",
+        "desc": "Role: Z_BS01"
       }
     ],
     "log": [
@@ -2411,16 +2411,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "ZINV_EWM_SPCC_ROLE",
-        "desc": "Role: ZINV_EWM_SPCC_ROLE"
-      },
-      {
         "role": "Z_CC03",
         "desc": "Role: Z_CC03"
       },
       {
         "role": "Z_BS20",
         "desc": "Role: Z_BS20"
+      },
+      {
+        "role": "Z_BS05",
+        "desc": "Role: Z_BS05"
       }
     ],
     "log": [
@@ -2446,16 +2446,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_FI12",
-        "desc": "Role: Z_FI12"
-      },
-      {
         "role": "Z_PY03",
         "desc": "Role: Z_PY03"
       },
       {
-        "role": "Z_HR03",
-        "desc": "Role: Z_HR03"
+        "role": "Z_HR04",
+        "desc": "Role: Z_HR04"
+      },
+      {
+        "role": "Z_FI12",
+        "desc": "Role: Z_FI12"
       }
     ],
     "log": [
@@ -2481,16 +2481,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
+        "role": "Z_PR02",
+        "desc": "Role: Z_PR02"
+      },
+      {
+        "role": "Z_MM03",
+        "desc": "Role: Z_MM03"
+      },
+      {
         "role": "Z_AP01",
         "desc": "Role: Z_AP01"
-      },
-      {
-        "role": "Z_PR01",
-        "desc": "Role: Z_PR01"
-      },
-      {
-        "role": "Z_PR07",
-        "desc": "Role: Z_PR07"
       }
     ],
     "log": [
@@ -2516,8 +2516,8 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_MM05",
-        "desc": "Role: Z_MM05"
+        "role": "Z_PR02",
+        "desc": "Role: Z_PR02"
       },
       {
         "role": "Z_MM10",
@@ -2551,16 +2551,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_PR01",
-        "desc": "Role: Z_PR01"
+        "role": "ZL_BR_SD_REPORTS",
+        "desc": "Role: ZL_BR_SD_REPORTS"
+      },
+      {
+        "role": "Z_PR04",
+        "desc": "Role: Z_PR04"
       },
       {
         "role": "Z_MM05",
         "desc": "Role: Z_MM05"
-      },
-      {
-        "role": "Z_MM06",
-        "desc": "Role: Z_MM06"
       }
     ],
     "log": [
@@ -2586,16 +2586,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "Critical \u00b7 SAP_ALL equivalent",
     "roles": [
       {
+        "role": "Z_PR04",
+        "desc": "Role: Z_PR04"
+      },
+      {
         "role": "Z_MM03",
         "desc": "Role: Z_MM03"
       },
       {
-        "role": "SAP_ALL",
-        "desc": "Role: SAP_ALL"
-      },
-      {
-        "role": "Z_AP02",
-        "desc": "Role: Z_AP02"
+        "role": "Z_AP04",
+        "desc": "Role: Z_AP04"
       }
     ],
     "log": [
@@ -2621,12 +2621,12 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_MM01",
-        "desc": "Role: Z_MM01"
+        "role": "Z_PR02",
+        "desc": "Role: Z_PR02"
       },
       {
-        "role": "Z_MM07",
-        "desc": "Role: Z_MM07"
+        "role": "Z_MM08",
+        "desc": "Role: Z_MM08"
       },
       {
         "role": "Z_PR04",
@@ -2656,16 +2656,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_PP03",
-        "desc": "Role: Z_PP03"
+        "role": "Z_AR03",
+        "desc": "Role: Z_AR03"
+      },
+      {
+        "role": "Z_SD01",
+        "desc": "Role: Z_SD01"
       },
       {
         "role": "Z_AR01",
         "desc": "Role: Z_AR01"
-      },
-      {
-        "role": "Z_AR04",
-        "desc": "Role: Z_AR04"
       }
     ],
     "log": [
@@ -2691,16 +2691,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_AR02",
-        "desc": "Role: Z_AR02"
-      },
-      {
-        "role": "Z_PS04",
-        "desc": "Role: Z_PS04"
+        "role": "HEC_BASIS_ADMIN_V3",
+        "desc": "Role: HEC_BASIS_ADMIN_V3"
       },
       {
         "role": "Z_SD01",
         "desc": "Role: Z_SD01"
+      },
+      {
+        "role": "Z_PS04",
+        "desc": "Role: Z_PS04"
       }
     ],
     "log": [
@@ -2726,16 +2726,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_AR02",
-        "desc": "Role: Z_AR02"
-      },
-      {
         "role": "Z_SD06",
         "desc": "Role: Z_SD06"
       },
       {
-        "role": "Z_SD03",
-        "desc": "Role: Z_SD03"
+        "role": "Z_SD04",
+        "desc": "Role: Z_SD04"
+      },
+      {
+        "role": "Z_SD01",
+        "desc": "Role: Z_SD01"
       }
     ],
     "log": [
@@ -2761,12 +2761,12 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_AR02",
-        "desc": "Role: Z_AR02"
+        "role": "Z_SD04",
+        "desc": "Role: Z_SD04"
       },
       {
-        "role": "Z_AR04",
-        "desc": "Role: Z_AR04"
+        "role": "ZL_BR_CA_ALL_USERS",
+        "desc": "Role: ZL_BR_CA_ALL_USERS"
       },
       {
         "role": "Z_SD03",
@@ -2796,12 +2796,12 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_SD02",
-        "desc": "Role: Z_SD02"
+        "role": "Z_AR06",
+        "desc": "Role: Z_AR06"
       },
       {
-        "role": "Z_AR02",
-        "desc": "Role: Z_AR02"
+        "role": "Z_SD05",
+        "desc": "Role: Z_SD05"
       },
       {
         "role": "Z_AR03",
@@ -2866,12 +2866,12 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_AR02",
-        "desc": "Role: Z_AR02"
+        "role": "Z_SD09",
+        "desc": "Role: Z_SD09"
       },
       {
-        "role": "Z_AR07",
-        "desc": "Role: Z_AR07"
+        "role": "Z_BS02",
+        "desc": "Role: Z_BS02"
       },
       {
         "role": "Z_BS05",
@@ -2901,8 +2901,8 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_BS10",
-        "desc": "Role: Z_BS10"
+        "role": "Z_BS12",
+        "desc": "Role: Z_BS12"
       },
       {
         "role": "Z_BS20",
@@ -2936,16 +2936,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
+        "role": "Z_PY02",
+        "desc": "Role: Z_PY02"
+      },
+      {
+        "role": "Z_AR05",
+        "desc": "Role: Z_AR05"
+      },
+      {
         "role": "Z_GL01",
         "desc": "Role: Z_GL01"
-      },
-      {
-        "role": "Z_HR03",
-        "desc": "Role: Z_HR03"
-      },
-      {
-        "role": "Z_PY04",
-        "desc": "Role: Z_PY04"
       }
     ],
     "log": [
@@ -2971,16 +2971,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_PY01",
-        "desc": "Role: Z_PY01"
-      },
-      {
         "role": "Z_PY03",
         "desc": "Role: Z_PY03"
       },
       {
-        "role": "ZBASIS_BR_BGJOB_ADMIN",
-        "desc": "Role: ZBASIS_BR_BGJOB_ADMIN"
+        "role": "Z_HR04",
+        "desc": "Role: Z_HR04"
+      },
+      {
+        "role": "Z_FI11",
+        "desc": "Role: Z_FI11"
       }
     ],
     "log": [
@@ -3006,16 +3006,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_BR_AP_ACCOUNTANT",
-        "desc": "Role: Z_BR_AP_ACCOUNTANT"
-      },
-      {
-        "role": "Z_HR03",
-        "desc": "Role: Z_HR03"
-      },
-      {
         "role": "Z_HR04",
         "desc": "Role: Z_HR04"
+      },
+      {
+        "role": "Z_PY02",
+        "desc": "Role: Z_PY02"
+      },
+      {
+        "role": "Z_HR01",
+        "desc": "Role: Z_HR01"
       }
     ],
     "log": [
@@ -3045,12 +3045,12 @@ const SERVICE_ACCOUNTS = [
         "desc": "Role: Z_PY03"
       },
       {
-        "role": "Z_HR03",
-        "desc": "Role: Z_HR03"
-      },
-      {
         "role": "Z_HR04",
         "desc": "Role: Z_HR04"
+      },
+      {
+        "role": "ZL_BR_MFG_EXECUTION_PL1710",
+        "desc": "Role: ZL_BR_MFG_EXECUTION_PL1710"
       }
     ],
     "log": [
@@ -3076,16 +3076,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_PP02",
-        "desc": "Role: Z_PP02"
-      },
-      {
         "role": "Z_PY03",
         "desc": "Role: Z_PY03"
       },
       {
-        "role": "Z_HR03",
-        "desc": "Role: Z_HR03"
+        "role": "Z_PP02",
+        "desc": "Role: Z_PP02"
+      },
+      {
+        "role": "Z_HR04",
+        "desc": "Role: Z_HR04"
       }
     ],
     "log": [
@@ -3111,16 +3111,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_SD02",
-        "desc": "Role: Z_SD02"
+        "role": "Z_HR04",
+        "desc": "Role: Z_HR04"
       },
       {
-        "role": "Z_MM01",
-        "desc": "Role: Z_MM01"
+        "role": "Z_PY05",
+        "desc": "Role: Z_PY05"
       },
       {
-        "role": "Z_QM01",
-        "desc": "Role: Z_QM01"
+        "role": "Z_HR06",
+        "desc": "Role: Z_HR06"
       }
     ],
     "log": [
@@ -3146,12 +3146,12 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_AP01",
-        "desc": "Role: Z_AP01"
+        "role": "Z_MM02",
+        "desc": "Role: Z_MM02"
       },
       {
-        "role": "Z_GL01",
-        "desc": "Role: Z_GL01"
+        "role": "Z_AP01",
+        "desc": "Role: Z_AP01"
       },
       {
         "role": "Z_MM01",
@@ -3181,12 +3181,12 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_AP01",
-        "desc": "Role: Z_AP01"
+        "role": "Z_PR02",
+        "desc": "Role: Z_PR02"
       },
       {
-        "role": "Z_PR01",
-        "desc": "Role: Z_PR01"
+        "role": "Z_AP01",
+        "desc": "Role: Z_AP01"
       },
       {
         "role": "Z_PR07",
@@ -3216,16 +3216,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_AP01",
-        "desc": "Role: Z_AP01"
+        "role": "Z_PR02",
+        "desc": "Role: Z_PR02"
       },
       {
-        "role": "Z_MM05",
-        "desc": "Role: Z_MM05"
+        "role": "ZL_BR_CA_ALL_USER_1710",
+        "desc": "Role: ZL_BR_CA_ALL_USER_1710"
       },
       {
-        "role": "Z_AP03",
-        "desc": "Role: Z_AP03"
+        "role": "Z_PR04",
+        "desc": "Role: Z_PR04"
       }
     ],
     "log": [
@@ -3251,16 +3251,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_PR07",
-        "desc": "Role: Z_PR07"
-      },
-      {
-        "role": "Z_MM03",
-        "desc": "Role: Z_MM03"
+        "role": "Z_PR06",
+        "desc": "Role: Z_PR06"
       },
       {
         "role": "ZBASIS_BR_BGJOB_ADMIN",
         "desc": "Role: ZBASIS_BR_BGJOB_ADMIN"
+      },
+      {
+        "role": "Z_PR04",
+        "desc": "Role: Z_PR04"
       }
     ],
     "log": [
@@ -3286,12 +3286,12 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_MM03",
-        "desc": "Role: Z_MM03"
+        "role": "Z_PR04",
+        "desc": "Role: Z_PR04"
       },
       {
-        "role": "Z_AP02",
-        "desc": "Role: Z_AP02"
+        "role": "Z_MM03",
+        "desc": "Role: Z_MM03"
       },
       {
         "role": "ZL_BR_IT_CAPTURE",
@@ -3321,12 +3321,12 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_PR11",
-        "desc": "Role: Z_PR11"
+        "role": "Z_MM08",
+        "desc": "Role: Z_MM08"
       },
       {
-        "role": "Z_AP03",
-        "desc": "Role: Z_AP03"
+        "role": "Z_PR04",
+        "desc": "Role: Z_PR04"
       },
       {
         "role": "Z_AP02",
@@ -3356,16 +3356,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_PR11",
-        "desc": "Role: Z_PR11"
+        "role": "Z_PR02",
+        "desc": "Role: Z_PR02"
+      },
+      {
+        "role": "ZL_BR_CA_ALL_USERS",
+        "desc": "Role: ZL_BR_CA_ALL_USERS"
       },
       {
         "role": "Z_AP03",
         "desc": "Role: Z_AP03"
-      },
-      {
-        "role": "Z_FI03",
-        "desc": "Role: Z_FI03"
       }
     ],
     "log": [
@@ -3391,16 +3391,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_AP01",
-        "desc": "Role: Z_AP01"
-      },
-      {
-        "role": "Z_PR11",
-        "desc": "Role: Z_PR11"
-      },
-      {
         "role": "Z_PR06",
         "desc": "Role: Z_PR06"
+      },
+      {
+        "role": "ZL_BR_CA_ALL_USERS",
+        "desc": "Role: ZL_BR_CA_ALL_USERS"
+      },
+      {
+        "role": "Z_AP01",
+        "desc": "Role: Z_AP01"
       }
     ],
     "log": [
@@ -3426,16 +3426,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "ZL_BR_CA_CONTRACTORS_COMMON",
-        "desc": "Role: ZL_BR_CA_CONTRACTORS_COMMON"
-      },
-      {
-        "role": "Z_AR02",
-        "desc": "Role: Z_AR02"
+        "role": "Z_SD01",
+        "desc": "Role: Z_SD01"
       },
       {
         "role": "Z_SD03",
         "desc": "Role: Z_SD03"
+      },
+      {
+        "role": "Z_AR02",
+        "desc": "Role: Z_AR02"
       }
     ],
     "log": [
@@ -3461,12 +3461,12 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_AR02",
-        "desc": "Role: Z_AR02"
-      },
-      {
         "role": "Z_SD06",
         "desc": "Role: Z_SD06"
+      },
+      {
+        "role": "ZL_BR_CA_ALL_USERS",
+        "desc": "Role: ZL_BR_CA_ALL_USERS"
       },
       {
         "role": "Z_SD03",
@@ -3496,16 +3496,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_AP01",
-        "desc": "Role: Z_AP01"
-      },
-      {
-        "role": "Z_PS02",
-        "desc": "Role: Z_PS02"
-      },
-      {
         "role": "Z_PS03",
         "desc": "Role: Z_PS03"
+      },
+      {
+        "role": "Z_FI06",
+        "desc": "Role: Z_FI06"
+      },
+      {
+        "role": "ZL_BR_MFG_EXECUTION_PL1710",
+        "desc": "Role: ZL_BR_MFG_EXECUTION_PL1710"
       }
     ],
     "log": [
@@ -3531,16 +3531,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_PY01",
-        "desc": "Role: Z_PY01"
+        "role": "Z_GL03",
+        "desc": "Role: Z_GL03"
       },
       {
-        "role": "Z_GL01",
-        "desc": "Role: Z_GL01"
+        "role": "Z_HR04",
+        "desc": "Role: Z_HR04"
       },
       {
-        "role": "Z_AR01",
-        "desc": "Role: Z_AR01"
+        "role": "Z_FI06",
+        "desc": "Role: Z_FI06"
       }
     ],
     "log": [
@@ -3566,16 +3566,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_PY01",
-        "desc": "Role: Z_PY01"
-      },
-      {
         "role": "Z_PY03",
         "desc": "Role: Z_PY03"
       },
       {
-        "role": "Z_HR03",
-        "desc": "Role: Z_HR03"
+        "role": "Z_HR04",
+        "desc": "Role: Z_HR04"
+      },
+      {
+        "role": "Z_PY01",
+        "desc": "Role: Z_PY01"
       }
     ],
     "log": [
@@ -3601,16 +3601,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
+        "role": "ZL_BR_MFG_EXECUTION_PL1720",
+        "desc": "Role: ZL_BR_MFG_EXECUTION_PL1720"
+      },
+      {
         "role": "Z_MM03",
         "desc": "Role: Z_MM03"
       },
       {
         "role": "Z_MM07",
         "desc": "Role: Z_MM07"
-      },
-      {
-        "role": "Z_QM01",
-        "desc": "Role: Z_QM01"
       }
     ],
     "log": [
@@ -3636,16 +3636,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_PR01",
-        "desc": "Role: Z_PR01"
+        "role": "Z_PR02",
+        "desc": "Role: Z_PR02"
+      },
+      {
+        "role": "Z_PR04",
+        "desc": "Role: Z_PR04"
       },
       {
         "role": "Z_MM05",
         "desc": "Role: Z_MM05"
-      },
-      {
-        "role": "Z_MM06",
-        "desc": "Role: Z_MM06"
       }
     ],
     "log": [
@@ -3671,16 +3671,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_PR01",
-        "desc": "Role: Z_PR01"
+        "role": "Z_PR02",
+        "desc": "Role: Z_PR02"
+      },
+      {
+        "role": "ZL_BR_MFG_EXECUTION_PL1730",
+        "desc": "Role: ZL_BR_MFG_EXECUTION_PL1730"
       },
       {
         "role": "Z_MM07",
         "desc": "Role: Z_MM07"
-      },
-      {
-        "role": "Z_AP04",
-        "desc": "Role: Z_AP04"
       }
     ],
     "log": [
@@ -3706,16 +3706,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_PR11",
-        "desc": "Role: Z_PR11"
-      },
-      {
         "role": "Z_AP03",
         "desc": "Role: Z_AP03"
       },
       {
         "role": "Z_FI03",
         "desc": "Role: Z_FI03"
+      },
+      {
+        "role": "ZM:IT-PROJECT_TEAM_DISPLAY",
+        "desc": "Role: ZM:IT-PROJECT_TEAM_DISPLAY"
       }
     ],
     "log": [
@@ -3741,16 +3741,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_AR03",
-        "desc": "Role: Z_AR03"
+        "role": "Z_AR06",
+        "desc": "Role: Z_AR06"
       },
       {
         "role": "ZL_BR_MFG_INVTRY_REP_1720_P03",
         "desc": "Role: ZL_BR_MFG_INVTRY_REP_1720_P03"
       },
       {
-        "role": "Z_AR06",
-        "desc": "Role: Z_AR06"
+        "role": "Z_AR03",
+        "desc": "Role: Z_AR03"
       }
     ],
     "log": [
@@ -3776,16 +3776,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "ZM:IT_PROJECT_TEAM_DISPLAY",
-        "desc": "Role: ZM:IT_PROJECT_TEAM_DISPLAY"
-      },
-      {
-        "role": "Z_BS05",
-        "desc": "Role: Z_BS05"
+        "role": "Z_BS02",
+        "desc": "Role: Z_BS02"
       },
       {
         "role": "Z_BS12",
         "desc": "Role: Z_BS12"
+      },
+      {
+        "role": "Z_BS05",
+        "desc": "Role: Z_BS05"
       }
     ],
     "log": [
@@ -3846,16 +3846,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_BS08",
-        "desc": "Role: Z_BS08"
+        "role": "Z_BS16",
+        "desc": "Role: Z_BS16"
       },
       {
         "role": "Z_CA01",
         "desc": "Role: Z_CA01"
       },
       {
-        "role": "Z_BS16",
-        "desc": "Role: Z_BS16"
+        "role": "ZPM_BR_NOTIF_CREATE_1720",
+        "desc": "Role: ZPM_BR_NOTIF_CREATE_1720"
       }
     ],
     "log": [
@@ -3889,8 +3889,8 @@ const SERVICE_ACCOUNTS = [
         "desc": "Role: Z_BS20"
       },
       {
-        "role": "Z_BS18",
-        "desc": "Role: Z_BS18"
+        "role": "Z_BS05",
+        "desc": "Role: Z_BS05"
       }
     ],
     "log": [
@@ -3916,16 +3916,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
+        "role": "Z_FI02",
+        "desc": "Role: Z_FI02"
+      },
+      {
+        "role": "Z_BS17",
+        "desc": "Role: Z_BS17"
+      },
+      {
         "role": "Z_FI07",
         "desc": "Role: Z_FI07"
-      },
-      {
-        "role": "Z_GL01",
-        "desc": "Role: Z_GL01"
-      },
-      {
-        "role": "Z_AP02",
-        "desc": "Role: Z_AP02"
       }
     ],
     "log": [
@@ -3951,12 +3951,12 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_GL01",
-        "desc": "Role: Z_GL01"
+        "role": "ZPM_BR_NOTIF_CREATE_1720",
+        "desc": "Role: ZPM_BR_NOTIF_CREATE_1720"
       },
       {
-        "role": "Z_BS19",
-        "desc": "Role: Z_BS19"
+        "role": "Z_CC02",
+        "desc": "Role: Z_CC02"
       },
       {
         "role": "Z_CC04",
@@ -3986,16 +3986,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_MM05",
-        "desc": "Role: Z_MM05"
-      },
-      {
-        "role": "Z_FA01",
-        "desc": "Role: Z_FA01"
+        "role": "Z_FA02",
+        "desc": "Role: Z_FA02"
       },
       {
         "role": "Z_CC03",
         "desc": "Role: Z_CC03"
+      },
+      {
+        "role": "Z_CC06",
+        "desc": "Role: Z_CC06"
       }
     ],
     "log": [
@@ -4021,16 +4021,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_AP01",
-        "desc": "Role: Z_AP01"
-      },
-      {
-        "role": "Z_AR02",
-        "desc": "Role: Z_AR02"
-      },
-      {
         "role": "Z_PS03",
         "desc": "Role: Z_PS03"
+      },
+      {
+        "role": "Z_FI06",
+        "desc": "Role: Z_FI06"
+      },
+      {
+        "role": "Z_CC07",
+        "desc": "Role: Z_CC07"
       }
     ],
     "log": [
@@ -4056,16 +4056,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_MM05",
-        "desc": "Role: Z_MM05"
+        "role": "Z_FA02",
+        "desc": "Role: Z_FA02"
       },
       {
-        "role": "Z_GL01",
-        "desc": "Role: Z_GL01"
+        "role": "Z_FI06",
+        "desc": "Role: Z_FI06"
       },
       {
-        "role": "Z_AR02",
-        "desc": "Role: Z_AR02"
+        "role": "ZPM_BR_NOTIF_CREATE_1720",
+        "desc": "Role: ZPM_BR_NOTIF_CREATE_1720"
       }
     ],
     "log": [
@@ -4091,16 +4091,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_FI07",
-        "desc": "Role: Z_FI07"
-      },
-      {
-        "role": "Z_PS02",
-        "desc": "Role: Z_PS02"
-      },
-      {
         "role": "Z_FI02",
         "desc": "Role: Z_FI02"
+      },
+      {
+        "role": "Z_FI06",
+        "desc": "Role: Z_FI06"
+      },
+      {
+        "role": "Z_FI07",
+        "desc": "Role: Z_FI07"
       }
     ],
     "log": [
@@ -4126,16 +4126,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_AP01",
-        "desc": "Role: Z_AP01"
+        "role": "Z_GL03",
+        "desc": "Role: Z_GL03"
       },
       {
-        "role": "Z_GL01",
-        "desc": "Role: Z_GL01"
+        "role": "Z_PS03",
+        "desc": "Role: Z_PS03"
       },
       {
-        "role": "Z_PS02",
-        "desc": "Role: Z_PS02"
+        "role": "Z_FI06",
+        "desc": "Role: Z_FI06"
       }
     ],
     "log": [
@@ -4161,16 +4161,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_FI08",
-        "desc": "Role: Z_FI08"
+        "role": "Z_GL03",
+        "desc": "Role: Z_GL03"
       },
       {
-        "role": "Z_AR02",
-        "desc": "Role: Z_AR02"
+        "role": "Z_FI04",
+        "desc": "Role: Z_FI04"
       },
       {
-        "role": "Z_GL02",
-        "desc": "Role: Z_GL02"
+        "role": "ZPM_BR_NOTIF_CREATE_1720",
+        "desc": "Role: ZPM_BR_NOTIF_CREATE_1720"
       }
     ],
     "log": [
@@ -4196,16 +4196,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_GL01",
-        "desc": "Role: Z_GL01"
+        "role": "Z_FI06",
+        "desc": "Role: Z_FI06"
       },
       {
-        "role": "Z_AR02",
-        "desc": "Role: Z_AR02"
+        "role": "Z_FI04",
+        "desc": "Role: Z_FI04"
       },
       {
-        "role": "Z_AP04",
-        "desc": "Role: Z_AP04"
+        "role": "ZPM_BR_NOTIF_CREATE_1720",
+        "desc": "Role: ZPM_BR_NOTIF_CREATE_1720"
       }
     ],
     "log": [
@@ -4231,16 +4231,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_GL01",
-        "desc": "Role: Z_GL01"
+        "role": "Z_GL03",
+        "desc": "Role: Z_GL03"
       },
       {
         "role": "Z_HR02",
         "desc": "Role: Z_HR02"
       },
       {
-        "role": "Z_AP02",
-        "desc": "Role: Z_AP02"
+        "role": "Z_FI10",
+        "desc": "Role: Z_FI10"
       }
     ],
     "log": [
@@ -4266,16 +4266,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
+        "role": "ZBC_BR_SPM_FIREFIGHTER",
+        "desc": "Role: ZBC_BR_SPM_FIREFIGHTER"
+      },
+      {
         "role": "Z_PP02",
         "desc": "Role: Z_PP02"
       },
       {
-        "role": "Z_MM10",
-        "desc": "Role: Z_MM10"
-      },
-      {
-        "role": "Z_MM01",
-        "desc": "Role: Z_MM01"
+        "role": "ZL_BR_CA_ALL_USER_1710",
+        "desc": "Role: ZL_BR_CA_ALL_USER_1710"
       }
     ],
     "log": [
@@ -4301,16 +4301,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_AP01",
-        "desc": "Role: Z_AP01"
-      },
-      {
-        "role": "Z_MM05",
-        "desc": "Role: Z_MM05"
+        "role": "Z_PR02",
+        "desc": "Role: Z_PR02"
       },
       {
         "role": "Z_MM03",
         "desc": "Role: Z_MM03"
+      },
+      {
+        "role": "Z_PR08",
+        "desc": "Role: Z_PR08"
       }
     ],
     "log": [
@@ -4336,16 +4336,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_PR11",
-        "desc": "Role: Z_PR11"
-      },
-      {
-        "role": "Z_PR08",
-        "desc": "Role: Z_PR08"
+        "role": "Z_PR02",
+        "desc": "Role: Z_PR02"
       },
       {
         "role": "Z_PR04",
         "desc": "Role: Z_PR04"
+      },
+      {
+        "role": "Z_PR08",
+        "desc": "Role: Z_PR08"
       }
     ],
     "log": [
@@ -4371,16 +4371,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_PR11",
-        "desc": "Role: Z_PR11"
+        "role": "Z_PR04",
+        "desc": "Role: Z_PR04"
       },
       {
         "role": "Z_AP03",
         "desc": "Role: Z_AP03"
       },
       {
-        "role": "Z_AP02",
-        "desc": "Role: Z_AP02"
+        "role": "ZL_BR_ALL_DISPLAY",
+        "desc": "Role: ZL_BR_ALL_DISPLAY"
       }
     ],
     "log": [
@@ -4406,16 +4406,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_BS10",
-        "desc": "Role: Z_BS10"
+        "role": "Z_BS02",
+        "desc": "Role: Z_BS02"
       },
       {
-        "role": "ZL_BR_ALL_DISPLAY",
-        "desc": "Role: ZL_BR_ALL_DISPLAY"
+        "role": "Z_BS12",
+        "desc": "Role: Z_BS12"
       },
       {
-        "role": "Z_BS06",
-        "desc": "Role: Z_BS06"
+        "role": "Z_BS05",
+        "desc": "Role: Z_BS05"
       }
     ],
     "log": [
@@ -4441,16 +4441,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_AP01",
-        "desc": "Role: Z_AP01"
+        "role": "Z_BS16",
+        "desc": "Role: Z_BS16"
       },
       {
         "role": "Z_CA01",
         "desc": "Role: Z_CA01"
       },
       {
-        "role": "ZL_BR_ALL_DISPLAY",
-        "desc": "Role: ZL_BR_ALL_DISPLAY"
+        "role": "Z_CC07",
+        "desc": "Role: Z_CC07"
       }
     ],
     "log": [
@@ -4476,16 +4476,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
+        "role": "Z_PS03",
+        "desc": "Role: Z_PS03"
+      },
+      {
+        "role": "Z_FI06",
+        "desc": "Role: Z_FI06"
+      },
+      {
         "role": "Z_AP01",
         "desc": "Role: Z_AP01"
-      },
-      {
-        "role": "Z_GL01",
-        "desc": "Role: Z_GL01"
-      },
-      {
-        "role": "Z_PS02",
-        "desc": "Role: Z_PS02"
       }
     ],
     "log": [
@@ -4511,16 +4511,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_MM05",
-        "desc": "Role: Z_MM05"
+        "role": "Z_FA02",
+        "desc": "Role: Z_FA02"
       },
       {
-        "role": "Z_GL01",
-        "desc": "Role: Z_GL01"
+        "role": "Z_GL03",
+        "desc": "Role: Z_GL03"
       },
       {
-        "role": "Z_AP02",
-        "desc": "Role: Z_AP02"
+        "role": "Z_FI06",
+        "desc": "Role: Z_FI06"
       }
     ],
     "log": [
@@ -4546,16 +4546,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_PS02",
-        "desc": "Role: Z_PS02"
+        "role": "Z_FI06",
+        "desc": "Role: Z_FI06"
+      },
+      {
+        "role": "Z_AP04",
+        "desc": "Role: Z_AP04"
       },
       {
         "role": "ZL_BR_ALL_DISPLAY",
         "desc": "Role: ZL_BR_ALL_DISPLAY"
-      },
-      {
-        "role": "Z_MM04",
-        "desc": "Role: Z_MM04"
       }
     ],
     "log": [
@@ -4581,16 +4581,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_FI08",
-        "desc": "Role: Z_FI08"
+        "role": "Z_GL03",
+        "desc": "Role: Z_GL03"
+      },
+      {
+        "role": "Z_FI04",
+        "desc": "Role: Z_FI04"
       },
       {
         "role": "Z_AR01",
         "desc": "Role: Z_AR01"
-      },
-      {
-        "role": "Z_GL02",
-        "desc": "Role: Z_GL02"
       }
     ],
     "log": [
@@ -4616,16 +4616,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_HR03",
-        "desc": "Role: Z_HR03"
-      },
-      {
         "role": "Z_HR04",
         "desc": "Role: Z_HR04"
       },
       {
-        "role": "Z_PY04",
-        "desc": "Role: Z_PY04"
+        "role": "Z_PY02",
+        "desc": "Role: Z_PY02"
+      },
+      {
+        "role": "Z_HR01",
+        "desc": "Role: Z_HR01"
       }
     ],
     "log": [
@@ -4651,16 +4651,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_PP02",
-        "desc": "Role: Z_PP02"
-      },
-      {
         "role": "Z_PY03",
         "desc": "Role: Z_PY03"
       },
       {
-        "role": "Z_HR03",
-        "desc": "Role: Z_HR03"
+        "role": "Z_PP02",
+        "desc": "Role: Z_PP02"
+      },
+      {
+        "role": "Z_HR04",
+        "desc": "Role: Z_HR04"
       }
     ],
     "log": [
@@ -4686,16 +4686,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
+        "role": "Z_PP01",
+        "desc": "Role: Z_PP01"
+      },
+      {
         "role": "Z_PP02",
         "desc": "Role: Z_PP02"
       },
       {
         "role": "ZL_BR_FI_AP_MGR_CC1720",
         "desc": "Role: ZL_BR_FI_AP_MGR_CC1720"
-      },
-      {
-        "role": "Z_QM01",
-        "desc": "Role: Z_QM01"
       }
     ],
     "log": [
@@ -4721,12 +4721,12 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_GL01",
-        "desc": "Role: Z_GL01"
+        "role": "Z_PP01",
+        "desc": "Role: Z_PP01"
       },
       {
-        "role": "Z_MM03",
-        "desc": "Role: Z_MM03"
+        "role": "ZL_BR_MFG_EXECUTION_PL1730",
+        "desc": "Role: ZL_BR_MFG_EXECUTION_PL1730"
       },
       {
         "role": "Z_MM07",
@@ -4756,16 +4756,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "Critical \u00b7 SAP_ALL equivalent",
     "roles": [
       {
-        "role": "Z_PR07",
-        "desc": "Role: Z_PR07"
-      },
-      {
-        "role": "SAP_ALL",
-        "desc": "Role: SAP_ALL"
+        "role": "Z_PR06",
+        "desc": "Role: Z_PR06"
       },
       {
         "role": "Z_PR04",
         "desc": "Role: Z_PR04"
+      },
+      {
+        "role": "Z_PR07",
+        "desc": "Role: Z_PR07"
       }
     ],
     "log": [
@@ -4791,16 +4791,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_PR11",
-        "desc": "Role: Z_PR11"
-      },
-      {
-        "role": "Z_PP03",
-        "desc": "Role: Z_PP03"
+        "role": "Z_PR02",
+        "desc": "Role: Z_PR02"
       },
       {
         "role": "Z_PR04",
         "desc": "Role: Z_PR04"
+      },
+      {
+        "role": "Z_PP03",
+        "desc": "Role: Z_PP03"
       }
     ],
     "log": [
@@ -4826,16 +4826,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_PR11",
-        "desc": "Role: Z_PR11"
-      },
-      {
-        "role": "Z_PR04",
-        "desc": "Role: Z_PR04"
+        "role": "Z_SD05",
+        "desc": "Role: Z_SD05"
       },
       {
         "role": "Z_AR03",
         "desc": "Role: Z_AR03"
+      },
+      {
+        "role": "Z_PR04",
+        "desc": "Role: Z_PR04"
       }
     ],
     "log": [
@@ -4861,16 +4861,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
+        "role": "Z_AR06",
+        "desc": "Role: Z_AR06"
+      },
+      {
+        "role": "ZL_BR_MFG_EXECUTION_PL1720",
+        "desc": "Role: ZL_BR_MFG_EXECUTION_PL1720"
+      },
+      {
         "role": "Z_AR01",
         "desc": "Role: Z_AR01"
-      },
-      {
-        "role": "Z_AR02",
-        "desc": "Role: Z_AR02"
-      },
-      {
-        "role": "Z_AR04",
-        "desc": "Role: Z_AR04"
       }
     ],
     "log": [
@@ -4896,16 +4896,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_BS10",
-        "desc": "Role: Z_BS10"
-      },
-      {
-        "role": "Z_BS06",
-        "desc": "Role: Z_BS06"
+        "role": "Z_BS02",
+        "desc": "Role: Z_BS02"
       },
       {
         "role": "Z_BS05",
         "desc": "Role: Z_BS05"
+      },
+      {
+        "role": "ZL_BW_ANALYTICS",
+        "desc": "Role: ZL_BW_ANALYTICS"
       }
     ],
     "log": [
@@ -4931,16 +4931,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_BS13",
-        "desc": "Role: Z_BS13"
+        "role": "Z_BS02",
+        "desc": "Role: Z_BS02"
       },
       {
-        "role": "Z_BS03",
-        "desc": "Role: Z_BS03"
+        "role": "Z_BS12",
+        "desc": "Role: Z_BS12"
       },
       {
-        "role": "Z_BS06",
-        "desc": "Role: Z_BS06"
+        "role": "ZL_BR_SD_ORDER_ISSUES_SO1710",
+        "desc": "Role: ZL_BR_SD_ORDER_ISSUES_SO1710"
       }
     ],
     "log": [
@@ -4966,16 +4966,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_BS03",
-        "desc": "Role: Z_BS03"
-      },
-      {
-        "role": "SAP_ESH_BOS_RFC_ENDUSER",
-        "desc": "Role: SAP_ESH_BOS_RFC_ENDUSER"
-      },
-      {
         "role": "Z_BS20",
         "desc": "Role: Z_BS20"
+      },
+      {
+        "role": "Z_BS05",
+        "desc": "Role: Z_BS05"
+      },
+      {
+        "role": "Z_BS01",
+        "desc": "Role: Z_BS01"
       }
     ],
     "log": [
@@ -5001,16 +5001,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_BS08",
-        "desc": "Role: Z_BS08"
-      },
-      {
-        "role": "ZM:IT_PROJECT_TEAM_DISPLAY",
-        "desc": "Role: ZM:IT_PROJECT_TEAM_DISPLAY"
+        "role": "Z_BS16",
+        "desc": "Role: Z_BS16"
       },
       {
         "role": "Z_CA01",
         "desc": "Role: Z_CA01"
+      },
+      {
+        "role": "Z_BS08",
+        "desc": "Role: Z_BS08"
       }
     ],
     "log": [
@@ -5036,8 +5036,8 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "ZM:IT_PROJECT_TEAM_DISPLAY",
-        "desc": "Role: ZM:IT_PROJECT_TEAM_DISPLAY"
+        "role": "Z_BS12",
+        "desc": "Role: Z_BS12"
       },
       {
         "role": "Z_BS20",
@@ -5071,12 +5071,12 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_GL01",
-        "desc": "Role: Z_GL01"
-      },
-      {
         "role": "ZBASIS_BR_BGJOB_ADMIN",
         "desc": "Role: ZBASIS_BR_BGJOB_ADMIN"
+      },
+      {
+        "role": "Z_BS17",
+        "desc": "Role: Z_BS17"
       },
       {
         "role": "Z_GL02",
@@ -5106,16 +5106,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "Critical \u00b7 SAP_ALL equivalent",
     "roles": [
       {
-        "role": "Z_GL01",
-        "desc": "Role: Z_GL01"
-      },
-      {
-        "role": "SAP_ALL",
-        "desc": "Role: SAP_ALL"
-      },
-      {
         "role": "Z_BS15",
         "desc": "Role: Z_BS15"
+      },
+      {
+        "role": "Z_CC02",
+        "desc": "Role: Z_CC02"
+      },
+      {
+        "role": "Z_CC04",
+        "desc": "Role: Z_CC04"
       }
     ],
     "log": [
@@ -5141,16 +5141,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_MM05",
-        "desc": "Role: Z_MM05"
-      },
-      {
         "role": "SAP_BC_WEBSERVICE_SERVICE_USER",
         "desc": "Role: SAP_BC_WEBSERVICE_SERVICE_USER"
       },
       {
-        "role": "Z_FA01",
-        "desc": "Role: Z_FA01"
+        "role": "Z_CC03",
+        "desc": "Role: Z_CC03"
+      },
+      {
+        "role": "Z_BS20",
+        "desc": "Role: Z_BS20"
       }
     ],
     "log": [
@@ -5176,16 +5176,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_HR02",
-        "desc": "Role: Z_HR02"
-      },
-      {
-        "role": "Z_HR03",
-        "desc": "Role: Z_HR03"
+        "role": "SAP_SRSM_SDAGENT_CF",
+        "desc": "Role: SAP_SRSM_SDAGENT_CF"
       },
       {
         "role": "Z_HR05",
         "desc": "Role: Z_HR05"
+      },
+      {
+        "role": "Z_HR02",
+        "desc": "Role: Z_HR02"
       }
     ],
     "log": [
@@ -5215,8 +5215,8 @@ const SERVICE_ACCOUNTS = [
         "desc": "Role: Z_PY03"
       },
       {
-        "role": "Z_HR03",
-        "desc": "Role: Z_HR03"
+        "role": "Z_PY02",
+        "desc": "Role: Z_PY02"
       },
       {
         "role": "ZL_BR_ALL_DISPLAY",
@@ -5246,16 +5246,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "Critical \u00b7 SAP_ALL equivalent",
     "roles": [
       {
-        "role": "SAP_ALL",
-        "desc": "Role: SAP_ALL"
-      },
-      {
-        "role": "Z_HR03",
-        "desc": "Role: Z_HR03"
-      },
-      {
         "role": "Z_HR04",
         "desc": "Role: Z_HR04"
+      },
+      {
+        "role": "Z_PY02",
+        "desc": "Role: Z_PY02"
+      },
+      {
+        "role": "Z_PY05",
+        "desc": "Role: Z_PY05"
       }
     ],
     "log": [
@@ -5285,12 +5285,12 @@ const SERVICE_ACCOUNTS = [
         "desc": "Role: Z_PY03"
       },
       {
-        "role": "Z_HR03",
-        "desc": "Role: Z_HR03"
+        "role": "Z_PY05",
+        "desc": "Role: Z_PY05"
       },
       {
-        "role": "Z_PY04",
-        "desc": "Role: Z_PY04"
+        "role": "ZHEC_SDMI_USER",
+        "desc": "Role: ZHEC_SDMI_USER"
       }
     ],
     "log": [
@@ -5316,16 +5316,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
+        "role": "ZL_BR_CA_COSTCEN_MAN_MSUP",
+        "desc": "Role: ZL_BR_CA_COSTCEN_MAN_MSUP"
+      },
+      {
         "role": "Z_MM03",
         "desc": "Role: Z_MM03"
       },
       {
         "role": "Z_MM07",
         "desc": "Role: Z_MM07"
-      },
-      {
-        "role": "Z_QM01",
-        "desc": "Role: Z_QM01"
       }
     ],
     "log": [
@@ -5351,16 +5351,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
+        "role": "Z_PR02",
+        "desc": "Role: Z_PR02"
+      },
+      {
+        "role": "Z_MM02",
+        "desc": "Role: Z_MM02"
+      },
+      {
         "role": "Z_AP01",
         "desc": "Role: Z_AP01"
-      },
-      {
-        "role": "Z_PR01",
-        "desc": "Role: Z_PR01"
-      },
-      {
-        "role": "Z_GL01",
-        "desc": "Role: Z_GL01"
       }
     ],
     "log": [
@@ -5386,16 +5386,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_AP03",
-        "desc": "Role: Z_AP03"
+        "role": "Z_PR02",
+        "desc": "Role: Z_PR02"
       },
       {
         "role": "Z_PR08",
         "desc": "Role: Z_PR08"
       },
       {
-        "role": "Z_AP02",
-        "desc": "Role: Z_AP02"
+        "role": "Z_AP03",
+        "desc": "Role: Z_AP03"
       }
     ],
     "log": [
@@ -5421,16 +5421,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_PR01",
-        "desc": "Role: Z_PR01"
-      },
-      {
-        "role": "Z_MM06",
-        "desc": "Role: Z_MM06"
+        "role": "Z_PR02",
+        "desc": "Role: Z_PR02"
       },
       {
         "role": "Z_PR04",
         "desc": "Role: Z_PR04"
+      },
+      {
+        "role": "Z_PR01",
+        "desc": "Role: Z_PR01"
       }
     ],
     "log": [
@@ -5456,16 +5456,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_AP01",
-        "desc": "Role: Z_AP01"
-      },
-      {
-        "role": "Z_AP03",
-        "desc": "Role: Z_AP03"
+        "role": "ZHEC_SNOTE_V8",
+        "desc": "Role: ZHEC_SNOTE_V8"
       },
       {
         "role": "Z_MM03",
         "desc": "Role: Z_MM03"
+      },
+      {
+        "role": "Z_AP03",
+        "desc": "Role: Z_AP03"
       }
     ],
     "log": [
@@ -5491,16 +5491,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_MM01",
-        "desc": "Role: Z_MM01"
-      },
-      {
-        "role": "Z_PR08",
-        "desc": "Role: Z_PR08"
+        "role": "Z_PR02",
+        "desc": "Role: Z_PR02"
       },
       {
         "role": "Z_PR04",
         "desc": "Role: Z_PR04"
+      },
+      {
+        "role": "Z_MM02",
+        "desc": "Role: Z_MM02"
       }
     ],
     "log": [
@@ -5526,16 +5526,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_PR11",
-        "desc": "Role: Z_PR11"
-      },
-      {
-        "role": "Z_AP01",
-        "desc": "Role: Z_AP01"
+        "role": "Z_PR06",
+        "desc": "Role: Z_PR06"
       },
       {
         "role": "ZL_BR_PROM_AUTH",
         "desc": "Role: ZL_BR_PROM_AUTH"
+      },
+      {
+        "role": "Z_AP01",
+        "desc": "Role: Z_AP01"
       }
     ],
     "log": [
@@ -5561,16 +5561,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_AR02",
-        "desc": "Role: Z_AR02"
-      },
-      {
         "role": "Z_SD06",
         "desc": "Role: Z_SD06"
       },
       {
-        "role": "Z_SD03",
-        "desc": "Role: Z_SD03"
+        "role": "Z_SD01",
+        "desc": "Role: Z_SD01"
+      },
+      {
+        "role": "Z_AR07",
+        "desc": "Role: Z_AR07"
       }
     ],
     "log": [
@@ -5596,16 +5596,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "Critical \u00b7 SAP_ALL equivalent",
     "roles": [
       {
-        "role": "Z_AR01",
-        "desc": "Role: Z_AR01"
-      },
-      {
-        "role": "SAP_ALL",
-        "desc": "Role: SAP_ALL"
-      },
-      {
         "role": "Z_AR03",
         "desc": "Role: Z_AR03"
+      },
+      {
+        "role": "Z_SD06",
+        "desc": "Role: Z_SD06"
+      },
+      {
+        "role": "Z_SD01",
+        "desc": "Role: Z_SD01"
       }
     ],
     "log": [
@@ -5631,16 +5631,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_SD02",
-        "desc": "Role: Z_SD02"
-      },
-      {
-        "role": "Z_AR02",
-        "desc": "Role: Z_AR02"
+        "role": "Z_SD05",
+        "desc": "Role: Z_SD05"
       },
       {
         "role": "Z_AR03",
         "desc": "Role: Z_AR03"
+      },
+      {
+        "role": "Z_SD01",
+        "desc": "Role: Z_SD01"
       }
     ],
     "log": [
@@ -5666,12 +5666,12 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_AR01",
-        "desc": "Role: Z_AR01"
+        "role": "Z_AR06",
+        "desc": "Role: Z_AR06"
       },
       {
-        "role": "Z_AR02",
-        "desc": "Role: Z_AR02"
+        "role": "Z_AR01",
+        "desc": "Role: Z_AR01"
       },
       {
         "role": "Z_AR04",
@@ -5701,16 +5701,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
+        "role": "Z_BS02",
+        "desc": "Role: Z_BS02"
+      },
+      {
+        "role": "Z_BS12",
+        "desc": "Role: Z_BS12"
+      },
+      {
         "role": "Z_SD02",
         "desc": "Role: Z_SD02"
-      },
-      {
-        "role": "Z_AR02",
-        "desc": "Role: Z_AR02"
-      },
-      {
-        "role": "Z_BS03",
-        "desc": "Role: Z_BS03"
       }
     ],
     "log": [
@@ -5736,16 +5736,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_SD08",
-        "desc": "Role: Z_SD08"
+        "role": "Z_BS02",
+        "desc": "Role: Z_BS02"
       },
       {
         "role": "Z_BS05",
         "desc": "Role: Z_BS05"
       },
       {
-        "role": "Display Access Role",
-        "desc": "Role: Display Access Role"
+        "role": "Z_SD08",
+        "desc": "Role: Z_SD08"
       }
     ],
     "log": [
@@ -5806,16 +5806,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_MM05",
-        "desc": "Role: Z_MM05"
+        "role": "Z_FA02",
+        "desc": "Role: Z_FA02"
       },
       {
-        "role": "Z_GL01",
-        "desc": "Role: Z_GL01"
+        "role": "ZL_BR_CA_ALL_USER_1710",
+        "desc": "Role: ZL_BR_CA_ALL_USER_1710"
       },
       {
-        "role": "Z_AR02",
-        "desc": "Role: Z_AR02"
+        "role": "Z_FI06",
+        "desc": "Role: Z_FI06"
       }
     ],
     "log": [
@@ -5841,16 +5841,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
+        "role": "Z_FI06",
+        "desc": "Role: Z_FI06"
+      },
+      {
+        "role": "Z_FI04",
+        "desc": "Role: Z_FI04"
+      },
+      {
         "role": "Z_FI12",
         "desc": "Role: Z_FI12"
-      },
-      {
-        "role": "Z_GL01",
-        "desc": "Role: Z_GL01"
-      },
-      {
-        "role": "Z_AR02",
-        "desc": "Role: Z_AR02"
       }
     ],
     "log": [
@@ -5876,16 +5876,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_GL01",
-        "desc": "Role: Z_GL01"
+        "role": "Z_GL03",
+        "desc": "Role: Z_GL03"
       },
       {
-        "role": "Z_AP02",
-        "desc": "Role: Z_AP02"
+        "role": "Z_FI10",
+        "desc": "Role: Z_FI10"
       },
       {
-        "role": "ZM:IT-PROJECT_TEAM_DISPLAY",
-        "desc": "Role: ZM:IT-PROJECT_TEAM_DISPLAY"
+        "role": "Z_CC02",
+        "desc": "Role: Z_CC02"
       }
     ],
     "log": [
@@ -5911,16 +5911,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_GL01",
-        "desc": "Role: Z_GL01"
+        "role": "Z_FI06",
+        "desc": "Role: Z_FI06"
       },
       {
-        "role": "ZL_BR_FI_GL_ACCNTING",
-        "desc": "Role: ZL_BR_FI_GL_ACCNTING"
+        "role": "Z_PY04",
+        "desc": "Role: Z_PY04"
       },
       {
-        "role": "Z_HR03",
-        "desc": "Role: Z_HR03"
+        "role": "Z_AR05",
+        "desc": "Role: Z_AR05"
       }
     ],
     "log": [
@@ -5946,12 +5946,12 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_HR02",
-        "desc": "Role: Z_HR02"
+        "role": "Z_HR04",
+        "desc": "Role: Z_HR04"
       },
       {
-        "role": "Z_HR03",
-        "desc": "Role: Z_HR03"
+        "role": "Z_PY05",
+        "desc": "Role: Z_PY05"
       },
       {
         "role": "Z_HR05",
@@ -5981,16 +5981,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_PP02",
-        "desc": "Role: Z_PP02"
-      },
-      {
         "role": "Z_PY03",
         "desc": "Role: Z_PY03"
       },
       {
-        "role": "Z_HR03",
-        "desc": "Role: Z_HR03"
+        "role": "Z_PP01",
+        "desc": "Role: Z_PP01"
+      },
+      {
+        "role": "Z_PP02",
+        "desc": "Role: Z_PP02"
       }
     ],
     "log": [
@@ -6016,16 +6016,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_AP01",
-        "desc": "Role: Z_AP01"
+        "role": "Z_PR02",
+        "desc": "Role: Z_PR02"
       },
       {
-        "role": "Z_PR01",
-        "desc": "Role: Z_PR01"
+        "role": "ZL_BR_FI_AR_REPORTS_WLTAX",
+        "desc": "Role: ZL_BR_FI_AR_REPORTS_WLTAX"
       },
       {
-        "role": "Z_GL01",
-        "desc": "Role: Z_GL01"
+        "role": "Z_MM03",
+        "desc": "Role: Z_MM03"
       }
     ],
     "log": [
@@ -6051,16 +6051,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_MM05",
-        "desc": "Role: Z_MM05"
+        "role": "Z_PR02",
+        "desc": "Role: Z_PR02"
       },
       {
         "role": "ZL_BR_FI_AR_REPORTS_WLTAX",
         "desc": "Role: ZL_BR_FI_AR_REPORTS_WLTAX"
       },
       {
-        "role": "Z_AP03",
-        "desc": "Role: Z_AP03"
+        "role": "Z_MM10",
+        "desc": "Role: Z_MM10"
       }
     ],
     "log": [
@@ -6086,12 +6086,12 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_AP02",
-        "desc": "Role: Z_AP02"
+        "role": "Z_PR02",
+        "desc": "Role: Z_PR02"
       },
       {
-        "role": "Z_MM06",
-        "desc": "Role: Z_MM06"
+        "role": "Z_AP02",
+        "desc": "Role: Z_AP02"
       },
       {
         "role": "Z_PR04",
@@ -6121,16 +6121,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_PR01",
-        "desc": "Role: Z_PR01"
-      },
-      {
-        "role": "Z_PR07",
-        "desc": "Role: Z_PR07"
+        "role": "Z_PR06",
+        "desc": "Role: Z_PR06"
       },
       {
         "role": "ZL_BR_PM_PURCHASING",
         "desc": "Role: ZL_BR_PM_PURCHASING"
+      },
+      {
+        "role": "Z_PR04",
+        "desc": "Role: Z_PR04"
       }
     ],
     "log": [
@@ -6156,16 +6156,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_MM07",
-        "desc": "Role: Z_MM07"
+        "role": "Z_PR02",
+        "desc": "Role: Z_PR02"
       },
       {
         "role": "Z_PR04",
         "desc": "Role: Z_PR04"
       },
       {
-        "role": "Z_FI03",
-        "desc": "Role: Z_FI03"
+        "role": "Z_MM07",
+        "desc": "Role: Z_MM07"
       }
     ],
     "log": [
@@ -6191,12 +6191,12 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_PR11",
-        "desc": "Role: Z_PR11"
+        "role": "Z_PR02",
+        "desc": "Role: Z_PR02"
       },
       {
-        "role": "Z_PP03",
-        "desc": "Role: Z_PP03"
+        "role": "Z_PR04",
+        "desc": "Role: Z_PR04"
       },
       {
         "role": "Z_PR08",
@@ -6226,16 +6226,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_PR11",
-        "desc": "Role: Z_PR11"
-      },
-      {
         "role": "Z_PR07",
         "desc": "Role: Z_PR07"
       },
       {
-        "role": "Z_AP02",
-        "desc": "Role: Z_AP02"
+        "role": "S_A.SYSTEM",
+        "desc": "Role: S_A.SYSTEM"
+      },
+      {
+        "role": "Z_PR11",
+        "desc": "Role: Z_PR11"
       }
     ],
     "log": [
@@ -6261,16 +6261,16 @@ const SERVICE_ACCOUNTS = [
     "risk": "High privilege technical account",
     "roles": [
       {
-        "role": "Z_PR11",
-        "desc": "Role: Z_PR11"
+        "role": "Z_PR04",
+        "desc": "Role: Z_PR04"
       },
       {
         "role": "Z_AP03",
         "desc": "Role: Z_AP03"
       },
       {
-        "role": "Z_AP02",
-        "desc": "Role: Z_AP02"
+        "role": "S_A.SYSTEM",
+        "desc": "Role: S_A.SYSTEM"
       }
     ],
     "log": [
@@ -6492,7 +6492,7 @@ const ALL_USERS = [
     "email": "aaron.smith@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "ZL_BR_PM_PURCHASING",
+    "role": "Z_BS02",
     "roleType": "Composite",
     "rolesCount": 12,
     "riskViolations": [
@@ -6526,7 +6526,7 @@ const ALL_USERS = [
         "standardsViolated": "SAP GRC Global Ruleset, SOX, Internal Access Control",
         "recommendedAction": "Separate access for BS02 - Basis Development and BS11 - System Administration; remove conflicting action or authorization object from one role.",
         "recommendations": "Separate access for BS02 - Basis Development and BS11 - System Administration; remove conflicting action or authorization object from one role.",
-        "assignee": "Seo-yeon Kim (Basis Admin)"
+        "assignee": "Basis Admin"
       },
       {
         "riskId": "B006",
@@ -6590,7 +6590,7 @@ const ALL_USERS = [
         "standardsViolated": "SAP GRC Global Ruleset, SOX, Internal Access Control",
         "recommendedAction": "Separate access for BS05 - Client Administration and BS10 - Security Administration; remove conflicting action or authorization object from one role.",
         "recommendations": "Separate access for BS05 - Client Administration and BS10 - Security Administration; remove conflicting action or authorization object from one role.",
-        "assignee": "Seo-yeon Kim (Basis Admin)"
+        "assignee": "Basis Admin"
       },
       {
         "riskId": "B016",
@@ -6639,7 +6639,7 @@ const ALL_USERS = [
     "recommendedAction": "Separate access for BS02 - Basis Development and BS11 - System Administration; remove conflicting action or authorization object from one role.",
     "priority": "P3",
     "status": "In Progress",
-    "assignee": "Seo-yeon Kim (Basis Admin)",
+    "assignee": "Basis Admin",
     "lastAnalyzedDate": "2026-05-19",
     "lastActivity": "2026-05-19 12:00:00",
     "firefighterId": "Standard Access",
@@ -6653,7 +6653,7 @@ const ALL_USERS = [
     "email": "Adetunji.Balogun@bs.nttdata.com",
     "sapStatus": "Not Locked",
     "license": "NA",
-    "role": "Z_BS03",
+    "role": "Z_BS02",
     "roleType": "Composite",
     "rolesCount": 7,
     "riskViolations": [
@@ -6719,7 +6719,7 @@ const ALL_USERS = [
         "standardsViolated": "SAP GRC Global Ruleset, SOX, Internal Access Control",
         "recommendedAction": "Separate access for BS03 - Basis Table Maintenance and BS11 - System Administration; remove conflicting action or authorization object from one role.",
         "recommendations": "Separate access for BS03 - Basis Table Maintenance and BS11 - System Administration; remove conflicting action or authorization object from one role.",
-        "assignee": "Ji-hun Park (Security Analyst)"
+        "assignee": "Security Analyst"
       },
       {
         "riskId": "B014",
@@ -6782,7 +6782,7 @@ const ALL_USERS = [
     "email": "achanders@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "HD Productivity",
-    "role": "Z_BS10",
+    "role": "Z_BS12",
     "roleType": "Composite",
     "rolesCount": 7,
     "riskViolations": [
@@ -6848,7 +6848,7 @@ const ALL_USERS = [
         "standardsViolated": "SAP GRC Global Ruleset, SOX, Internal Access Control",
         "recommendedAction": "Separate access for BS10 - Security Administration and BS12 - Transport Administration; remove conflicting action or authorization object from one role.",
         "recommendations": "Separate access for BS10 - Security Administration and BS12 - Transport Administration; remove conflicting action or authorization object from one role.",
-        "assignee": "Ji-hun Park (Security Analyst)"
+        "assignee": "Security Analyst"
       },
       {
         "riskId": "B017",
@@ -6911,7 +6911,7 @@ const ALL_USERS = [
     "email": "alexis.courville@lottechem.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HC Functional",
-    "role": "ZMM_BR_PO_DISPLAY_HR",
+    "role": "Z_BS20",
     "roleType": "Composite",
     "rolesCount": 10,
     "riskViolations": [
@@ -6945,7 +6945,7 @@ const ALL_USERS = [
         "standardsViolated": "SAP GRC Global Ruleset, SOX, Internal Access Control",
         "recommendedAction": "Separate access for BS03 - Basis Table Maintenance and BS05 - Client Administration; remove conflicting action or authorization object from one role.",
         "recommendations": "Separate access for BS03 - Basis Table Maintenance and BS05 - Client Administration; remove conflicting action or authorization object from one role.",
-        "assignee": "Seo-yeon Kim (Basis Admin)"
+        "assignee": "Basis Admin"
       },
       {
         "riskId": "B015",
@@ -7056,7 +7056,7 @@ const ALL_USERS = [
     "recommendedAction": "Separate access for BS03 - Basis Table Maintenance and BS05 - Client Administration; remove conflicting action or authorization object from one role.",
     "priority": "P2",
     "status": "Resolved",
-    "assignee": "Seo-yeon Kim (Basis Admin)",
+    "assignee": "Basis Admin",
     "lastAnalyzedDate": "2026-05-19",
     "lastActivity": "2026-05-19 12:00:00",
     "firefighterId": "Standard Access",
@@ -7070,7 +7070,7 @@ const ALL_USERS = [
     "email": "ADAPTER.QUICKBOOKS@lottechem.us",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_BS08",
+    "role": "Z_BS16",
     "roleType": "Composite",
     "rolesCount": 6,
     "riskViolations": [
@@ -7197,7 +7197,7 @@ const ALL_USERS = [
     "email": "ads_agent@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "HD Productivity",
-    "role": "Z_BS20",
+    "role": "Z_BS12",
     "roleType": "Composite",
     "rolesCount": 9,
     "riskViolations": [
@@ -7324,7 +7324,7 @@ const ALL_USERS = [
     "email": "allison.elliott@lottechemusa.com",
     "sapStatus": "Locked Due To Incorrect Logons",
     "license": "HB Professional",
-    "role": "Z_GL01",
+    "role": "Z_BS17",
     "roleType": "Composite",
     "rolesCount": 58,
     "riskViolations": [
@@ -7358,7 +7358,7 @@ const ALL_USERS = [
         "standardsViolated": "SAP GRC Global Ruleset, SOX, Internal Access Control",
         "recommendedAction": "Separate access for BS13 - Maintain User Master and BS14 - Maintain Profiles / Roles; remove conflicting action or authorization object from one role.",
         "recommendations": "Separate access for BS13 - Maintain User Master and BS14 - Maintain Profiles / Roles; remove conflicting action or authorization object from one role.",
-        "assignee": "Yeon-hee Choi (Finance Controller)"
+        "assignee": "Finance Controller"
       },
       {
         "riskId": "BSCT",
@@ -7469,7 +7469,7 @@ const ALL_USERS = [
     "recommendedAction": "Separate access for BS13 - Maintain User Master and BS14 - Maintain Profiles / Roles; remove conflicting action or authorization object from one role.",
     "priority": "P2",
     "status": "Open",
-    "assignee": "Yeon-hee Choi (Finance Controller)",
+    "assignee": "Finance Controller",
     "lastAnalyzedDate": "2026-05-19",
     "lastActivity": "2026-05-19 12:00:00",
     "firefighterId": "Standard Access",
@@ -7483,7 +7483,7 @@ const ALL_USERS = [
     "email": "afaia@westlake.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "NA",
-    "role": "Z_GL01",
+    "role": "Z_BS15",
     "roleType": "Composite",
     "rolesCount": 5,
     "riskViolations": [
@@ -7608,7 +7608,7 @@ const ALL_USERS = [
     "email": "amanda.flores@lottechemusa.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "NA",
-    "role": "Z_MM05",
+    "role": "Z_CC03",
     "roleType": "Composite",
     "rolesCount": 6,
     "riskViolations": [
@@ -7735,7 +7735,7 @@ const ALL_USERS = [
     "email": "amadia.guidry@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_AP01",
+    "role": "Z_PS03",
     "roleType": "Composite",
     "rolesCount": 32,
     "riskViolations": [
@@ -7894,7 +7894,7 @@ const ALL_USERS = [
     "email": "andrei.ivanov@lottechem.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_MM05",
+    "role": "Z_FA02",
     "roleType": "Composite",
     "rolesCount": 32,
     "riskViolations": [
@@ -8023,7 +8023,7 @@ const ALL_USERS = [
     "email": "ashutosh.katara@nttdata.com",
     "sapStatus": "Not Locked",
     "license": "NA",
-    "role": "Z_FI07",
+    "role": "Z_FI02",
     "roleType": "Composite",
     "rolesCount": 7,
     "riskViolations": [
@@ -8152,7 +8152,7 @@ const ALL_USERS = [
     "email": "akotagiri@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "NA",
-    "role": "Z_AP01",
+    "role": "Z_GL03",
     "roleType": "Composite",
     "rolesCount": 9,
     "riskViolations": [
@@ -8313,7 +8313,7 @@ const ALL_USERS = [
     "email": "akrishnamoorthy@sageitinc.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_AR02",
+    "role": "Z_FA02",
     "roleType": "Composite",
     "rolesCount": 88,
     "riskViolations": [
@@ -8442,7 +8442,7 @@ const ALL_USERS = [
     "email": "alla.green@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_AR02",
+    "role": "Z_PS03",
     "roleType": "Composite",
     "rolesCount": 63,
     "riskViolations": [
@@ -8571,7 +8571,7 @@ const ALL_USERS = [
     "email": "alla.voth@lottechemusa.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_GL01",
+    "role": "Z_GL03",
     "roleType": "Composite",
     "rolesCount": 60,
     "riskViolations": [
@@ -8730,7 +8730,7 @@ const ALL_USERS = [
     "email": "amanda.kolb@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_GL01",
+    "role": "Z_MM04",
     "roleType": "Composite",
     "rolesCount": 60,
     "riskViolations": [
@@ -8859,7 +8859,7 @@ const ALL_USERS = [
     "email": "antonio.marotta@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "NA",
-    "role": "Z_GL01",
+    "role": "Z_GL03",
     "roleType": "Composite",
     "rolesCount": 6,
     "riskViolations": [
@@ -8986,7 +8986,7 @@ const ALL_USERS = [
     "email": "amber.dunbar@lottechem.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_FI08",
+    "role": "Z_PY02",
     "roleType": "Composite",
     "rolesCount": 96,
     "riskViolations": [
@@ -9147,7 +9147,7 @@ const ALL_USERS = [
     "email": "amol11.patil@nttdata.com",
     "sapStatus": "Not Locked",
     "license": "HD Productivity",
-    "role": "Z_FI12",
+    "role": "Z_HR04",
     "roleType": "Composite",
     "rolesCount": 6,
     "riskViolations": [
@@ -9274,7 +9274,7 @@ const ALL_USERS = [
     "email": "andre.borne@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_HR02",
+    "role": "ZL_BR_CA_COSTCEN_MAN_LABMAN",
     "roleType": "Composite",
     "rolesCount": 9,
     "riskViolations": [
@@ -9562,7 +9562,7 @@ const ALL_USERS = [
     "email": "AjinkyaVikas.Palkar@bs.nttdata.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_PY01",
+    "role": "Z_PY03",
     "roleType": "Composite",
     "rolesCount": 63,
     "riskViolations": [
@@ -9691,7 +9691,7 @@ const ALL_USERS = [
     "email": "adaam.poche@partner.lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_HR03",
+    "role": "Z_HR04",
     "roleType": "Composite",
     "rolesCount": 47,
     "riskViolations": [
@@ -9820,7 +9820,7 @@ const ALL_USERS = [
     "email": "anand.polamalla@nttdata.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_PP02",
+    "role": "Z_PY03",
     "roleType": "Composite",
     "rolesCount": 18,
     "riskViolations": [
@@ -9981,7 +9981,7 @@ const ALL_USERS = [
     "email": "aprasad@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_HR05",
+    "role": "Z_HR04",
     "roleType": "Composite",
     "rolesCount": 11,
     "riskViolations": [
@@ -10108,7 +10108,7 @@ const ALL_USERS = [
     "email": "Abhichandan.Rapelly@nttdata.com",
     "sapStatus": "Not Locked",
     "license": "HD Productivity",
-    "role": "Z_FI05",
+    "role": "Z_PP01",
     "roleType": "Composite",
     "rolesCount": 7,
     "riskViolations": [
@@ -10237,7 +10237,7 @@ const ALL_USERS = [
     "email": "amber.sammons@lottechemusa.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HC Functional",
-    "role": "Z_PP02",
+    "role": "Z_PY03",
     "roleType": "Composite",
     "rolesCount": 31,
     "riskViolations": [
@@ -10402,7 +10402,7 @@ const ALL_USERS = [
     "email": "andre.schexnider@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_SD02",
+    "role": "Z_HR06",
     "roleType": "Composite",
     "rolesCount": 30,
     "riskViolations": [
@@ -10531,7 +10531,7 @@ const ALL_USERS = [
     "email": "ashley.shogreen@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_PP02",
+    "role": "Z_PP01",
     "roleType": "Composite",
     "rolesCount": 9,
     "riskViolations": [
@@ -10660,7 +10660,7 @@ const ALL_USERS = [
     "email": "ashton.bacon@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_MM03",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 31,
     "riskViolations": [
@@ -10821,7 +10821,7 @@ const ALL_USERS = [
     "email": "arjun.srirangam@nttdata.com",
     "sapStatus": "Not Locked",
     "license": "HC Functional",
-    "role": "Z_AP01",
+    "role": "Z_GL01",
     "roleType": "Composite",
     "rolesCount": 8,
     "riskViolations": [
@@ -10952,7 +10952,7 @@ const ALL_USERS = [
     "email": "asundarasekar@sageitinc.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_MM05",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 90,
     "riskViolations": [
@@ -11081,7 +11081,7 @@ const ALL_USERS = [
     "email": "avanderling@iagcompliance.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_AP01",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 10,
     "riskViolations": [
@@ -11244,7 +11244,7 @@ const ALL_USERS = [
     "email": "austin.vincent@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HC Functional",
-    "role": "Z_PR01",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 17,
     "riskViolations": [
@@ -11373,7 +11373,7 @@ const ALL_USERS = [
     "email": "ammiel.williams@lottechemusa.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HD Productivity",
-    "role": "Z_AP03",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 21,
     "riskViolations": [
@@ -11502,7 +11502,7 @@ const ALL_USERS = [
     "email": "ananth.bangalore@nttdata.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_AP01",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 43,
     "riskViolations": [
@@ -11665,7 +11665,7 @@ const ALL_USERS = [
     "email": "bart.mcelwee@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_AP01",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 32,
     "riskViolations": [
@@ -11794,7 +11794,7 @@ const ALL_USERS = [
     "email": "vinoth.radhakrishnan@partner.lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_PR01",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 7,
     "riskViolations": [
@@ -11923,7 +11923,7 @@ const ALL_USERS = [
     "email": "Noreply.SAP@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_AP01",
+    "role": "Z_PR06",
     "roleType": "Composite",
     "rolesCount": 48,
     "riskViolations": [
@@ -12084,7 +12084,7 @@ const ALL_USERS = [
     "email": "Brian.Berkebile@bs.nttdata.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_MM05",
+    "role": "Z_PR04",
     "roleType": "Composite",
     "rolesCount": 113,
     "riskViolations": [
@@ -12213,7 +12213,7 @@ const ALL_USERS = [
     "email": "Bryan.Booze@bs.nttdata.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_PR01",
+    "role": "Z_PR06",
     "roleType": "Composite",
     "rolesCount": 28,
     "riskViolations": [
@@ -12344,7 +12344,7 @@ const ALL_USERS = [
     "email": "bruno.breves@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_AP01",
+    "role": "Z_PR06",
     "roleType": "Composite",
     "rolesCount": 123,
     "riskViolations": [
@@ -12505,7 +12505,7 @@ const ALL_USERS = [
     "email": "belinda.burnett@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_AP01",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 7,
     "riskViolations": [
@@ -12634,7 +12634,7 @@ const ALL_USERS = [
     "email": "ben.burns@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_PR07",
+    "role": "Z_PR06",
     "roleType": "Composite",
     "rolesCount": 21,
     "riskViolations": [
@@ -12763,7 +12763,7 @@ const ALL_USERS = [
     "email": "baron.carrier@lottechemusa.com",
     "sapStatus": "Locked Due To Incorrect Logons",
     "license": "HB Professional",
-    "role": "Z_MM01",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 48,
     "riskViolations": [
@@ -12926,7 +12926,7 @@ const ALL_USERS = [
     "email": "ben.daugherty@lottechemusa.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_PR07",
+    "role": "Z_PR06",
     "roleType": "Composite",
     "rolesCount": 45,
     "riskViolations": [
@@ -13055,7 +13055,7 @@ const ALL_USERS = [
     "email": "bryon.derouen@partner.lottechemusa.com",
     "sapStatus": "Locked Due To Incorrect Logons",
     "license": "HB Professional",
-    "role": "Z_MM01",
+    "role": "Z_PR06",
     "roleType": "Composite",
     "rolesCount": 40,
     "riskViolations": [
@@ -13188,7 +13188,7 @@ const ALL_USERS = [
     "email": "benjamin.devillier@lottechemusa.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_AP03",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 41,
     "riskViolations": [
@@ -13351,7 +13351,7 @@ const ALL_USERS = [
     "email": "brahmareddy.duggempudi@nttdata.com",
     "sapStatus": "Not Locked",
     "license": "HD Productivity",
-    "role": "Z_PR01",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 8,
     "riskViolations": [
@@ -13482,7 +13482,7 @@ const ALL_USERS = [
     "email": "ben.trouard@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_MM01",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 30,
     "riskViolations": [
@@ -13613,7 +13613,7 @@ const ALL_USERS = [
     "email": "brittney.ferchaud@partner.lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_PR11",
+    "role": "Z_PR07",
     "roleType": "Composite",
     "rolesCount": 60,
     "riskViolations": [
@@ -13774,7 +13774,7 @@ const ALL_USERS = [
     "email": "brooklyn.gill@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_PR11",
+    "role": "Z_PR04",
     "roleType": "Composite",
     "rolesCount": 60,
     "riskViolations": [
@@ -13903,7 +13903,7 @@ const ALL_USERS = [
     "email": "bgrfc_super@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "HD Productivity",
-    "role": "Z_PR11",
+    "role": "Z_AP03",
     "roleType": "Composite",
     "rolesCount": 8,
     "riskViolations": [
@@ -14030,7 +14030,7 @@ const ALL_USERS = [
     "email": "brett.hooper@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_AP01",
+    "role": "Z_PR06",
     "roleType": "Composite",
     "rolesCount": 42,
     "riskViolations": [
@@ -14189,7 +14189,7 @@ const ALL_USERS = [
     "email": "bhavik.jani@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_PR11",
+    "role": "Z_PP03",
     "roleType": "Composite",
     "rolesCount": 43,
     "riskViolations": [
@@ -14316,7 +14316,7 @@ const ALL_USERS = [
     "email": "ben.kershaw@partner.lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_PR11",
+    "role": "ZPM_BR_MORD_PROCESS_1720",
     "roleType": "Composite",
     "rolesCount": 15,
     "riskViolations": [
@@ -14443,7 +14443,7 @@ const ALL_USERS = [
     "email": "bkingery@lottechem.com",
     "sapStatus": "UNKNOWN",
     "license": "HB Professional",
-    "role": "Z_AR01",
+    "role": "Z_AR06",
     "roleType": "Composite",
     "rolesCount": 32,
     "riskViolations": [
@@ -14602,7 +14602,7 @@ const ALL_USERS = [
     "email": "billy.kingrey@partner.lottechemusa.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_AR02",
+    "role": "Z_SD01",
     "roleType": "Composite",
     "rolesCount": 33,
     "riskViolations": [
@@ -14729,7 +14729,7 @@ const ALL_USERS = [
     "email": "brad.kreis@nttdata.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HD Productivity",
-    "role": "Z_AR02",
+    "role": "Z_SD04",
     "roleType": "Composite",
     "rolesCount": 7,
     "riskViolations": [
@@ -14858,7 +14858,7 @@ const ALL_USERS = [
     "email": "barrett.leblanc@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HC Functional",
-    "role": "Z_AR01",
+    "role": "Z_AR03",
     "roleType": "Composite",
     "rolesCount": 39,
     "riskViolations": [
@@ -15019,7 +15019,7 @@ const ALL_USERS = [
     "email": "bradley.lejeune@partner.lottechemusa.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "ZEWM_BR_WH_DISPLAY_MP_LAMW",
+    "role": "Z_SD01",
     "roleType": "Composite",
     "rolesCount": 62,
     "riskViolations": [
@@ -15148,7 +15148,7 @@ const ALL_USERS = [
     "email": "Brandi.LeJune@partner.lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_AR01",
+    "role": "Z_AR06",
     "roleType": "Composite",
     "rolesCount": 51,
     "riskViolations": [
@@ -15277,7 +15277,7 @@ const ALL_USERS = [
     "email": "bmtest@lottechem.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_SD06",
+    "role": "Z_SD04",
     "roleType": "Composite",
     "rolesCount": 33,
     "riskViolations": [
@@ -15436,7 +15436,7 @@ const ALL_USERS = [
     "email": "bnallapareddy@sageitinc.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_AR02",
+    "role": "Z_SD05",
     "roleType": "Composite",
     "rolesCount": 88,
     "riskViolations": [
@@ -15565,7 +15565,7 @@ const ALL_USERS = [
     "email": "bay.quebodeaux@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HC Functional",
-    "role": "Z_AR02",
+    "role": "Z_SD09",
     "roleType": "Composite",
     "rolesCount": 26,
     "riskViolations": [
@@ -15692,7 +15692,7 @@ const ALL_USERS = [
     "email": "bruce.rentrop@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HC Functional",
-    "role": "Z_AR03",
+    "role": "Z_AR06",
     "roleType": "Composite",
     "rolesCount": 17,
     "riskViolations": [
@@ -15790,7 +15790,7 @@ const ALL_USERS = [
         "standardsViolated": "SAP GRC Global Ruleset, SOX, Internal Access Control",
         "recommendedAction": "Separate access for BS02 - Basis Development and BS11 - System Administration; remove conflicting action or authorization object from one role.",
         "recommendations": "Separate access for BS02 - Basis Development and BS11 - System Administration; remove conflicting action or authorization object from one role.",
-        "assignee": "Seo-yeon Kim (Basis Admin)"
+        "assignee": "Basis Admin"
       },
       {
         "riskId": "B006",
@@ -15853,7 +15853,7 @@ const ALL_USERS = [
     "email": "Brian.Kwak@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_SD02",
+    "role": "Z_BS02",
     "roleType": "Composite",
     "rolesCount": 31,
     "riskViolations": [
@@ -15982,7 +15982,7 @@ const ALL_USERS = [
     "email": "bsaha@sageitinc.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_SD08",
+    "role": "Z_BS02",
     "roleType": "Composite",
     "rolesCount": 88,
     "riskViolations": [
@@ -16109,7 +16109,7 @@ const ALL_USERS = [
     "email": "Noreply.SAP@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "ZBASIS_BR_BGJOB_ADMIN",
+    "role": "Z_BS05",
     "roleType": "Composite",
     "rolesCount": 16,
     "riskViolations": [
@@ -16143,7 +16143,7 @@ const ALL_USERS = [
         "standardsViolated": "SAP GRC Global Ruleset, SOX, Internal Access Control",
         "recommendedAction": "Separate access for ZBS01 - BS01 - Archiving and ZBS02 - BS02 - Basis Development; remove conflicting action or authorization object from one role.",
         "recommendations": "Separate access for ZBS01 - BS01 - Archiving and ZBS02 - BS02 - Basis Development; remove conflicting action or authorization object from one role.",
-        "assignee": "Sarah Jenkins (AP Manager)"
+        "assignee": "AP Manager"
       },
       {
         "riskId": "B005",
@@ -16207,7 +16207,7 @@ const ALL_USERS = [
         "standardsViolated": "SAP GRC Global Ruleset, SOX, Internal Access Control",
         "recommendedAction": "Separate access for BS03 - Basis Table Maintenance and BS05 - Client Administration; remove conflicting action or authorization object from one role.",
         "recommendations": "Separate access for BS03 - Basis Table Maintenance and BS05 - Client Administration; remove conflicting action or authorization object from one role.",
-        "assignee": "Seo-yeon Kim (Basis Admin)"
+        "assignee": "Basis Admin"
       },
       {
         "riskId": "B015",
@@ -16256,7 +16256,7 @@ const ALL_USERS = [
     "recommendedAction": "Separate access for ZBS01 - BS01 - Archiving and ZBS02 - BS02 - Basis Development; remove conflicting action or authorization object from one role.",
     "priority": "P3",
     "status": "Resolved",
-    "assignee": "Sarah Jenkins (AP Manager)",
+    "assignee": "AP Manager",
     "lastAnalyzedDate": "2026-05-19",
     "lastActivity": "2026-05-19 12:00:00",
     "firefighterId": "Standard Access",
@@ -16270,7 +16270,7 @@ const ALL_USERS = [
     "email": "byeong.moon@lottechem.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_BS05",
+    "role": "Z_BS02",
     "roleType": "Composite",
     "rolesCount": 39,
     "riskViolations": [
@@ -16304,7 +16304,7 @@ const ALL_USERS = [
         "standardsViolated": "SAP GRC Global Ruleset, SOX, Internal Access Control",
         "recommendedAction": "Separate access for BS02 - Basis Development and BS05 - Client Administration; remove conflicting action or authorization object from one role.",
         "recommendations": "Separate access for BS02 - Basis Development and BS05 - Client Administration; remove conflicting action or authorization object from one role.",
-        "assignee": "Seo-yeon Kim (Basis Admin)"
+        "assignee": "Basis Admin"
       },
       {
         "riskId": "B008",
@@ -16385,7 +16385,7 @@ const ALL_USERS = [
     "recommendedAction": "Separate access for BS02 - Basis Development and BS05 - Client Administration; remove conflicting action or authorization object from one role.",
     "priority": "P3",
     "status": "Open",
-    "assignee": "Seo-yeon Kim (Basis Admin)",
+    "assignee": "Basis Admin",
     "lastAnalyzedDate": "2026-05-19",
     "lastActivity": "2026-05-19 12:00:00",
     "firefighterId": "Standard Access",
@@ -16399,7 +16399,7 @@ const ALL_USERS = [
     "email": "cam_change@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_BS10",
+    "role": "Z_BS12",
     "roleType": "Composite",
     "rolesCount": 10,
     "riskViolations": [
@@ -16465,7 +16465,7 @@ const ALL_USERS = [
         "standardsViolated": "SAP GRC Global Ruleset, SOX, Internal Access Control",
         "recommendedAction": "Separate access for BS05 - Client Administration and BS10 - Security Administration; remove conflicting action or authorization object from one role.",
         "recommendations": "Separate access for BS05 - Client Administration and BS10 - Security Administration; remove conflicting action or authorization object from one role.",
-        "assignee": "Seo-yeon Kim (Basis Admin)"
+        "assignee": "Basis Admin"
       },
       {
         "riskId": "B016",
@@ -16528,7 +16528,7 @@ const ALL_USERS = [
     "email": "cam_fallback@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "HD Productivity",
-    "role": "Z_BS13",
+    "role": "Z_BS17",
     "roleType": "Composite",
     "rolesCount": 8,
     "riskViolations": [
@@ -16562,7 +16562,7 @@ const ALL_USERS = [
         "standardsViolated": "SAP GRC Global Ruleset, SOX, Internal Access Control",
         "recommendedAction": "Separate access for BS03 - Basis Table Maintenance and BS11 - System Administration; remove conflicting action or authorization object from one role.",
         "recommendations": "Separate access for BS03 - Basis Table Maintenance and BS11 - System Administration; remove conflicting action or authorization object from one role.",
-        "assignee": "Ji-hun Park (Security Analyst)"
+        "assignee": "Security Analyst"
       },
       {
         "riskId": "B014",
@@ -16626,7 +16626,7 @@ const ALL_USERS = [
         "standardsViolated": "SAP GRC Global Ruleset, SOX, Internal Access Control",
         "recommendedAction": "Separate access for BS13 - Maintain User Master and BS14 - Maintain Profiles / Roles; remove conflicting action or authorization object from one role.",
         "recommendations": "Separate access for BS13 - Maintain User Master and BS14 - Maintain Profiles / Roles; remove conflicting action or authorization object from one role.",
-        "assignee": "Yeon-hee Choi (Finance Controller)"
+        "assignee": "Finance Controller"
       },
       {
         "riskId": "BSCT",
@@ -16673,7 +16673,7 @@ const ALL_USERS = [
     "recommendedAction": "Separate access for BS03 - Basis Table Maintenance and BS11 - System Administration; remove conflicting action or authorization object from one role.",
     "priority": "P2",
     "status": "In Progress",
-    "assignee": "Ji-hun Park (Security Analyst)",
+    "assignee": "Security Analyst",
     "lastAnalyzedDate": "2026-05-19",
     "lastActivity": "2026-05-19 12:00:00",
     "firefighterId": "Standard Access",
@@ -16687,7 +16687,7 @@ const ALL_USERS = [
     "email": "christopher.ange@lottechemusa.com",
     "sapStatus": "Locked Due To Incorrect Logons",
     "license": "HB Professional",
-    "role": "Z_BS10",
+    "role": "Z_BS12",
     "roleType": "Composite",
     "rolesCount": 32,
     "riskViolations": [
@@ -16721,7 +16721,7 @@ const ALL_USERS = [
         "standardsViolated": "SAP GRC Global Ruleset, SOX, Internal Access Control",
         "recommendedAction": "Separate access for BS10 - Security Administration and BS12 - Transport Administration; remove conflicting action or authorization object from one role.",
         "recommendations": "Separate access for BS10 - Security Administration and BS12 - Transport Administration; remove conflicting action or authorization object from one role.",
-        "assignee": "Ji-hun Park (Security Analyst)"
+        "assignee": "Security Analyst"
       },
       {
         "riskId": "B017",
@@ -16800,7 +16800,7 @@ const ALL_USERS = [
     "recommendedAction": "Separate access for BS10 - Security Administration and BS12 - Transport Administration; remove conflicting action or authorization object from one role.",
     "priority": "P2",
     "status": "Resolved",
-    "assignee": "Ji-hun Park (Security Analyst)",
+    "assignee": "Security Analyst",
     "lastAnalyzedDate": "2026-05-19",
     "lastActivity": "2026-05-19 12:00:00",
     "firefighterId": "Standard Access",
@@ -16814,7 +16814,7 @@ const ALL_USERS = [
     "email": "carla.meyer@lottechemusa.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_BS20",
+    "role": "ZL_BR_CA_ALL_USER_1710",
     "roleType": "Composite",
     "rolesCount": 7,
     "riskViolations": [
@@ -16941,7 +16941,7 @@ const ALL_USERS = [
     "email": "carley.simon@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HD Productivity",
-    "role": "Z_AP01",
+    "role": "Z_BS16",
     "roleType": "Composite",
     "rolesCount": 52,
     "riskViolations": [
@@ -17098,7 +17098,7 @@ const ALL_USERS = [
     "email": "cbonot@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "HC Functional",
-    "role": "ZINV_EWM_SPCC_ROLE",
+    "role": "Z_CC03",
     "roleType": "Composite",
     "rolesCount": 6,
     "riskViolations": [
@@ -17225,7 +17225,7 @@ const ALL_USERS = [
     "email": "cbrescher@westlake.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_GL01",
+    "role": "Z_BS17",
     "roleType": "Composite",
     "rolesCount": 6,
     "riskViolations": [
@@ -17352,7 +17352,7 @@ const ALL_USERS = [
     "email": "christopher.bridges@lottechem.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_GL01",
+    "role": "ZL_BR_MFG_EXECUTION_PL1720",
     "roleType": "Composite",
     "rolesCount": 16,
     "riskViolations": [
@@ -17511,7 +17511,7 @@ const ALL_USERS = [
     "email": "chad.brockhoeft@lottechem.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_MM05",
+    "role": "Z_FA02",
     "roleType": "Composite",
     "rolesCount": 35,
     "riskViolations": [
@@ -17640,7 +17640,7 @@ const ALL_USERS = [
     "email": "clinton.busby@lottechemusa.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_AP01",
+    "role": "Z_PS03",
     "roleType": "Composite",
     "rolesCount": 41,
     "riskViolations": [
@@ -17769,7 +17769,7 @@ const ALL_USERS = [
     "email": "chad.crain@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HD Productivity",
-    "role": "Z_MM05",
+    "role": "Z_FA02",
     "roleType": "Composite",
     "rolesCount": 18,
     "riskViolations": [
@@ -17930,7 +17930,7 @@ const ALL_USERS = [
     "email": "chiranjeevi.dasu@nttdata.com",
     "sapStatus": "Locked Due To Incorrect Logons",
     "license": "HD Productivity",
-    "role": "Z_FI07",
+    "role": "Z_FI02",
     "roleType": "Composite",
     "rolesCount": 7,
     "riskViolations": [
@@ -18059,7 +18059,7 @@ const ALL_USERS = [
     "email": "cait.doncouse@nttdata.com",
     "sapStatus": "Not Locked",
     "license": "HD Productivity",
-    "role": "Z_AP01",
+    "role": "Z_GL03",
     "roleType": "Composite",
     "rolesCount": 7,
     "riskViolations": [
@@ -18188,7 +18188,7 @@ const ALL_USERS = [
     "email": "chad.lejeune@lottechemusa.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_FI08",
+    "role": "Z_GL03",
     "roleType": "Composite",
     "rolesCount": 23,
     "riskViolations": [
@@ -18349,7 +18349,7 @@ const ALL_USERS = [
     "email": "chad.poe@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HC Functional",
-    "role": "Z_GL01",
+    "role": "Z_FI06",
     "roleType": "Composite",
     "rolesCount": 44,
     "riskViolations": [
@@ -18478,7 +18478,7 @@ const ALL_USERS = [
     "email": "chulseung.jung@lottechemusa.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_GL01",
+    "role": "Z_GL03",
     "roleType": "Composite",
     "rolesCount": 50,
     "riskViolations": [
@@ -18605,7 +18605,7 @@ const ALL_USERS = [
     "email": "christopher.laughlin@partner.lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HC Functional",
-    "role": "Z_GL01",
+    "role": "Z_PY02",
     "roleType": "Composite",
     "rolesCount": 13,
     "riskViolations": [
@@ -18766,7 +18766,7 @@ const ALL_USERS = [
     "email": "christopher.gandy@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HC Functional",
-    "role": "Z_PY01",
+    "role": "Z_HR04",
     "roleType": "Composite",
     "rolesCount": 17,
     "riskViolations": [
@@ -18893,7 +18893,7 @@ const ALL_USERS = [
     "email": "chunggyu.lim@lotte.net",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_AR01",
+    "role": "Z_PY02",
     "roleType": "Composite",
     "rolesCount": 7,
     "riskViolations": [
@@ -19022,7 +19022,7 @@ const ALL_USERS = [
     "email": "Chandramouli.Lanka@nttdata.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_FI12",
+    "role": "Z_PY03",
     "roleType": "Composite",
     "rolesCount": 9,
     "riskViolations": [
@@ -19181,7 +19181,7 @@ const ALL_USERS = [
     "email": "christopher.lasher@partner.lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HC Functional",
-    "role": "Z_HR02",
+    "role": "Z_HR04",
     "roleType": "Composite",
     "rolesCount": 39,
     "riskViolations": [
@@ -19439,7 +19439,7 @@ const ALL_USERS = [
     "email": "chris.lee@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_PP02",
+    "role": "Z_PY03",
     "roleType": "Composite",
     "rolesCount": 35,
     "riskViolations": [
@@ -19727,7 +19727,7 @@ const ALL_USERS = [
     "email": "Clarissa.Martins@nttdata.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_PP02",
+    "role": "Z_PY03",
     "roleType": "Composite",
     "rolesCount": 16,
     "riskViolations": [
@@ -19856,7 +19856,7 @@ const ALL_USERS = [
     "email": "Craig.McCollough@ams-par.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_MM03",
+    "role": "Z_HR07",
     "roleType": "Composite",
     "rolesCount": 9,
     "riskViolations": [
@@ -20017,7 +20017,7 @@ const ALL_USERS = [
     "email": "chris.mier@lottechemusa.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_GL01",
+    "role": "Z_PP01",
     "roleType": "Composite",
     "rolesCount": 46,
     "riskViolations": [
@@ -20281,7 +20281,7 @@ const ALL_USERS = [
     "email": "Cesar.Orellana@bs.nttdata.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_AP01",
+    "role": "Z_MM02",
     "roleType": "Composite",
     "rolesCount": 67,
     "riskViolations": [
@@ -20446,7 +20446,7 @@ const ALL_USERS = [
     "email": "chandra.pagidela@nttdata.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HD Productivity",
-    "role": "Z_PR01",
+    "role": "Z_PP01",
     "roleType": "Composite",
     "rolesCount": 7,
     "riskViolations": [
@@ -20575,7 +20575,7 @@ const ALL_USERS = [
     "email": "camila.schneider@nttdata.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HD Productivity",
-    "role": "Z_MM03",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 6,
     "riskViolations": [
@@ -20702,7 +20702,7 @@ const ALL_USERS = [
     "email": "cust_tc@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_AP01",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 16,
     "riskViolations": [
@@ -20863,7 +20863,7 @@ const ALL_USERS = [
     "email": "cvankadara@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "HD Productivity",
-    "role": "Z_MM05",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 6,
     "riskViolations": [
@@ -20990,7 +20990,7 @@ const ALL_USERS = [
     "email": "candice.wilcox@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_AP01",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 43,
     "riskViolations": [
@@ -21119,7 +21119,7 @@ const ALL_USERS = [
     "email": "chinyup.kim@lottechemusa.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HC Functional",
-    "role": "Z_AP01",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 60,
     "riskViolations": [
@@ -21280,7 +21280,7 @@ const ALL_USERS = [
     "email": "daewon.hwang@lotte.net",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "ZL_BR_FI_AR_LCC",
+    "role": "Z_PR04",
     "roleType": "Composite",
     "rolesCount": 28,
     "riskViolations": [
@@ -21409,7 +21409,7 @@ const ALL_USERS = [
     "email": "david.airhart@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_PR07",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 29,
     "riskViolations": [
@@ -21540,7 +21540,7 @@ const ALL_USERS = [
     "email": "davis.anderson@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_AP01",
+    "role": "Z_PR04",
     "roleType": "Composite",
     "rolesCount": 65,
     "riskViolations": [
@@ -21701,7 +21701,7 @@ const ALL_USERS = [
     "email": "daniel.lee@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_PR01",
+    "role": "ZL_BR_SD_REPORTS",
     "roleType": "Composite",
     "rolesCount": 14,
     "riskViolations": [
@@ -21830,7 +21830,7 @@ const ALL_USERS = [
     "email": "danish.ali@nttdata.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HD Productivity",
-    "role": "Z_AP01",
+    "role": "Z_PR06",
     "roleType": "Composite",
     "rolesCount": 7,
     "riskViolations": [
@@ -21959,7 +21959,7 @@ const ALL_USERS = [
     "email": "darryl.droll@lottechemusa.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HD Productivity",
-    "role": "Z_AP02",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 22,
     "riskViolations": [
@@ -22120,7 +22120,7 @@ const ALL_USERS = [
     "email": "david.sung@lottechemusa.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_PR01",
+    "role": "Z_PR06",
     "roleType": "Composite",
     "rolesCount": 90,
     "riskViolations": [
@@ -22249,7 +22249,7 @@ const ALL_USERS = [
     "email": "david.wyatt@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HC Functional",
-    "role": "Z_AP01",
+    "role": "Z_PR06",
     "roleType": "Composite",
     "rolesCount": 57,
     "riskViolations": [
@@ -22378,7 +22378,7 @@ const ALL_USERS = [
     "email": "daryl.buckles@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_AP01",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 10,
     "riskViolations": [
@@ -22541,7 +22541,7 @@ const ALL_USERS = [
     "email": "daniel.cooley@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_PR07",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 37,
     "riskViolations": [
@@ -22672,7 +22672,7 @@ const ALL_USERS = [
     "email": "debra.courville@lottechemusa.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "ZMM_BR_PO_DISPLAY_DCO_1720",
+    "role": "Z_PR04",
     "roleType": "Composite",
     "rolesCount": 13,
     "riskViolations": [
@@ -22803,7 +22803,7 @@ const ALL_USERS = [
     "email": "Noreply.SAP@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_MM03",
+    "role": "Z_PR04",
     "roleType": "Composite",
     "rolesCount": 9,
     "riskViolations": [
@@ -22964,7 +22964,7 @@ const ALL_USERS = [
     "email": "delay_logon@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "NA",
-    "role": "Z_MM01",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 9,
     "riskViolations": [
@@ -23097,7 +23097,7 @@ const ALL_USERS = [
     "email": "dennis.hiew@drivingoe.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_MM07",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 8,
     "riskViolations": [
@@ -23228,7 +23228,7 @@ const ALL_USERS = [
     "email": "david.gotte@lottechemusa.com",
     "sapStatus": "Locked Due To Incorrect Logons",
     "license": "HD Productivity",
-    "role": "Z_AP01",
+    "role": "Z_PR06",
     "roleType": "Composite",
     "rolesCount": 50,
     "riskViolations": [
@@ -23389,7 +23389,7 @@ const ALL_USERS = [
     "email": "dustin.guilbeaux@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_PR11",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 32,
     "riskViolations": [
@@ -23518,7 +23518,7 @@ const ALL_USERS = [
     "email": "daniel.jung@drivingoe.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_PR11",
+    "role": "ZL_BR_CA_ALL_USERS",
     "roleType": "Composite",
     "rolesCount": 7,
     "riskViolations": [
@@ -23647,7 +23647,7 @@ const ALL_USERS = [
     "email": "daniel.kennedy@lottechemusa.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_PR11",
+    "role": "Z_AR03",
     "roleType": "Composite",
     "rolesCount": 9,
     "riskViolations": [
@@ -23806,7 +23806,7 @@ const ALL_USERS = [
     "email": "daniel.myers@lottechemusa.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "NA",
-    "role": "Z_PR11",
+    "role": "Z_AP03",
     "roleType": "Composite",
     "rolesCount": 5,
     "riskViolations": [
@@ -23931,7 +23931,7 @@ const ALL_USERS = [
     "email": "david.richardson@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HC Functional",
-    "role": "Z_PR11",
+    "role": "Z_PR06",
     "roleType": "Composite",
     "rolesCount": 17,
     "riskViolations": [
@@ -24058,7 +24058,7 @@ const ALL_USERS = [
     "email": "ds4_admin@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_PP03",
+    "role": "Z_AR03",
     "roleType": "Composite",
     "rolesCount": 12,
     "riskViolations": [
@@ -24217,7 +24217,7 @@ const ALL_USERS = [
     "email": "ds4_fallback@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_AR02",
+    "role": "HEC_BASIS_ADMIN_V3",
     "roleType": "Composite",
     "rolesCount": 9,
     "riskViolations": [
@@ -24344,7 +24344,7 @@ const ALL_USERS = [
     "email": "doug.sammons@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_AR01",
+    "role": "Z_AR06",
     "roleType": "Composite",
     "rolesCount": 33,
     "riskViolations": [
@@ -24473,7 +24473,7 @@ const ALL_USERS = [
     "email": "dsattlapally@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "HD Productivity",
-    "role": "Z_AR02",
+    "role": "Z_SD06",
     "roleType": "Composite",
     "rolesCount": 9,
     "riskViolations": [
@@ -24634,7 +24634,7 @@ const ALL_USERS = [
     "email": "david.thibodeaux@lottechemusa.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_AR02",
+    "role": "Z_SD04",
     "roleType": "Composite",
     "rolesCount": 7,
     "riskViolations": [
@@ -24763,7 +24763,7 @@ const ALL_USERS = [
     "email": "dukho.kim@lottechemusa.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HD Productivity",
-    "role": "Z_AR01",
+    "role": "Z_SD06",
     "roleType": "Composite",
     "rolesCount": 58,
     "riskViolations": [
@@ -24892,7 +24892,7 @@ const ALL_USERS = [
     "email": "edmilson.barbosa@nttdata.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_SD02",
+    "role": "Z_AR06",
     "roleType": "Composite",
     "rolesCount": 16,
     "riskViolations": [
@@ -25182,7 +25182,7 @@ const ALL_USERS = [
     "email": "ellen.elliott@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_SD08",
+    "role": "Z_SD04",
     "roleType": "Composite",
     "rolesCount": 78,
     "riskViolations": [
@@ -25407,7 +25407,7 @@ const ALL_USERS = [
         "standardsViolated": "SAP GRC Global Ruleset, SOX, Internal Access Control",
         "recommendedAction": "Separate access for ZBS01 - BS01 - Archiving and ZBS02 - BS02 - Basis Development; remove conflicting action or authorization object from one role.",
         "recommendations": "Separate access for ZBS01 - BS01 - Archiving and ZBS02 - BS02 - Basis Development; remove conflicting action or authorization object from one role.",
-        "assignee": "Sarah Jenkins (AP Manager)"
+        "assignee": "AP Manager"
       },
       {
         "riskId": "B005",
@@ -25470,7 +25470,7 @@ const ALL_USERS = [
     "email": "ekaterina.ivanov@lottechem.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_AR02",
+    "role": "Z_SD09",
     "roleType": "Composite",
     "rolesCount": 28,
     "riskViolations": [
@@ -25566,7 +25566,7 @@ const ALL_USERS = [
         "standardsViolated": "SAP GRC Global Ruleset, SOX, Internal Access Control",
         "recommendedAction": "Separate access for BS02 - Basis Development and BS05 - Client Administration; remove conflicting action or authorization object from one role.",
         "recommendations": "Separate access for BS02 - Basis Development and BS05 - Client Administration; remove conflicting action or authorization object from one role.",
-        "assignee": "Seo-yeon Kim (Basis Admin)"
+        "assignee": "Basis Admin"
       }
     ],
     "riskId": "S026",
@@ -25597,7 +25597,7 @@ const ALL_USERS = [
     "email": "emaldonado@westlake.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "NA",
-    "role": "Z_AR03",
+    "role": "Z_AR06",
     "roleType": "Composite",
     "rolesCount": 7,
     "riskViolations": [
@@ -25663,7 +25663,7 @@ const ALL_USERS = [
         "standardsViolated": "SAP GRC Global Ruleset, SOX, Internal Access Control",
         "recommendedAction": "Separate access for BS02 - Basis Development and BS11 - System Administration; remove conflicting action or authorization object from one role.",
         "recommendations": "Separate access for BS02 - Basis Development and BS11 - System Administration; remove conflicting action or authorization object from one role.",
-        "assignee": "Seo-yeon Kim (Basis Admin)"
+        "assignee": "Basis Admin"
       },
       {
         "riskId": "B006",
@@ -25726,7 +25726,7 @@ const ALL_USERS = [
     "email": "erin.mogg@itelligencegroup.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "ZL_BR_FI_GL_ACCNTING",
+    "role": "Z_BS02",
     "roleType": "Composite",
     "rolesCount": 81,
     "riskViolations": [
@@ -25824,7 +25824,7 @@ const ALL_USERS = [
         "standardsViolated": "SAP GRC Global Ruleset, SOX, Internal Access Control",
         "recommendedAction": "Separate access for BS03 - Basis Table Maintenance and BS11 - System Administration; remove conflicting action or authorization object from one role.",
         "recommendations": "Separate access for BS03 - Basis Table Maintenance and BS11 - System Administration; remove conflicting action or authorization object from one role.",
-        "assignee": "Ji-hun Park (Security Analyst)"
+        "assignee": "Security Analyst"
       },
       {
         "riskId": "B014",
@@ -25887,7 +25887,7 @@ const ALL_USERS = [
     "email": "eric.nunez@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_BS10",
+    "role": "Z_BS02",
     "roleType": "Composite",
     "rolesCount": 22,
     "riskViolations": [
@@ -25985,7 +25985,7 @@ const ALL_USERS = [
         "standardsViolated": "SAP GRC Global Ruleset, SOX, Internal Access Control",
         "recommendedAction": "Separate access for BS10 - Security Administration and BS12 - Transport Administration; remove conflicting action or authorization object from one role.",
         "recommendations": "Separate access for BS10 - Security Administration and BS12 - Transport Administration; remove conflicting action or authorization object from one role.",
-        "assignee": "Ji-hun Park (Security Analyst)"
+        "assignee": "Security Analyst"
       }
     ],
     "riskId": "B002",
@@ -26082,7 +26082,7 @@ const ALL_USERS = [
         "standardsViolated": "SAP GRC Global Ruleset, SOX, Internal Access Control",
         "recommendedAction": "Separate access for BS03 - Basis Table Maintenance and BS05 - Client Administration; remove conflicting action or authorization object from one role.",
         "recommendations": "Separate access for BS03 - Basis Table Maintenance and BS05 - Client Administration; remove conflicting action or authorization object from one role.",
-        "assignee": "Seo-yeon Kim (Basis Admin)"
+        "assignee": "Basis Admin"
       },
       {
         "riskId": "B015",
@@ -26145,7 +26145,7 @@ const ALL_USERS = [
     "email": "ely.taleon@partner.lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_BS08",
+    "role": "Z_BS16",
     "roleType": "Composite",
     "rolesCount": 66,
     "riskViolations": [
@@ -26304,7 +26304,7 @@ const ALL_USERS = [
     "email": "ethan.traxler@lottechemusa.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_BS10",
+    "role": "Z_BS12",
     "roleType": "Composite",
     "rolesCount": 41,
     "riskViolations": [
@@ -26338,7 +26338,7 @@ const ALL_USERS = [
         "standardsViolated": "SAP GRC Global Ruleset, SOX, Internal Access Control",
         "recommendedAction": "Separate access for BS05 - Client Administration and BS10 - Security Administration; remove conflicting action or authorization object from one role.",
         "recommendations": "Separate access for BS05 - Client Administration and BS10 - Security Administration; remove conflicting action or authorization object from one role.",
-        "assignee": "Seo-yeon Kim (Basis Admin)"
+        "assignee": "Basis Admin"
       },
       {
         "riskId": "B016",
@@ -26419,7 +26419,7 @@ const ALL_USERS = [
     "recommendedAction": "Separate access for BS05 - Client Administration and BS10 - Security Administration; remove conflicting action or authorization object from one role.",
     "priority": "P2",
     "status": "Open",
-    "assignee": "Seo-yeon Kim (Basis Admin)",
+    "assignee": "Basis Admin",
     "lastAnalyzedDate": "2026-05-19",
     "lastActivity": "2026-05-19 12:00:00",
     "firefighterId": "Standard Access",
@@ -26433,7 +26433,7 @@ const ALL_USERS = [
     "email": "eric.walker@partner.lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "ZMM_BR_PO_COM_USER_1720",
+    "role": "Z_BS17",
     "roleType": "Composite",
     "rolesCount": 8,
     "riskViolations": [
@@ -26499,7 +26499,7 @@ const ALL_USERS = [
         "standardsViolated": "SAP GRC Global Ruleset, SOX, Internal Access Control",
         "recommendedAction": "Separate access for BS13 - Maintain User Master and BS14 - Maintain Profiles / Roles; remove conflicting action or authorization object from one role.",
         "recommendations": "Separate access for BS13 - Maintain User Master and BS14 - Maintain Profiles / Roles; remove conflicting action or authorization object from one role.",
-        "assignee": "Yeon-hee Choi (Finance Controller)"
+        "assignee": "Finance Controller"
       },
       {
         "riskId": "BSCT",
@@ -26560,7 +26560,7 @@ const ALL_USERS = [
     "email": "ey.audit.a@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "ZL_BR_FI_GL_ACCNTING",
+    "role": "Z_BS09",
     "roleType": "Composite",
     "rolesCount": 84,
     "riskViolations": [
@@ -26844,7 +26844,7 @@ const ALL_USERS = [
     "email": "ff.basis@lottechem.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_AP01",
+    "role": "Z_BS16",
     "roleType": "Composite",
     "rolesCount": 92,
     "riskViolations": [
@@ -26969,7 +26969,7 @@ const ALL_USERS = [
     "email": "ff.ewm@lottechem.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_MM05",
+    "role": "ZBC_BR_SPM_FIREFIGHTER",
     "roleType": "Composite",
     "rolesCount": 17,
     "riskViolations": [
@@ -27128,7 +27128,7 @@ const ALL_USERS = [
     "email": "ff.fi@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_FI07",
+    "role": "Z_FI02",
     "roleType": "Composite",
     "rolesCount": 17,
     "riskViolations": [
@@ -27257,7 +27257,7 @@ const ALL_USERS = [
     "email": "ff.it@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_GL01",
+    "role": "ZBC_BR_SPM_FIREFIGHTER",
     "roleType": "Composite",
     "rolesCount": 79,
     "riskViolations": [
@@ -27386,7 +27386,7 @@ const ALL_USERS = [
     "email": "ff.it02@lottechem.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_MM05",
+    "role": "ZBC_BR_SPM_FIREFIGHTER",
     "roleType": "Composite",
     "rolesCount": 71,
     "riskViolations": [
@@ -27547,7 +27547,7 @@ const ALL_USERS = [
     "email": "ff.mm@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_AR02",
+    "role": "ZBC_BR_SPM_FIREFIGHTER",
     "roleType": "Composite",
     "rolesCount": 54,
     "riskViolations": [
@@ -27676,7 +27676,7 @@ const ALL_USERS = [
     "email": "ff.mm02@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_MM05",
+    "role": "ZBC_BR_SPM_FIREFIGHTER",
     "roleType": "Composite",
     "rolesCount": 18,
     "riskViolations": [
@@ -27805,7 +27805,7 @@ const ALL_USERS = [
     "email": "ff.pm@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_GL01",
+    "role": "ZBC_BR_SPM_FIREFIGHTER",
     "roleType": "Composite",
     "rolesCount": 22,
     "riskViolations": [
@@ -27966,7 +27966,7 @@ const ALL_USERS = [
     "email": "ff.pp@lottechem.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_AP01",
+    "role": "ZBC_BR_SPM_FIREFIGHTER",
     "roleType": "Composite",
     "rolesCount": 18,
     "riskViolations": [
@@ -28095,7 +28095,7 @@ const ALL_USERS = [
     "email": "ff.sd@lottechem.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_FI08",
+    "role": "ZBC_BR_SPM_FIREFIGHTER",
     "roleType": "Composite",
     "rolesCount": 29,
     "riskViolations": [
@@ -28224,7 +28224,7 @@ const ALL_USERS = [
     "email": "ff.temp@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_FI12",
+    "role": "ZBC_BR_SPM_FIREFIGHTER",
     "roleType": "Composite",
     "rolesCount": 73,
     "riskViolations": [
@@ -28383,7 +28383,7 @@ const ALL_USERS = [
     "email": "fico_ams@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_GL01",
+    "role": "Z_AP02",
     "roleType": "Composite",
     "rolesCount": 71,
     "riskViolations": [
@@ -28510,7 +28510,7 @@ const ALL_USERS = [
     "email": "fioriadm@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_GL01",
+    "role": "Z_PY02",
     "roleType": "Composite",
     "rolesCount": 36,
     "riskViolations": [
@@ -28639,7 +28639,7 @@ const ALL_USERS = [
     "email": "fiori_batch@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_PY01",
+    "role": "Z_PY03",
     "roleType": "Composite",
     "rolesCount": 8,
     "riskViolations": [
@@ -28798,7 +28798,7 @@ const ALL_USERS = [
     "email": "fiori_ex@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_BR_AP_ACCOUNTANT",
+    "role": "Z_HR04",
     "roleType": "Composite",
     "rolesCount": 65,
     "riskViolations": [
@@ -29056,7 +29056,7 @@ const ALL_USERS = [
     "email": "fernando.valarino@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_HR03",
+    "role": "Z_HR04",
     "roleType": "Composite",
     "rolesCount": 49,
     "riskViolations": [
@@ -29344,7 +29344,7 @@ const ALL_USERS = [
     "email": "gdutta@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_PP02",
+    "role": "Z_PY03",
     "roleType": "Composite",
     "rolesCount": 7,
     "riskViolations": [
@@ -29473,7 +29473,7 @@ const ALL_USERS = [
     "email": "ggollapudi@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "HD Productivity",
-    "role": "Z_SD02",
+    "role": "Z_HR04",
     "roleType": "Composite",
     "rolesCount": 9,
     "riskViolations": [
@@ -29634,7 +29634,7 @@ const ALL_USERS = [
     "email": "glauco.silva@nttdata.com",
     "sapStatus": "Not Locked",
     "license": "HD Productivity",
-    "role": "Z_PP02",
+    "role": "Z_PP01",
     "roleType": "Composite",
     "rolesCount": 7,
     "riskViolations": [
@@ -29763,7 +29763,7 @@ const ALL_USERS = [
     "email": "gmadhavan@sageitinc.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_MM03",
+    "role": "Z_HR07",
     "roleType": "Composite",
     "rolesCount": 88,
     "riskViolations": [
@@ -29892,7 +29892,7 @@ const ALL_USERS = [
     "email": "greg.morgan@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HC Functional",
-    "role": "Z_AP01",
+    "role": "Z_PP01",
     "roleType": "Composite",
     "rolesCount": 40,
     "riskViolations": [
@@ -30055,7 +30055,7 @@ const ALL_USERS = [
     "email": "gnatarajan@sageitinc.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_MM10",
+    "role": "Z_MM07",
     "roleType": "Composite",
     "rolesCount": 88,
     "riskViolations": [
@@ -30186,7 +30186,7 @@ const ALL_USERS = [
     "email": "Gangadhar.Paerla@nttdata.com",
     "sapStatus": "Not Locked",
     "license": "HD Productivity",
-    "role": "Z_AP01",
+    "role": "Z_MM02",
     "roleType": "Composite",
     "rolesCount": 9,
     "riskViolations": [
@@ -30319,7 +30319,7 @@ const ALL_USERS = [
     "email": "gregory.peterson@lottechemusa.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HD Productivity",
-    "role": "Z_PR01",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 9,
     "riskViolations": [
@@ -30480,7 +30480,7 @@ const ALL_USERS = [
     "email": "hs410.lee@lotte.net",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "ZL_BR_FI_AR_LCC",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 28,
     "riskViolations": [
@@ -30607,7 +30607,7 @@ const ALL_USERS = [
     "email": "harishankert@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_AP01",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 9,
     "riskViolations": [
@@ -30736,7 +30736,7 @@ const ALL_USERS = [
     "email": "howard.brandon@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_AP01",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 9,
     "riskViolations": [
@@ -30897,7 +30897,7 @@ const ALL_USERS = [
     "email": "hamish.campbell@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_PR01",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 97,
     "riskViolations": [
@@ -31026,7 +31026,7 @@ const ALL_USERS = [
     "email": "hannah.nelson@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_AP01",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 38,
     "riskViolations": [
@@ -31155,7 +31155,7 @@ const ALL_USERS = [
     "email": "hunter.freeland@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "ZEWM_BR_WH_DISPLAY_MP_LAMW",
+    "role": "Z_PR04",
     "roleType": "Composite",
     "rolesCount": 68,
     "riskViolations": [
@@ -31316,7 +31316,7 @@ const ALL_USERS = [
     "email": "hima.m@nttdata.com",
     "sapStatus": "Not Locked",
     "license": "HD Productivity",
-    "role": "Z_PR01",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 8,
     "riskViolations": [
@@ -31447,7 +31447,7 @@ const ALL_USERS = [
     "email": "harley.haley@c-ka.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_AP01",
+    "role": "ZL_BR_MFG_INVTRY_REP_1720_P03",
     "roleType": "Composite",
     "rolesCount": 16,
     "riskViolations": [
@@ -31576,7 +31576,7 @@ const ALL_USERS = [
     "email": "heather.holbrook@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HD Productivity",
-    "role": "Z_AP01",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 9,
     "riskViolations": [
@@ -31737,7 +31737,7 @@ const ALL_USERS = [
     "email": "hyunjin.kang@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_AP01",
+    "role": "Z_PR06",
     "roleType": "Composite",
     "rolesCount": 50,
     "riskViolations": [
@@ -31866,7 +31866,7 @@ const ALL_USERS = [
     "email": "hoang.nguyen@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "ZFI_BR_AP_MGR_1710",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 238,
     "riskViolations": [
@@ -31995,7 +31995,7 @@ const ALL_USERS = [
     "email": "iagconnect@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_PR07",
+    "role": "Z_PR06",
     "roleType": "Composite",
     "rolesCount": 13,
     "riskViolations": [
@@ -32156,7 +32156,7 @@ const ALL_USERS = [
     "email": "iksoo.kim@lottechemusa.com",
     "sapStatus": "UNKNOWN",
     "license": "HB Professional",
-    "role": "ZFI_BR_AP_MGR_1710",
+    "role": "Z_PR06",
     "roleType": "Composite",
     "rolesCount": 276,
     "riskViolations": [
@@ -32287,7 +32287,7 @@ const ALL_USERS = [
     "email": "inho.shin@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_AP01",
+    "role": "Z_PR04",
     "roleType": "Composite",
     "rolesCount": 69,
     "riskViolations": [
@@ -32418,7 +32418,7 @@ const ALL_USERS = [
     "email": "Inseob.han@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_PR01",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 26,
     "riskViolations": [
@@ -32581,7 +32581,7 @@ const ALL_USERS = [
     "email": "isenthilkumar@sageitinc.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_MM01",
+    "role": "Z_PR04",
     "roleType": "Composite",
     "rolesCount": 89,
     "riskViolations": [
@@ -32712,7 +32712,7 @@ const ALL_USERS = [
     "email": "it.capture@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_MM03",
+    "role": "Z_PR04",
     "roleType": "Composite",
     "rolesCount": 7,
     "riskViolations": [
@@ -32841,7 +32841,7 @@ const ALL_USERS = [
     "email": "itcapture@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "NA",
-    "role": "Z_PR11",
+    "role": "Z_MM08",
     "roleType": "Composite",
     "rolesCount": 10,
     "riskViolations": [
@@ -33004,7 +33004,7 @@ const ALL_USERS = [
     "email": "itell@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_PR11",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 7,
     "riskViolations": [
@@ -33133,7 +33133,7 @@ const ALL_USERS = [
     "email": "itellvpn@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_AP01",
+    "role": "Z_PR06",
     "roleType": "Composite",
     "rolesCount": 10,
     "riskViolations": [
@@ -33262,7 +33262,7 @@ const ALL_USERS = [
     "email": "jae.kang@lottechemusa.com",
     "sapStatus": "Locked Due To Incorrect Logons",
     "license": "HB Professional",
-    "role": "Z_PR11",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 151,
     "riskViolations": [
@@ -33548,7 +33548,7 @@ const ALL_USERS = [
     "email": "jaewoo.lee@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_PR11",
+    "role": "Z_AR03",
     "roleType": "Composite",
     "rolesCount": 38,
     "riskViolations": [
@@ -33675,7 +33675,7 @@ const ALL_USERS = [
     "email": "jake.nixon@levingston.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "ZL_BR_CA_CONTRACTORS_COMMON",
+    "role": "Z_SD01",
     "roleType": "Composite",
     "rolesCount": 7,
     "riskViolations": [
@@ -33832,7 +33832,7 @@ const ALL_USERS = [
     "email": "james.ledger@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "NA",
-    "role": "Z_AR04",
+    "role": "Z_SD01",
     "roleType": "Composite",
     "rolesCount": 6,
     "riskViolations": [
@@ -33959,7 +33959,7 @@ const ALL_USERS = [
     "email": "james.park@lottechem.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_AR01",
+    "role": "Z_AR03",
     "roleType": "Composite",
     "rolesCount": 82,
     "riskViolations": [
@@ -34088,7 +34088,7 @@ const ALL_USERS = [
     "email": "janalyn.arceneaux@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_SD02",
+    "role": "ZL_BR_CA_ALL_USER_1710",
     "roleType": "Composite",
     "rolesCount": 9,
     "riskViolations": [
@@ -34249,7 +34249,7 @@ const ALL_USERS = [
     "email": "jared.ogea@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_AR01",
+    "role": "Z_AR06",
     "roleType": "Composite",
     "rolesCount": 24,
     "riskViolations": [
@@ -34378,7 +34378,7 @@ const ALL_USERS = [
     "email": "justin.arnold@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_AR02",
+    "role": "Z_SD06",
     "roleType": "Composite",
     "rolesCount": 39,
     "riskViolations": [
@@ -34507,7 +34507,7 @@ const ALL_USERS = [
     "email": "jason.long@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_AR02",
+    "role": "Z_SD05",
     "roleType": "Composite",
     "rolesCount": 37,
     "riskViolations": [
@@ -34668,7 +34668,7 @@ const ALL_USERS = [
     "email": "jayaramiv@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_AR02",
+    "role": "Z_SD06",
     "roleType": "Composite",
     "rolesCount": 7,
     "riskViolations": [
@@ -34797,7 +34797,7 @@ const ALL_USERS = [
     "email": "josie.bertrand@lottechem.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_AR02",
+    "role": "Z_AR06",
     "roleType": "Composite",
     "rolesCount": 55,
     "riskViolations": [
@@ -34926,7 +34926,7 @@ const ALL_USERS = [
     "email": "jessica.boudreaux@lottechemusa.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "ZCA_BR_COSTCEN_MAN_CAMAN_1720",
+    "role": "Z_BS02",
     "roleType": "Composite",
     "rolesCount": 72,
     "riskViolations": [
@@ -35087,7 +35087,7 @@ const ALL_USERS = [
     "email": "jody.brashear@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HD Productivity",
-    "role": "Z_SD08",
+    "role": "Z_BS02",
     "roleType": "Composite",
     "rolesCount": 16,
     "riskViolations": [
@@ -35214,7 +35214,7 @@ const ALL_USERS = [
     "email": "jbroderick@sumitcredits.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "ZL_BR_FI_AP",
+    "role": "Z_AR07",
     "roleType": "Composite",
     "rolesCount": 7,
     "riskViolations": [
@@ -35280,7 +35280,7 @@ const ALL_USERS = [
         "standardsViolated": "SAP GRC Global Ruleset, SOX, Internal Access Control",
         "recommendedAction": "Separate access for ZBS01 - BS01 - Archiving and ZBS02 - BS02 - Basis Development; remove conflicting action or authorization object from one role.",
         "recommendations": "Separate access for ZBS01 - BS01 - Archiving and ZBS02 - BS02 - Basis Development; remove conflicting action or authorization object from one role.",
-        "assignee": "Sarah Jenkins (AP Manager)"
+        "assignee": "AP Manager"
       },
       {
         "riskId": "B005",
@@ -35343,7 +35343,7 @@ const ALL_USERS = [
     "email": "joseph.brown@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HC Functional",
-    "role": "Z_BS05",
+    "role": "Z_SD09",
     "roleType": "Composite",
     "rolesCount": 31,
     "riskViolations": [
@@ -35407,7 +35407,7 @@ const ALL_USERS = [
         "standardsViolated": "SAP GRC Global Ruleset, SOX, Internal Access Control",
         "recommendedAction": "Separate access for BS02 - Basis Development and BS05 - Client Administration; remove conflicting action or authorization object from one role.",
         "recommendations": "Separate access for BS02 - Basis Development and BS05 - Client Administration; remove conflicting action or authorization object from one role.",
-        "assignee": "Seo-yeon Kim (Basis Admin)"
+        "assignee": "Basis Admin"
       },
       {
         "riskId": "B008",
@@ -35502,7 +35502,7 @@ const ALL_USERS = [
     "email": "john.burchjr@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_BS10",
+    "role": "Z_BS02",
     "roleType": "Composite",
     "rolesCount": 20,
     "riskViolations": [
@@ -35536,7 +35536,7 @@ const ALL_USERS = [
         "standardsViolated": "SAP GRC Global Ruleset, SOX, Internal Access Control",
         "recommendedAction": "Separate access for BS02 - Basis Development and BS11 - System Administration; remove conflicting action or authorization object from one role.",
         "recommendations": "Separate access for BS02 - Basis Development and BS11 - System Administration; remove conflicting action or authorization object from one role.",
-        "assignee": "Seo-yeon Kim (Basis Admin)"
+        "assignee": "Basis Admin"
       },
       {
         "riskId": "B006",
@@ -35600,7 +35600,7 @@ const ALL_USERS = [
         "standardsViolated": "SAP GRC Global Ruleset, SOX, Internal Access Control",
         "recommendedAction": "Separate access for BS05 - Client Administration and BS10 - Security Administration; remove conflicting action or authorization object from one role.",
         "recommendations": "Separate access for BS05 - Client Administration and BS10 - Security Administration; remove conflicting action or authorization object from one role.",
-        "assignee": "Seo-yeon Kim (Basis Admin)"
+        "assignee": "Basis Admin"
       }
     ],
     "riskId": "B001",
@@ -35617,7 +35617,7 @@ const ALL_USERS = [
     "recommendedAction": "Separate access for BS02 - Basis Development and BS11 - System Administration; remove conflicting action or authorization object from one role.",
     "priority": "P3",
     "status": "In Progress",
-    "assignee": "Seo-yeon Kim (Basis Admin)",
+    "assignee": "Basis Admin",
     "lastAnalyzedDate": "2026-05-19",
     "lastActivity": "2026-05-19 12:00:00",
     "firefighterId": "Standard Access",
@@ -35631,7 +35631,7 @@ const ALL_USERS = [
     "email": "jayde.butler@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HD Productivity",
-    "role": "ZL_BR_MM_PRPO_REPORTS_EHSSAA",
+    "role": "Z_BS02",
     "roleType": "Composite",
     "rolesCount": 48,
     "riskViolations": [
@@ -35697,7 +35697,7 @@ const ALL_USERS = [
         "standardsViolated": "SAP GRC Global Ruleset, SOX, Internal Access Control",
         "recommendedAction": "Separate access for BS03 - Basis Table Maintenance and BS11 - System Administration; remove conflicting action or authorization object from one role.",
         "recommendations": "Separate access for BS03 - Basis Table Maintenance and BS11 - System Administration; remove conflicting action or authorization object from one role.",
-        "assignee": "Ji-hun Park (Security Analyst)"
+        "assignee": "Security Analyst"
       },
       {
         "riskId": "B014",
@@ -35760,7 +35760,7 @@ const ALL_USERS = [
     "email": "josie.carter@lottechemusa.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_BS10",
+    "role": "Z_BS12",
     "roleType": "Composite",
     "rolesCount": 57,
     "riskViolations": [
@@ -35826,7 +35826,7 @@ const ALL_USERS = [
         "standardsViolated": "SAP GRC Global Ruleset, SOX, Internal Access Control",
         "recommendedAction": "Separate access for BS10 - Security Administration and BS12 - Transport Administration; remove conflicting action or authorization object from one role.",
         "recommendations": "Separate access for BS10 - Security Administration and BS12 - Transport Administration; remove conflicting action or authorization object from one role.",
-        "assignee": "Ji-hun Park (Security Analyst)"
+        "assignee": "Security Analyst"
       },
       {
         "riskId": "B017",
@@ -35919,7 +35919,7 @@ const ALL_USERS = [
     "email": "justin.chaisson@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_BS03",
+    "role": "Z_BS20",
     "roleType": "Composite",
     "rolesCount": 46,
     "riskViolations": [
@@ -35953,7 +35953,7 @@ const ALL_USERS = [
         "standardsViolated": "SAP GRC Global Ruleset, SOX, Internal Access Control",
         "recommendedAction": "Separate access for BS03 - Basis Table Maintenance and BS05 - Client Administration; remove conflicting action or authorization object from one role.",
         "recommendations": "Separate access for BS03 - Basis Table Maintenance and BS05 - Client Administration; remove conflicting action or authorization object from one role.",
-        "assignee": "Seo-yeon Kim (Basis Admin)"
+        "assignee": "Basis Admin"
       },
       {
         "riskId": "B015",
@@ -36034,7 +36034,7 @@ const ALL_USERS = [
     "recommendedAction": "Separate access for BS03 - Basis Table Maintenance and BS05 - Client Administration; remove conflicting action or authorization object from one role.",
     "priority": "P2",
     "status": "Resolved",
-    "assignee": "Seo-yeon Kim (Basis Admin)",
+    "assignee": "Basis Admin",
     "lastAnalyzedDate": "2026-05-19",
     "lastActivity": "2026-05-19 12:00:00",
     "firefighterId": "Standard Access",
@@ -36048,7 +36048,7 @@ const ALL_USERS = [
     "email": "john.chapman@partner.lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "ZEWM_BR_WH_DISPLAY_MP_LAMW",
+    "role": "Z_BS16",
     "roleType": "Composite",
     "rolesCount": 73,
     "riskViolations": [
@@ -36175,7 +36175,7 @@ const ALL_USERS = [
     "email": "joshua.cormier@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "ZL_BR_MFG_EXECUTION_PL1720",
+    "role": "Z_BS12",
     "roleType": "Composite",
     "rolesCount": 24,
     "riskViolations": [
@@ -36334,7 +36334,7 @@ const ALL_USERS = [
     "email": "jeff.dozart@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_GL01",
+    "role": "ZBC_BR_SPM_FIREFIGHTER",
     "roleType": "Composite",
     "rolesCount": 34,
     "riskViolations": [
@@ -36368,7 +36368,7 @@ const ALL_USERS = [
         "standardsViolated": "SAP GRC Global Ruleset, SOX, Internal Access Control",
         "recommendedAction": "Separate access for BS13 - Maintain User Master and BS14 - Maintain Profiles / Roles; remove conflicting action or authorization object from one role.",
         "recommendations": "Separate access for BS13 - Maintain User Master and BS14 - Maintain Profiles / Roles; remove conflicting action or authorization object from one role.",
-        "assignee": "Yeon-hee Choi (Finance Controller)"
+        "assignee": "Finance Controller"
       },
       {
         "riskId": "BSCT",
@@ -36447,7 +36447,7 @@ const ALL_USERS = [
     "recommendedAction": "Separate access for BS13 - Maintain User Master and BS14 - Maintain Profiles / Roles; remove conflicting action or authorization object from one role.",
     "priority": "P2",
     "status": "Open",
-    "assignee": "Yeon-hee Choi (Finance Controller)",
+    "assignee": "Finance Controller",
     "lastAnalyzedDate": "2026-05-19",
     "lastActivity": "2026-05-19 12:00:00",
     "firefighterId": "JEFF.DOZART",
@@ -36461,7 +36461,7 @@ const ALL_USERS = [
     "email": "jbai@mysupplychaingroup.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_GL01",
+    "role": "Z_BS15",
     "roleType": "Composite",
     "rolesCount": 17,
     "riskViolations": [
@@ -36586,7 +36586,7 @@ const ALL_USERS = [
     "email": "jeremy.terro@lottechemusa.com",
     "sapStatus": "UNKNOWN",
     "license": "HB Professional",
-    "role": "Z_MM05",
+    "role": "Z_FA02",
     "roleType": "Composite",
     "rolesCount": 23,
     "riskViolations": [
@@ -36745,7 +36745,7 @@ const ALL_USERS = [
     "email": "jourious.evans@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HC Functional",
-    "role": "Z_AP01",
+    "role": "Z_CA01",
     "roleType": "Composite",
     "rolesCount": 17,
     "riskViolations": [
@@ -36872,7 +36872,7 @@ const ALL_USERS = [
     "email": "jennifer.guice@lottechem.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_MM05",
+    "role": "Z_FA02",
     "roleType": "Composite",
     "rolesCount": 8,
     "riskViolations": [
@@ -37001,7 +37001,7 @@ const ALL_USERS = [
     "email": "john.holliday@lottechemusa.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HD Productivity",
-    "role": "Z_FI07",
+    "role": "Z_FI02",
     "roleType": "Composite",
     "rolesCount": 9,
     "riskViolations": [
@@ -37162,7 +37162,7 @@ const ALL_USERS = [
     "email": "jinkeunjang@lotte.net",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_AP01",
+    "role": "Z_PS03",
     "roleType": "Composite",
     "rolesCount": 34,
     "riskViolations": [
@@ -37291,7 +37291,7 @@ const ALL_USERS = [
     "email": "jinmoon.son@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_AR02",
+    "role": "Z_FA02",
     "roleType": "Composite",
     "rolesCount": 78,
     "riskViolations": [
@@ -37420,7 +37420,7 @@ const ALL_USERS = [
     "email": "jinseoblee@lotte.net",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_GL01",
+    "role": "Z_PS03",
     "roleType": "Composite",
     "rolesCount": 9,
     "riskViolations": [
@@ -37581,7 +37581,7 @@ const ALL_USERS = [
     "email": "joseph.choi@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_GL01",
+    "role": "Z_GL03",
     "roleType": "Composite",
     "rolesCount": 58,
     "riskViolations": [
@@ -37710,7 +37710,7 @@ const ALL_USERS = [
     "email": "john.jardneaux@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_GL01",
+    "role": "Z_MM04",
     "roleType": "Composite",
     "rolesCount": 37,
     "riskViolations": [
@@ -37839,7 +37839,7 @@ const ALL_USERS = [
     "email": "jasmine.johnson@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_PY01",
+    "role": "Z_GL03",
     "roleType": "Composite",
     "rolesCount": 33,
     "riskViolations": [
@@ -37998,7 +37998,7 @@ const ALL_USERS = [
     "email": "jkang@lottechem.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_FI08",
+    "role": "Z_FI04",
     "roleType": "Composite",
     "rolesCount": 54,
     "riskViolations": [
@@ -38127,7 +38127,7 @@ const ALL_USERS = [
     "email": "Jeppe.Karlsen@bs.nttdata.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_FI12",
+    "role": "Z_HR04",
     "roleType": "Composite",
     "rolesCount": 6,
     "riskViolations": [
@@ -38254,7 +38254,7 @@ const ALL_USERS = [
     "email": "jennifer.lavalley@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "NA",
-    "role": "Z_HR02",
+    "role": "Z_HR04",
     "roleType": "Composite",
     "rolesCount": 8,
     "riskViolations": [
@@ -38542,7 +38542,7 @@ const ALL_USERS = [
     "email": "jlink@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_PY01",
+    "role": "Z_PY03",
     "roleType": "Composite",
     "rolesCount": 12,
     "riskViolations": [
@@ -38671,7 +38671,7 @@ const ALL_USERS = [
     "email": "jeff.meaux@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HD Productivity",
-    "role": "Z_HR03",
+    "role": "Z_HR04",
     "roleType": "Composite",
     "rolesCount": 8,
     "riskViolations": [
@@ -38959,7 +38959,7 @@ const ALL_USERS = [
     "email": "james.nielsen@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HC Functional",
-    "role": "Z_HR05",
+    "role": "Z_HR04",
     "roleType": "Composite",
     "rolesCount": 38,
     "riskViolations": [
@@ -39086,7 +39086,7 @@ const ALL_USERS = [
     "email": "joanne.kim@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_GL01",
+    "role": "Z_PP01",
     "roleType": "Composite",
     "rolesCount": 41,
     "riskViolations": [
@@ -39249,7 +39249,7 @@ const ALL_USERS = [
     "email": "jody.manzon@lottechem.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_PP02",
+    "role": "Z_PY03",
     "roleType": "Composite",
     "rolesCount": 8,
     "riskViolations": [
@@ -39380,7 +39380,7 @@ const ALL_USERS = [
     "email": "jody.trahan@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_SD02",
+    "role": "Z_HR06",
     "roleType": "Composite",
     "rolesCount": 36,
     "riskViolations": [
@@ -39509,7 +39509,7 @@ const ALL_USERS = [
     "email": "john.arnold@lottechemusa.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_PR01",
+    "role": "Z_PP01",
     "roleType": "Composite",
     "rolesCount": 34,
     "riskViolations": [
@@ -39670,7 +39670,7 @@ const ALL_USERS = [
     "email": "john.levine@lottechemusa.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_MM03",
+    "role": "ZL_BR_MFG_EXECUTION_PL1720",
     "roleType": "Composite",
     "rolesCount": 16,
     "riskViolations": [
@@ -39799,7 +39799,7 @@ const ALL_USERS = [
     "email": "John.Rivas@lottechemusa.com",
     "sapStatus": "Locked Due To Incorrect Logons",
     "license": "HB Professional",
-    "role": "Z_AP01",
+    "role": "Z_MM03",
     "roleType": "Composite",
     "rolesCount": 47,
     "riskViolations": [
@@ -39930,7 +39930,7 @@ const ALL_USERS = [
     "email": "john.willis@lottechemusa.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_MM05",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 11,
     "riskViolations": [
@@ -40091,7 +40091,7 @@ const ALL_USERS = [
     "email": "johyun.kwoun@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_AP01",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 55,
     "riskViolations": [
@@ -40222,7 +40222,7 @@ const ALL_USERS = [
     "email": "jhuey@sumitcredits.com",
     "sapStatus": "Locked Due To Incorrect Logons",
     "license": "HB Professional",
-    "role": "Z_PR01",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 7,
     "riskViolations": [
@@ -40351,7 +40351,7 @@ const ALL_USERS = [
     "email": "josh.harmon@lottechemusa.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HC Functional",
-    "role": "Z_MM05",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 9,
     "riskViolations": [
@@ -40512,7 +40512,7 @@ const ALL_USERS = [
     "email": "josh.romero@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HC Functional",
-    "role": "Z_AP01",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 17,
     "riskViolations": [
@@ -40641,7 +40641,7 @@ const ALL_USERS = [
     "email": "jason.peloquin@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_AP01",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 64,
     "riskViolations": [
@@ -40770,7 +40770,7 @@ const ALL_USERS = [
     "email": "julio.quintana@nttdata.com",
     "sapStatus": "Not Locked",
     "license": "HD Productivity",
-    "role": "Z_PR01",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 9,
     "riskViolations": [
@@ -40931,7 +40931,7 @@ const ALL_USERS = [
     "email": "joe.soileau@partner.lottechemusa.com",
     "sapStatus": "Locked Due To Incorrect Logons",
     "license": "HB Professional",
-    "role": "Z_AP01",
+    "role": "Z_PR04",
     "roleType": "Composite",
     "rolesCount": 9,
     "riskViolations": [
@@ -41060,7 +41060,7 @@ const ALL_USERS = [
     "email": "james.sonnier@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_MM05",
+    "role": "Z_PR04",
     "roleType": "Composite",
     "rolesCount": 37,
     "riskViolations": [
@@ -41189,7 +41189,7 @@ const ALL_USERS = [
     "email": "jgade@sageitinc.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_PR01",
+    "role": "Z_PR06",
     "roleType": "Composite",
     "rolesCount": 116,
     "riskViolations": [
@@ -41352,7 +41352,7 @@ const ALL_USERS = [
     "email": "jeffery.stapleford@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_AP01",
+    "role": "Z_MM03",
     "roleType": "Composite",
     "rolesCount": 45,
     "riskViolations": [
@@ -41481,7 +41481,7 @@ const ALL_USERS = [
     "email": "jared.swinney@lottechemusa.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_AP01",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 14,
     "riskViolations": [
@@ -41610,7 +41610,7 @@ const ALL_USERS = [
     "email": "jasvinder.thakur@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_PR07",
+    "role": "Z_PR06",
     "roleType": "Composite",
     "rolesCount": 43,
     "riskViolations": [
@@ -41773,7 +41773,7 @@ const ALL_USERS = [
     "email": "juan.castro@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HC Functional",
-    "role": "Z_AP02",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 37,
     "riskViolations": [
@@ -41902,7 +41902,7 @@ const ALL_USERS = [
     "email": "jdulay@mysupplychaingroup.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_PR07",
+    "role": "Z_PR06",
     "roleType": "Composite",
     "rolesCount": 17,
     "riskViolations": [
@@ -42031,7 +42031,7 @@ const ALL_USERS = [
     "email": "justin.labry@lottechemusa.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_MM01",
+    "role": "Z_PR06",
     "roleType": "Composite",
     "rolesCount": 32,
     "riskViolations": [
@@ -42196,7 +42196,7 @@ const ALL_USERS = [
     "email": "jessica.wallace@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "NA",
-    "role": "Z_AP03",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 8,
     "riskViolations": [
@@ -42327,7 +42327,7 @@ const ALL_USERS = [
     "email": "james.williams@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_PR01",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 10,
     "riskViolations": [
@@ -42458,7 +42458,7 @@ const ALL_USERS = [
     "email": "kristopher.borel@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_PR11",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 58,
     "riskViolations": [
@@ -42621,7 +42621,7 @@ const ALL_USERS = [
     "email": "krystle.brown@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_PR11",
+    "role": "ZL_BR_CA_ALL_USERS",
     "roleType": "Composite",
     "rolesCount": 7,
     "riskViolations": [
@@ -42750,7 +42750,7 @@ const ALL_USERS = [
     "email": "kimberly.doucet@lottechemusa.com",
     "sapStatus": "Locked Due To Incorrect Logons",
     "license": "HB Professional",
-    "role": "Z_PR11",
+    "role": "Z_AP02",
     "roleType": "Composite",
     "rolesCount": 104,
     "riskViolations": [
@@ -42879,7 +42879,7 @@ const ALL_USERS = [
     "email": "kirk.eckhardt@itelligencegroup.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_PR11",
+    "role": "Z_AP03",
     "roleType": "Composite",
     "rolesCount": 7,
     "riskViolations": [
@@ -43036,7 +43036,7 @@ const ALL_USERS = [
     "email": "keegan.labry@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_AP01",
+    "role": "Z_PR06",
     "roleType": "Composite",
     "rolesCount": 43,
     "riskViolations": [
@@ -43163,7 +43163,7 @@ const ALL_USERS = [
     "email": "kelly.peek@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_PR11",
+    "role": "Z_PP03",
     "roleType": "Composite",
     "rolesCount": 48,
     "riskViolations": [
@@ -43290,7 +43290,7 @@ const ALL_USERS = [
     "email": "okkyun.oh@lotte.net",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_PR11",
+    "role": "ZL_BR_PM_PURCHASING",
     "roleType": "Composite",
     "rolesCount": 9,
     "riskViolations": [
@@ -43576,7 +43576,7 @@ const ALL_USERS = [
     "email": "kgraham@lottechem.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_AR02",
+    "role": "Z_SD01",
     "roleType": "Composite",
     "rolesCount": 6,
     "riskViolations": [
@@ -43703,7 +43703,7 @@ const ALL_USERS = [
     "email": "kyeongjo.han@lotte.net",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_AR02",
+    "role": "Z_SD05",
     "roleType": "Composite",
     "rolesCount": 12,
     "riskViolations": [
@@ -43864,7 +43864,7 @@ const ALL_USERS = [
     "email": "Kim.Harrell@lottechemusa.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_AR01",
+    "role": "Z_AR03",
     "roleType": "Composite",
     "rolesCount": 7,
     "riskViolations": [
@@ -43993,7 +43993,7 @@ const ALL_USERS = [
     "email": "kirk.carroll@lottechemusa.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HD Productivity",
-    "role": "ZL_BR_CA_COSTCEN_MAN_SECMAN",
+    "role": "Z_SD01",
     "roleType": "Composite",
     "rolesCount": 14,
     "riskViolations": [
@@ -44122,7 +44122,7 @@ const ALL_USERS = [
     "email": "kyle.kardish@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_SD02",
+    "role": "Z_AR06",
     "roleType": "Composite",
     "rolesCount": 34,
     "riskViolations": [
@@ -44283,7 +44283,7 @@ const ALL_USERS = [
     "email": "kaysea.kelley@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HD Productivity",
-    "role": "Z_SD06",
+    "role": "Z_SD04",
     "roleType": "Composite",
     "rolesCount": 7,
     "riskViolations": [
@@ -44412,7 +44412,7 @@ const ALL_USERS = [
     "email": "kk.kwon@lotte.net",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "ZL_BR_PM_PURCHASING",
+    "role": "Z_SD06",
     "roleType": "Composite",
     "rolesCount": 7,
     "riskViolations": [
@@ -44541,7 +44541,7 @@ const ALL_USERS = [
     "email": "kwasi.attuahene-mensah@nttdata.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HD Productivity",
-    "role": "Z_AR02",
+    "role": "Z_SD09",
     "roleType": "Composite",
     "rolesCount": 8,
     "riskViolations": [
@@ -44669,7 +44669,7 @@ const ALL_USERS = [
         "standardsViolated": "SAP GRC Global Ruleset, SOX, Internal Access Control",
         "recommendedAction": "Separate access for BS02 - Basis Development and BS05 - Client Administration; remove conflicting action or authorization object from one role.",
         "recommendations": "Separate access for BS02 - Basis Development and BS05 - Client Administration; remove conflicting action or authorization object from one role.",
-        "assignee": "Seo-yeon Kim (Basis Admin)"
+        "assignee": "Basis Admin"
       }
     ],
     "riskId": "S021",
@@ -44700,7 +44700,7 @@ const ALL_USERS = [
     "email": "kaili.patterson@lottechemusa.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_AR03",
+    "role": "Z_AR06",
     "roleType": "Composite",
     "rolesCount": 16,
     "riskViolations": [
@@ -44798,7 +44798,7 @@ const ALL_USERS = [
         "standardsViolated": "SAP GRC Global Ruleset, SOX, Internal Access Control",
         "recommendedAction": "Separate access for BS02 - Basis Development and BS11 - System Administration; remove conflicting action or authorization object from one role.",
         "recommendations": "Separate access for BS02 - Basis Development and BS11 - System Administration; remove conflicting action or authorization object from one role.",
-        "assignee": "Seo-yeon Kim (Basis Admin)"
+        "assignee": "Basis Admin"
       }
     ],
     "riskId": "S024",
@@ -44829,7 +44829,7 @@ const ALL_USERS = [
     "email": "kperkins1@westlake.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "ZMM_BR_PO_COM_USER_1720",
+    "role": "Z_BS02",
     "roleType": "Composite",
     "rolesCount": 7,
     "riskViolations": [
@@ -44958,7 +44958,7 @@ const ALL_USERS = [
     "email": "kristin.ned@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HD Productivity",
-    "role": "Z_BS10",
+    "role": "Z_BS02",
     "roleType": "Composite",
     "rolesCount": 13,
     "riskViolations": [
@@ -45086,7 +45086,7 @@ const ALL_USERS = [
         "standardsViolated": "SAP GRC Global Ruleset, SOX, Internal Access Control",
         "recommendedAction": "Separate access for BS10 - Security Administration and BS12 - Transport Administration; remove conflicting action or authorization object from one role.",
         "recommendations": "Separate access for BS10 - Security Administration and BS12 - Transport Administration; remove conflicting action or authorization object from one role.",
-        "assignee": "Ji-hun Park (Security Analyst)"
+        "assignee": "Security Analyst"
       }
     ],
     "riskId": "SDAC",
@@ -45117,7 +45117,7 @@ const ALL_USERS = [
     "email": "kali.shetty@nttdata.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HD Productivity",
-    "role": "Z_BS03",
+    "role": "Z_BS05",
     "roleType": "Composite",
     "rolesCount": 7,
     "riskViolations": [
@@ -45151,7 +45151,7 @@ const ALL_USERS = [
         "standardsViolated": "SAP GRC Global Ruleset, SOX, Internal Access Control",
         "recommendedAction": "Separate access for ZBS01 - BS01 - Archiving and ZBS02 - BS02 - Basis Development; remove conflicting action or authorization object from one role.",
         "recommendations": "Separate access for ZBS01 - BS01 - Archiving and ZBS02 - BS02 - Basis Development; remove conflicting action or authorization object from one role.",
-        "assignee": "Sarah Jenkins (AP Manager)"
+        "assignee": "AP Manager"
       },
       {
         "riskId": "B005",
@@ -45215,7 +45215,7 @@ const ALL_USERS = [
         "standardsViolated": "SAP GRC Global Ruleset, SOX, Internal Access Control",
         "recommendedAction": "Separate access for BS03 - Basis Table Maintenance and BS05 - Client Administration; remove conflicting action or authorization object from one role.",
         "recommendations": "Separate access for BS03 - Basis Table Maintenance and BS05 - Client Administration; remove conflicting action or authorization object from one role.",
-        "assignee": "Seo-yeon Kim (Basis Admin)"
+        "assignee": "Basis Admin"
       }
     ],
     "riskId": "T_RUATDE",
@@ -45232,7 +45232,7 @@ const ALL_USERS = [
     "recommendedAction": "Separate access for ZBS01 - BS01 - Archiving and ZBS02 - BS02 - Basis Development; remove conflicting action or authorization object from one role.",
     "priority": "P3",
     "status": "Resolved",
-    "assignee": "Sarah Jenkins (AP Manager)",
+    "assignee": "AP Manager",
     "lastAnalyzedDate": "2026-05-19",
     "lastActivity": "2026-05-19 12:00:00",
     "firefighterId": "Standard Access",
@@ -45246,7 +45246,7 @@ const ALL_USERS = [
     "email": "ktern_servic@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "ZM:IT_PROJECT_TEAM_DISPLAY",
+    "role": "Z_BS02",
     "roleType": "Composite",
     "rolesCount": 7,
     "riskViolations": [
@@ -45280,7 +45280,7 @@ const ALL_USERS = [
         "standardsViolated": "SAP GRC Global Ruleset, SOX, Internal Access Control",
         "recommendedAction": "Separate access for BS02 - Basis Development and BS05 - Client Administration; remove conflicting action or authorization object from one role.",
         "recommendations": "Separate access for BS02 - Basis Development and BS05 - Client Administration; remove conflicting action or authorization object from one role.",
-        "assignee": "Seo-yeon Kim (Basis Admin)"
+        "assignee": "Basis Admin"
       },
       {
         "riskId": "B008",
@@ -45361,7 +45361,7 @@ const ALL_USERS = [
     "recommendedAction": "Separate access for BS02 - Basis Development and BS05 - Client Administration; remove conflicting action or authorization object from one role.",
     "priority": "P3",
     "status": "Open",
-    "assignee": "Seo-yeon Kim (Basis Admin)",
+    "assignee": "Basis Admin",
     "lastAnalyzedDate": "2026-05-19",
     "lastActivity": "2026-05-19 12:00:00",
     "firefighterId": "Standard Access",
@@ -45375,7 +45375,7 @@ const ALL_USERS = [
     "email": "kyle.carroll@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_BS10",
+    "role": "Z_BS12",
     "roleType": "Composite",
     "rolesCount": 21,
     "riskViolations": [
@@ -45441,7 +45441,7 @@ const ALL_USERS = [
         "standardsViolated": "SAP GRC Global Ruleset, SOX, Internal Access Control",
         "recommendedAction": "Separate access for BS05 - Client Administration and BS10 - Security Administration; remove conflicting action or authorization object from one role.",
         "recommendations": "Separate access for BS05 - Client Administration and BS10 - Security Administration; remove conflicting action or authorization object from one role.",
-        "assignee": "Seo-yeon Kim (Basis Admin)"
+        "assignee": "Basis Admin"
       },
       {
         "riskId": "B016",
@@ -45536,7 +45536,7 @@ const ALL_USERS = [
     "email": "kyle.quick@lottechemusa.com",
     "sapStatus": "Locked Due To Incorrect Logons",
     "license": "HD Productivity",
-    "role": "Z_BS13",
+    "role": "Z_BS03",
     "roleType": "Composite",
     "rolesCount": 8,
     "riskViolations": [
@@ -45570,7 +45570,7 @@ const ALL_USERS = [
         "standardsViolated": "SAP GRC Global Ruleset, SOX, Internal Access Control",
         "recommendedAction": "Separate access for BS03 - Basis Table Maintenance and BS11 - System Administration; remove conflicting action or authorization object from one role.",
         "recommendations": "Separate access for BS03 - Basis Table Maintenance and BS11 - System Administration; remove conflicting action or authorization object from one role.",
-        "assignee": "Ji-hun Park (Security Analyst)"
+        "assignee": "Security Analyst"
       },
       {
         "riskId": "B014",
@@ -45634,7 +45634,7 @@ const ALL_USERS = [
         "standardsViolated": "SAP GRC Global Ruleset, SOX, Internal Access Control",
         "recommendedAction": "Separate access for BS13 - Maintain User Master and BS14 - Maintain Profiles / Roles; remove conflicting action or authorization object from one role.",
         "recommendations": "Separate access for BS13 - Maintain User Master and BS14 - Maintain Profiles / Roles; remove conflicting action or authorization object from one role.",
-        "assignee": "Yeon-hee Choi (Finance Controller)"
+        "assignee": "Finance Controller"
       }
     ],
     "riskId": "B009",
@@ -45651,7 +45651,7 @@ const ALL_USERS = [
     "recommendedAction": "Separate access for BS03 - Basis Table Maintenance and BS11 - System Administration; remove conflicting action or authorization object from one role.",
     "priority": "P2",
     "status": "In Progress",
-    "assignee": "Ji-hun Park (Security Analyst)",
+    "assignee": "Security Analyst",
     "lastAnalyzedDate": "2026-05-19",
     "lastActivity": "2026-05-19 12:00:00",
     "firefighterId": "Standard Access",
@@ -45665,7 +45665,7 @@ const ALL_USERS = [
     "email": "kalman.zimmerman@partner.lottechemusa.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_BS10",
+    "role": "Z_BS12",
     "roleType": "Composite",
     "rolesCount": 45,
     "riskViolations": [
@@ -45699,7 +45699,7 @@ const ALL_USERS = [
         "standardsViolated": "SAP GRC Global Ruleset, SOX, Internal Access Control",
         "recommendedAction": "Separate access for BS10 - Security Administration and BS12 - Transport Administration; remove conflicting action or authorization object from one role.",
         "recommendations": "Separate access for BS10 - Security Administration and BS12 - Transport Administration; remove conflicting action or authorization object from one role.",
-        "assignee": "Ji-hun Park (Security Analyst)"
+        "assignee": "Security Analyst"
       },
       {
         "riskId": "B017",
@@ -45778,7 +45778,7 @@ const ALL_USERS = [
     "recommendedAction": "Separate access for BS10 - Security Administration and BS12 - Transport Administration; remove conflicting action or authorization object from one role.",
     "priority": "P2",
     "status": "Resolved",
-    "assignee": "Ji-hun Park (Security Analyst)",
+    "assignee": "Security Analyst",
     "lastAnalyzedDate": "2026-05-19",
     "lastActivity": "2026-05-19 12:00:00",
     "firefighterId": "Standard Access",
@@ -45951,7 +45951,7 @@ const ALL_USERS = [
     "email": "lacc.cold1-outside@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HC Functional",
-    "role": "Z_BS08",
+    "role": "Z_BS16",
     "roleType": "Composite",
     "rolesCount": 5,
     "riskViolations": [
@@ -46203,7 +46203,7 @@ const ALL_USERS = [
     "email": "lacc.cold2-outside@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HC Functional",
-    "role": "Z_FI07",
+    "role": "Z_FI02",
     "roleType": "Composite",
     "rolesCount": 8,
     "riskViolations": [
@@ -46362,7 +46362,7 @@ const ALL_USERS = [
     "email": "lacc.hot1-board@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HC Functional",
-    "role": "Z_GL01",
+    "role": "ZPM_BR_NOTIF_CREATE_1720",
     "roleType": "Composite",
     "rolesCount": 6,
     "riskViolations": [
@@ -46489,7 +46489,7 @@ const ALL_USERS = [
     "email": "lacc.hot1-outside@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HC Functional",
-    "role": "Z_MM05",
+    "role": "Z_FA02",
     "roleType": "Composite",
     "rolesCount": 7,
     "riskViolations": [
@@ -46618,7 +46618,7 @@ const ALL_USERS = [
     "email": "lacc.hot2-board@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HC Functional",
-    "role": "Z_AP01",
+    "role": "Z_PS03",
     "roleType": "Composite",
     "rolesCount": 9,
     "riskViolations": [
@@ -46779,7 +46779,7 @@ const ALL_USERS = [
     "email": "lacc.hot2-outside@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HC Functional",
-    "role": "Z_MM05",
+    "role": "Z_FA02",
     "roleType": "Composite",
     "rolesCount": 7,
     "riskViolations": [
@@ -46908,7 +46908,7 @@ const ALL_USERS = [
     "email": "lacc.shiftsupervisor@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HC Functional",
-    "role": "Z_FI07",
+    "role": "Z_FI02",
     "roleType": "Composite",
     "rolesCount": 7,
     "riskViolations": [
@@ -47037,7 +47037,7 @@ const ALL_USERS = [
     "email": "lacc.ut-board@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HC Functional",
-    "role": "Z_AP01",
+    "role": "Z_GL03",
     "roleType": "Composite",
     "rolesCount": 9,
     "riskViolations": [
@@ -47198,7 +47198,7 @@ const ALL_USERS = [
     "email": "lacc.ut1-outside@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HC Functional",
-    "role": "Z_FI08",
+    "role": "Z_GL03",
     "roleType": "Composite",
     "rolesCount": 7,
     "riskViolations": [
@@ -47327,7 +47327,7 @@ const ALL_USERS = [
     "email": "lacc.ut2-outside@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HC Functional",
-    "role": "Z_GL01",
+    "role": "Z_FI06",
     "roleType": "Composite",
     "rolesCount": 7,
     "riskViolations": [
@@ -47456,7 +47456,7 @@ const ALL_USERS = [
     "email": "lacc.wasterequests@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HC Functional",
-    "role": "Z_GL01",
+    "role": "Z_GL03",
     "roleType": "Composite",
     "rolesCount": 8,
     "riskViolations": [
@@ -47615,7 +47615,7 @@ const ALL_USERS = [
     "email": "lance.tucker@lottechemusa.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_GL01",
+    "role": "Z_FI06",
     "roleType": "Composite",
     "rolesCount": 30,
     "riskViolations": [
@@ -47744,7 +47744,7 @@ const ALL_USERS = [
     "email": "laura.choi@lottechemusa.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_PY01",
+    "role": "Z_HR04",
     "roleType": "Composite",
     "rolesCount": 7,
     "riskViolations": [
@@ -47871,7 +47871,7 @@ const ALL_USERS = [
     "email": "lcc.audit@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_AR01",
+    "role": "Z_HR04",
     "roleType": "Composite",
     "rolesCount": 138,
     "riskViolations": [
@@ -48032,7 +48032,7 @@ const ALL_USERS = [
     "email": "UPJT0005@partner.lottechem.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_FI12",
+    "role": "Z_PY03",
     "roleType": "Composite",
     "rolesCount": 53,
     "riskViolations": [
@@ -48159,7 +48159,7 @@ const ALL_USERS = [
     "email": "lee.lyons@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HC Functional",
-    "role": "Z_HR02",
+    "role": "ZMM_BR_PO_DISPLAY_PCO_1720",
     "roleType": "Composite",
     "rolesCount": 13,
     "riskViolations": [
@@ -48705,7 +48705,7 @@ const ALL_USERS = [
     "email": "lindsey.maricle@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HC Functional",
-    "role": "Z_PP02",
+    "role": "Z_PY03",
     "roleType": "Composite",
     "rolesCount": 10,
     "riskViolations": [
@@ -48866,7 +48866,7 @@ const ALL_USERS = [
     "email": "lauryn.mcmahon@partner.lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "ZCA_BR_COSTCEN_MAN_CAMAN_1720",
+    "role": "Z_HR07",
     "roleType": "Composite",
     "rolesCount": 144,
     "riskViolations": [
@@ -48995,7 +48995,7 @@ const ALL_USERS = [
     "email": "laura.salgado@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "ZCA_BR_COSTCEN_MAN_CAMAN_1720",
+    "role": "Z_PP01",
     "roleType": "Composite",
     "rolesCount": 144,
     "riskViolations": [
@@ -49126,7 +49126,7 @@ const ALL_USERS = [
     "email": "lauren.schiffman@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_PP02",
+    "role": "ZBC_BR_SPM_FIREFIGHTER",
     "roleType": "Composite",
     "rolesCount": 11,
     "riskViolations": [
@@ -49422,7 +49422,7 @@ const ALL_USERS = [
     "email": "lucian.carp.bp@nttdata.com",
     "sapStatus": "Not Locked",
     "license": "HD Productivity",
-    "role": "Z_PR01",
+    "role": "Z_PP01",
     "roleType": "Composite",
     "rolesCount": 7,
     "riskViolations": [
@@ -49551,7 +49551,7 @@ const ALL_USERS = [
     "email": "lance.veronie@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_MM03",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 55,
     "riskViolations": [
@@ -49710,7 +49710,7 @@ const ALL_USERS = [
     "email": "mangeshp@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_AP01",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 7,
     "riskViolations": [
@@ -49839,7 +49839,7 @@ const ALL_USERS = [
     "email": "mark.gibson@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_MM05",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 42,
     "riskViolations": [
@@ -49966,7 +49966,7 @@ const ALL_USERS = [
     "email": "mark.grayjr@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_AP01",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 23,
     "riskViolations": [
@@ -50127,7 +50127,7 @@ const ALL_USERS = [
     "email": "mark.kang@lottechem.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_AP01",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 83,
     "riskViolations": [
@@ -50256,7 +50256,7 @@ const ALL_USERS = [
     "email": "mark.peters@partner.lottechemusa.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_MM05",
+    "role": "Z_PR04",
     "roleType": "Composite",
     "rolesCount": 7,
     "riskViolations": [
@@ -50385,7 +50385,7 @@ const ALL_USERS = [
     "email": "miles.benoit@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_PR01",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 43,
     "riskViolations": [
@@ -50548,7 +50548,7 @@ const ALL_USERS = [
     "email": "michael.daigle@partner.lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_AP01",
+    "role": "Z_PR04",
     "roleType": "Composite",
     "rolesCount": 42,
     "riskViolations": [
@@ -50677,7 +50677,7 @@ const ALL_USERS = [
     "email": "ManojKumar.Doddapineni@bs.nttdata.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_PR01",
+    "role": "Z_PR04",
     "roleType": "Composite",
     "rolesCount": 45,
     "riskViolations": [
@@ -50806,7 +50806,7 @@ const ALL_USERS = [
     "email": "micheal.duraso@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_AP01",
+    "role": "Z_PR06",
     "roleType": "Composite",
     "rolesCount": 39,
     "riskViolations": [
@@ -50967,7 +50967,7 @@ const ALL_USERS = [
     "email": "michael.estes@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_AP02",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 7,
     "riskViolations": [
@@ -51096,7 +51096,7 @@ const ALL_USERS = [
     "email": "marcel.guidroz@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_PR01",
+    "role": "Z_PR06",
     "roleType": "Composite",
     "rolesCount": 43,
     "riskViolations": [
@@ -51225,7 +51225,7 @@ const ALL_USERS = [
     "email": "michael.vice@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_AP01",
+    "role": "Z_PR06",
     "roleType": "Composite",
     "rolesCount": 46,
     "riskViolations": [
@@ -51388,7 +51388,7 @@ const ALL_USERS = [
     "email": "miqbal@sageitinc.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_AP01",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 88,
     "riskViolations": [
@@ -51517,7 +51517,7 @@ const ALL_USERS = [
     "email": "Medha.Kanugula@bs.nttdata.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_PR07",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 18,
     "riskViolations": [
@@ -51648,7 +51648,7 @@ const ALL_USERS = [
     "email": "mohan11.kethineedi@nttdata.com",
     "sapStatus": "Not Locked",
     "license": "HC Functional",
-    "role": "Z_MM01",
+    "role": "Z_PR04",
     "roleType": "Composite",
     "rolesCount": 10,
     "riskViolations": [
@@ -51811,7 +51811,7 @@ const ALL_USERS = [
     "email": "miranda.crow@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_MM03",
+    "role": "ZL_BR_MM_PRPO_REPORTS_PROAA",
     "roleType": "Composite",
     "rolesCount": 22,
     "riskViolations": [
@@ -51940,7 +51940,7 @@ const ALL_USERS = [
     "email": "mitchell.kingrey@partner.lottechemusa.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_MM01",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 32,
     "riskViolations": [
@@ -52073,7 +52073,7 @@ const ALL_USERS = [
     "email": "mlee@lottechem.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_PR11",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 10,
     "riskViolations": [
@@ -52365,7 +52365,7 @@ const ALL_USERS = [
     "email": "tony.picou@lottechem.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_PR11",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 29,
     "riskViolations": [
@@ -52494,7 +52494,7 @@ const ALL_USERS = [
     "email": "michael.poole@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_PR11",
+    "role": "Z_PS04",
     "roleType": "Composite",
     "rolesCount": 34,
     "riskViolations": [
@@ -52653,7 +52653,7 @@ const ALL_USERS = [
     "email": "mahesh.rajagopal@nttdata.com",
     "sapStatus": "Not Locked",
     "license": "HD Productivity",
-    "role": "Z_PR11",
+    "role": "Z_PR04",
     "roleType": "Composite",
     "rolesCount": 6,
     "riskViolations": [
@@ -52780,7 +52780,7 @@ const ALL_USERS = [
     "email": "michael.reado@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_PR11",
+    "role": "ZL_BR_MFG_EXECUTION_PL1720",
     "roleType": "Composite",
     "rolesCount": 23,
     "riskViolations": [
@@ -52905,7 +52905,7 @@ const ALL_USERS = [
     "email": "Michael.Romaniello@bs.nttdata.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HD Productivity",
-    "role": "Z_PR11",
+    "role": "Z_PR06",
     "roleType": "Composite",
     "rolesCount": 8,
     "riskViolations": [
@@ -53064,7 +53064,7 @@ const ALL_USERS = [
     "email": "maite.sadaba@lottechem.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_PP03",
+    "role": "Z_AR03",
     "roleType": "Composite",
     "rolesCount": 24,
     "riskViolations": [
@@ -53191,7 +53191,7 @@ const ALL_USERS = [
     "email": "msamson@sageitinc.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_AR02",
+    "role": "Z_SD05",
     "roleType": "Composite",
     "rolesCount": 88,
     "riskViolations": [
@@ -53318,7 +53318,7 @@ const ALL_USERS = [
     "email": "monty.sinnreich@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_AR01",
+    "role": "Z_AR06",
     "roleType": "Composite",
     "rolesCount": 33,
     "riskViolations": [
@@ -53479,7 +53479,7 @@ const ALL_USERS = [
     "email": "srirangam.mallikarjun@gmail.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_AR02",
+    "role": "Z_SD06",
     "roleType": "Composite",
     "rolesCount": 14,
     "riskViolations": [
@@ -53608,7 +53608,7 @@ const ALL_USERS = [
     "email": "michael.walker@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HC Functional",
-    "role": "Z_AR02",
+    "role": "Z_SD04",
     "roleType": "Composite",
     "rolesCount": 39,
     "riskViolations": [
@@ -53737,7 +53737,7 @@ const ALL_USERS = [
     "email": "matthew.warren@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HC Functional",
-    "role": "Z_AR01",
+    "role": "Z_SD06",
     "roleType": "Composite",
     "rolesCount": 26,
     "riskViolations": [
@@ -53898,7 +53898,7 @@ const ALL_USERS = [
     "email": "mwitek@westlake.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HD Productivity",
-    "role": "Z_SD02",
+    "role": "Z_AR03",
     "roleType": "Composite",
     "rolesCount": 7,
     "riskViolations": [
@@ -54156,7 +54156,7 @@ const ALL_USERS = [
     "email": "nayoun.kim@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_SD08",
+    "role": "Z_BS02",
     "roleType": "Composite",
     "rolesCount": 29,
     "riskViolations": [
@@ -54413,7 +54413,7 @@ const ALL_USERS = [
         "standardsViolated": "SAP GRC Global Ruleset, SOX, Internal Access Control",
         "recommendedAction": "Separate access for ZBS01 - BS01 - Archiving and ZBS02 - BS02 - Basis Development; remove conflicting action or authorization object from one role.",
         "recommendations": "Separate access for ZBS01 - BS01 - Archiving and ZBS02 - BS02 - Basis Development; remove conflicting action or authorization object from one role.",
-        "assignee": "Sarah Jenkins (AP Manager)"
+        "assignee": "AP Manager"
       }
     ],
     "riskId": "S023",
@@ -54444,7 +54444,7 @@ const ALL_USERS = [
     "email": "eugenia.najar@sap.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "SAP_ALL",
+    "role": "Z_SD09",
     "roleType": "Composite",
     "rolesCount": 9,
     "riskViolations": [
@@ -54540,7 +54540,7 @@ const ALL_USERS = [
         "standardsViolated": "SAP GRC Global Ruleset, SOX, Internal Access Control",
         "recommendedAction": "Separate access for BS02 - Basis Development and BS05 - Client Administration; remove conflicting action or authorization object from one role.",
         "recommendations": "Separate access for BS02 - Basis Development and BS05 - Client Administration; remove conflicting action or authorization object from one role.",
-        "assignee": "Seo-yeon Kim (Basis Admin)"
+        "assignee": "Basis Admin"
       }
     ],
     "riskId": "S026",
@@ -54571,7 +54571,7 @@ const ALL_USERS = [
     "email": "nick.curl@nttdata.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_BS10",
+    "role": "Z_AR06",
     "roleType": "Composite",
     "rolesCount": 9,
     "riskViolations": [
@@ -54637,7 +54637,7 @@ const ALL_USERS = [
         "standardsViolated": "SAP GRC Global Ruleset, SOX, Internal Access Control",
         "recommendedAction": "Separate access for BS02 - Basis Development and BS11 - System Administration; remove conflicting action or authorization object from one role.",
         "recommendations": "Separate access for BS02 - Basis Development and BS11 - System Administration; remove conflicting action or authorization object from one role.",
-        "assignee": "Seo-yeon Kim (Basis Admin)"
+        "assignee": "Basis Admin"
       },
       {
         "riskId": "B006",
@@ -54701,7 +54701,7 @@ const ALL_USERS = [
         "standardsViolated": "SAP GRC Global Ruleset, SOX, Internal Access Control",
         "recommendedAction": "Separate access for BS05 - Client Administration and BS10 - Security Administration; remove conflicting action or authorization object from one role.",
         "recommendations": "Separate access for BS05 - Client Administration and BS10 - Security Administration; remove conflicting action or authorization object from one role.",
-        "assignee": "Seo-yeon Kim (Basis Admin)"
+        "assignee": "Basis Admin"
       }
     ],
     "riskId": "S029",
@@ -54732,7 +54732,7 @@ const ALL_USERS = [
     "email": "npannu@prometheusgroup.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_BS03",
+    "role": "Z_BS02",
     "roleType": "Composite",
     "rolesCount": 86,
     "riskViolations": [
@@ -54830,7 +54830,7 @@ const ALL_USERS = [
         "standardsViolated": "SAP GRC Global Ruleset, SOX, Internal Access Control",
         "recommendedAction": "Separate access for BS03 - Basis Table Maintenance and BS11 - System Administration; remove conflicting action or authorization object from one role.",
         "recommendations": "Separate access for BS03 - Basis Table Maintenance and BS11 - System Administration; remove conflicting action or authorization object from one role.",
-        "assignee": "Ji-hun Park (Security Analyst)"
+        "assignee": "Security Analyst"
       }
     ],
     "riskId": "TST_R123",
@@ -54861,7 +54861,7 @@ const ALL_USERS = [
     "email": "nkandi@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "HD Productivity",
-    "role": "Z_BS10",
+    "role": "Z_BS02",
     "roleType": "Composite",
     "rolesCount": 7,
     "riskViolations": [
@@ -54959,7 +54959,7 @@ const ALL_USERS = [
         "standardsViolated": "SAP GRC Global Ruleset, SOX, Internal Access Control",
         "recommendedAction": "Separate access for BS10 - Security Administration and BS12 - Transport Administration; remove conflicting action or authorization object from one role.",
         "recommendations": "Separate access for BS10 - Security Administration and BS12 - Transport Administration; remove conflicting action or authorization object from one role.",
-        "assignee": "Ji-hun Park (Security Analyst)"
+        "assignee": "Security Analyst"
       }
     ],
     "riskId": "B002",
@@ -54990,7 +54990,7 @@ const ALL_USERS = [
     "email": "nkaruppusamy@mysupplychaingroup.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_BS03",
+    "role": "Z_BS20",
     "roleType": "Composite",
     "rolesCount": 17,
     "riskViolations": [
@@ -55056,7 +55056,7 @@ const ALL_USERS = [
         "standardsViolated": "SAP GRC Global Ruleset, SOX, Internal Access Control",
         "recommendedAction": "Separate access for BS03 - Basis Table Maintenance and BS05 - Client Administration; remove conflicting action or authorization object from one role.",
         "recommendations": "Separate access for BS03 - Basis Table Maintenance and BS05 - Client Administration; remove conflicting action or authorization object from one role.",
-        "assignee": "Seo-yeon Kim (Basis Admin)"
+        "assignee": "Basis Admin"
       },
       {
         "riskId": "B015",
@@ -55151,7 +55151,7 @@ const ALL_USERS = [
     "email": "nick.kitzmiller@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_BS08",
+    "role": "Z_BS12",
     "roleType": "Composite",
     "rolesCount": 24,
     "riskViolations": [
@@ -55280,7 +55280,7 @@ const ALL_USERS = [
     "email": "namgoon.rodriguez@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HC Functional",
-    "role": "ZFI_BR_GL_REPORTS_CAMAN_1720",
+    "role": "Z_BS12",
     "roleType": "Composite",
     "rolesCount": 29,
     "riskViolations": [
@@ -55314,7 +55314,7 @@ const ALL_USERS = [
         "standardsViolated": "SAP GRC Global Ruleset, SOX, Internal Access Control",
         "recommendedAction": "Separate access for BS05 - Client Administration and BS10 - Security Administration; remove conflicting action or authorization object from one role.",
         "recommendations": "Separate access for BS05 - Client Administration and BS10 - Security Administration; remove conflicting action or authorization object from one role.",
-        "assignee": "Seo-yeon Kim (Basis Admin)"
+        "assignee": "Basis Admin"
       },
       {
         "riskId": "B016",
@@ -55395,7 +55395,7 @@ const ALL_USERS = [
     "recommendedAction": "Separate access for BS05 - Client Administration and BS10 - Security Administration; remove conflicting action or authorization object from one role.",
     "priority": "P2",
     "status": "Open",
-    "assignee": "Seo-yeon Kim (Basis Admin)",
+    "assignee": "Basis Admin",
     "lastAnalyzedDate": "2026-05-19",
     "lastActivity": "2026-05-19 12:00:00",
     "firefighterId": "Standard Access",
@@ -55409,7 +55409,7 @@ const ALL_USERS = [
     "email": "satyanarayana.nerugonda@itelligencegroup.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_GL01",
+    "role": "Z_BS17",
     "roleType": "Composite",
     "rolesCount": 87,
     "riskViolations": [
@@ -55475,7 +55475,7 @@ const ALL_USERS = [
         "standardsViolated": "SAP GRC Global Ruleset, SOX, Internal Access Control",
         "recommendedAction": "Separate access for BS13 - Maintain User Master and BS14 - Maintain Profiles / Roles; remove conflicting action or authorization object from one role.",
         "recommendations": "Separate access for BS13 - Maintain User Master and BS14 - Maintain Profiles / Roles; remove conflicting action or authorization object from one role.",
-        "assignee": "Yeon-hee Choi (Finance Controller)"
+        "assignee": "Finance Controller"
       },
       {
         "riskId": "BSCT",
@@ -55568,7 +55568,7 @@ const ALL_USERS = [
     "email": "nsurya@sageitinc.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_BS15",
+    "role": "Z_BS09",
     "roleType": "Composite",
     "rolesCount": 88,
     "riskViolations": [
@@ -55820,7 +55820,7 @@ const ALL_USERS = [
     "email": "sachin.date@nttdata.com",
     "sapStatus": "Not Locked",
     "license": "HD Productivity",
-    "role": "Z_AP01",
+    "role": "Z_BS16",
     "roleType": "Composite",
     "rolesCount": 7,
     "riskViolations": [
@@ -55977,7 +55977,7 @@ const ALL_USERS = [
     "email": "Natalie.VanAllen@itelligencegroup.com",
     "sapStatus": "Not Locked",
     "license": "HD Productivity",
-    "role": "Z_AR02",
+    "role": "Z_CC03",
     "roleType": "Composite",
     "rolesCount": 6,
     "riskViolations": [
@@ -56104,7 +56104,7 @@ const ALL_USERS = [
     "email": "oscar.brugger@nttdata.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_FI07",
+    "role": "Z_FI02",
     "roleType": "Composite",
     "rolesCount": 7,
     "riskViolations": [
@@ -56233,7 +56233,7 @@ const ALL_USERS = [
     "email": "oesadmin@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "HD Productivity",
-    "role": "Z_AP01",
+    "role": "Z_PS03",
     "roleType": "Composite",
     "rolesCount": 10,
     "riskViolations": [
@@ -56394,7 +56394,7 @@ const ALL_USERS = [
     "email": "oesupport@lottechem.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_MM05",
+    "role": "Z_FA02",
     "roleType": "Composite",
     "rolesCount": 7,
     "riskViolations": [
@@ -56523,7 +56523,7 @@ const ALL_USERS = [
     "email": "woongjae.lee@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_AR02",
+    "role": "Z_PS03",
     "roleType": "Composite",
     "rolesCount": 9,
     "riskViolations": [
@@ -56652,7 +56652,7 @@ const ALL_USERS = [
     "email": "olalekan.ogunbanwo@nttdata.com",
     "sapStatus": "Not Locked",
     "license": "HD Productivity",
-    "role": "Z_MM05",
+    "role": "Z_FA02",
     "roleType": "Composite",
     "rolesCount": 9,
     "riskViolations": [
@@ -56813,7 +56813,7 @@ const ALL_USERS = [
     "email": "Orlando.Weidgenant@bs.nttdata.com",
     "sapStatus": "Not Locked",
     "license": "HD Productivity",
-    "role": "Z_PS02",
+    "role": "Z_FI06",
     "roleType": "Composite",
     "rolesCount": 7,
     "riskViolations": [
@@ -56942,7 +56942,7 @@ const ALL_USERS = [
     "email": "praveen.arvabhumi@nttdata.com",
     "sapStatus": "Not Locked",
     "license": "HD Productivity",
-    "role": "Z_AP01",
+    "role": "Z_GL03",
     "roleType": "Composite",
     "rolesCount": 7,
     "riskViolations": [
@@ -57071,7 +57071,7 @@ const ALL_USERS = [
     "email": "PraveenKumar.Chinnolla@itelligencegroup.com",
     "sapStatus": "Not Locked",
     "license": "HD Productivity",
-    "role": "Z_FI08",
+    "role": "Z_GL03",
     "roleType": "Composite",
     "rolesCount": 9,
     "riskViolations": [
@@ -57232,7 +57232,7 @@ const ALL_USERS = [
     "email": "pgovindasamy@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "HD Productivity",
-    "role": "Z_FI12",
+    "role": "Z_FI04",
     "roleType": "Composite",
     "rolesCount": 6,
     "riskViolations": [
@@ -57359,7 +57359,7 @@ const ALL_USERS = [
     "email": "pablo.hernandez@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HC Functional",
-    "role": "Z_GL01",
+    "role": "ZL_BR_MFG_EXECUTION_LCLAPSS",
     "roleType": "Composite",
     "rolesCount": 17,
     "riskViolations": [
@@ -57486,7 +57486,7 @@ const ALL_USERS = [
     "email": "paul.humplik@lottechemusa.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HC Functional",
-    "role": "Z_GL01",
+    "role": "Z_PY03",
     "roleType": "Composite",
     "rolesCount": 33,
     "riskViolations": [
@@ -57647,7 +57647,7 @@ const ALL_USERS = [
     "email": "karen.ponce@sap.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_PY01",
+    "role": "Z_PY03",
     "roleType": "Composite",
     "rolesCount": 9,
     "riskViolations": [
@@ -57774,7 +57774,7 @@ const ALL_USERS = [
     "email": "Praneeth.Mallampati@itelligencegroup.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_HR03",
+    "role": "Z_HR04",
     "roleType": "Composite",
     "rolesCount": 7,
     "riskViolations": [
@@ -58064,7 +58064,7 @@ const ALL_USERS = [
     "email": "pm_ams@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_HR03",
+    "role": "Z_HR04",
     "roleType": "Composite",
     "rolesCount": 10,
     "riskViolations": [
@@ -58322,7 +58322,7 @@ const ALL_USERS = [
     "email": "pamela.sullivan@nttdata.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_PP02",
+    "role": "Z_PY03",
     "roleType": "Composite",
     "rolesCount": 10,
     "riskViolations": [
@@ -58485,7 +58485,7 @@ const ALL_USERS = [
     "email": "pamela.theriot@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_SD02",
+    "role": "Z_HR04",
     "roleType": "Composite",
     "rolesCount": 24,
     "riskViolations": [
@@ -58612,7 +58612,7 @@ const ALL_USERS = [
     "email": "pthornton@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_PP02",
+    "role": "Z_PP01",
     "roleType": "Composite",
     "rolesCount": 36,
     "riskViolations": [
@@ -58741,7 +58741,7 @@ const ALL_USERS = [
     "email": "ptourish@westlake.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "ZMM_BR_PO_COM_USER_1720",
+    "role": "Z_HR07",
     "roleType": "Composite",
     "rolesCount": 8,
     "riskViolations": [
@@ -58900,7 +58900,7 @@ const ALL_USERS = [
     "email": "pat.trahan@lottechem.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_GL01",
+    "role": "Z_PP01",
     "roleType": "Composite",
     "rolesCount": 13,
     "riskViolations": [
@@ -59031,7 +59031,7 @@ const ALL_USERS = [
     "email": "pupadhyay@sageitinc.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_MM10",
+    "role": "Z_MM07",
     "roleType": "Composite",
     "rolesCount": 89,
     "riskViolations": [
@@ -59162,7 +59162,7 @@ const ALL_USERS = [
     "email": "patricia.valencia@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_AP01",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 107,
     "riskViolations": [
@@ -59327,7 +59327,7 @@ const ALL_USERS = [
     "email": "pwc.audit@lottechem.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HD Productivity",
-    "role": "Z_PR01",
+    "role": "Z_MM03",
     "roleType": "Composite",
     "rolesCount": 7,
     "riskViolations": [
@@ -59456,7 +59456,7 @@ const ALL_USERS = [
     "email": "patti.williams@nttdata.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_AP03",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 67,
     "riskViolations": [
@@ -59583,7 +59583,7 @@ const ALL_USERS = [
     "email": "peter.zhang@lottechemusa.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_AP01",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 34,
     "riskViolations": [
@@ -59744,7 +59744,7 @@ const ALL_USERS = [
     "email": "quinton.bushnell@lottechemusa.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_MM05",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 17,
     "riskViolations": [
@@ -59873,7 +59873,7 @@ const ALL_USERS = [
     "email": "ratul.roy@nttdata.com",
     "sapStatus": "Not Locked",
     "license": "HD Productivity",
-    "role": "Z_PR01",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 7,
     "riskViolations": [
@@ -60002,7 +60002,7 @@ const ALL_USERS = [
     "email": "raymond.shin@lottechemusa.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_AP01",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 38,
     "riskViolations": [
@@ -60163,7 +60163,7 @@ const ALL_USERS = [
     "email": "reagan.berry@c-ka.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_MM05",
+    "role": "ZL_BR_MFG_INVTRY_REP_1720_P03",
     "roleType": "Composite",
     "rolesCount": 16,
     "riskViolations": [
@@ -60292,7 +60292,7 @@ const ALL_USERS = [
     "email": "regina.buchanan@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_PR01",
+    "role": "ZHCM_BR_PA_BP",
     "roleType": "Composite",
     "rolesCount": 65,
     "riskViolations": [
@@ -60423,7 +60423,7 @@ const ALL_USERS = [
     "email": "rchalasani@westlake.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "NA",
-    "role": "Z_AP01",
+    "role": "Z_PR04",
     "roleType": "Composite",
     "rolesCount": 9,
     "riskViolations": [
@@ -60584,7 +60584,7 @@ const ALL_USERS = [
     "email": "ranganath.chitalkar@lottechemusa.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_PR01",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 14,
     "riskViolations": [
@@ -60713,7 +60713,7 @@ const ALL_USERS = [
     "email": "robert.dalton@partner.lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_AP01",
+    "role": "Z_PR06",
     "roleType": "Composite",
     "rolesCount": 71,
     "riskViolations": [
@@ -60842,7 +60842,7 @@ const ALL_USERS = [
     "email": "randall.faulk@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HC Functional",
-    "role": "Z_AP02",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 17,
     "riskViolations": [
@@ -61003,7 +61003,7 @@ const ALL_USERS = [
     "email": "rfcuser@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_PR07",
+    "role": "Z_PR06",
     "roleType": "Composite",
     "rolesCount": 12,
     "riskViolations": [
@@ -61132,7 +61132,7 @@ const ALL_USERS = [
     "email": "robert.humphries@lottechemusa.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_MM03",
+    "role": "Z_PR06",
     "roleType": "Composite",
     "rolesCount": 16,
     "riskViolations": [
@@ -61263,7 +61263,7 @@ const ALL_USERS = [
     "email": "richard.gill@lottechemusa.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_AP01",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 14,
     "riskViolations": [
@@ -61426,7 +61426,7 @@ const ALL_USERS = [
     "email": "richard.song@lottechemusa.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_PR01",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 39,
     "riskViolations": [
@@ -61557,7 +61557,7 @@ const ALL_USERS = [
     "email": "rjohnson3@westlake.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_MM01",
+    "role": "Z_PR04",
     "roleType": "Composite",
     "rolesCount": 8,
     "riskViolations": [
@@ -61688,7 +61688,7 @@ const ALL_USERS = [
     "email": "rkovin@westlake.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_PR11",
+    "role": "ZL_BR_PM_PURCHASING",
     "roleType": "Composite",
     "rolesCount": 9,
     "riskViolations": [
@@ -61849,7 +61849,7 @@ const ALL_USERS = [
     "email": "robert.lohmeier@lottechemusa.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HD Productivity",
-    "role": "Z_AP03",
+    "role": "Z_AP02",
     "roleType": "Composite",
     "rolesCount": 8,
     "riskViolations": [
@@ -61980,7 +61980,7 @@ const ALL_USERS = [
     "email": "rajani.maddali@partner.lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_PR11",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 35,
     "riskViolations": [
@@ -62109,7 +62109,7 @@ const ALL_USERS = [
     "email": "rmallikarjun@sageitinc.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_AP01",
+    "role": "Z_PR06",
     "roleType": "Composite",
     "rolesCount": 88,
     "riskViolations": [
@@ -62268,7 +62268,7 @@ const ALL_USERS = [
     "email": "Raj.Mulpuri@itelligencegroup.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_PR11",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 13,
     "riskViolations": [
@@ -62395,7 +62395,7 @@ const ALL_USERS = [
     "email": "Rob.Frey@bs.nttdata.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_PR11",
+    "role": "Z_PS04",
     "roleType": "Composite",
     "rolesCount": 47,
     "riskViolations": [
@@ -62522,7 +62522,7 @@ const ALL_USERS = [
     "email": "rpritzkau@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_PR11",
+    "role": "Z_SD05",
     "roleType": "Composite",
     "rolesCount": 8,
     "riskViolations": [
@@ -62681,7 +62681,7 @@ const ALL_USERS = [
     "email": "rsubramaniam@sageitinc.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_SD03",
+    "role": "Z_SD01",
     "roleType": "Composite",
     "rolesCount": 85,
     "riskViolations": [
@@ -62806,7 +62806,7 @@ const ALL_USERS = [
     "email": "rod.thibodeaux@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_AR04",
+    "role": "Z_SD01",
     "roleType": "Composite",
     "rolesCount": 56,
     "riskViolations": [
@@ -62933,7 +62933,7 @@ const ALL_USERS = [
     "email": "rutger.dukes@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HC Functional",
-    "role": "Z_AR01",
+    "role": "ZMM_BR_INVENTORY_REP_DR",
     "roleType": "Composite",
     "rolesCount": 50,
     "riskViolations": [
@@ -63094,7 +63094,7 @@ const ALL_USERS = [
     "email": "richard.vincent@lottechemusa.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_SD02",
+    "role": "ZL_BR_MFG_EXECUTION_PL1720",
     "roleType": "Composite",
     "rolesCount": 16,
     "riskViolations": [
@@ -63223,7 +63223,7 @@ const ALL_USERS = [
     "email": "rolanda.waldroup@lottechemusa.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_AR01",
+    "role": "Z_AR06",
     "roleType": "Composite",
     "rolesCount": 13,
     "riskViolations": [
@@ -63352,7 +63352,7 @@ const ALL_USERS = [
     "email": "ryan.qiu@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HC Functional",
-    "role": "Z_AR02",
+    "role": "Z_SD06",
     "roleType": "Composite",
     "rolesCount": 53,
     "riskViolations": [
@@ -63513,7 +63513,7 @@ const ALL_USERS = [
     "email": "s4kt_abap@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_AR02",
+    "role": "Z_SD04",
     "roleType": "Composite",
     "rolesCount": 32,
     "riskViolations": [
@@ -63642,7 +63642,7 @@ const ALL_USERS = [
     "email": "s4kt_ewm@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_AR02",
+    "role": "Z_SD06",
     "roleType": "Composite",
     "rolesCount": 339,
     "riskViolations": [
@@ -63771,7 +63771,7 @@ const ALL_USERS = [
     "email": "s4kt_fico@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_BR_AP_ACCOUNTANT",
+    "role": "Z_AR06",
     "roleType": "Composite",
     "rolesCount": 332,
     "riskViolations": [
@@ -63901,7 +63901,7 @@ const ALL_USERS = [
         "standardsViolated": "SAP GRC Global Ruleset, SOX, Internal Access Control",
         "recommendedAction": "Separate access for BS02 - Basis Development and BS11 - System Administration; remove conflicting action or authorization object from one role.",
         "recommendations": "Separate access for BS02 - Basis Development and BS11 - System Administration; remove conflicting action or authorization object from one role.",
-        "assignee": "Seo-yeon Kim (Basis Admin)"
+        "assignee": "Basis Admin"
       }
     ],
     "riskId": "S019",
@@ -63932,7 +63932,7 @@ const ALL_USERS = [
     "email": "s4kt_mm@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_SD02",
+    "role": "Z_BS02",
     "roleType": "Composite",
     "rolesCount": 330,
     "riskViolations": [
@@ -64061,7 +64061,7 @@ const ALL_USERS = [
     "email": "s4kt_pm@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "ZL_BR_FI_AP_MGR",
+    "role": "Z_BS02",
     "roleType": "Composite",
     "rolesCount": 329,
     "riskViolations": [
@@ -64188,7 +64188,7 @@ const ALL_USERS = [
     "email": "s4kt_pp@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "ZL_BR_FI_AP_MGR",
+    "role": "Z_BS05",
     "roleType": "Composite",
     "rolesCount": 322,
     "riskViolations": [
@@ -64254,7 +64254,7 @@ const ALL_USERS = [
         "standardsViolated": "SAP GRC Global Ruleset, SOX, Internal Access Control",
         "recommendedAction": "Separate access for ZBS01 - BS01 - Archiving and ZBS02 - BS02 - Basis Development; remove conflicting action or authorization object from one role.",
         "recommendations": "Separate access for ZBS01 - BS01 - Archiving and ZBS02 - BS02 - Basis Development; remove conflicting action or authorization object from one role.",
-        "assignee": "Sarah Jenkins (AP Manager)"
+        "assignee": "AP Manager"
       },
       {
         "riskId": "B005",
@@ -64318,7 +64318,7 @@ const ALL_USERS = [
         "standardsViolated": "SAP GRC Global Ruleset, SOX, Internal Access Control",
         "recommendedAction": "Separate access for BS03 - Basis Table Maintenance and BS05 - Client Administration; remove conflicting action or authorization object from one role.",
         "recommendations": "Separate access for BS03 - Basis Table Maintenance and BS05 - Client Administration; remove conflicting action or authorization object from one role.",
-        "assignee": "Seo-yeon Kim (Basis Admin)"
+        "assignee": "Basis Admin"
       }
     ],
     "riskId": "S028",
@@ -64349,7 +64349,7 @@ const ALL_USERS = [
     "email": "s4kt_sd@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "ZL_BR_FI_AP_MGR",
+    "role": "Z_SD09",
     "roleType": "Composite",
     "rolesCount": 328,
     "riskViolations": [
@@ -64413,7 +64413,7 @@ const ALL_USERS = [
         "standardsViolated": "SAP GRC Global Ruleset, SOX, Internal Access Control",
         "recommendedAction": "Separate access for BS02 - Basis Development and BS05 - Client Administration; remove conflicting action or authorization object from one role.",
         "recommendations": "Separate access for BS02 - Basis Development and BS05 - Client Administration; remove conflicting action or authorization object from one role.",
-        "assignee": "Seo-yeon Kim (Basis Admin)"
+        "assignee": "Basis Admin"
       },
       {
         "riskId": "B008",
@@ -64476,7 +64476,7 @@ const ALL_USERS = [
     "email": "sacadmin@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_BS10",
+    "role": "Z_BS02",
     "roleType": "Composite",
     "rolesCount": 7,
     "riskViolations": [
@@ -64510,7 +64510,7 @@ const ALL_USERS = [
         "standardsViolated": "SAP GRC Global Ruleset, SOX, Internal Access Control",
         "recommendedAction": "Separate access for BS02 - Basis Development and BS11 - System Administration; remove conflicting action or authorization object from one role.",
         "recommendations": "Separate access for BS02 - Basis Development and BS11 - System Administration; remove conflicting action or authorization object from one role.",
-        "assignee": "Seo-yeon Kim (Basis Admin)"
+        "assignee": "Basis Admin"
       },
       {
         "riskId": "B006",
@@ -64574,7 +64574,7 @@ const ALL_USERS = [
         "standardsViolated": "SAP GRC Global Ruleset, SOX, Internal Access Control",
         "recommendedAction": "Separate access for BS05 - Client Administration and BS10 - Security Administration; remove conflicting action or authorization object from one role.",
         "recommendations": "Separate access for BS05 - Client Administration and BS10 - Security Administration; remove conflicting action or authorization object from one role.",
-        "assignee": "Seo-yeon Kim (Basis Admin)"
+        "assignee": "Basis Admin"
       }
     ],
     "riskId": "B001",
@@ -64591,7 +64591,7 @@ const ALL_USERS = [
     "recommendedAction": "Separate access for BS02 - Basis Development and BS11 - System Administration; remove conflicting action or authorization object from one role.",
     "priority": "P3",
     "status": "In Progress",
-    "assignee": "Seo-yeon Kim (Basis Admin)",
+    "assignee": "Basis Admin",
     "lastAnalyzedDate": "2026-05-19",
     "lastActivity": "2026-05-19 12:00:00",
     "firefighterId": "Standard Access",
@@ -64605,7 +64605,7 @@ const ALL_USERS = [
     "email": "shellie.adams@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_BS13",
+    "role": "Z_BS02",
     "roleType": "Composite",
     "rolesCount": 26,
     "riskViolations": [
@@ -64671,7 +64671,7 @@ const ALL_USERS = [
         "standardsViolated": "SAP GRC Global Ruleset, SOX, Internal Access Control",
         "recommendedAction": "Separate access for BS03 - Basis Table Maintenance and BS11 - System Administration; remove conflicting action or authorization object from one role.",
         "recommendations": "Separate access for BS03 - Basis Table Maintenance and BS11 - System Administration; remove conflicting action or authorization object from one role.",
-        "assignee": "Ji-hun Park (Security Analyst)"
+        "assignee": "Security Analyst"
       },
       {
         "riskId": "B014",
@@ -64735,7 +64735,7 @@ const ALL_USERS = [
         "standardsViolated": "SAP GRC Global Ruleset, SOX, Internal Access Control",
         "recommendedAction": "Separate access for BS13 - Maintain User Master and BS14 - Maintain Profiles / Roles; remove conflicting action or authorization object from one role.",
         "recommendations": "Separate access for BS13 - Maintain User Master and BS14 - Maintain Profiles / Roles; remove conflicting action or authorization object from one role.",
-        "assignee": "Yeon-hee Choi (Finance Controller)"
+        "assignee": "Finance Controller"
       }
     ],
     "riskId": "B004",
@@ -64766,7 +64766,7 @@ const ALL_USERS = [
     "email": "sanghoon.lee@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HD Productivity",
-    "role": "Z_BS10",
+    "role": "Z_BS12",
     "roleType": "Composite",
     "rolesCount": 48,
     "riskViolations": [
@@ -64832,7 +64832,7 @@ const ALL_USERS = [
         "standardsViolated": "SAP GRC Global Ruleset, SOX, Internal Access Control",
         "recommendedAction": "Separate access for BS10 - Security Administration and BS12 - Transport Administration; remove conflicting action or authorization object from one role.",
         "recommendations": "Separate access for BS10 - Security Administration and BS12 - Transport Administration; remove conflicting action or authorization object from one role.",
-        "assignee": "Ji-hun Park (Security Analyst)"
+        "assignee": "Security Analyst"
       },
       {
         "riskId": "B017",
@@ -64895,7 +64895,7 @@ const ALL_USERS = [
     "email": "sap*@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "NA",
-    "role": "Z_BS03",
+    "role": "Z_BS20",
     "roleType": "Composite",
     "rolesCount": 7,
     "riskViolations": [
@@ -64929,7 +64929,7 @@ const ALL_USERS = [
         "standardsViolated": "SAP GRC Global Ruleset, SOX, Internal Access Control",
         "recommendedAction": "Separate access for BS03 - Basis Table Maintenance and BS05 - Client Administration; remove conflicting action or authorization object from one role.",
         "recommendations": "Separate access for BS03 - Basis Table Maintenance and BS05 - Client Administration; remove conflicting action or authorization object from one role.",
-        "assignee": "Seo-yeon Kim (Basis Admin)"
+        "assignee": "Basis Admin"
       },
       {
         "riskId": "B015",
@@ -65010,7 +65010,7 @@ const ALL_USERS = [
     "recommendedAction": "Separate access for BS03 - Basis Table Maintenance and BS05 - Client Administration; remove conflicting action or authorization object from one role.",
     "priority": "P2",
     "status": "Resolved",
-    "assignee": "Seo-yeon Kim (Basis Admin)",
+    "assignee": "Basis Admin",
     "lastAnalyzedDate": "2026-05-19",
     "lastActivity": "2026-05-19 12:00:00",
     "firefighterId": "Standard Access",
@@ -65024,7 +65024,7 @@ const ALL_USERS = [
     "email": "sapsupport@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_BS08",
+    "role": "Z_BS16",
     "roleType": "Composite",
     "rolesCount": 108,
     "riskViolations": [
@@ -65181,7 +65181,7 @@ const ALL_USERS = [
     "email": "sapsupport1@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "ZM:IT_PROJECT_TEAM_DISPLAY",
+    "role": "Z_BS12",
     "roleType": "Composite",
     "rolesCount": 89,
     "riskViolations": [
@@ -65308,7 +65308,7 @@ const ALL_USERS = [
     "email": "sap_spc@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_GL01",
+    "role": "ZBASIS_BR_BGJOB_ADMIN",
     "roleType": "Composite",
     "rolesCount": 8,
     "riskViolations": [
@@ -65342,7 +65342,7 @@ const ALL_USERS = [
         "standardsViolated": "SAP GRC Global Ruleset, SOX, Internal Access Control",
         "recommendedAction": "Separate access for BS13 - Maintain User Master and BS14 - Maintain Profiles / Roles; remove conflicting action or authorization object from one role.",
         "recommendations": "Separate access for BS13 - Maintain User Master and BS14 - Maintain Profiles / Roles; remove conflicting action or authorization object from one role.",
-        "assignee": "Yeon-hee Choi (Finance Controller)"
+        "assignee": "Finance Controller"
       },
       {
         "riskId": "BSCT",
@@ -65421,7 +65421,7 @@ const ALL_USERS = [
     "recommendedAction": "Separate access for BS13 - Maintain User Master and BS14 - Maintain Profiles / Roles; remove conflicting action or authorization object from one role.",
     "priority": "P2",
     "status": "Open",
-    "assignee": "Yeon-hee Choi (Finance Controller)",
+    "assignee": "Finance Controller",
     "lastAnalyzedDate": "2026-05-19",
     "lastActivity": "2026-05-19 12:00:00",
     "firefighterId": "Standard Access",
@@ -65435,7 +65435,7 @@ const ALL_USERS = [
     "email": "Noreply.SAP@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_GL01",
+    "role": "Z_BS15",
     "roleType": "Composite",
     "rolesCount": 15,
     "riskViolations": [
@@ -65592,7 +65592,7 @@ const ALL_USERS = [
     "email": "sap_wsrt@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "NA",
-    "role": "Z_MM05",
+    "role": "SAP_BC_WEBSERVICE_SERVICE_USER",
     "roleType": "Composite",
     "rolesCount": 6,
     "riskViolations": [
@@ -65719,7 +65719,7 @@ const ALL_USERS = [
     "email": "sarah.park@lottechemusa.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_AP01",
+    "role": "Z_CA01",
     "roleType": "Composite",
     "rolesCount": 38,
     "riskViolations": [
@@ -65846,7 +65846,7 @@ const ALL_USERS = [
     "email": "saud.ahmed@lottechem.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_MM05",
+    "role": "Z_FA02",
     "roleType": "Composite",
     "rolesCount": 32,
     "riskViolations": [
@@ -66007,7 +66007,7 @@ const ALL_USERS = [
     "email": "suren.ayrapetyan@lottechemusa.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_FI07",
+    "role": "Z_FI02",
     "roleType": "Composite",
     "rolesCount": 19,
     "riskViolations": [
@@ -66136,7 +66136,7 @@ const ALL_USERS = [
     "email": "sam.benoit@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_AP01",
+    "role": "Z_PS03",
     "roleType": "Composite",
     "rolesCount": 54,
     "riskViolations": [
@@ -66265,7 +66265,7 @@ const ALL_USERS = [
     "email": "shelly.bordelon@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_FI08",
+    "role": "Z_FA02",
     "roleType": "Composite",
     "rolesCount": 35,
     "riskViolations": [
@@ -66426,7 +66426,7 @@ const ALL_USERS = [
     "email": "sam.breaux@c-ka.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_AR02",
+    "role": "ZL_BR_MFG_INVTRY_REP_1720_P03",
     "roleType": "Composite",
     "rolesCount": 16,
     "riskViolations": [
@@ -66555,7 +66555,7 @@ const ALL_USERS = [
     "email": "shelby.broussard@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_GL01",
+    "role": "Z_GL03",
     "roleType": "Composite",
     "rolesCount": 7,
     "riskViolations": [
@@ -66684,7 +66684,7 @@ const ALL_USERS = [
     "email": "stephanie.bryan@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_GL01",
+    "role": "Z_MM04",
     "roleType": "Composite",
     "rolesCount": 104,
     "riskViolations": [
@@ -66845,7 +66845,7 @@ const ALL_USERS = [
     "email": "saturnino.cisneros@partner.lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_GL01",
+    "role": "Z_GL03",
     "roleType": "Composite",
     "rolesCount": 43,
     "riskViolations": [
@@ -66972,7 +66972,7 @@ const ALL_USERS = [
     "email": "shannon.cooley@lottechemusa.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_FI08",
+    "role": "Z_FI04",
     "roleType": "Composite",
     "rolesCount": 44,
     "riskViolations": [
@@ -67101,7 +67101,7 @@ const ALL_USERS = [
     "email": "scredits.ptr@lottechem.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_FI12",
+    "role": "Z_PY03",
     "roleType": "Composite",
     "rolesCount": 8,
     "riskViolations": [
@@ -67260,7 +67260,7 @@ const ALL_USERS = [
     "email": "sdagent@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "HD Productivity",
-    "role": "Z_HR02",
+    "role": "SAP_SRSM_SDAGENT_CF",
     "roleType": "Composite",
     "rolesCount": 23,
     "riskViolations": [
@@ -67516,7 +67516,7 @@ const ALL_USERS = [
     "email": "sdhandapani@sageitinc.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_PY01",
+    "role": "Z_PY03",
     "roleType": "Composite",
     "rolesCount": 88,
     "riskViolations": [
@@ -67677,7 +67677,7 @@ const ALL_USERS = [
     "email": "sdmi_gjjnqxg@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "SAP_ALL",
+    "role": "Z_HR04",
     "roleType": "Composite",
     "rolesCount": 7,
     "riskViolations": [
@@ -67935,7 +67935,7 @@ const ALL_USERS = [
     "email": "SathyaKishore11.Doli@bs.nttdata.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "ZL_BR_FI_GL_ACCNTING",
+    "role": "Z_HR04",
     "roleType": "Composite",
     "rolesCount": 39,
     "riskViolations": [
@@ -68096,7 +68096,7 @@ const ALL_USERS = [
     "email": "sean.hanus@lottechemusa.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "ZL_BR_SD_REPORTS_LS",
+    "role": "Z_PP01",
     "roleType": "Composite",
     "rolesCount": 37,
     "riskViolations": [
@@ -68225,7 +68225,7 @@ const ALL_USERS = [
     "email": "sehun.kim@lottechemusa.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_PP02",
+    "role": "Z_PY03",
     "roleType": "Composite",
     "rolesCount": 29,
     "riskViolations": [
@@ -68356,7 +68356,7 @@ const ALL_USERS = [
     "email": "seth.fulton@lottechemusa.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_SD02",
+    "role": "Z_HR06",
     "roleType": "Composite",
     "rolesCount": 43,
     "riskViolations": [
@@ -68519,7 +68519,7 @@ const ALL_USERS = [
     "email": "somasekhar.gajjala@nttdata.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HD Productivity",
-    "role": "Z_PP02",
+    "role": "Z_PP01",
     "roleType": "Composite",
     "rolesCount": 7,
     "riskViolations": [
@@ -68648,7 +68648,7 @@ const ALL_USERS = [
     "email": "samuel.gauspohl@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_MM03",
+    "role": "ZL_BR_CA_COSTCEN_MAN_MSUP",
     "roleType": "Composite",
     "rolesCount": 39,
     "riskViolations": [
@@ -68777,7 +68777,7 @@ const ALL_USERS = [
     "email": "sgawhale@sageitinc.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_AP01",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 88,
     "riskViolations": [
@@ -68940,7 +68940,7 @@ const ALL_USERS = [
     "email": "scott.gill@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_MM05",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 40,
     "riskViolations": [
@@ -69069,7 +69069,7 @@ const ALL_USERS = [
     "email": "Shivakumar.Diddi@itelligencegroup.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_AP01",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 8,
     "riskViolations": [
@@ -69200,7 +69200,7 @@ const ALL_USERS = [
     "email": "shah.julilian@partner.lottechemusa.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_AP01",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 46,
     "riskViolations": [
@@ -69361,7 +69361,7 @@ const ALL_USERS = [
     "email": "sridhar.kongari2@nttdata.com",
     "sapStatus": "Not Locked",
     "license": "HD Productivity",
-    "role": "Z_AP03",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 7,
     "riskViolations": [
@@ -69490,7 +69490,7 @@ const ALL_USERS = [
     "email": "Santosh.Korada@nttdata.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_AP01",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 67,
     "riskViolations": [
@@ -69619,7 +69619,7 @@ const ALL_USERS = [
     "email": "stanley.lofton@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_AP01",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 41,
     "riskViolations": [
@@ -69780,7 +69780,7 @@ const ALL_USERS = [
     "email": "snair@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_PR01",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 22,
     "riskViolations": [
@@ -69909,7 +69909,7 @@ const ALL_USERS = [
     "email": "snemeli@sageitinc.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_AP01",
+    "role": "Z_PR04",
     "roleType": "Composite",
     "rolesCount": 88,
     "riskViolations": [
@@ -70038,7 +70038,7 @@ const ALL_USERS = [
     "email": "sonja.wright@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_MM05",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 28,
     "riskViolations": [
@@ -70199,7 +70199,7 @@ const ALL_USERS = [
     "email": "steven.parker@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_PR01",
+    "role": "Z_PR06",
     "roleType": "Composite",
     "rolesCount": 51,
     "riskViolations": [
@@ -70330,7 +70330,7 @@ const ALL_USERS = [
     "email": "spc_snote@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_AP01",
+    "role": "ZHEC_SNOTE_V8",
     "roleType": "Composite",
     "rolesCount": 8,
     "riskViolations": [
@@ -70459,7 +70459,7 @@ const ALL_USERS = [
     "email": "sudhakar.reddy@nttdata.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HD Productivity",
-    "role": "Z_AP01",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 9,
     "riskViolations": [
@@ -70620,7 +70620,7 @@ const ALL_USERS = [
     "email": "nvsrinivas@sageitinc.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_PR07",
+    "role": "Z_PR06",
     "roleType": "Composite",
     "rolesCount": 118,
     "riskViolations": [
@@ -70749,7 +70749,7 @@ const ALL_USERS = [
     "email": "steven.robins@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_AP02",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 7,
     "riskViolations": [
@@ -70878,7 +70878,7 @@ const ALL_USERS = [
     "email": "Spatil@sageitinc.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_PR07",
+    "role": "Z_PR06",
     "roleType": "Composite",
     "rolesCount": 90,
     "riskViolations": [
@@ -71039,7 +71039,7 @@ const ALL_USERS = [
     "email": "stephen.bordelon@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_MM01",
+    "role": "Z_PR06",
     "roleType": "Composite",
     "rolesCount": 46,
     "riskViolations": [
@@ -71172,7 +71172,7 @@ const ALL_USERS = [
     "email": "steven.mchan@lottechemusa.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_AP03",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 16,
     "riskViolations": [
@@ -71303,7 +71303,7 @@ const ALL_USERS = [
     "email": "spatil@sageitinc.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_AP01",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 86,
     "riskViolations": [
@@ -71466,7 +71466,7 @@ const ALL_USERS = [
     "email": "suman.gadwal@bs.nttdata.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_MM01",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 11,
     "riskViolations": [
@@ -71597,7 +71597,7 @@ const ALL_USERS = [
     "email": "Sunghee.Park@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_PR11",
+    "role": "ZFI_BR_GL_ACCNTING_1710",
     "roleType": "Composite",
     "rolesCount": 43,
     "riskViolations": [
@@ -71726,7 +71726,7 @@ const ALL_USERS = [
     "email": "sunil.sahai@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_PR11",
+    "role": "ZFI_BR_AP_MGR_LAFCON_1720",
     "roleType": "Composite",
     "rolesCount": 84,
     "riskViolations": [
@@ -71885,7 +71885,7 @@ const ALL_USERS = [
     "email": "svasudevan@sageitinc.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_PR11",
+    "role": "Z_AP03",
     "roleType": "Composite",
     "rolesCount": 88,
     "riskViolations": [
@@ -72012,7 +72012,7 @@ const ALL_USERS = [
     "email": "svc_user@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "HD Productivity",
-    "role": "Z_PR11",
+    "role": "Z_PR06",
     "roleType": "Composite",
     "rolesCount": 6,
     "riskViolations": [
@@ -72139,7 +72139,7 @@ const ALL_USERS = [
     "email": "shawn.weeks@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_PR11",
+    "role": "Z_AR03",
     "roleType": "Composite",
     "rolesCount": 42,
     "riskViolations": [
@@ -72298,7 +72298,7 @@ const ALL_USERS = [
     "email": "taehoon.kim@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_PR11",
+    "role": "ZFI_BR_GL_PPD",
     "roleType": "Composite",
     "rolesCount": 115,
     "riskViolations": [
@@ -72425,7 +72425,7 @@ const ALL_USERS = [
     "email": "taewoon.soun@lotte.net",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "ZL_BR_FI_GL_ACCNTING",
+    "role": "Z_AR03",
     "roleType": "Composite",
     "rolesCount": 88,
     "riskViolations": [
@@ -72552,7 +72552,7 @@ const ALL_USERS = [
     "email": "taeyul.kim@lottechem.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_AR02",
+    "role": "Z_SD06",
     "roleType": "Composite",
     "rolesCount": 12,
     "riskViolations": [
@@ -72711,7 +72711,7 @@ const ALL_USERS = [
     "email": "thomas.bordwell@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HC Functional",
-    "role": "Z_AR02",
+    "role": "Z_SD04",
     "roleType": "Composite",
     "rolesCount": 17,
     "riskViolations": [
@@ -72840,7 +72840,7 @@ const ALL_USERS = [
     "email": "tc_user@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_AR01",
+    "role": "Z_AR03",
     "roleType": "Composite",
     "rolesCount": 7,
     "riskViolations": [
@@ -72969,7 +72969,7 @@ const ALL_USERS = [
     "email": "test@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_SD02",
+    "role": "Z_SD05",
     "roleType": "Composite",
     "rolesCount": 57,
     "riskViolations": [
@@ -73130,7 +73130,7 @@ const ALL_USERS = [
     "email": "test1@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_AR01",
+    "role": "Z_AR06",
     "roleType": "Composite",
     "rolesCount": 87,
     "riskViolations": [
@@ -73259,7 +73259,7 @@ const ALL_USERS = [
     "email": "testusr1@lottechem.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "ZL_BR_FI_GL_ACCNTING",
+    "role": "Z_SD04",
     "roleType": "Composite",
     "rolesCount": 91,
     "riskViolations": [
@@ -73388,7 +73388,7 @@ const ALL_USERS = [
     "email": "troy.fountain@lottechemusa.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_AR02",
+    "role": "Z_SD06",
     "roleType": "Composite",
     "rolesCount": 17,
     "riskViolations": [
@@ -73518,7 +73518,7 @@ const ALL_USERS = [
         "standardsViolated": "SAP GRC Global Ruleset, SOX, Internal Access Control",
         "recommendedAction": "Separate access for ZBS01 - BS01 - Archiving and ZBS02 - BS02 - Basis Development; remove conflicting action or authorization object from one role.",
         "recommendations": "Separate access for ZBS01 - BS01 - Archiving and ZBS02 - BS02 - Basis Development; remove conflicting action or authorization object from one role.",
-        "assignee": "Sarah Jenkins (AP Manager)"
+        "assignee": "AP Manager"
       }
     ],
     "riskId": "S018",
@@ -73549,7 +73549,7 @@ const ALL_USERS = [
     "email": "tommy.guillory@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_AR02",
+    "role": "Z_SD09",
     "roleType": "Composite",
     "rolesCount": 42,
     "riskViolations": [
@@ -73676,7 +73676,7 @@ const ALL_USERS = [
     "email": "tly1@westlake.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "NA",
-    "role": "Z_AR03",
+    "role": "Z_AR06",
     "roleType": "Composite",
     "rolesCount": 7,
     "riskViolations": [
@@ -73774,7 +73774,7 @@ const ALL_USERS = [
         "standardsViolated": "SAP GRC Global Ruleset, SOX, Internal Access Control",
         "recommendedAction": "Separate access for BS02 - Basis Development and BS11 - System Administration; remove conflicting action or authorization object from one role.",
         "recommendations": "Separate access for BS02 - Basis Development and BS11 - System Administration; remove conflicting action or authorization object from one role.",
-        "assignee": "Seo-yeon Kim (Basis Admin)"
+        "assignee": "Basis Admin"
       }
     ],
     "riskId": "S024",
@@ -73805,7 +73805,7 @@ const ALL_USERS = [
     "email": "thomas.eun@lottechemusa.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_SD02",
+    "role": "Z_BS02",
     "roleType": "Composite",
     "rolesCount": 43,
     "riskViolations": [
@@ -73935,7 +73935,7 @@ const ALL_USERS = [
         "standardsViolated": "SAP GRC Global Ruleset, SOX, Internal Access Control",
         "recommendedAction": "Separate access for BS03 - Basis Table Maintenance and BS11 - System Administration; remove conflicting action or authorization object from one role.",
         "recommendations": "Separate access for BS03 - Basis Table Maintenance and BS11 - System Administration; remove conflicting action or authorization object from one role.",
-        "assignee": "Ji-hun Park (Security Analyst)"
+        "assignee": "Security Analyst"
       }
     ],
     "riskId": "S027",
@@ -73966,7 +73966,7 @@ const ALL_USERS = [
     "email": "tle1@westlake.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "NA",
-    "role": "Z_SD08",
+    "role": "Z_BS02",
     "roleType": "Composite",
     "rolesCount": 6,
     "riskViolations": [
@@ -74093,7 +74093,7 @@ const ALL_USERS = [
     "email": "Tim.Laiveling@bs.nttdata.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "ZM:IT_PROJECT_TEAM_DISPLAY",
+    "role": "Z_BS05",
     "roleType": "Composite",
     "rolesCount": 16,
     "riskViolations": [
@@ -74127,7 +74127,7 @@ const ALL_USERS = [
         "standardsViolated": "SAP GRC Global Ruleset, SOX, Internal Access Control",
         "recommendedAction": "Separate access for ZBS01 - BS01 - Archiving and ZBS02 - BS02 - Basis Development; remove conflicting action or authorization object from one role.",
         "recommendations": "Separate access for ZBS01 - BS01 - Archiving and ZBS02 - BS02 - Basis Development; remove conflicting action or authorization object from one role.",
-        "assignee": "Sarah Jenkins (AP Manager)"
+        "assignee": "AP Manager"
       },
       {
         "riskId": "B005",
@@ -74191,7 +74191,7 @@ const ALL_USERS = [
         "standardsViolated": "SAP GRC Global Ruleset, SOX, Internal Access Control",
         "recommendedAction": "Separate access for BS03 - Basis Table Maintenance and BS05 - Client Administration; remove conflicting action or authorization object from one role.",
         "recommendations": "Separate access for BS03 - Basis Table Maintenance and BS05 - Client Administration; remove conflicting action or authorization object from one role.",
-        "assignee": "Seo-yeon Kim (Basis Admin)"
+        "assignee": "Basis Admin"
       }
     ],
     "riskId": "T_RUATDE",
@@ -74208,7 +74208,7 @@ const ALL_USERS = [
     "recommendedAction": "Separate access for ZBS01 - BS01 - Archiving and ZBS02 - BS02 - Basis Development; remove conflicting action or authorization object from one role.",
     "priority": "P3",
     "status": "Resolved",
-    "assignee": "Sarah Jenkins (AP Manager)",
+    "assignee": "AP Manager",
     "lastAnalyzedDate": "2026-05-19",
     "lastActivity": "2026-05-19 12:00:00",
     "firefighterId": "Standard Access",
@@ -74222,7 +74222,7 @@ const ALL_USERS = [
     "email": "terrell.latchison@lottechemusa.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HC Functional",
-    "role": "Z_BS08",
+    "role": "Z_BS02",
     "roleType": "Composite",
     "rolesCount": 10,
     "riskViolations": [
@@ -74256,7 +74256,7 @@ const ALL_USERS = [
         "standardsViolated": "SAP GRC Global Ruleset, SOX, Internal Access Control",
         "recommendedAction": "Separate access for BS02 - Basis Development and BS05 - Client Administration; remove conflicting action or authorization object from one role.",
         "recommendations": "Separate access for BS02 - Basis Development and BS05 - Client Administration; remove conflicting action or authorization object from one role.",
-        "assignee": "Seo-yeon Kim (Basis Admin)"
+        "assignee": "Basis Admin"
       },
       {
         "riskId": "B008",
@@ -74369,7 +74369,7 @@ const ALL_USERS = [
     "recommendedAction": "Separate access for BS02 - Basis Development and BS05 - Client Administration; remove conflicting action or authorization object from one role.",
     "priority": "P3",
     "status": "Open",
-    "assignee": "Seo-yeon Kim (Basis Admin)",
+    "assignee": "Basis Admin",
     "lastAnalyzedDate": "2026-05-19",
     "lastActivity": "2026-05-19 12:00:00",
     "firefighterId": "Standard Access",
@@ -74383,7 +74383,7 @@ const ALL_USERS = [
     "email": "timothy.lebleu@lottechemusa.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_BS10",
+    "role": "Z_BS12",
     "roleType": "Composite",
     "rolesCount": 41,
     "riskViolations": [
@@ -74449,7 +74449,7 @@ const ALL_USERS = [
         "standardsViolated": "SAP GRC Global Ruleset, SOX, Internal Access Control",
         "recommendedAction": "Separate access for BS05 - Client Administration and BS10 - Security Administration; remove conflicting action or authorization object from one role.",
         "recommendations": "Separate access for BS05 - Client Administration and BS10 - Security Administration; remove conflicting action or authorization object from one role.",
-        "assignee": "Seo-yeon Kim (Basis Admin)"
+        "assignee": "Basis Admin"
       },
       {
         "riskId": "B016",
@@ -74512,7 +74512,7 @@ const ALL_USERS = [
     "email": "Terrence.McMurray@ams-par.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HD Productivity",
-    "role": "ZL_BR_CA_CONTRACTORS_COMMON",
+    "role": "Z_BS03",
     "roleType": "Composite",
     "rolesCount": 7,
     "riskViolations": [
@@ -74546,7 +74546,7 @@ const ALL_USERS = [
         "standardsViolated": "SAP GRC Global Ruleset, SOX, Internal Access Control",
         "recommendedAction": "Separate access for BS03 - Basis Table Maintenance and BS11 - System Administration; remove conflicting action or authorization object from one role.",
         "recommendations": "Separate access for BS03 - Basis Table Maintenance and BS11 - System Administration; remove conflicting action or authorization object from one role.",
-        "assignee": "Ji-hun Park (Security Analyst)"
+        "assignee": "Security Analyst"
       },
       {
         "riskId": "B014",
@@ -74610,7 +74610,7 @@ const ALL_USERS = [
         "standardsViolated": "SAP GRC Global Ruleset, SOX, Internal Access Control",
         "recommendedAction": "Separate access for BS13 - Maintain User Master and BS14 - Maintain Profiles / Roles; remove conflicting action or authorization object from one role.",
         "recommendations": "Separate access for BS13 - Maintain User Master and BS14 - Maintain Profiles / Roles; remove conflicting action or authorization object from one role.",
-        "assignee": "Yeon-hee Choi (Finance Controller)"
+        "assignee": "Finance Controller"
       }
     ],
     "riskId": "B009",
@@ -74627,7 +74627,7 @@ const ALL_USERS = [
     "recommendedAction": "Separate access for BS03 - Basis Table Maintenance and BS11 - System Administration; remove conflicting action or authorization object from one role.",
     "priority": "P2",
     "status": "In Progress",
-    "assignee": "Ji-hun Park (Security Analyst)",
+    "assignee": "Security Analyst",
     "lastAnalyzedDate": "2026-05-19",
     "lastActivity": "2026-05-19 12:00:00",
     "firefighterId": "Standard Access",
@@ -74641,7 +74641,7 @@ const ALL_USERS = [
     "email": "terra.moore@partner.lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_BS10",
+    "role": "Z_BS12",
     "roleType": "Composite",
     "rolesCount": 50,
     "riskViolations": [
@@ -74675,7 +74675,7 @@ const ALL_USERS = [
         "standardsViolated": "SAP GRC Global Ruleset, SOX, Internal Access Control",
         "recommendedAction": "Separate access for BS10 - Security Administration and BS12 - Transport Administration; remove conflicting action or authorization object from one role.",
         "recommendations": "Separate access for BS10 - Security Administration and BS12 - Transport Administration; remove conflicting action or authorization object from one role.",
-        "assignee": "Ji-hun Park (Security Analyst)"
+        "assignee": "Security Analyst"
       },
       {
         "riskId": "B017",
@@ -74784,7 +74784,7 @@ const ALL_USERS = [
     "recommendedAction": "Separate access for BS10 - Security Administration and BS12 - Transport Administration; remove conflicting action or authorization object from one role.",
     "priority": "P2",
     "status": "Resolved",
-    "assignee": "Ji-hun Park (Security Analyst)",
+    "assignee": "Security Analyst",
     "lastAnalyzedDate": "2026-05-19",
     "lastActivity": "2026-05-19 12:00:00",
     "firefighterId": "Standard Access",
@@ -74925,7 +74925,7 @@ const ALL_USERS = [
     "email": "tom.burke@nttdata.com",
     "sapStatus": "Not Locked",
     "license": "NA",
-    "role": "Z_BS08",
+    "role": "Z_BS16",
     "roleType": "Composite",
     "rolesCount": 5,
     "riskViolations": [
@@ -75050,7 +75050,7 @@ const ALL_USERS = [
     "email": "twestern@westlake.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "NA",
-    "role": "Z_AR02",
+    "role": "Z_CC03",
     "roleType": "Composite",
     "rolesCount": 8,
     "riskViolations": [
@@ -75209,7 +75209,7 @@ const ALL_USERS = [
     "email": "tyler.porter@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_GL01",
+    "role": "Z_BS17",
     "roleType": "Composite",
     "rolesCount": 52,
     "riskViolations": [
@@ -75336,7 +75336,7 @@ const ALL_USERS = [
     "email": "trinh.pham@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_GL01",
+    "role": "ZFI_BR_PAY_PROPOSAL_1720",
     "roleType": "Composite",
     "rolesCount": 47,
     "riskViolations": [
@@ -75463,7 +75463,7 @@ const ALL_USERS = [
     "email": "tvaughn@westlake.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_MM05",
+    "role": "Z_FA02",
     "roleType": "Composite",
     "rolesCount": 9,
     "riskViolations": [
@@ -75624,7 +75624,7 @@ const ALL_USERS = [
     "email": "thomas.watsabaugh@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_AP01",
+    "role": "ZL_BR_MFG_EXECUTION_PL1720",
     "roleType": "Composite",
     "rolesCount": 20,
     "riskViolations": [
@@ -75753,7 +75753,7 @@ const ALL_USERS = [
     "email": "timothy.wilcox@lottechemusa.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_MM05",
+    "role": "Z_FA02",
     "roleType": "Composite",
     "rolesCount": 7,
     "riskViolations": [
@@ -75882,7 +75882,7 @@ const ALL_USERS = [
     "email": "tyler.williams@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HD Productivity",
-    "role": "Z_FI07",
+    "role": "Z_FI02",
     "roleType": "Composite",
     "rolesCount": 19,
     "riskViolations": [
@@ -76043,7 +76043,7 @@ const ALL_USERS = [
     "email": "tyler.barron@lottechem.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_AP01",
+    "role": "Z_GL03",
     "roleType": "Composite",
     "rolesCount": 7,
     "riskViolations": [
@@ -76172,7 +76172,7 @@ const ALL_USERS = [
     "email": "umachcha@lottechem.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HD Productivity",
-    "role": "Z_FI08",
+    "role": "Z_GL03",
     "roleType": "Composite",
     "rolesCount": 7,
     "riskViolations": [
@@ -76301,7 +76301,7 @@ const ALL_USERS = [
     "email": "userlocked@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "91",
-    "role": "Z_FI12",
+    "role": "Z_FI06",
     "roleType": "Composite",
     "rolesCount": 8,
     "riskViolations": [
@@ -76460,7 +76460,7 @@ const ALL_USERS = [
     "email": "vbaid@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_GL01",
+    "role": "Z_GL03",
     "roleType": "Composite",
     "rolesCount": 10,
     "riskViolations": [
@@ -76587,7 +76587,7 @@ const ALL_USERS = [
     "email": "VenkateswaraRao.Balumuru@bs.nttdata.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_GL01",
+    "role": "Z_FI06",
     "roleType": "Composite",
     "rolesCount": 39,
     "riskViolations": [
@@ -76716,7 +76716,7 @@ const ALL_USERS = [
     "email": "VijayaKrishnaveni.Kasturi@bs.nttdata.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_PY01",
+    "role": "Z_PY03",
     "roleType": "Composite",
     "rolesCount": 17,
     "riskViolations": [
@@ -76875,7 +76875,7 @@ const ALL_USERS = [
     "email": "Vijayakumar.Kommandi@bs.nttdata.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_AR01",
+    "role": "Z_PY02",
     "roleType": "Composite",
     "rolesCount": 48,
     "riskViolations": [
@@ -77004,7 +77004,7 @@ const ALL_USERS = [
     "email": "vkuruva@lottechem.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_FI12",
+    "role": "Z_PY03",
     "roleType": "Composite",
     "rolesCount": 15,
     "riskViolations": [
@@ -77131,7 +77131,7 @@ const ALL_USERS = [
     "email": "vijayalakshmi.maddula@nttdata.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_HR02",
+    "role": "Z_HR04",
     "roleType": "Composite",
     "rolesCount": 9,
     "riskViolations": [
@@ -77550,7 +77550,7 @@ const ALL_USERS = [
     "email": "vinoth.radhakrishnan@partner.lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_SD02",
+    "role": "Z_HR04",
     "roleType": "Composite",
     "rolesCount": 92,
     "riskViolations": [
@@ -77709,7 +77709,7 @@ const ALL_USERS = [
     "email": "venkatesh.srungarapu@itelligencegroup.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_PP02",
+    "role": "Z_PY03",
     "roleType": "Composite",
     "rolesCount": 7,
     "riskViolations": [
@@ -77838,7 +77838,7 @@ const ALL_USERS = [
     "email": "viswanath.thammineni@nttdata.com",
     "sapStatus": "Not Locked",
     "license": "HD Productivity",
-    "role": "ZM:IT_PROJECT_TEAM_DISPLAY",
+    "role": "Z_HR07",
     "roleType": "Composite",
     "rolesCount": 7,
     "riskViolations": [
@@ -77967,7 +77967,7 @@ const ALL_USERS = [
     "email": "wade.malone@lottechem.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "ZL_BR_PM_PURCHASING",
+    "role": "Z_PP01",
     "roleType": "Composite",
     "rolesCount": 12,
     "riskViolations": [
@@ -78130,7 +78130,7 @@ const ALL_USERS = [
     "email": "waylon.fyfe@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "ZEWM_BR_WH_DISPLAY_MP_LAMW",
+    "role": "Z_PP02",
     "roleType": "Composite",
     "rolesCount": 50,
     "riskViolations": [
@@ -78263,7 +78263,7 @@ const ALL_USERS = [
     "email": "wahrens@westlake.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "NA",
-    "role": "Z_SD02",
+    "role": "Z_MM02",
     "roleType": "Composite",
     "rolesCount": 9,
     "riskViolations": [
@@ -78396,7 +78396,7 @@ const ALL_USERS = [
     "email": "wendy.berryman@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_PR01",
+    "role": "Z_PP01",
     "roleType": "Composite",
     "rolesCount": 51,
     "riskViolations": [
@@ -78557,7 +78557,7 @@ const ALL_USERS = [
     "email": "wyane.broussard@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_MM03",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 37,
     "riskViolations": [
@@ -78684,7 +78684,7 @@ const ALL_USERS = [
     "email": "westlake.fi@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_AP01",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 25,
     "riskViolations": [
@@ -78813,7 +78813,7 @@ const ALL_USERS = [
     "email": "westlake.tax@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_MM05",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 25,
     "riskViolations": [
@@ -78972,7 +78972,7 @@ const ALL_USERS = [
     "email": "wilfred.gordon@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HD Productivity",
-    "role": "Z_AP01",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 7,
     "riskViolations": [
@@ -79101,7 +79101,7 @@ const ALL_USERS = [
     "email": "whitney.reed@lottechemusa.com",
     "sapStatus": "UNKNOWN",
     "license": "HB Professional",
-    "role": "Z_AP01",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 49,
     "riskViolations": [
@@ -79230,7 +79230,7 @@ const ALL_USERS = [
     "email": "wafa.koubaa@partner.lottechemusa.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_MM05",
+    "role": "Z_PR04",
     "roleType": "Composite",
     "rolesCount": 46,
     "riskViolations": [
@@ -79391,7 +79391,7 @@ const ALL_USERS = [
     "email": "william.mason@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_PR07",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 55,
     "riskViolations": [
@@ -79522,7 +79522,7 @@ const ALL_USERS = [
     "email": "william.miller@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HD Productivity",
-    "role": "Z_AP01",
+    "role": "ZL_BR_MFG_EXECUTION_PL1730",
     "roleType": "Composite",
     "rolesCount": 14,
     "riskViolations": [
@@ -79651,7 +79651,7 @@ const ALL_USERS = [
     "email": "woongjo.yang@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HD Productivity",
-    "role": "Z_PR01",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 47,
     "riskViolations": [
@@ -79812,7 +79812,7 @@ const ALL_USERS = [
     "email": "woowon.jang@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_AP01",
+    "role": "Z_PR06",
     "roleType": "Composite",
     "rolesCount": 24,
     "riskViolations": [
@@ -79941,7 +79941,7 @@ const ALL_USERS = [
     "email": "Yogesh11.Balel@nttdata.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_AP02",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 12,
     "riskViolations": [
@@ -80070,7 +80070,7 @@ const ALL_USERS = [
     "email": "yeongje.lee@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_PR01",
+    "role": "Z_PR06",
     "roleType": "Composite",
     "rolesCount": 9,
     "riskViolations": [
@@ -80231,7 +80231,7 @@ const ALL_USERS = [
     "email": "yingying.huang@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_AP01",
+    "role": "Z_PR06",
     "roleType": "Composite",
     "rolesCount": 106,
     "riskViolations": [
@@ -80360,7 +80360,7 @@ const ALL_USERS = [
     "email": "yjeon@lottechem.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HC Functional",
-    "role": "Z_AP01",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 7,
     "riskViolations": [
@@ -80489,7 +80489,7 @@ const ALL_USERS = [
     "email": "yongki.min@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_PR01",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 45,
     "riskViolations": [
@@ -80652,7 +80652,7 @@ const ALL_USERS = [
     "email": "YoungHyun.Kim@lottechemusa.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_MM01",
+    "role": "Z_PR04",
     "roleType": "Composite",
     "rolesCount": 45,
     "riskViolations": [
@@ -80783,7 +80783,7 @@ const ALL_USERS = [
     "email": "yoel.sanchez@lottechem.com",
     "sapStatus": "Locked Locally By Administrator",
     "license": "HB Professional",
-    "role": "Z_MM03",
+    "role": "Z_PR04",
     "roleType": "Composite",
     "rolesCount": 32,
     "riskViolations": [
@@ -80912,7 +80912,7 @@ const ALL_USERS = [
     "email": "yunh@lotte.net",
     "sapStatus": "Not Locked",
     "license": "HC Functional",
-    "role": "Z_AP03",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 11,
     "riskViolations": [
@@ -81077,7 +81077,7 @@ const ALL_USERS = [
     "email": "zgrfc_super@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "HD Productivity",
-    "role": "Z_MM07",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 8,
     "riskViolations": [
@@ -81208,7 +81208,7 @@ const ALL_USERS = [
     "email": "zachery.tidmore@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_AP01",
+    "role": "ZL_BR_MFG_EXECUTION_PL1710",
     "roleType": "Composite",
     "rolesCount": 32,
     "riskViolations": [
@@ -81337,7 +81337,7 @@ const ALL_USERS = [
     "email": "_sapi870957@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "HD Productivity",
-    "role": "Z_PR11",
+    "role": "Z_PR02",
     "roleType": "Composite",
     "rolesCount": 8,
     "riskViolations": [
@@ -81496,7 +81496,7 @@ const ALL_USERS = [
     "email": "_sap_ams_adm@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_PR11",
+    "role": "Z_PR07",
     "roleType": "Composite",
     "rolesCount": 11,
     "riskViolations": [
@@ -81625,7 +81625,7 @@ const ALL_USERS = [
     "email": "_sap_tec_usr@lottechem.com",
     "sapStatus": "Not Locked",
     "license": "HB Professional",
-    "role": "Z_PR11",
+    "role": "Z_PR04",
     "roleType": "Composite",
     "rolesCount": 14,
     "riskViolations": [
@@ -81790,7 +81790,7 @@ const ALL_RISKS = [
     "complianceImpact": "Direct SAP GRC and SOX control impact.",
     "grcMapping": "SAP GRC Global Ruleset, SOX, Internal Access Control",
     "auditNotes": "Ruleset-derived mock row generated from local S4HANAOP content.",
-    "assignee": "Seo-yeon Kim (Basis Admin)",
+    "assignee": "Basis Admin",
     "functionIds": [
       "BS02",
       "BS11"
@@ -81904,7 +81904,7 @@ const ALL_RISKS = [
     "complianceImpact": "Direct SAP GRC and SOX control impact.",
     "grcMapping": "SAP GRC Global Ruleset, SOX, Internal Access Control",
     "auditNotes": "Ruleset-derived mock row generated from local S4HANAOP content.",
-    "assignee": "Seo-yeon Kim (Basis Admin)",
+    "assignee": "Basis Admin",
     "functionIds": [
       "BS02",
       "BS05"
@@ -82248,7 +82248,7 @@ const ALL_RISKS = [
     "complianceImpact": "Direct SAP GRC and SOX control impact.",
     "grcMapping": "SAP GRC Global Ruleset, SOX, Internal Access Control",
     "auditNotes": "Ruleset-derived mock row generated from local S4HANAOP content.",
-    "assignee": "Ji-hun Park (Security Analyst)",
+    "assignee": "Security Analyst",
     "functionIds": [
       "BS03",
       "BS11"
@@ -82306,7 +82306,7 @@ const ALL_RISKS = [
     "complianceImpact": "Direct SAP GRC and SOX control impact.",
     "grcMapping": "SAP GRC Global Ruleset, SOX, Internal Access Control",
     "auditNotes": "Ruleset-derived mock row generated from local S4HANAOP content.",
-    "assignee": "Seo-yeon Kim (Basis Admin)",
+    "assignee": "Basis Admin",
     "functionIds": [
       "BS03",
       "BS05"
@@ -82364,7 +82364,7 @@ const ALL_RISKS = [
     "complianceImpact": "Direct SAP GRC and SOX control impact.",
     "grcMapping": "SAP GRC Global Ruleset, SOX, Internal Access Control",
     "auditNotes": "Ruleset-derived mock row generated from local S4HANAOP content.",
-    "assignee": "Seo-yeon Kim (Basis Admin)",
+    "assignee": "Basis Admin",
     "functionIds": [
       "BS05",
       "BS10"
@@ -82422,7 +82422,7 @@ const ALL_RISKS = [
     "complianceImpact": "Direct SAP GRC and SOX control impact.",
     "grcMapping": "SAP GRC Global Ruleset, SOX, Internal Access Control",
     "auditNotes": "Ruleset-derived mock row generated from local S4HANAOP content.",
-    "assignee": "Ji-hun Park (Security Analyst)",
+    "assignee": "Security Analyst",
     "functionIds": [
       "BS10",
       "BS12"
@@ -82825,7 +82825,7 @@ const ALL_RISKS = [
     "complianceImpact": "Direct SAP GRC and SOX control impact.",
     "grcMapping": "SAP GRC Global Ruleset, SOX, Internal Access Control",
     "auditNotes": "Ruleset-derived mock row generated from local S4HANAOP content.",
-    "assignee": "Yeon-hee Choi (Finance Controller)",
+    "assignee": "Finance Controller",
     "functionIds": [
       "BS13",
       "BS14"
@@ -93635,7 +93635,7 @@ const ALL_RISKS = [
     "complianceImpact": "Direct SAP GRC and SOX control impact.",
     "grcMapping": "SAP GRC Global Ruleset, SOX, Internal Access Control",
     "auditNotes": "Ruleset-derived mock row generated from local S4HANAOP content.",
-    "assignee": "Sarah Jenkins (AP Manager)",
+    "assignee": "AP Manager",
     "functionIds": [
       "ZBS01",
       "ZBS02"

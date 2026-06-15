@@ -204,19 +204,19 @@ RULES_DEF = [
 ]
 
 OWNER_NAME_MAP = {
-    "P000004": "Seo-yeon Kim (Basis Admin)",
-    "P000095": "Min-woo Lee (Compliance Lead)",
-    "P000006": "Ji-hun Park (Security Analyst)",
-    "P000022": "Yeon-hee Choi (Finance Controller)",
-    "P001268": "Ravi Sharma (Basis Architect)",
-    "P004088": "Sarah Jenkins (AP Manager)"
+    "P000004": "Basis Admin",
+    "P000095": "Compliance Lead",
+    "P000006": "Security Analyst",
+    "P000022": "Finance Controller",
+    "P001268": "Basis Architect",
+    "P004088": "AP Manager"
 }
 
 def resolve_assignee(val, process):
     if val and val in OWNER_NAME_MAP:
         return OWNER_NAME_MAP[val]
     if val and val.startswith("P") and val[1:].isdigit():
-        return f"IT Compliance ({val})"
+        return "IT Compliance"
     if not val:
         return "SAP Security Team" if "basis" in str(process).lower() else "IT Compliance"
     return val

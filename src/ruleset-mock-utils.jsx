@@ -33,18 +33,18 @@ const rulesetCategory = process => {
 };
 
 const OWNER_NAME_MAP = {
-  'P000004': 'Seo-yeon Kim (Basis Admin)',
-  'P000095': 'Min-woo Lee (Compliance Lead)',
-  'P000006': 'Ji-hun Park (Security Analyst)',
-  'P000022': 'Yeon-hee Choi (Finance Controller)',
-  'P001268': 'Ravi Sharma (Basis Architect)',
-  'P004088': 'Sarah Jenkins (AP Manager)'
+  'P000004': 'Basis Admin',
+  'P000095': 'Compliance Lead',
+  'P000006': 'Security Analyst',
+  'P000022': 'Finance Controller',
+  'P001268': 'Basis Architect',
+  'P004088': 'AP Manager'
 };
 
 const resolveAssignee = (val, process) => {
   if (val && OWNER_NAME_MAP[val]) return OWNER_NAME_MAP[val];
   if (val && String(val).startsWith('P') && String(val).slice(1).match(/^\d+$/)) {
-    return `IT Compliance (${val})`;
+    return 'IT Compliance';
   }
   return val || (String(process || '').includes('Basis') ? 'SAP Security Team' : 'IT Compliance');
 };

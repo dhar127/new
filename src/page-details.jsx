@@ -332,11 +332,14 @@ window.UserProfilePage = function({ userId, onNavigate, inline, onBack }) {
     const existing = (window.MOCK.ALL_USERS || []).find(u => u.userId === userId);
     if (existing) {
       const riskViolations = Array.isArray(existing.riskViolations) ? existing.riskViolations : [];
+      const primaryRole = existing.role || (riskViolations[0] ? `Z_ROLE_${riskViolations[0].functionIds[0]}` : 'ZFI_BR_GL_POSTING');
       
       const violations = riskViolations.map(rv => ({
         id: rv.riskId,
         desc: rv.scenario,
-        severity: rv.severity
+        severity: rv.severity,
+        action: rv.recommendedAction || rv.recommendations || 'Separate conflicting roles.',
+        compensatingMonitor: `Implement daily reviewer checklists on transactions completed by this user under role ${primaryRole} for risk ${rv.riskId}.`
       }));
       
       const criticalCount = riskViolations.filter(rv => rv.severity === 'Critical' || (rv.severity === 'High' && rv.riskScore >= 90)).length;
@@ -347,17 +350,15 @@ window.UserProfilePage = function({ userId, onNavigate, inline, onBack }) {
       const tcodes = Array.from(new Set(riskViolations.flatMap(rv => String(rv.conflictingTransactions || '').split(',').map(t => t.trim())).filter(Boolean)));
       const roles = Array.from(new Set(riskViolations.flatMap(rv => Array.isArray(rv.functionIds) ? rv.functionIds.map(fid => `Z_ROLE_${fid}`) : []).filter(Boolean)));
       if (!roles.length) {
-        roles.push(existing.role || 'ZFI_BR_GL_POSTING');
+        roles.push(primaryRole);
       }
-      
-      const primaryRole = roles[0];
-      const action = riskViolations[0]?.recommendedAction || existing.recommendedAction || 'Separate conflicting roles.';
       
       return {
         userId: existing.userId,
         fullName: existing.fullName,
         dept: existing.processArea || existing.dept || 'Finance',
         role: primaryRole,
+        email: existing.email || existing.emailId || '',
         lastLogin: existing.lastActivity || '2026-05-19 14:10',
         criticalCount,
         highCount,
@@ -366,7 +367,7 @@ window.UserProfilePage = function({ userId, onNavigate, inline, onBack }) {
         roles,
         rolesTotal: Number(existing.rolesCount) > 0 ? Number(existing.rolesCount) : roles.length,
         tcodes: tcodes.length ? tcodes : ['FK01', 'F110'],
-        action,
+        action: riskViolations[0]?.recommendedAction || existing.recommendedAction || 'Separate conflicting roles.',
         compensatingMonitor: `Implement daily reviewer checklists on transactions completed by this user under role ${primaryRole}.`,
         violations
       };
@@ -378,6 +379,7 @@ window.UserProfilePage = function({ userId, onNavigate, inline, onBack }) {
       fullName: nameFormatted,
       dept: userId.includes('FF') ? 'IT Basis' : 'Finance',
       role: userId.includes('FF') ? 'SAP Security Specialist' : 'Senior Analyst',
+      email: `${userId.toLowerCase()}@lottechem.com`,
       lastLogin: '2026-05-19 14:10',
       criticalCount: userId.includes('HOANG') ? 1 : userId.includes('FF') ? 2 : 0,
       highCount: userId.includes('HOANG') ? 1 : userId.includes('FF') ? 1 : 0,
@@ -387,8 +389,8 @@ window.UserProfilePage = function({ userId, onNavigate, inline, onBack }) {
       tcodes: ['FB50', 'MIRO', 'ME21N', 'SU01', 'PFCG'],
       action: 'Separate conflicting billing and invoice receipt roles immediately.',
       violations: [
-        { id: 'V-1058', desc: 'Full OTC cycle control (Order → Bill → Collect) by single user', severity: 'Critical' },
-        { id: 'V-1101', desc: 'F110 Auto-Payment Run runnable by non-treasury users', severity: 'High' }
+        { id: 'V-1058', desc: 'Full OTC cycle control (Order → Bill → Collect) by single user', severity: 'Critical', action: 'Separate conflicting billing and invoice receipt roles immediately.', compensatingMonitor: 'Implement daily reviewer checklists on billing and collections transactions.' },
+        { id: 'V-1101', desc: 'F110 Auto-Payment Run runnable by non-treasury users', severity: 'High', action: 'Restrict F110 to Treasury role pool.', compensatingMonitor: 'Enforce dual authorization signatures on bank transfers.' }
       ]
     };
   }, [userId]);
@@ -458,8 +460,8 @@ window.UserProfilePage = function({ userId, onNavigate, inline, onBack }) {
               </div>
               <div className="h-8 w-px bg-ink-150 self-center hidden sm:block" />
               <div className="flex flex-col gap-0.5">
-                <span className="text-[9px] font-extrabold uppercase tracking-wider text-ink-400">Role Title</span>
-                <span className="font-mono font-semibold text-brand-650">{user.role}</span>
+                <span className="text-[9px] font-extrabold uppercase tracking-wider text-ink-400">Email Address</span>
+                <span className="font-semibold text-ink-800">{user.email || 'N/A'}</span>
               </div>
 
             </div>
@@ -585,25 +587,34 @@ window.UserProfilePage = function({ userId, onNavigate, inline, onBack }) {
         <div className="space-y-6">
           
           <window.Section title="Remediation & Compensation">
-            <div className="p-5 space-y-4">
-              <div>
-                <span className="text-[10px] font-bold uppercase tracking-wider text-ink-400 flex items-center gap-1 mb-1">
-                  Recommended Control Actions
-                  <window.HeaderTooltip tip="Recommended governance actions to mitigate or resolve this conflict." />
-                </span>
-                <p className="text-xs font-semibold text-ink-800 bg-amber-50 border border-amber-200 rounded p-3 leading-relaxed">
-                  {user.action}
-                </p>
-              </div>
-              <div className="pt-3 border-t border-ink-100">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-ink-400 flex items-center gap-1 mb-1">
-                  Compensating Monitor
-                  <window.HeaderTooltip tip="Required monitoring controls to cover the risk if left unmitigated." />
-                </span>
-                <p className="text-xs text-ink-600 leading-relaxed font-medium">
-                  Implement daily reviewer checklists on transactions completed by this user under role ZSD_BR_BILLING_CREATE.
-                </p>
-              </div>
+            <div className="p-5 space-y-5 divide-y divide-ink-100">
+              {user.violations.map((v, vIdx) => (
+                <div key={v.id} className={vIdx > 0 ? "pt-4 space-y-3 animate-fade-in" : "space-y-3 animate-fade-in"}>
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono text-xs font-bold text-brand-700 bg-brand-50 px-2 py-0.5 rounded ring-1 ring-brand-100">{v.id}</span>
+                    <span className="text-[10px] font-bold text-ink-500 uppercase tracking-wider">Mitigation Plan</span>
+                  </div>
+                  <div>
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-ink-400 flex items-center gap-1 mb-1">
+                      Recommended Control Actions
+                    </span>
+                    <p className="text-xs font-semibold text-ink-850 bg-amber-50/70 border border-amber-200/60 rounded p-2.5 leading-relaxed">
+                      {v.action}
+                    </p>
+                  </div>
+                  <div>
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-ink-400 flex items-center gap-1 mb-1">
+                      Compensating Monitor
+                    </span>
+                    <p className="text-xs text-ink-600 leading-relaxed font-medium">
+                      {v.compensatingMonitor}
+                    </p>
+                  </div>
+                </div>
+              ))}
+              {user.violations.length === 0 && (
+                <p className="text-xs font-bold text-ink-400 text-center uppercase tracking-wider py-4">No active SoD violations for this profile</p>
+              )}
             </div>
           </window.Section>
 
@@ -853,7 +864,8 @@ window.RiskDetailPage = function({ riskId, onNavigate, inline, onBack }) {
         businessImpact: existing.businessImpact || 'Unmitigated authorizations create potential audit exceptions.',
         complianceImpact: existing.complianceImpact || 'Direct violation of SOX Section 404 control requirements.',
         compensatingControls: existing.recommendations || 'Implement automatic daily ledger reconciliations.',
-        affectedUsers
+        affectedUsers,
+        functionIds: existing.functionIds || []
       };
     }
 
@@ -869,7 +881,8 @@ window.RiskDetailPage = function({ riskId, onNavigate, inline, onBack }) {
       businessImpact: 'A single individual holding both parameters has the ability to register suppliers/sales transactions and execute payouts or clear bill postings without independent oversight.',
       complianceImpact: 'Direct violation of SOX Section 404 requirements concerning internal controls over financial reporting (ICFR).',
       compensatingControls: 'Implement automated three-way matching verification in client configuration, paired with daily independent reconciliation logs.',
-      affectedUsers: ['HOANG.NGUYEN', 'JAE.KANG', 'PVALENCIA', 'RUTGER.DUKES', 'WBERRYMAN']
+      affectedUsers: ['HOANG.NGUYEN', 'JAE.KANG', 'PVALENCIA', 'RUTGER.DUKES', 'WBERRYMAN'],
+      functionIds: riskId === 'V-1058' ? ['SD01', 'SD03'] : ['AP01', 'PR01']
     };
   }, [riskId]);
 
@@ -948,8 +961,12 @@ window.RiskDetailPage = function({ riskId, onNavigate, inline, onBack }) {
                   <window.SeverityBadge value={details.level} />
                 </div>
                 <div>
-                  <span className="text-[9px] font-bold uppercase tracking-wider text-ink-400 block mb-0.5">Active Rule Set</span>
-                  <span className="font-mono text-xs text-ink-600 block">{details.ruleset}</span>
+                  <span className="text-[9px] font-bold uppercase tracking-wider text-ink-400 block mb-0.5">Function IDs</span>
+                  <span className="font-mono text-xs text-brand-650 font-bold block">
+                    {Array.isArray(details.functionIds) && details.functionIds.length > 0 
+                      ? details.functionIds.join(', ') 
+                      : 'N/A'}
+                  </span>
                 </div>
               </div>
             </div>
