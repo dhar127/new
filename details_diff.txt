@@ -1,0 +1,219 @@
+﻿diff --git a/src/page-details.jsx b/src/page-details.jsx
+index 9db68bf..b58b8b0 100644
+--- a/src/page-details.jsx
++++ b/src/page-details.jsx
+@@ -11,7 +11,8 @@ window.ViolationDetailPage = function({ violationId, onNavigate, inline, onBack
+   const [nestedRoleId, setNestedRoleId] = useState(null);
+ 
+   const finding = useMemo(() => {
+-    return CRITICAL_FINDINGS.find(f => f.id === violationId) || 
++    return (window.MOCK.ALL_RISKS || []).find(r => r.riskId === violationId) ||
++           CRITICAL_FINDINGS.find(f => f.id === violationId) || 
+            IMMEDIATE_ACTIONS.find(a => a.id === violationId || a.user === violationId) ||
+            {
+              id: violationId,
+@@ -24,18 +25,38 @@ window.ViolationDetailPage = function({ violationId, onNavigate, inline, onBack
+            };
+   }, [violationId, CRITICAL_FINDINGS, IMMEDIATE_ACTIONS]);
+ 
+-  const user = finding.user || (finding.affectedUsersList && finding.affectedUsersList[0]?.userId) || 'HOANG.NGUYEN';
+-  const userName = finding.affectedUsersList && finding.affectedUsersList[0]?.name || 'Hoang Nguyen';
++  const userObj = useMemo(() => {
++    const users = window.MOCK.ALL_USERS || [];
++    const firstUserId = (finding.affectedUsers && finding.affectedUsers[0]) || (finding.affectedUsersList && finding.affectedUsersList[0]?.userId) || finding.user || 'HOANG.NGUYEN';
++    return users.find(u => u.userId === firstUserId) || { userId: firstUserId, fullName: firstUserId };
++  }, [finding]);
+ 
+-  const details = {
+-    roles: ['ZSD_BR_SO_CREATE', 'ZSD_BR_BILLING_CREATE'],
+-    authObjects: ['S_TCODE', 'S_DEVELOP', 'S_TABU_DIS', 'S_TABU_CLI'],
+-    tcodes: ['VA01', 'VF01', 'F-28'],
+-    explanation: 'User holds transaction codes across the order creation, invoicing, and collection stages. This violates the standard Segregation of Duties policy for revenue cycles by enabling a single identity to process sales and ledger settlements.',
+-    reasonFlagged: 'Scanned authorization profiles contain transaction access mapping directly to conflict code OTC_SOD_011 (VA01 ├ù VF01 ├ù F-28).',
+-    complianceImpact: 'SOX ┬º404 Control 12 (Segregation of Duties in Revenue Cycle); K-SOX compliance audit failure.',
+-    auditNotes: 'Risk identified on May 19, 2026. No active mitigating controls or compensating supervisor reviews are documented for this account profile.'
+-  };
++  const user = userObj.userId;
++  const userName = userObj.fullName || userObj.name || 'SAP User';
++
++  const details = useMemo(() => {
++    const tcodes = finding.tcodes || (finding.conflictingTransactions ? String(finding.conflictingTransactions).split(',').map(t => t.trim()).filter(Boolean) : (finding.func ? String(finding.func).split(',').map(t => t.trim()).filter(Boolean) : ['FK01', 'F110']));
++    const authObjects = finding.authObjects ? String(finding.authObjects).split(',').map(t => t.trim()).filter(Boolean) : ['S_TCODE'];
++    
++    const roles = Array.isArray(finding.functionIds)
++      ? finding.functionIds.map(fid => `Z_ROLE_${fid}`)
++      : (finding.roles && finding.roles.length ? finding.roles : [`Z_ROLE_${finding.id || violationId}`]);
++      
++    const explanation = finding.businessImpact || `This conflict violates the standard Segregation of Duties policy for ${finding.area || finding.process || 'SAP Access Control'} cycles.`;
++    const reasonFlagged = `Scanned authorization profiles contain transaction access mapping directly to conflict code ${finding.id || finding.riskId || violationId} (${tcodes.join(' ├ù ')}).`;
++    const complianceImpact = finding.complianceImpact || finding.grcMapping || 'SAP GRC and SOX control impact.';
++    const auditNotes = finding.auditNotes || 'Risk identified on May 19, 2026. Ruleset-derived mock row generated from local S4HANAOP content.';
++    
++    return {
++      roles,
++      authObjects,
++      tcodes,
++      explanation,
++      reasonFlagged,
++      complianceImpact,
++      auditNotes
++    };
++  }, [finding, violationId]);
+ 
+   if (nestedUserId) {
+     return (
+@@ -222,8 +243,8 @@ window.ViolationDetailPage = function({ violationId, onNavigate, inline, onBack
+               </div>
+               <div className="pt-3 border-t border-ink-100 text-xs space-y-2">
+                 <div className="flex justify-between">
+-                  <span className="text-ink-450">Business Process:</span>
+-                  <span className="font-bold text-ink-800">Finance Operations</span>
++                  <span className="text-ink-450">Business Area:</span>
++                  <span className="font-bold text-ink-800">{finding.businessProcess || finding.process || finding.area || 'Finance'}</span>
+                 </div>
+                 <div className="flex justify-between">
+                   <span className="text-ink-450">Run Scope:</span>
+@@ -231,9 +252,32 @@ window.ViolationDetailPage = function({ violationId, onNavigate, inline, onBack
+                 </div>
+                 <div className="flex justify-between">
+                   <span className="text-ink-450">Assigned Roles:</span>
+-                  <span className="font-bold text-ink-800 font-mono">148 Roles</span>
++                  <span className="font-bold text-ink-800 font-mono">{(userObj.rolesCount || 3)} Roles</span>
+                 </div>
+               </div>
++              {finding.affectedUsers && finding.affectedUsers.length > 1 && (
++                <div className="pt-3 border-t border-ink-100 text-xs">
++                  <span className="text-[10px] font-bold uppercase tracking-wider text-ink-400 block mb-2">Other Affected Users ({finding.affectedUsers.length - 1})</span>
++                  <div className="max-h-[120px] overflow-y-auto space-y-1.5 pr-1 font-mono text-[11px] font-bold">
++                    {finding.affectedUsers.filter(uid => uid !== user).slice(0, 5).map(uid => (
++                      <div key={uid} className="flex justify-between items-center">
++                        <button 
++                          onClick={() => {
++                            if (inline) setNestedUserId(uid);
++                            else onNavigate('user-profile', uid);
++                          }}
++                          className="text-brand-600 hover:underline text-left"
++                        >
++                          {uid}
++                        </button>
++                      </div>
++                    ))}
++                    {finding.affectedUsers.filter(uid => uid !== user).length > 5 && (
++                      <div className="text-[10px] text-ink-400 font-semibold italic">And {finding.affectedUsers.filter(uid => uid !== user).length - 5} more...</div>
++                    )}
++                  </div>
++                </div>
++              )}
+             </div>
+           </window.Section>
+ 
+@@ -287,43 +331,44 @@ window.UserProfilePage = function({ userId, onNavigate, inline, onBack }) {
+     // Find custom data in mock data if available
+     const existing = (window.MOCK.ALL_USERS || []).find(u => u.userId === userId);
+     if (existing) {
+-      const roleByViolation = {
+-        'V-1042': 'ZMM_BR_VENDOR_CREATE',
+-        'V-1058': 'ZSD_BR_BILLING_CREATE',
+-        'V-1071': 'ZBC_BR_SYSTEM_ADMIN',
+-        'V-1090': 'ZBC_BR_FIREFIGHTER_ACCESS',
+-        'V-1094': 'ZMM_BR_PO_RELEASE',
+-        'V-1101': 'ZFI_BR_AP_PAYMENT',
+-        'V-1124': 'ZBC_BR_RFC_BATCH',
+-        'V-1131': 'ZMM_BR_INVOICE_VERIFY'
+-      };
+-      const primaryRole = existing.role && existing.role !== 'Display Access Role'
+-        ? existing.role
+-        : (roleByViolation[existing.violationId] || 'ZFI_BR_GL_POSTING');
+-      const secondaryRole = existing.violationId === 'V-1042' ? 'ZFI_BR_AP_PAYMENT' : 'ZFI_BR_AUDIT_REVIEW';
+-      const roles = Array.from(new Set([primaryRole, secondaryRole].filter(Boolean)));
+-      const tcodes = (existing.conflictingTransactions && existing.conflictingTransactions !== 'N/A')
+-        ? existing.conflictingTransactions.split(',').map(t => t.trim()).filter(Boolean)
+-        : ['FK01', 'F110'];
+-      const severity = existing.severity || 'Medium';
++      const riskViolations = Array.isArray(existing.riskViolations) ? existing.riskViolations : [];
++      
++      const violations = riskViolations.map(rv => ({
++        id: rv.riskId,
++        desc: rv.scenario,
++        severity: rv.severity
++      }));
++      
++      const criticalCount = riskViolations.filter(rv => rv.severity === 'Critical' || (rv.severity === 'High' && rv.riskScore >= 90)).length;
++      const highCount = riskViolations.filter(rv => rv.severity === 'High' && rv.riskScore < 90).length;
++      const mediumCount = riskViolations.filter(rv => rv.severity === 'Medium').length;
++      const lowCount = riskViolations.filter(rv => rv.severity === 'Low').length;
++      
++      const tcodes = Array.from(new Set(riskViolations.flatMap(rv => String(rv.conflictingTransactions || '').split(',').map(t => t.trim())).filter(Boolean)));
++      const roles = Array.from(new Set(riskViolations.flatMap(rv => Array.isArray(rv.functionIds) ? rv.functionIds.map(fid => `Z_ROLE_${fid}`) : []).filter(Boolean)));
++      if (!roles.length) {
++        roles.push(existing.role || 'ZFI_BR_GL_POSTING');
++      }
++      
++      const primaryRole = roles[0];
++      const action = riskViolations[0]?.recommendedAction || existing.recommendedAction || 'Separate conflicting roles.';
++      
+       return {
+         userId: existing.userId,
+         fullName: existing.fullName,
+         dept: existing.processArea || existing.dept || 'Finance',
+         role: primaryRole,
+         lastLogin: existing.lastActivity || '2026-05-19 14:10',
+-        criticalCount: severity === 'Critical' ? 1 : 0,
+-        highCount: severity === 'High' ? 1 : 0,
+-        mediumCount: severity === 'Medium' || severity === 'Low' ? 1 : 0,
+-        lowCount: severity === 'Low' ? 1 : 0,
++        criticalCount,
++        highCount,
++        mediumCount,
++        lowCount,
+         roles,
+         rolesTotal: Number(existing.rolesCount) > 0 ? Number(existing.rolesCount) : roles.length,
+-        tcodes,
+-        action: existing.recommendedAction || 'Separate conflicting billing and invoice receipt roles.',
+-        compensatingMonitor: `Implement daily reviewer checklists on ${tcodes.join(', ')} transactions completed by this user under role ${primaryRole}.`,
+-        violations: [
+-          { id: existing.violationId, desc: existing.violationDesc, severity }
+-        ]
++        tcodes: tcodes.length ? tcodes : ['FK01', 'F110'],
++        action,
++        compensatingMonitor: `Implement daily reviewer checklists on transactions completed by this user under role ${primaryRole}.`,
++        violations
+       };
+     }
+ 
+@@ -784,19 +829,31 @@ window.RiskDetailPage = function({ riskId, onNavigate, inline, onBack }) {
+   const details = useMemo(() => {
+     const existing = (window.MOCK.ALL_RISKS || []).find(r => r.riskId === riskId);
+     if (existing) {
++      const tcodes = Array.isArray(existing.tcodes)
++        ? existing.tcodes
++        : (existing.func ? existing.func.split(',').map(t => t.trim()).filter(Boolean) : ['FK01', 'F110']);
++        
++      const roles = Array.isArray(existing.functionIds)
++        ? existing.functionIds.map(fid => `Z_ROLE_${fid}`)
++        : ['ZMM_BR_VENDOR_CREATE', 'ZFI_BR_AP_PAYMENT'];
++        
++      const affectedUsers = Array.isArray(existing.affectedUsers)
++        ? existing.affectedUsers
++        : [];
++        
+       return {
+         id: existing.riskId,
+         title: existing.title,
+         level: existing.level,
+         process: existing.process,
+         category: existing.category,
+-        ruleset: existing.ruleset || 'SAP GRC Global Matrix v4.2',
+-        tcodes: existing.func ? existing.func.split(', ') : ['FK01', 'F110'],
+-        roles: ['ZMM_BR_VENDOR_CREATE', 'ZFI_BR_AP_PAYMENT'],
++        ruleset: existing.ruleset || 'SAP GRC S4HANAOP Global Ruleset',
++        tcodes,
++        roles,
+         businessImpact: existing.businessImpact || 'Unmitigated authorizations create potential audit exceptions.',
+         complianceImpact: existing.complianceImpact || 'Direct violation of SOX Section 404 control requirements.',
+         compensatingControls: existing.recommendations || 'Implement automatic daily ledger reconciliations.',
+-        affectedUsers: ['HOANG.NGUYEN', 'JAE.KANG', 'PVALENCIA', 'RUTGER.DUKES']
++        affectedUsers
+       };
+     }
+ 

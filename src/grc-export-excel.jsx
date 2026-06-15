@@ -22,7 +22,9 @@ window.exportGrcExcel = function(runId, filteredUsers, filteredRisks, userColSeq
     MIGO: ['M_MSEG_BWA', 'Goods movement posting authorization'],
     MIRO: ['M_RECH_BUK', 'Invoice verification authorization']
   };
-  const getViolationCount = u => Math.max(1, splitTcodes(u.conflictingTransactions).length);
+  const getRiskViolations = u => window.getRiskViolationsForUser ? window.getRiskViolationsForUser(u) : [];
+  const getRiskCount = u => window.getRiskCountForUser ? window.getRiskCountForUser(u) : getRiskViolations(u).length;
+  const getViolationCount = u => window.getViolationCountForUser ? window.getViolationCountForUser(u) : Math.max(1, splitTcodes(u.conflictingTransactions).length);
   const remediationSteps = u => [
     `Use PFCG to review ${u.role || 'affected SAP role'} and identify access granting ${u.conflictingTransactions || 'conflicting transactions'}.`,
     `${u.recommendedAction || 'Remove conflicting authorization access'}.`,
@@ -63,46 +65,37 @@ window.exportGrcExcel = function(runId, filteredUsers, filteredRisks, userColSeq
       "First Name": u.firstName,
       "Last Name": u.lastName,
       "Email": u.email,
-      "Violation Count": getViolationCount(u),
-      "Violation ID": u.violationId,
-      "Violation Name": u.violationDesc,
-      "Role Type": u.roleType,
-      "Business Process": u.processArea,
-      "Risk Category": u.riskCategory,
-      "Severity": u.severity,
-      "Risk Score": u.riskScore,
-      "Violation Scenario": u.violationDesc,
-      "Conflicting Transactions": u.conflictingTransactions,
-      "Business Impact": u.businessImpact,
-      "Standards Violated": u.standardsViolated,
-      "Recommended Action": u.recommendedAction,
-      "Remediation Priority": u.priority,
-      "Mitigation Status": "Active",
-      "Last Analyzed Date": u.lastAnalyzedDate,
-      "Assessment Run ID": u.runId,
-      "Assignee": u.assignee
+      "Account Type": u.accountType,
+      "Risk Count": getRiskCount(u),
+      "Violation Count": getViolationCount(u)
     }));
   }
   const ws2 = XLSX.utils.json_to_sheet(userWiseData);
 
-  const userViolationDetailsData = filteredUsers.flatMap(u => splitTcodes(u.conflictingTransactions).map((tcode, idx) => {
-    const [authObject] = authObjectByTcode[tcode] || ['S_TCODE', `${tcode} transaction authorization`];
-    return {
-      "Violation ID": u.violationId,
-      "Violation Name": u.violationDesc,
+  const userViolationDetailsData = filteredUsers.flatMap(u => getRiskViolations(u).map(risk => ({
+      "Risk ID": risk.riskId,
       "User ID": u.userId,
       "First Name": u.firstName,
       "Last Name": u.lastName,
       "Email": u.email,
-      "Violation Count": getViolationCount(u),
-      "Role Type": u.roleType,
-      "T-Code": tcode,
-      "Auth Object": authObject,
-      "Remediation Priority": u.priority,
+      "Function IDs": (risk.functionIds || []).join(", "),
+      "Function Names": (risk.functionNames || []).join(" | "),
+      "Role Type": risk.roleType,
+      "Business Process": risk.businessProcess,
+      "Risk Category": risk.riskCategory,
+      "Risk Score": risk.riskScore,
+      "Severity": risk.severity,
+      "Violation Scenario": risk.scenario,
+      "Conflicting Transactions": risk.conflictingTransactions,
+      "Auth Objects": risk.authObjects,
+      "Business Impact": risk.businessImpact,
+      "Standards Violated": risk.standardsViolated,
+      "Recommended Action": risk.recommendedAction,
+      "Remediation Priority": risk.priority,
       "Status": "Active",
-      "Step-by-step Recommendation": remediationSteps(u)
-    };
-  }));
+      "Assignee": risk.assignee,
+      "Step-by-step Recommendation": remediationSteps(risk)
+  })));
   const wsUserDetails = XLSX.utils.json_to_sheet(userViolationDetailsData);
 
   // 3. Risk Wise Violations
@@ -134,8 +127,10 @@ window.exportGrcExcel = function(runId, filteredUsers, filteredRisks, userColSeq
   }
   const ws3 = XLSX.utils.json_to_sheet(riskWiseData);
 
-  const riskUserDetailsData = filteredRisks.flatMap(r => (r.affectedUsers || []).map(uid => {
-    const u = usersForRun.find(user => user.userId === uid) || {};
+  const riskUserDetailsData = filteredRisks.flatMap(r => {
+    const affected = window.getUsersForRisk ? window.getUsersForRisk(r, usersForRun) : (r.affectedUsers || []).map(uid => usersForRun.find(user => user.userId === uid) || { userId: uid });
+    return affected.map(u => {
+    const mappedRisk = getRiskViolations(u).find(item => item.riskId === r.riskId) || r;
     return {
       "Risk ID": r.riskId,
       "Risk Name": r.title,
@@ -144,14 +139,18 @@ window.exportGrcExcel = function(runId, filteredUsers, filteredRisks, userColSeq
       "User ID": u.userId || uid,
       "First Name": u.firstName || 'SAP',
       "Last Name": u.lastName || 'User',
-      "Email": u.email || `${String(uid).toLowerCase()}@lottechem.com`,
-      "Role Type": u.roleType || 'Single',
+      "Email": u.email || `${String(u.userId || 'sap.user').toLowerCase()}@lottechem.com`,
+      "Role Type": mappedRisk.roleType || u.roleType || 'Single',
       "Violation Count": u.userId ? getViolationCount(u) : 1,
-      "T-Codes": u.conflictingTransactions || r.func,
+      "T-Codes": mappedRisk.conflictingTransactions || r.func,
+      "Auth Objects": mappedRisk.authObjects || '',
       "Status": "Active",
-      "Recommendation": u.recommendedAction || r.recommendations
+      "Recommendation": mappedRisk.recommendedAction || r.recommendations,
+      "Priority": mappedRisk.priority || '',
+      "Assignee": mappedRisk.assignee || r.assignee
     };
-  }));
+  });
+  });
   const wsRiskUsers = XLSX.utils.json_to_sheet(riskUserDetailsData);
 
   // 4. Severity Distribution

@@ -3,7 +3,7 @@ import json
 import glob
 import re
 
-USER_DETAILS_DIR = r"C:\Users\dhara\Downloads\user_details 1\user_details"
+USER_DETAILS_DIR = os.environ.get("USER_DETAILS_DIR", os.path.join(os.path.dirname(os.path.abspath(__file__)), "user_details"))
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 MOCK_DATA_JSX = os.path.join(BASE_DIR, "src", "mock-data.jsx")
 RUNS_MOCK_DATA_JSX = os.path.join(BASE_DIR, "src", "runs-mock-data.jsx")
@@ -203,6 +203,103 @@ RULES_DEF = [
     }
 ]
 
+OWNER_NAME_MAP = {
+    "P000004": "Seo-yeon Kim (Basis Admin)",
+    "P000095": "Min-woo Lee (Compliance Lead)",
+    "P000006": "Ji-hun Park (Security Analyst)",
+    "P000022": "Yeon-hee Choi (Finance Controller)",
+    "P001268": "Ravi Sharma (Basis Architect)",
+    "P004088": "Sarah Jenkins (AP Manager)"
+}
+
+def resolve_assignee(val, process):
+    if val and val in OWNER_NAME_MAP:
+        return OWNER_NAME_MAP[val]
+    if val and val.startswith("P") and val[1:].isdigit():
+        return f"IT Compliance ({val})"
+    if not val:
+        return "SAP Security Team" if "basis" in str(process).lower() else "IT Compliance"
+    return val
+
+def generate_fallback_users(risks_catalog):
+    mock_users = []
+    metadata_path = os.path.join(BASE_DIR, "src", "original_users_metadata.json")
+    if not os.path.exists(metadata_path):
+        print(f"Error: metadata file not found at {metadata_path}")
+        return mock_users
+        
+    with open(metadata_path, "r", encoding="utf-8") as f:
+        original_users = json.load(f)
+        
+    for idx, record in enumerate(original_users):
+        username = record["userId"]
+        first_name = record["firstName"]
+        last_name = record["lastName"]
+        email = record["email"]
+        status = record["sapStatus"]
+        user_type = record["accountType"]
+        license_type = record["license"]
+        
+        # Select 3-4 deterministic risks from risks_catalog
+        risk_total = 4 if idx % 3 == 0 else 3
+        selected = []
+        if risks_catalog:
+            for offset in range(risk_total):
+                risk_item = risks_catalog[(idx * 3 + offset * 5) % len(risks_catalog)]
+                selected.append(risk_item)
+                
+        roles = []
+        if record.get("role") and record["role"] != "NA":
+            roles.append(record["role"])
+            
+        tx_codes = set()
+        
+        for risk in selected:
+            r_id = risk["riskId"]
+            tcodes_str = risk.get("conflictingTransactions", "")
+            if tcodes_str:
+                for t in tcodes_str.split(","):
+                    t_clean = t.strip()
+                    if t_clean:
+                        tx_codes.add(t_clean)
+                        
+            for fid in risk.get("functionIds", []):
+                roles.append(f"Z_{fid}")
+                
+            if r_id == "V-1090":
+                roles.append("ZBC_BR_SPM_FIREFIGHTER")
+                tx_codes.update(["STMS", "SU01", "PFCG", "SM20", "SE01"])
+            if r_id == "V-1101":
+                tx_codes.add("F110")
+            if r_id == "V-1124":
+                roles.append("SAP_ALL")
+            if r_id == "V-1071":
+                tx_codes.update(["PFCG", "SU01", "ME21N", "MIRO", "VA01", "VF01", "FB50", "F110"])
+            if r_id == "V-1058":
+                tx_codes.update(["VA01", "VA02", "VF01", "VF04", "F-28", "FB05"])
+                
+        if "FF" in username:
+            roles.append("ZBC_BR_SPM_FIREFIGHTER")
+            
+        mock_users.append({
+            "userInfo": {
+                "username": username,
+                "firstName": first_name,
+                "lastName": last_name,
+                "emailId": email,
+                "status": status,
+                "lastLogin": "2026-05-19 12:00:00",
+                "userType": user_type,
+                "license": license_type
+            },
+            "authSummary": {
+                "totalRoles": max(record["rolesCount"], len(roles))
+            },
+            "roleBreakdown": [{"role": r, "authObjects": [{"authObj": "S_TCODE"}]} for r in list(set(roles))],
+            "authorizedTransactions": [{"tCode": t} for t in tx_codes]
+        })
+    return mock_users
+
 def generate():
     files = glob.glob(os.path.join(USER_DETAILS_DIR, "user__*.json"))
     print(f"Parsing {len(files)} files...")
@@ -217,6 +314,175 @@ def generate():
             except Exception as e:
                 print(f"Error loading {fpath}: {e}")
                 
+    # We will load users_data fallback after ruleset parsing to pass risks_catalog
+    
+    # Ruleset Parsing
+    RULESET_BASE = os.path.join(BASE_DIR, "..", "sodruleset", "OneDrive_2026-06-02 1", "Standard RUleset deactivation")
+    S4HANAOP_DIR = os.path.join(RULESET_BASE, "S4HANAOP")
+    ALL_DIR = os.path.join(RULESET_BASE, "ALL")
+
+    def read_tsv(filepath):
+        encodings = ["utf-8", "utf-16", "cp1252", "iso-8859-1"]
+        for enc in encodings:
+            try:
+                with open(filepath, "r", encoding=enc) as f:
+                    lines = f.readlines()
+                return lines, enc
+            except UnicodeDecodeError:
+                continue
+        raise Exception(f"Failed to read {filepath} with any encoding")
+
+    # 1. Business Processes
+    bp_map = {}
+    bp_file = os.path.join(ALL_DIR, "ALL_Business_Processes.txt")
+    lines, enc = read_tsv(bp_file)
+    for line in lines[1:]:
+        parts = line.strip("\r\n").split("\t")
+        if len(parts) >= 3:
+            bp_id, langu, desc = parts[0], parts[1], parts[2]
+            if langu == "EN":
+                bp_map[bp_id] = desc.strip()
+                
+    # 2. Functions
+    func_desc_map = {}
+    func_file = os.path.join(ALL_DIR, "ALL_Functions.txt")
+    lines, enc = read_tsv(func_file)
+    for line in lines[1:]:
+        parts = line.strip("\r\n").split("\t")
+        if len(parts) >= 3:
+            func_id, langu, desc = parts[0], parts[1], parts[2]
+            if langu == "EN":
+                func_desc_map[func_id] = desc.strip()
+
+    # 3. Actions (T-codes)
+    func_actions = {}
+    action_file = os.path.join(S4HANAOP_DIR, "S4HANAOP_Function_Action.txt")
+    lines, enc = read_tsv(action_file)
+    for line in lines[1:]:
+        parts = line.strip("\r\n").split("\t")
+        if len(parts) >= 2:
+            func_id, action = parts[0], parts[1]
+            func_actions.setdefault(func_id, []).append(action)
+
+    # 4. Permissions (Auth Objects)
+    func_auths = {}
+    perm_file = os.path.join(S4HANAOP_DIR, "S4HANAOP_Function_Permission.txt")
+    lines, enc = read_tsv(perm_file)
+    for line in lines[1:]:
+        parts = line.strip("\r\n").split("\t")
+        if len(parts) >= 3:
+            func_id, _, auth_obj = parts[0], parts[1], parts[2]
+            if auth_obj and auth_obj != "S_TCODE" and auth_obj != "S_SERVICE":
+                func_auths.setdefault(func_id, set()).add(auth_obj)
+
+    # 5. Owners
+    owner_map = {}
+    owner_file = os.path.join(S4HANAOP_DIR, "S4HANAOP_Risk_Owners.txt")
+    lines, enc = read_tsv(owner_file)
+    for line in lines[1:]:
+        parts = line.strip("\r\n").split("\t")
+        if len(parts) >= 2:
+            risk_id, owner_id = parts[0], parts[1]
+            owner_map.setdefault(risk_id, []).append(owner_id)
+
+    # 6. Risk Descriptions
+    risk_desc_map = {}
+    desc_file = os.path.join(S4HANAOP_DIR, "S4HANAOP_Risks_Description.txt")
+    lines, enc = read_tsv(desc_file)
+    for line in lines[1:]:
+        parts = line.strip("\r\n").split("\t")
+        if len(parts) >= 4:
+            risk_id, langu, desc, long_desc = parts[0], parts[1], parts[2], parts[3]
+            if langu == "EN":
+                risk_desc_map[risk_id] = {
+                    "scenario": desc.strip('" '),
+                    "businessImpact": long_desc.strip('" ')
+                }
+
+    # 7. Risks
+    risks_catalog = []
+    risks_file = os.path.join(S4HANAOP_DIR, "S4HANAOP_Risks.txt")
+    lines, enc = read_tsv(risks_file)
+    for line in lines[1:]:
+        parts = line.strip("\r\n").split("\t")
+        if len(parts) >= 10:
+            risk_id = parts[0]
+            funct_ids = [f for f in parts[1:6] if f.strip()]
+            bp_id = parts[6]
+            risk_level = parts[7]
+            active = parts[8]
+            risk_type = parts[9]
+            
+            desc_info = risk_desc_map.get(risk_id, {"scenario": f"SoD Conflict for Risk {risk_id}", "businessImpact": "Potential access control violation."})
+            bp_name = bp_map.get(bp_id, bp_id)
+            
+            funct_names = []
+            conflicting_tcodes = []
+            auth_objects = set()
+            for fid in funct_ids:
+                fname = func_desc_map.get(fid, fid)
+                clean_name = fname
+                prefix_pattern = re.compile(rf'^{fid}\s*[:\-]?\s*', re.IGNORECASE)
+                clean_name = prefix_pattern.sub('', fname).strip()
+                funct_names.append(f"{fid} - {clean_name}")
+                conflicting_tcodes.extend(func_actions.get(fid, []))
+                auth_objects.update(func_auths.get(fid, []))
+            
+            owners = owner_map.get(risk_id, [])
+            assignee_id = owners[0] if owners else None
+            assignee = resolve_assignee(assignee_id, bp_name)
+            
+            level = int(risk_level) if risk_level.isdigit() else 1
+            severity = "High" if level == 2 else "Medium" if level == 1 else "Low"
+            score = 90 if level == 2 else 70 if level == 1 else 40
+            priority = "P1" if level == 2 else "P2" if level == 1 else "P3"
+            
+            proc = str(bp_name).lower()
+            if 'finance' in proc or 'cash' in proc or 'order to cash' in proc:
+                category = "Financial"
+            elif 'procure' in proc or 'pay' in proc:
+                category = "Procurement"
+            elif 'human' in proc or 'resource' in proc:
+                category = "Regulatory"
+            elif 'basis' in proc or 'it' in proc:
+                category = "Technical"
+            else:
+                category = "Operational"
+                
+            role_type = "Critical Action" if risk_type == "2" else "SoD Conflict"
+            rec_action = f"Separate access for {funct_names[0] if len(funct_names) > 0 else 'Function A'} and {funct_names[1] if len(funct_names) > 1 else 'Function B'}; remove conflicting action or authorization object from one role."
+            
+            risks_catalog.append({
+                "riskId": risk_id,
+                "functionIds": funct_ids,
+                "functionNames": funct_names,
+                "businessProcess": bp_name,
+                "riskLevel": level,
+                "riskType": risk_type,
+                "scenario": desc_info["scenario"],
+                "businessImpact": desc_info["businessImpact"],
+                "conflictingTransactions": ", ".join(sorted(list(set(conflicting_tcodes)))[:8]),
+                "authObjects": ", ".join(sorted(list(auth_objects))[:6]),
+                "title": desc_info["scenario"],
+                "status": "Active",
+                "level": severity,
+                "severity": severity,
+                "riskScore": score,
+                "priority": priority,
+                "category": category,
+                "riskCategory": category,
+                "process": bp_name,
+                "roleType": role_type,
+                "standardsViolated": "SAP GRC Global Ruleset, SOX, Internal Access Control",
+                "recommendedAction": rec_action,
+                "recommendations": rec_action,
+                "assignee": assignee
+            })
+    
+    if not users_data:
+        print("No user files found. Using fallback generator with original_users_metadata.json to create mock users.")
+        users_data = generate_fallback_users(risks_catalog)
+        
     total_users_count = len(users_data)
     
     # 1. Scanned Users & SoD Checks
@@ -731,7 +997,7 @@ def generate():
                     "processArea": item.get("dept", rule["area"])
                 }
     all_scanned_users = []
-    for data in users_data:
+    for idx, data in enumerate(users_data):
         uinfo = data.get("userInfo", {})
         username = uinfo.get("username", "")
         first_name = uinfo.get("firstName", "")
@@ -740,19 +1006,17 @@ def generate():
         role_breakdown = data.get("roleBreakdown", [])
         roles = [r.get("role") for r in role_breakdown if r.get("role")]
         user_type = uinfo.get("userType", "Dialog")
-        violation = violations_by_user_id.get(username)
-        has_full_otc_default = len(all_scanned_users) % 2 == 0
-        default_violation_desc = "Full OTC cycle control by single user" if has_full_otc_default else "Create Vendor + Approve Payment"
-        default_transactions = "VA01, VF01, F-28" if has_full_otc_default else "FK01, F110"
-        default_business_impact = (
-            "SOX §404 deficiency and revenue leakage potential. Bypasses dual controls."
-            if has_full_otc_default
-            else "Enables creation of fictitious suppliers paired with payment releases."
-        )
+        
+        # Select 3-4 deterministic risks from risks_catalog
+        risk_total = 4 if idx % 3 == 0 else 3
+        selected = []
+        for offset in range(risk_total):
+            risk_item = risks_catalog[(idx * 3 + offset * 5) % len(risks_catalog)]
+            selected.append(risk_item)
+            
+        first_risk = selected[0]
         role = roles[0] if roles else "Display Access Role"
-        default_priority = "P3" if has_full_otc_default else "P2"
-        default_risk_category = "Operational" if user_type != "Dialog" else "Financial"
-        default_risk_score = 65 if default_risk_category == "Operational" else 75
+        
         base = {
             "userId": username,
             "firstName": first_name or username.split(".")[0].title(),
@@ -764,26 +1028,72 @@ def generate():
             "role": role,
             "roleType": "Composite" if len(roles) > 1 else "Single",
             "rolesCount": auth_summary.get("totalRoles", len(roles)),
-            "processArea": violation["processArea"] if violation else ("IT Basis" if user_type != "Dialog" else "General"),
-            "riskCategory": violation["riskCategory"] if violation else default_risk_category,
-            "riskViolation": "Yes" if violation else "No",
-            "violationId": violation["violationId"] if violation else ("V-1058" if has_full_otc_default else "V-1042"),
-            "violationDesc": violation["violationDesc"] if violation else default_violation_desc,
-            "severity": violation["severity"] if violation else "Low",
-            "riskScore": violation["riskScore"] if violation else default_risk_score,
-            "conflictingTransactions": violation["conflictingTransactions"] if violation else default_transactions,
-            "businessImpact": violation["businessImpact"] if violation else default_business_impact,
-            "standardsViolated": violation["standardsViolated"] if violation else "SAP GRC, SOX",
-            "recommendedAction": violation["recommendedAction"] if violation else ("Split SD billing authority" if has_full_otc_default else "Revoke PFCG role admin authority"),
-            "priority": violation["priority"] if violation else default_priority,
-            "status": violation["status"] if violation else "Resolved",
-            "assignee": violation["assignee"] if violation else ("IT Compliance Lead" if has_full_otc_default else "SAP Security Architect"),
+            "riskViolations": selected,
+            "riskId": first_risk["riskId"],
+            "violationId": first_risk["riskId"],
+            "violationDesc": first_risk["scenario"],
+            "riskViolation": "Yes",
+            "severity": first_risk["level"],
+            "riskScore": max(item["riskScore"] for item in selected),
+            "processArea": first_risk["businessProcess"],
+            "riskCategory": first_risk["category"],
+            "conflictingTransactions": first_risk["conflictingTransactions"],
+            "businessImpact": first_risk["businessImpact"],
+            "standardsViolated": first_risk["standardsViolated"],
+            "recommendedAction": first_risk["recommendedAction"],
+            "priority": first_risk["priority"],
+            "status": "In Progress" if idx % 4 == 0 else "Open" if idx % 2 == 0 else "Resolved",
+            "assignee": first_risk["assignee"],
             "lastAnalyzedDate": "2026-05-19",
             "lastActivity": uinfo.get("lastLogin") or "00-00-0000 00:00:00",
             "firefighterId": username if "FF" in username else "Standard Access",
             "accountType": "Service" if user_type != "Dialog" else "Dialog"
         }
         all_scanned_users.append(base)
+
+    all_risks = []
+    for risk in risks_catalog:
+        affected_users = [
+            user["userId"]
+            for user in all_scanned_users
+            if any(item["riskId"] == risk["riskId"] for item in user.get("riskViolations", []))
+        ]
+        
+        tcodes_list = [v.strip() for v in str(risk["conflictingTransactions"] or '').split(',') if v.strip()]
+        
+        all_risks.append({
+            "riskId": risk["riskId"],
+            "title": risk["scenario"],
+            "status": "Active",
+            "level": risk["level"],
+            "severity": risk["severity"],
+            "category": risk["category"],
+            "riskScore": risk["riskScore"],
+            "process": risk["businessProcess"],
+            "type": risk["roleType"],
+            "ruleset": "SAP GRC S4HANAOP Global Ruleset",
+            "func": risk["conflictingTransactions"],
+            "funcDesc": risk["scenario"],
+            "funcStatus": "Enabled",
+            "userCount": len(affected_users),
+            "affectedUsers": affected_users,
+            "group": f"{risk['businessProcess']} Control Pool",
+            "lastRun": "LCSOD-2026-Q2-007",
+            "lastDetected": "May 19, 2026",
+            "roles": [],
+            "tcodes": tcodes_list,
+            "businessImpact": risk["businessImpact"],
+            "complianceImpact": "Direct SAP GRC and SOX control impact.",
+            "grcMapping": risk["standardsViolated"],
+            "auditNotes": "Ruleset-derived mock row generated from local S4HANAOP content.",
+            "assignee": risk["assignee"],
+            "functionIds": risk["functionIds"],
+            "functionNames": risk["functionNames"],
+            "standardsViolated": risk["standardsViolated"],
+            "recommendedAction": risk["recommendedAction"],
+            "recommendations": risk["recommendations"],
+            "priority": risk["priority"]
+        })
 
     # Generate javascript code contents
     js_content = f"""// Real data generated from downloads/user_details
@@ -1090,33 +1400,7 @@ Object.assign(window.MOCK, {{
 }});
 
 const ALL_USERS = {json.dumps(all_scanned_users, indent=2)};
-const ALL_RISKS = CRITICAL_FINDINGS.map(finding => ({{
-  riskId: finding.id,
-  title: finding.desc,
-  status: 'Active',
-  level: finding.severity,
-  category: finding.area === 'IT' ? 'Operational' : 'Financial',
-  riskScore: Math.min(100, (finding.area === 'IT' ? 65 : 75) + (finding.severity === 'Critical' ? 25 : finding.severity === 'High' ? 15 : finding.severity === 'Medium' ? 8 : 0)),
-  process: finding.area,
-  type: 'SoD Conflict',
-  ruleset: 'SAP GRC Global Matrix v4.2',
-  func: finding.id === 'V-1058' ? 'VA01, VF01, F-28' : finding.id === 'V-1131' ? 'MIGO, MIRO' : 'SU01, PFCG',
-  funcDesc: finding.desc,
-  funcStatus: 'Enabled',
-  userCount: finding.users,
-  affectedUsers: (finding.affectedUsersList || []).map(u => u.userId),
-  group: finding.area === 'IT' ? 'Basis Control Pool' : 'Business Process Pool',
-  recommendations: finding.action,
-  lastRun: 'LCSOD-2026-Q2-007',
-  lastDetected: 'May 19, 2026',
-  roles: [finding.area === 'IT' ? 'ZBC_BR_SYSTEM_ADMIN' : 'ZFI_BR_AP_INVOICE'],
-  tcodes: finding.id === 'V-1058' ? ['VA01', 'VF01', 'F-28'] : finding.id === 'V-1131' ? ['MIGO', 'MIRO'] : ['SU01', 'PFCG'],
-  businessImpact: 'Unmitigated authorizations create potential audit exceptions.',
-  complianceImpact: 'Direct SAP GRC and SOX control impact.',
-  grcMapping: `GRC Ruleset ID ${{finding.id}}`,
-  auditNotes: 'Generated from supplied SAP user detail exports.',
-  assignee: 'SAP Security Team'
-}}));
+const ALL_RISKS = {json.dumps(all_risks, indent=2)};
 
 Object.assign(window.MOCK, {{ ALL_USERS, ALL_RISKS }});
 

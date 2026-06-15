@@ -484,16 +484,15 @@ function Sod12ContinuousComplianceView() {
 
 const getSodStreamsForUser = (u) => {
   const streams = new Set(['SOD-05', 'SOD-11']);
-  if (u.severity === 'Critical' || u.riskViolation === 'Yes') streams.add('SOD-03');
+  const riskRows = window.getRiskViolationsForUser ? window.getRiskViolationsForUser(u) : [];
+  if (riskRows.some(r => r.severity === 'High') || u.riskViolation === 'Yes') streams.add('SOD-03');
   if (u.status === 'Open' || u.status === 'In Progress' || ['P1', 'P2', 'P1 - Immediate', 'P2 - High'].includes(u.priority)) streams.add('SOD-04');
   if (u.firefighterId && String(u.firefighterId).startsWith('FF')) streams.add('SOD-08');
   if (u.accountType === 'Service' || u.accountType === 'System') streams.add('SOD-10');
-  if ((u.role && u.role.includes('SYSTEM')) || u.violationId === 'V-1071') streams.add('SOD-06');
-  if (u.violationId === 'V-1124') streams.add('SOD-10');
-  if (u.violationId === 'V-1058') streams.add('SOD-09');
-  if (u.violationId === 'V-1094' || u.violationId === 'V-1131') streams.add('SOD-P2P');
-  if (u.violationId === 'V-1042' || u.violationId === 'V-1101') streams.add('SOD-07');
-  if (u.violationId === 'V-1090') streams.add('SOD-08');
+  if ((u.role && u.role.includes('SYSTEM')) || riskRows.some(r => String(r.businessProcess).includes('Basis'))) streams.add('SOD-06');
+  if (riskRows.some(r => String(r.businessProcess).includes('Order to Cash'))) streams.add('SOD-09');
+  if (riskRows.some(r => String(r.businessProcess).includes('Procure to Pay'))) streams.add('SOD-P2P');
+  if (riskRows.length) streams.add('SOD-07');
   return Array.from(streams);
 };
 
@@ -540,22 +539,17 @@ const AUTH_OBJECT_BY_TCODE = {
 
 const splitTcodes = (value) => String(value || '').split(',').map(v => v.trim()).filter(Boolean);
 
-const getUserViolationDetails = (user) => {
-  const tcodes = splitTcodes(user.conflictingTransactions);
-  return tcodes.map((tcode, idx) => {
-    const [authObject] = AUTH_OBJECT_BY_TCODE[tcode] || ['S_TCODE', `${tcode} transaction authorization`];
-    return {
-      violationId: user.violationId,
-      roleType: user.roleType,
-      tcode,
-      authObject,
-      remediationPriority: user.priority,
-      status: 'Active'
-    };
-  });
-};
+const getUserViolationDetails = (user) => (
+  window.getRiskViolationsForUser ? window.getRiskViolationsForUser(user) : []
+);
 
-const getViolationCount = (user) => Math.max(1, splitTcodes(user.conflictingTransactions).length);
+const getRiskCount = (user) => (
+  window.getRiskCountForUser ? window.getRiskCountForUser(user) : getUserViolationDetails(user).length
+);
+
+const getViolationCount = (user) => (
+  window.getViolationCountForUser ? window.getViolationCountForUser(user) : Math.max(1, splitTcodes(user.conflictingTransactions).length)
+);
 
 const getRemediationSteps = (item) => {
   const action = item.recommendedAction || item.recommendations || 'Review and remove conflicting authorization access.';
@@ -576,59 +570,76 @@ const UserViolationExpansion = ({ user }) => {
   return (
     <div className="p-4 border-t border-ink-100 text-left">
       <div className="flex flex-wrap items-center gap-3 mb-3">
-        <span className="text-[11px] font-black uppercase tracking-wider text-ink-500">Violation Details</span>
-        <span className="font-mono text-xs font-bold text-brand-700 bg-brand-50 px-2 py-1 rounded-lg ring-1 ring-brand-100">{user.violationId}</span>
-        <span className="text-xs font-black text-ink-850">{user.violationDesc}</span>
-        <span className="text-xs font-bold text-ink-700">{getViolationCount(user)} violation checks</span>
+        <span className="text-[11px] font-black uppercase tracking-wider text-ink-500">Ruleset Risk Violations</span>
+        <span className="font-mono text-xs font-bold text-brand-700 bg-brand-50 px-2 py-1 rounded-lg ring-1 ring-brand-100">{user.userId}</span>
+        <span className="text-xs font-bold text-ink-700">{details.length} risks mapped from S4HANAOP</span>
       </div>
       <div className="overflow-x-auto rounded-xl border border-ink-200 bg-white">
-        <table className="w-full min-w-[980px] text-xs">
+        <table className="w-full min-w-[1900px] text-xs">
           <thead className="bg-ink-50 text-[10px] uppercase tracking-wider text-ink-500">
             <tr>
-              <th className="px-3 py-2 text-left">Violation ID</th>
-              <th className="px-3 py-2 text-left">Violation Name</th>
+              <th className="px-3 py-2 text-left">Risk ID</th>
+              <th className="px-3 py-2 text-left">Function IDs</th>
+              <th className="px-3 py-2 text-left">Function Names</th>
               <th className="px-3 py-2 text-left">Role Type</th>
-              <th className="px-3 py-2 text-left">T-Codes</th>
+              <th className="px-3 py-2 text-left">Business Process</th>
+              <th className="px-3 py-2 text-left">Risk Category</th>
+              <th className="px-3 py-2 text-left">Risk Score</th>
+              <th className="px-3 py-2 text-left">Severity</th>
+              <th className="px-3 py-2 text-left">Violation Scenario</th>
+              <th className="px-3 py-2 text-left">Conflicting Transactions</th>
               <th className="px-3 py-2 text-left">Auth Objects</th>
+              <th className="px-3 py-2 text-left">Business Impact</th>
+              <th className="px-3 py-2 text-left">Standards / Controls Violated</th>
+              <th className="px-3 py-2 text-left">Recommended Action</th>
               <th className="px-3 py-2 text-left">Remediation Priority</th>
               <th className="px-3 py-2 text-left">Status</th>
-              <th className="px-3 py-2 text-left">Remediation Plan</th>
+              <th className="px-3 py-2 text-left">Assignee</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-ink-100">
             {details.map((d, idx) => (
-              <React.Fragment key={`${user.userId}_${d.tcode}_${idx}`}>
+              <React.Fragment key={`${user.userId}_${d.riskId}_${idx}`}>
                 <tr>
-                  <td className="px-3 py-2 font-mono font-bold text-brand-700">{d.violationId}</td>
-                  <td className="px-3 py-2 font-semibold text-ink-800">{user.violationDesc}</td>
+                  <td className="px-3 py-2 font-mono font-bold text-brand-700">{d.riskId}</td>
+                  <td className="px-3 py-2 font-mono font-bold text-ink-800">{(d.functionIds || []).join(', ')}</td>
+                  <td className="px-3 py-2 font-semibold text-ink-800 min-w-[220px]">{(d.functionNames || []).join(' | ')}</td>
                   <td className="px-3 py-2"><span className="rounded-md bg-slate-50 px-2 py-0.5 ring-1 ring-slate-200">{d.roleType}</span></td>
-                  <td className="px-3 py-2 font-mono font-bold text-brand-700">{d.tcode}</td>
-                  <td className="px-3 py-2 font-mono text-ink-700">{d.authObject}</td>
-                  <td className="px-3 py-2 font-black text-ink-850">{d.remediationPriority}</td>
-                  <td className="px-3 py-2"><span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700">Active</span></td>
+                  <td className="px-3 py-2 font-semibold text-ink-800">{d.businessProcess}</td>
+                  <td className="px-3 py-2">{d.riskCategory}</td>
+                  <td className="px-3 py-2 font-mono font-black text-ink-900">{d.riskScore}</td>
+                  <td className="px-3 py-2"><window.SeverityBadge value={d.severity} /></td>
+                  <td className="px-3 py-2 font-semibold text-ink-800 min-w-[220px]">{d.scenario}</td>
+                  <td className="px-3 py-2 font-mono text-brand-700 min-w-[220px]">{d.conflictingTransactions}</td>
+                  <td className="px-3 py-2 font-mono text-ink-700 min-w-[180px]">{d.authObjects}</td>
+                  <td className="px-3 py-2 text-ink-700 min-w-[260px]">{d.businessImpact}</td>
+                  <td className="px-3 py-2 text-ink-700 min-w-[180px]">{d.standardsViolated}</td>
                   <td className="px-3 py-2 align-top min-w-[360px]">
                     <button
                       type="button"
                       onClick={() => setExpandedRemediationRow(current => current === idx ? null : idx)}
-                      className="inline-flex items-center gap-1.5 rounded-lg bg-brand-50 px-2.5 py-1 text-[11px] font-black text-brand-700 ring-1 ring-brand-100 hover:bg-brand-100"
+                      className="inline-flex items-center gap-1.5 rounded-lg bg-brand-50 px-2.5 py-1 text-[11px] font-black text-brand-700 ring-1 ring-brand-100 hover:bg-brand-100 text-left"
                     >
                       <window.Icon name="chevron" className={`w-3 h-3 transition-transform ${expandedRemediationRow === idx ? 'rotate-90' : ''}`} />
-                      <span>{user.recommendedAction}</span>
+                      <span>{d.recommendedAction}</span>
                     </button>
                     {expandedRemediationRow === idx && (
                       <div className="mt-2 w-full rounded-xl border border-brand-100 bg-brand-50/40 p-3 shadow-sm">
                         <div className="flex flex-wrap items-center gap-2 mb-2">
                           <div className="text-[10px] font-black uppercase tracking-wider text-brand-700">Remediation Plan</div>
-                          <span className="font-mono text-[10px] font-bold text-brand-700 bg-white px-2 py-0.5 rounded ring-1 ring-brand-100">{user.violationId}</span>
+                          <span className="font-mono text-[10px] font-bold text-brand-700 bg-white px-2 py-0.5 rounded ring-1 ring-brand-100">{d.riskId}</span>
                         </div>
                         <ol className="list-decimal pl-4 space-y-1.5 text-[11px] font-semibold text-ink-700">
-                          {getRemediationSteps(user).map((step, stepIdx) => (
-                            <li key={`${user.userId}_${d.tcode}_step_${stepIdx}`}>{step}</li>
+                          {getRemediationSteps(d).map((step, stepIdx) => (
+                            <li key={`${user.userId}_${d.riskId}_step_${stepIdx}`}>{step}</li>
                           ))}
                         </ol>
                       </div>
                     )}
                   </td>
+                  <td className="px-3 py-2 font-black text-ink-850">{d.priority}</td>
+                  <td className="px-3 py-2"><span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700">Active</span></td>
+                  <td className="px-3 py-2 font-semibold text-ink-800">{d.assignee}</td>
                 </tr>
               </React.Fragment>
             ))}
@@ -640,7 +651,9 @@ const UserViolationExpansion = ({ user }) => {
 };
 
 const RiskUsersExpansion = ({ risk, users }) => {
-  const affected = (risk.affectedUsers || []).map(uid => users.find(u => u.userId === uid) || (window.MOCK.ALL_USERS || []).find(u => u.userId === uid)).filter(Boolean);
+  const affected = window.getUsersForRisk
+    ? window.getUsersForRisk(risk, users)
+    : (risk.affectedUsers || []).map(uid => users.find(u => u.userId === uid) || (window.MOCK.ALL_USERS || []).find(u => u.userId === uid)).filter(Boolean);
   return (
     <div className="p-4 border-t border-ink-100 text-left">
       <div className="flex flex-wrap items-center gap-3 mb-3">
@@ -649,7 +662,7 @@ const RiskUsersExpansion = ({ risk, users }) => {
         <span className="text-xs font-bold text-ink-700">{affected.length} users listed</span>
       </div>
       <div className="overflow-x-auto rounded-xl border border-ink-200 bg-white">
-        <table className="w-full min-w-[1080px] text-xs">
+        <table className="w-full min-w-[1320px] text-xs">
           <thead className="bg-ink-50 text-[10px] uppercase tracking-wider text-ink-500">
             <tr>
               <th className="px-3 py-2 text-left">User ID</th>
@@ -657,28 +670,35 @@ const RiskUsersExpansion = ({ risk, users }) => {
               <th className="px-3 py-2 text-left">Last Name</th>
               <th className="px-3 py-2 text-left">Email</th>
               <th className="px-3 py-2 text-left">Role Type</th>
-              <th className="px-3 py-2 text-left">Risk Category</th>
               <th className="px-3 py-2 text-left">Violation Count</th>
               <th className="px-3 py-2 text-left">T-Codes</th>
+              <th className="px-3 py-2 text-left">Auth Objects</th>
               <th className="px-3 py-2 text-left">Status</th>
               <th className="px-3 py-2 text-left">Recommendation</th>
+              <th className="px-3 py-2 text-left">Priority</th>
+              <th className="px-3 py-2 text-left">Assignee</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-ink-100">
-            {affected.map(u => (
-              <tr key={`${risk.riskId}_${u.userId}`}>
-                <td className="px-3 py-2 font-mono font-bold text-ink-850">{u.userId}</td>
-                <td className="px-3 py-2 font-semibold">{u.firstName}</td>
-                <td className="px-3 py-2 font-semibold">{u.lastName}</td>
-                <td className="px-3 py-2 text-ink-600">{u.email}</td>
-                <td className="px-3 py-2">{u.roleType}</td>
-                <td className="px-3 py-2">{u.riskCategory}</td>
-                <td className="px-3 py-2 font-mono">{getViolationCount(u)}</td>
-                <td className="px-3 py-2 font-mono text-brand-700">{u.conflictingTransactions}</td>
-                <td className="px-3 py-2"><span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700">Active</span></td>
-                <td className="px-3 py-2 text-ink-700">{u.recommendedAction || risk.recommendations}</td>
-              </tr>
-            ))}
+            {affected.map(u => {
+              const mappedRisk = getUserViolationDetails(u).find(item => item.riskId === risk.riskId) || risk;
+              return (
+                <tr key={`${risk.riskId}_${u.userId}`}>
+                  <td className="px-3 py-2 font-mono font-bold text-ink-850">{u.userId}</td>
+                  <td className="px-3 py-2 font-semibold">{u.firstName}</td>
+                  <td className="px-3 py-2 font-semibold">{u.lastName}</td>
+                  <td className="px-3 py-2 text-ink-600">{u.email}</td>
+                  <td className="px-3 py-2">{mappedRisk.roleType || u.roleType}</td>
+                  <td className="px-3 py-2 font-mono">{getViolationCount(u)}</td>
+                  <td className="px-3 py-2 font-mono text-brand-700 min-w-[180px]">{mappedRisk.conflictingTransactions}</td>
+                  <td className="px-3 py-2 font-mono text-ink-700 min-w-[160px]">{mappedRisk.authObjects}</td>
+                  <td className="px-3 py-2"><span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700">Active</span></td>
+                  <td className="px-3 py-2 text-ink-700 min-w-[260px]">{mappedRisk.recommendedAction || risk.recommendations}</td>
+                  <td className="px-3 py-2 font-black text-ink-850">{mappedRisk.priority}</td>
+                  <td className="px-3 py-2 font-semibold text-ink-800">{mappedRisk.assignee}</td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
@@ -746,21 +766,9 @@ window.LaunchPage = function({
     { id: 'firstName', label: 'First Name', accessor: u => u.firstName, tooltip: 'SAP user first name' },
     { id: 'lastName', label: 'Last Name', accessor: u => u.lastName, tooltip: 'SAP user last name' },
     { id: 'email', label: 'Email', accessor: u => u.email, tooltip: 'SAP user email address' },
-    { id: 'violationCount', label: 'Violation Count', accessor: getViolationCount, tooltip: 'Number of conflicting transaction checks in this violation' },
-    { id: 'violationId', label: 'Violation ID', accessor: u => u.violationId, isMono: true, tooltip: 'Click to expand role, T-code, authorization, and recommendation details' },
-    { id: 'roleType', label: 'Role Type', accessor: u => u.roleType, tooltip: 'Type of SAP role (Single, Composite, Derived)' },
-    { id: 'processArea', label: 'Business Process', accessor: u => u.processArea, tooltip: 'Associated business process flow' },
-    { id: 'riskCategory', label: 'Risk Category', accessor: u => u.riskCategory, tooltip: 'GRC Risk Classification category' },
-    { id: 'riskScore', label: 'Risk Score', accessor: getRiskScore, tooltip: RISK_SCORE_TOOLTIP },
-    { id: 'severity', label: 'Severity', accessor: u => u.severity, tooltip: 'Calculated severity of the conflict' },
-    { id: 'violationDesc', label: 'Violation Scenario', accessor: u => u.violationDesc, tooltip: 'Active violation check scenario definition' },
-    { id: 'conflictingTransactions', label: 'Conflicting Transactions', accessor: u => u.conflictingTransactions, isMono: true, tooltip: 'SAP transaction codes forming the conflict' },
-    { id: 'businessImpact', label: 'Business Impact', accessor: u => u.businessImpact, tooltip: 'Potential financial or regulatory risk exposure' },
-    { id: 'standardsViolated', label: 'Standards / Controls Violated', accessor: u => u.standardsViolated, tooltip: 'Violated external standards and internal controls' },
-    { id: 'recommendedAction', label: 'Recommended Action', accessor: u => u.recommendedAction, tooltip: 'Actionable remediation recommendation' },
-    { id: 'priority', label: 'Remediation Priority', accessor: u => u.priority, tooltip: 'Urgency tier of the remediation action' },
-    { id: 'status', label: 'Status', accessor: u => 'Active', tooltip: 'Current remediation workflow status' },
-    { id: 'assignee', label: 'Assignee', accessor: u => u.assignee, tooltip: 'Responsible mitigation team or architect' },
+    { id: 'accountType', label: 'Account Type', accessor: u => u.accountType, tooltip: 'SAP account type from user master data' },
+    { id: 'riskCount', label: 'Risk Count', accessor: getRiskCount, tooltip: 'Click to expand ruleset-derived risks for this user' },
+    { id: 'violationCount', label: 'Violation Count', accessor: getViolationCount, tooltip: 'Number of active SoD risk violations mapped to this user' },
     { id: 'viewAction', label: 'View', accessor: u => 'View', tooltip: 'Navigate to user profile detail' }
   ], [risks]);
 
@@ -1193,7 +1201,7 @@ window.LaunchPage = function({
           exportLabel="Export Users (Excel)"
           onExport={handleExportExcel}
           getRowId={(row) => row.userId}
-          expandColumnId="violationId"
+          expandColumnId="riskCount"
           renderExpandedRow={(row) => <UserViolationExpansion user={row} />}
         />
       </div>
@@ -1408,16 +1416,9 @@ window.UserInventoryPage = function({ onNavigate, selectedRun }) {
     { id: 'firstName', label: 'First Name', accessor: u => u.firstName, tooltip: 'SAP user first name' },
     { id: 'lastName', label: 'Last Name', accessor: u => u.lastName, tooltip: 'SAP user last name' },
     { id: 'email', label: 'Email', accessor: u => u.email, tooltip: 'SAP user email address' },
-    { id: 'violationCount', label: 'Violation Count', accessor: getViolationCount, tooltip: 'Number of conflicting transaction checks in this violation' },
-    { id: 'violationId', label: 'Violation ID', accessor: u => u.violationId, isMono: true, tooltip: 'Click to expand role, T-code, authorization, and recommendation details' },
-    { id: 'roleType', label: 'Role Type', accessor: u => u.roleType, tooltip: 'Type of SAP role' },
-    { id: 'processArea', label: 'Business Process', accessor: u => u.processArea, tooltip: 'Associated business process flow' },
-    { id: 'riskCategory', label: 'Risk Category', accessor: u => u.riskCategory, tooltip: 'GRC Risk Classification category' },
-    { id: 'riskScore', label: 'Risk Score', accessor: getRiskScore, tooltip: RISK_SCORE_TOOLTIP },
-    { id: 'severity', label: 'Severity', accessor: u => u.severity, tooltip: 'Calculated severity of the conflict' },
-    { id: 'violationDesc', label: 'Violation Scenario', accessor: u => u.violationDesc, tooltip: 'Active violation check scenario' },
-    { id: 'status', label: 'Status', accessor: u => 'Active', tooltip: 'Current status' },
-    { id: 'assignee', label: 'Assignee', accessor: u => u.assignee, tooltip: 'Responsible mitigation team' },
+    { id: 'accountType', label: 'Account Type', accessor: u => u.accountType, tooltip: 'SAP account type from user master data' },
+    { id: 'riskCount', label: 'Risk Count', accessor: getRiskCount, tooltip: 'Click to expand ruleset-derived risks for this user' },
+    { id: 'violationCount', label: 'Violation Count', accessor: getViolationCount, tooltip: 'Number of active SoD risk violations mapped to this user' },
     { id: 'viewAction', label: 'View', accessor: u => 'View', tooltip: 'Navigate to user profile' }
   ], [risks]);
 
@@ -1474,7 +1475,7 @@ window.UserInventoryPage = function({ onNavigate, selectedRun }) {
         exportLabel="Export Users (Excel)"
         onExport={handleExportExcel}
         getRowId={(row) => row.userId}
-        expandColumnId="violationId"
+        expandColumnId="riskCount"
         renderExpandedRow={(row) => <UserViolationExpansion user={row} />}
       />
     </div>
@@ -1582,16 +1583,18 @@ window.ViolationExplorerPage = function({ onNavigate, selectedRun }) {
 
   const filtered = useMemo(() => {
     return users.filter(u => {
+      const riskRows = getUserViolationDetails(u);
+      const riskSearchText = riskRows.map(r => `${r.riskId} ${r.scenario} ${r.businessProcess} ${(r.functionNames || []).join(' ')}`).join(' ').toLowerCase();
       const matchesSearch = 
         u.userId.toLowerCase().includes(searchTerm.toLowerCase()) ||
         (u.fullName || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-        u.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        u.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        u.violationDesc.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        u.role.toLowerCase().includes(searchTerm.toLowerCase());
+        String(u.firstName || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+        String(u.lastName || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+        riskSearchText.includes(searchTerm.toLowerCase()) ||
+        String(u.role || '').toLowerCase().includes(searchTerm.toLowerCase());
       
-      const matchesSeverity = severityFilter === 'All' || u.severity === severityFilter;
-      const matchesProcess = processFilter === 'All' || u.processArea === processFilter;
+      const matchesSeverity = severityFilter === 'All' || riskRows.some(r => r.severity === severityFilter);
+      const matchesProcess = processFilter === 'All' || riskRows.some(r => r.businessProcess === processFilter || r.riskCategory === processFilter);
       
       return matchesSearch && matchesSeverity && matchesProcess;
     });
@@ -1602,14 +1605,9 @@ window.ViolationExplorerPage = function({ onNavigate, selectedRun }) {
     { id: 'firstName', label: 'First Name', accessor: u => u.firstName, tooltip: 'SAP user first name' },
     { id: 'lastName', label: 'Last Name', accessor: u => u.lastName, tooltip: 'SAP user last name' },
     { id: 'email', label: 'Email', accessor: u => u.email, tooltip: 'SAP user email address' },
-    { id: 'violationCount', label: 'Violation Count', accessor: getViolationCount, tooltip: 'Number of conflicting transaction checks in this violation' },
-    { id: 'violationId', label: 'Violation ID', accessor: u => u.violationId, isMono: true, tooltip: 'Click to expand role, T-code, authorization, and recommendation details' },
-    { id: 'riskCategory', label: 'Risk Category', accessor: u => u.riskCategory, tooltip: 'GRC Risk Classification category' },
-    { id: 'riskScore', label: 'Risk Score', accessor: getRiskScore, tooltip: RISK_SCORE_TOOLTIP },
-    { id: 'violationDesc', label: 'Scenario Description', accessor: u => u.violationDesc, tooltip: 'Description of the risk violation' },
-    { id: 'severity', label: 'Severity', accessor: u => u.severity, tooltip: 'Calculated severity level' },
-    { id: 'processArea', label: 'Business Area', accessor: u => u.processArea, tooltip: 'Associated business flow area' },
-    { id: 'status', label: 'Status', accessor: u => 'Active', tooltip: 'Remediation status' },
+    { id: 'accountType', label: 'Account Type', accessor: u => u.accountType, tooltip: 'SAP account type from user master data' },
+    { id: 'riskCount', label: 'Risk Count', accessor: getRiskCount, tooltip: 'Click to expand ruleset-derived risks for this user' },
+    { id: 'violationCount', label: 'Violation Count', accessor: getViolationCount, tooltip: 'Number of active SoD risk violations mapped to this user' },
     { id: 'viewAction', label: 'View', accessor: u => 'View', tooltip: 'Navigate to user profile' }
   ], [risks]);
 
@@ -1639,10 +1637,10 @@ window.ViolationExplorerPage = function({ onNavigate, selectedRun }) {
         <select value={processFilter} onChange={e => setProcessFilter(e.target.value)} className="rounded border border-ink-200 text-[11px] font-bold uppercase text-ink-600 p-1.5 bg-ink-50">
           <option value="All">All Business Areas</option>
           <option value="Finance">Finance</option>
-          <option value="Procurement">Procurement</option>
-          <option value="OTC">OTC</option>
-          <option value="IT Basis">IT Basis</option>
-          <option value="Treasury">Treasury</option>
+          <option value="Procure to Pay">Procure to Pay</option>
+          <option value="Order to Cash">Order to Cash</option>
+          <option value="Basis">Basis</option>
+          <option value="Human Resources">Human Resources</option>
         </select>
       </window.FilterBar>
 
@@ -1654,7 +1652,7 @@ window.ViolationExplorerPage = function({ onNavigate, selectedRun }) {
         exportLabel="Export Violations (Excel)"
         onExport={handleExportExcel}
         getRowId={(row) => row.userId}
-        expandColumnId="violationId"
+        expandColumnId="riskCount"
         renderExpandedRow={(row) => <UserViolationExpansion user={row} />}
       />
     </div>
