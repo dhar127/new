@@ -526,6 +526,166 @@ const getRiskScore = (item) => {
 
 const RISK_SCORE_TOOLTIP = 'Risk score is calculated from risk category and severity. Financial starts at 75 because it can affect SOX, revenue, payment, or accounting controls; Operational starts at 65 because it affects access, process, or IT control reliability. Severity then adds Critical +25, High +15, Medium +8, capped at 100.';
 
+const AUTH_OBJECT_BY_TCODE = {
+  VA01: ['V_VBAK_AAT', 'Sales order create authorization'],
+  VF01: ['V_VBRK_FKA', 'Billing document create authorization'],
+  'F-28': ['F_BKPF_BUK', 'Customer payment clearing authorization'],
+  FK01: ['F_LFA1_APP', 'Vendor master create authorization'],
+  F110: ['F_REGU_BUK', 'Automatic payment run authorization'],
+  PFCG: ['S_USER_AGR', 'Role administration authorization'],
+  SU01: ['S_USER_GRP', 'User master maintenance authorization'],
+  MIGO: ['M_MSEG_BWA', 'Goods movement posting authorization'],
+  MIRO: ['M_RECH_BUK', 'Invoice verification authorization']
+};
+
+const splitTcodes = (value) => String(value || '').split(',').map(v => v.trim()).filter(Boolean);
+
+const getUserViolationDetails = (user) => {
+  const tcodes = splitTcodes(user.conflictingTransactions);
+  return tcodes.map((tcode, idx) => {
+    const [authObject] = AUTH_OBJECT_BY_TCODE[tcode] || ['S_TCODE', `${tcode} transaction authorization`];
+    return {
+      violationId: user.violationId,
+      roleType: user.roleType,
+      tcode,
+      authObject,
+      remediationPriority: user.priority,
+      status: 'Active'
+    };
+  });
+};
+
+const getViolationCount = (user) => Math.max(1, splitTcodes(user.conflictingTransactions).length);
+
+const getRemediationSteps = (item) => {
+  const action = item.recommendedAction || item.recommendations || 'Review and remove conflicting authorization access.';
+  const tcodes = splitTcodes(item.conflictingTransactions || item.func).join(', ') || 'conflicting transactions';
+  const role = item.role || (item.roles && item.roles[0]) || 'affected SAP role';
+  return [
+    `Use PFCG to review ${role} and identify access granting ${tcodes}.`,
+    `${action}.`,
+    `Create a separated least-privilege role so the conflicting functions are not held by the same user.`,
+    `Use SU10 or the access request workflow to remove the conflicting authorization from affected users.`,
+    `Re-run the SoD rule and keep the violation Active until the retest shows no conflict.`
+  ];
+};
+
+const UserViolationExpansion = ({ user }) => {
+  const details = getUserViolationDetails(user);
+  const [expandedRemediationRow, setExpandedRemediationRow] = useState(null);
+  return (
+    <div className="p-4 border-t border-ink-100 text-left">
+      <div className="flex flex-wrap items-center gap-3 mb-3">
+        <span className="text-[11px] font-black uppercase tracking-wider text-ink-500">Violation Details</span>
+        <span className="font-mono text-xs font-bold text-brand-700 bg-brand-50 px-2 py-1 rounded-lg ring-1 ring-brand-100">{user.violationId}</span>
+        <span className="text-xs font-black text-ink-850">{user.violationDesc}</span>
+        <span className="text-xs font-bold text-ink-700">{getViolationCount(user)} violation checks</span>
+      </div>
+      <div className="overflow-x-auto rounded-xl border border-ink-200 bg-white">
+        <table className="w-full min-w-[980px] text-xs">
+          <thead className="bg-ink-50 text-[10px] uppercase tracking-wider text-ink-500">
+            <tr>
+              <th className="px-3 py-2 text-left">Violation ID</th>
+              <th className="px-3 py-2 text-left">Violation Name</th>
+              <th className="px-3 py-2 text-left">Role Type</th>
+              <th className="px-3 py-2 text-left">T-Codes</th>
+              <th className="px-3 py-2 text-left">Auth Objects</th>
+              <th className="px-3 py-2 text-left">Remediation Priority</th>
+              <th className="px-3 py-2 text-left">Status</th>
+              <th className="px-3 py-2 text-left">Remediation Plan</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-ink-100">
+            {details.map((d, idx) => (
+              <React.Fragment key={`${user.userId}_${d.tcode}_${idx}`}>
+                <tr>
+                  <td className="px-3 py-2 font-mono font-bold text-brand-700">{d.violationId}</td>
+                  <td className="px-3 py-2 font-semibold text-ink-800">{user.violationDesc}</td>
+                  <td className="px-3 py-2"><span className="rounded-md bg-slate-50 px-2 py-0.5 ring-1 ring-slate-200">{d.roleType}</span></td>
+                  <td className="px-3 py-2 font-mono font-bold text-brand-700">{d.tcode}</td>
+                  <td className="px-3 py-2 font-mono text-ink-700">{d.authObject}</td>
+                  <td className="px-3 py-2 font-black text-ink-850">{d.remediationPriority}</td>
+                  <td className="px-3 py-2"><span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700">Active</span></td>
+                  <td className="px-3 py-2 align-top min-w-[360px]">
+                    <button
+                      type="button"
+                      onClick={() => setExpandedRemediationRow(current => current === idx ? null : idx)}
+                      className="inline-flex items-center gap-1.5 rounded-lg bg-brand-50 px-2.5 py-1 text-[11px] font-black text-brand-700 ring-1 ring-brand-100 hover:bg-brand-100"
+                    >
+                      <window.Icon name="chevron" className={`w-3 h-3 transition-transform ${expandedRemediationRow === idx ? 'rotate-90' : ''}`} />
+                      <span>{user.recommendedAction}</span>
+                    </button>
+                    {expandedRemediationRow === idx && (
+                      <div className="mt-2 w-full rounded-xl border border-brand-100 bg-brand-50/40 p-3 shadow-sm">
+                        <div className="flex flex-wrap items-center gap-2 mb-2">
+                          <div className="text-[10px] font-black uppercase tracking-wider text-brand-700">Remediation Plan</div>
+                          <span className="font-mono text-[10px] font-bold text-brand-700 bg-white px-2 py-0.5 rounded ring-1 ring-brand-100">{user.violationId}</span>
+                        </div>
+                        <ol className="list-decimal pl-4 space-y-1.5 text-[11px] font-semibold text-ink-700">
+                          {getRemediationSteps(user).map((step, stepIdx) => (
+                            <li key={`${user.userId}_${d.tcode}_step_${stepIdx}`}>{step}</li>
+                          ))}
+                        </ol>
+                      </div>
+                    )}
+                  </td>
+                </tr>
+              </React.Fragment>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+};
+
+const RiskUsersExpansion = ({ risk, users }) => {
+  const affected = (risk.affectedUsers || []).map(uid => users.find(u => u.userId === uid) || (window.MOCK.ALL_USERS || []).find(u => u.userId === uid)).filter(Boolean);
+  return (
+    <div className="p-4 border-t border-ink-100 text-left">
+      <div className="flex flex-wrap items-center gap-3 mb-3">
+        <span className="text-[11px] font-black uppercase tracking-wider text-ink-500">Affected Users</span>
+        <span className="font-mono text-xs font-bold text-brand-700 bg-brand-50 px-2 py-1 rounded-lg ring-1 ring-brand-100">{risk.riskId}</span>
+        <span className="text-xs font-bold text-ink-700">{affected.length} users listed</span>
+      </div>
+      <div className="overflow-x-auto rounded-xl border border-ink-200 bg-white">
+        <table className="w-full min-w-[1080px] text-xs">
+          <thead className="bg-ink-50 text-[10px] uppercase tracking-wider text-ink-500">
+            <tr>
+              <th className="px-3 py-2 text-left">User ID</th>
+              <th className="px-3 py-2 text-left">First Name</th>
+              <th className="px-3 py-2 text-left">Last Name</th>
+              <th className="px-3 py-2 text-left">Email</th>
+              <th className="px-3 py-2 text-left">Role Type</th>
+              <th className="px-3 py-2 text-left">Risk Category</th>
+              <th className="px-3 py-2 text-left">Violation Count</th>
+              <th className="px-3 py-2 text-left">T-Codes</th>
+              <th className="px-3 py-2 text-left">Status</th>
+              <th className="px-3 py-2 text-left">Recommendation</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-ink-100">
+            {affected.map(u => (
+              <tr key={`${risk.riskId}_${u.userId}`}>
+                <td className="px-3 py-2 font-mono font-bold text-ink-850">{u.userId}</td>
+                <td className="px-3 py-2 font-semibold">{u.firstName}</td>
+                <td className="px-3 py-2 font-semibold">{u.lastName}</td>
+                <td className="px-3 py-2 text-ink-600">{u.email}</td>
+                <td className="px-3 py-2">{u.roleType}</td>
+                <td className="px-3 py-2">{u.riskCategory}</td>
+                <td className="px-3 py-2 font-mono">{getViolationCount(u)}</td>
+                <td className="px-3 py-2 font-mono text-brand-700">{u.conflictingTransactions}</td>
+                <td className="px-3 py-2"><span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700">Active</span></td>
+                <td className="px-3 py-2 text-ink-700">{u.recommendedAction || risk.recommendations}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+};
+
 window.LaunchPage = function({ 
   onNavigate, 
   selectedRun,
@@ -545,6 +705,7 @@ window.LaunchPage = function({
 
   const { users, risks, kpis } = runData;
   const { totalUsers, totalRoles, totalViolations, critical: criticalCount, high: highCount, medium: mediumCount, low: lowCount, complianceScore, riskScore } = kpis;
+  const totalRisks = risks.length;
   const runId = selectedRun ? selectedRun.id : 'LCSOD-2026-Q2-007';
   const runDate = selectedRun ? selectedRun.date : 'May 19, 2026';
 
@@ -584,7 +745,9 @@ window.LaunchPage = function({
     { id: 'userId', label: 'User ID', accessor: u => u.userId, isMono: true, tooltip: 'Unique SAP User identifier' },
     { id: 'firstName', label: 'First Name', accessor: u => u.firstName, tooltip: 'SAP user first name' },
     { id: 'lastName', label: 'Last Name', accessor: u => u.lastName, tooltip: 'SAP user last name' },
-    { id: 'role', label: 'Role Name', accessor: u => u.role, isMono: true, tooltip: 'Assigned SAP Role' },
+    { id: 'email', label: 'Email', accessor: u => u.email, tooltip: 'SAP user email address' },
+    { id: 'violationCount', label: 'Violation Count', accessor: getViolationCount, tooltip: 'Number of conflicting transaction checks in this violation' },
+    { id: 'violationId', label: 'Violation ID', accessor: u => u.violationId, isMono: true, tooltip: 'Click to expand role, T-code, authorization, and recommendation details' },
     { id: 'roleType', label: 'Role Type', accessor: u => u.roleType, tooltip: 'Type of SAP role (Single, Composite, Derived)' },
     { id: 'processArea', label: 'Business Process', accessor: u => u.processArea, tooltip: 'Associated business process flow' },
     { id: 'riskCategory', label: 'Risk Category', accessor: u => u.riskCategory, tooltip: 'GRC Risk Classification category' },
@@ -596,10 +759,10 @@ window.LaunchPage = function({
     { id: 'standardsViolated', label: 'Standards / Controls Violated', accessor: u => u.standardsViolated, tooltip: 'Violated external standards and internal controls' },
     { id: 'recommendedAction', label: 'Recommended Action', accessor: u => u.recommendedAction, tooltip: 'Actionable remediation recommendation' },
     { id: 'priority', label: 'Remediation Priority', accessor: u => u.priority, tooltip: 'Urgency tier of the remediation action' },
-    { id: 'status', label: 'Status', accessor: u => u.status, tooltip: 'Current remediation workflow status' },
+    { id: 'status', label: 'Status', accessor: u => 'Active', tooltip: 'Current remediation workflow status' },
     { id: 'assignee', label: 'Assignee', accessor: u => u.assignee, tooltip: 'Responsible mitigation team or architect' },
     { id: 'viewAction', label: 'View', accessor: u => 'View', tooltip: 'Navigate to user profile detail' }
-  ], []);
+  ], [risks]);
 
   // Define column definitions for risk catalog
   const riskColumns = useMemo(() => [
@@ -615,25 +778,13 @@ window.LaunchPage = function({
       id: 'userCount', 
       label: 'Total Users', 
       accessor: r => r.userCount, 
-      renderCell: r => (
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            setActiveModalRisk(r);
-          }}
-          className="px-2.5 py-1 bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-[11px] rounded-lg transition-all inline-flex items-center gap-1 shadow-sm shrink-0"
-        >
-          <span>{r.userCount} Users</span>
-          <window.Icon name="user" className="w-3 h-3 text-rose-500" />
-        </button>
-      ),
-      tooltip: 'Number of active user accounts violating this rule' 
+      tooltip: 'Click to expand the affected users and recommendations for this rule'
     },
     { id: 'businessImpact', label: 'Business Impact', accessor: r => r.businessImpact, tooltip: 'Financial or regulatory impact detail' },
     { id: 'recommendations', label: 'Recommended Action', accessor: r => r.recommendations, tooltip: 'Standard mitigation instruction' },
     { id: 'assignee', label: 'Assignee', accessor: r => r.assignee, tooltip: 'Mitigation team lead' },
     { id: 'viewAction', label: 'View', accessor: r => 'View', tooltip: 'Navigate to risk details' }
-  ], [setActiveModalRisk]);
+  ], []);
 
   // Export handlers
   const handleExportExcel = (filteredData, orderedColumns) => {
@@ -695,8 +846,8 @@ window.LaunchPage = function({
         </div>
       </div>
 
-      {/* Redesigned 4 KPI Cards Grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* KPI Cards Grid */}
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
         {/* Card 1: No. of Users Scanned */}
         <div className="bg-white rounded-xl shadow-card ring-1 ring-ink-200 overflow-hidden border-t-4 border-blue-500 p-4">
           <div className="flex items-center gap-2">
@@ -745,7 +896,23 @@ window.LaunchPage = function({
           </div>
         </div>
 
-        {/* Card 4: Risk Severity Classification */}
+        {/* Card 4: Total Risks */}
+        <div className="bg-white rounded-xl shadow-card ring-1 ring-ink-200 overflow-hidden border-t-4 border-purple-500 p-4">
+          <div className="flex items-center gap-2">
+            <div className="h-8 w-8 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center">
+              <window.Icon name="shield" className="w-4 h-4" />
+            </div>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-ink-500">TOTAL RISKS</span>
+          </div>
+          <div className="mt-3">
+            <span className="text-[28px] font-bold leading-none text-ink-900 font-mono">{totalRisks}</span>
+          </div>
+          <div className="mt-2 text-xs text-ink-450 font-medium">
+            Active SoD risk rules detected
+          </div>
+        </div>
+
+        {/* Card 5: Risk Severity Classification */}
         <div className="bg-white rounded-xl shadow-card ring-1 ring-ink-200 overflow-hidden border-t-4 border-orange-500 p-4 flex flex-col justify-between">
           <div>
             <div className="flex items-center gap-2">
@@ -1025,6 +1192,9 @@ window.LaunchPage = function({
           onRowClick={(row) => onNavigate('user-profile', row.userId)}
           exportLabel="Export Users (Excel)"
           onExport={handleExportExcel}
+          getRowId={(row) => row.userId}
+          expandColumnId="violationId"
+          renderExpandedRow={(row) => <UserViolationExpansion user={row} />}
         />
       </div>
 
@@ -1083,6 +1253,9 @@ window.LaunchPage = function({
           onRowClick={(row) => onNavigate('risk-detail', row.riskId)}
           exportLabel="Export Ruleset (Excel)"
           onExport={handleExportExcel}
+          getRowId={(row) => row.riskId}
+          expandColumnId="userCount"
+          renderExpandedRow={(row) => <RiskUsersExpansion risk={row} users={users} />}
         />
       </div>
 
@@ -1224,7 +1397,7 @@ window.UserInventoryPage = function({ onNavigate, selectedRun }) {
   const runData = useMemo(() => {
     return window.getMockDataForRun(selectedRun ? selectedRun.id : 'LCSOD-2026-Q2-007');
   }, [selectedRun]);
-  const { users } = runData;
+  const { users, risks } = runData;
   const filteredUsers = useMemo(() => {
     if (!userSodFilter || userSodFilter === 'All') return users;
     return users.filter(u => getSodStreamsForUser(u).includes(userSodFilter));
@@ -1234,17 +1407,19 @@ window.UserInventoryPage = function({ onNavigate, selectedRun }) {
     { id: 'userId', label: 'User ID', accessor: u => u.userId, isMono: true, tooltip: 'Unique SAP User identifier' },
     { id: 'firstName', label: 'First Name', accessor: u => u.firstName, tooltip: 'SAP user first name' },
     { id: 'lastName', label: 'Last Name', accessor: u => u.lastName, tooltip: 'SAP user last name' },
-    { id: 'role', label: 'Role Name', accessor: u => u.role, isMono: true, tooltip: 'Assigned SAP Role' },
+    { id: 'email', label: 'Email', accessor: u => u.email, tooltip: 'SAP user email address' },
+    { id: 'violationCount', label: 'Violation Count', accessor: getViolationCount, tooltip: 'Number of conflicting transaction checks in this violation' },
+    { id: 'violationId', label: 'Violation ID', accessor: u => u.violationId, isMono: true, tooltip: 'Click to expand role, T-code, authorization, and recommendation details' },
     { id: 'roleType', label: 'Role Type', accessor: u => u.roleType, tooltip: 'Type of SAP role' },
     { id: 'processArea', label: 'Business Process', accessor: u => u.processArea, tooltip: 'Associated business process flow' },
     { id: 'riskCategory', label: 'Risk Category', accessor: u => u.riskCategory, tooltip: 'GRC Risk Classification category' },
     { id: 'riskScore', label: 'Risk Score', accessor: getRiskScore, tooltip: RISK_SCORE_TOOLTIP },
     { id: 'severity', label: 'Severity', accessor: u => u.severity, tooltip: 'Calculated severity of the conflict' },
     { id: 'violationDesc', label: 'Violation Scenario', accessor: u => u.violationDesc, tooltip: 'Active violation check scenario' },
-    { id: 'status', label: 'Status', accessor: u => u.status, tooltip: 'Current status' },
+    { id: 'status', label: 'Status', accessor: u => 'Active', tooltip: 'Current status' },
     { id: 'assignee', label: 'Assignee', accessor: u => u.assignee, tooltip: 'Responsible mitigation team' },
     { id: 'viewAction', label: 'View', accessor: u => 'View', tooltip: 'Navigate to user profile' }
-  ], []);
+  ], [risks]);
 
   const handleExportExcel = () => {
     if (window.exportGrcExcel) {
@@ -1298,6 +1473,9 @@ window.UserInventoryPage = function({ onNavigate, selectedRun }) {
         onRowClick={(row) => onNavigate('user-profile', row.userId)}
         exportLabel="Export Users (Excel)"
         onExport={handleExportExcel}
+        getRowId={(row) => row.userId}
+        expandColumnId="violationId"
+        renderExpandedRow={(row) => <UserViolationExpansion user={row} />}
       />
     </div>
   );
@@ -1305,11 +1483,10 @@ window.UserInventoryPage = function({ onNavigate, selectedRun }) {
 
 window.RiskCatalogPage = function({ onNavigate, selectedRun }) {
   const [riskSodFilter, setRiskSodFilter] = useState('All');
-  const [activeModalRisk, setActiveModalRisk] = useState(null);
   const runData = useMemo(() => {
     return window.getMockDataForRun(selectedRun ? selectedRun.id : 'LCSOD-2026-Q2-007');
   }, [selectedRun]);
-  const { risks } = runData;
+  const { users, risks } = runData;
   const filteredRisks = useMemo(() => {
     if (!riskSodFilter || riskSodFilter === 'All') return risks;
     return risks.filter(r => getSodStreamsForRisk(r).includes(riskSodFilter));
@@ -1328,18 +1505,7 @@ window.RiskCatalogPage = function({ onNavigate, selectedRun }) {
       id: 'userCount',
       label: 'Total Users',
       accessor: r => r.userCount,
-      renderCell: r => (
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            setActiveModalRisk(r);
-          }}
-          className="px-2.5 py-1 bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-[11px] rounded-lg transition-all inline-flex items-center gap-1 shadow-sm shrink-0"
-        >
-          <span>{r.userCount} Users</span>
-          <window.Icon name="chevron" className="w-3 h-3 rotate-90" />
-        </button>
-      )
+      tooltip: 'Click to expand affected users and recommendations'
     },
     { id: 'viewAction', label: 'View', accessor: r => 'View', tooltip: 'Navigate to risk details' }
   ], []);
@@ -1396,11 +1562,10 @@ window.RiskCatalogPage = function({ onNavigate, selectedRun }) {
         onRowClick={(row) => onNavigate('risk-detail', row.riskId)}
         exportLabel="Export Ruleset (Excel)"
         onExport={handleExportExcel}
+        getRowId={(row) => row.riskId}
+        expandColumnId="userCount"
+        renderExpandedRow={(row) => <RiskUsersExpansion risk={row} users={users} />}
       />
-
-      {activeModalRisk && (
-        <RiskUsersModal activeModalRisk={activeModalRisk} onClose={() => setActiveModalRisk(null)} onNavigate={onNavigate} />
-      )}
     </div>
   );
 };
@@ -1413,7 +1578,7 @@ window.ViolationExplorerPage = function({ onNavigate, selectedRun }) {
   const runData = useMemo(() => {
     return window.getMockDataForRun(selectedRun ? selectedRun.id : 'LCSOD-2026-Q2-007');
   }, [selectedRun]);
-  const { users } = runData;
+  const { users, risks } = runData;
 
   const filtered = useMemo(() => {
     return users.filter(u => {
@@ -1436,16 +1601,17 @@ window.ViolationExplorerPage = function({ onNavigate, selectedRun }) {
     { id: 'userId', label: 'User ID', accessor: u => u.userId, isMono: true, tooltip: 'SAP user ID' },
     { id: 'firstName', label: 'First Name', accessor: u => u.firstName, tooltip: 'SAP user first name' },
     { id: 'lastName', label: 'Last Name', accessor: u => u.lastName, tooltip: 'SAP user last name' },
-    { id: 'violationId', label: 'Risk ID', accessor: u => u.violationId, isMono: true, tooltip: 'Violated GRC check ID' },
+    { id: 'email', label: 'Email', accessor: u => u.email, tooltip: 'SAP user email address' },
+    { id: 'violationCount', label: 'Violation Count', accessor: getViolationCount, tooltip: 'Number of conflicting transaction checks in this violation' },
+    { id: 'violationId', label: 'Violation ID', accessor: u => u.violationId, isMono: true, tooltip: 'Click to expand role, T-code, authorization, and recommendation details' },
     { id: 'riskCategory', label: 'Risk Category', accessor: u => u.riskCategory, tooltip: 'GRC Risk Classification category' },
     { id: 'riskScore', label: 'Risk Score', accessor: getRiskScore, tooltip: RISK_SCORE_TOOLTIP },
     { id: 'violationDesc', label: 'Scenario Description', accessor: u => u.violationDesc, tooltip: 'Description of the risk violation' },
-    { id: 'role', label: 'SAP Role', accessor: u => u.role, isMono: true, tooltip: 'SAP authorization role' },
     { id: 'severity', label: 'Severity', accessor: u => u.severity, tooltip: 'Calculated severity level' },
     { id: 'processArea', label: 'Business Area', accessor: u => u.processArea, tooltip: 'Associated business flow area' },
-    { id: 'status', label: 'Status', accessor: u => u.status, tooltip: 'Remediation status' },
+    { id: 'status', label: 'Status', accessor: u => 'Active', tooltip: 'Remediation status' },
     { id: 'viewAction', label: 'View', accessor: u => 'View', tooltip: 'Navigate to user profile' }
-  ], []);
+  ], [risks]);
 
   const handleExportExcel = () => {
     if (window.exportGrcExcel) {
@@ -1487,6 +1653,9 @@ window.ViolationExplorerPage = function({ onNavigate, selectedRun }) {
         onRowClick={(row) => onNavigate('user-profile', row.userId)}
         exportLabel="Export Violations (Excel)"
         onExport={handleExportExcel}
+        getRowId={(row) => row.userId}
+        expandColumnId="violationId"
+        renderExpandedRow={(row) => <UserViolationExpansion user={row} />}
       />
     </div>
   );

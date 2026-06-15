@@ -8,6 +8,28 @@ window.exportGrcExcel = function(runId, filteredUsers, filteredRisks, userColSeq
   const runData = window.getMockDataForRun(runId);
   const { kpis } = runData;
   const runIdClean = runId || 'LCSOD-2026-Q2-007';
+  const risksForRun = runData.risks || [];
+  const usersForRun = runData.users || [];
+  const splitTcodes = value => String(value || '').split(',').map(v => v.trim()).filter(Boolean);
+  const authObjectByTcode = {
+    VA01: ['V_VBAK_AAT', 'Sales order create authorization'],
+    VF01: ['V_VBRK_FKA', 'Billing document create authorization'],
+    'F-28': ['F_BKPF_BUK', 'Customer payment clearing authorization'],
+    FK01: ['F_LFA1_APP', 'Vendor master create authorization'],
+    F110: ['F_REGU_BUK', 'Automatic payment run authorization'],
+    PFCG: ['S_USER_AGR', 'Role administration authorization'],
+    SU01: ['S_USER_GRP', 'User master maintenance authorization'],
+    MIGO: ['M_MSEG_BWA', 'Goods movement posting authorization'],
+    MIRO: ['M_RECH_BUK', 'Invoice verification authorization']
+  };
+  const getViolationCount = u => Math.max(1, splitTcodes(u.conflictingTransactions).length);
+  const remediationSteps = u => [
+    `Use PFCG to review ${u.role || 'affected SAP role'} and identify access granting ${u.conflictingTransactions || 'conflicting transactions'}.`,
+    `${u.recommendedAction || 'Remove conflicting authorization access'}.`,
+    'Create a separated least-privilege role so the conflicting functions are not held by the same user.',
+    'Use SU10 or the access request workflow to remove the conflicting authorization from affected users.',
+    'Re-run the SoD rule and keep the violation Active until the retest shows no conflict.'
+  ].join('\n');
 
   // 1. Executive Summary
   const execSummaryData = [
@@ -15,6 +37,7 @@ window.exportGrcExcel = function(runId, filteredUsers, filteredRisks, userColSeq
     { "Metric KPI Parameter": "Run Status", "Value": "Completed" },
     { "Metric KPI Parameter": "Total SAP Users Scanned", "Value": kpis.totalUsers },
     { "Metric KPI Parameter": "Total Access Violations", "Value": kpis.totalViolations },
+    { "Metric KPI Parameter": "Total SoD Risks", "Value": risksForRun.length },
     { "Metric KPI Parameter": "System Risk Score (Average)", "Value": kpis.riskScore },
     { "Metric KPI Parameter": "Risk Coverage Score (%)", "Value": kpis.complianceScore + "%" },
     { "Metric KPI Parameter": "Weighted Detected Risk (WDR)", "Value": kpis.wdr },
@@ -39,7 +62,10 @@ window.exportGrcExcel = function(runId, filteredUsers, filteredRisks, userColSeq
       "User ID": u.userId,
       "First Name": u.firstName,
       "Last Name": u.lastName,
-      "Role Name": u.role,
+      "Email": u.email,
+      "Violation Count": getViolationCount(u),
+      "Violation ID": u.violationId,
+      "Violation Name": u.violationDesc,
       "Role Type": u.roleType,
       "Business Process": u.processArea,
       "Risk Category": u.riskCategory,
@@ -51,13 +77,33 @@ window.exportGrcExcel = function(runId, filteredUsers, filteredRisks, userColSeq
       "Standards Violated": u.standardsViolated,
       "Recommended Action": u.recommendedAction,
       "Remediation Priority": u.priority,
-      "Mitigation Status": u.status,
+      "Mitigation Status": "Active",
       "Last Analyzed Date": u.lastAnalyzedDate,
       "Assessment Run ID": u.runId,
       "Assignee": u.assignee
     }));
   }
   const ws2 = XLSX.utils.json_to_sheet(userWiseData);
+
+  const userViolationDetailsData = filteredUsers.flatMap(u => splitTcodes(u.conflictingTransactions).map((tcode, idx) => {
+    const [authObject] = authObjectByTcode[tcode] || ['S_TCODE', `${tcode} transaction authorization`];
+    return {
+      "Violation ID": u.violationId,
+      "Violation Name": u.violationDesc,
+      "User ID": u.userId,
+      "First Name": u.firstName,
+      "Last Name": u.lastName,
+      "Email": u.email,
+      "Violation Count": getViolationCount(u),
+      "Role Type": u.roleType,
+      "T-Code": tcode,
+      "Auth Object": authObject,
+      "Remediation Priority": u.priority,
+      "Status": "Active",
+      "Step-by-step Recommendation": remediationSteps(u)
+    };
+  }));
+  const wsUserDetails = XLSX.utils.json_to_sheet(userViolationDetailsData);
 
   // 3. Risk Wise Violations
   let riskWiseData;
@@ -87,6 +133,26 @@ window.exportGrcExcel = function(runId, filteredUsers, filteredRisks, userColSeq
     }));
   }
   const ws3 = XLSX.utils.json_to_sheet(riskWiseData);
+
+  const riskUserDetailsData = filteredRisks.flatMap(r => (r.affectedUsers || []).map(uid => {
+    const u = usersForRun.find(user => user.userId === uid) || {};
+    return {
+      "Risk ID": r.riskId,
+      "Risk Name": r.title,
+      "Risk Category": r.category,
+      "Risk Score": r.riskScore,
+      "User ID": u.userId || uid,
+      "First Name": u.firstName || 'SAP',
+      "Last Name": u.lastName || 'User',
+      "Email": u.email || `${String(uid).toLowerCase()}@lottechem.com`,
+      "Role Type": u.roleType || 'Single',
+      "Violation Count": u.userId ? getViolationCount(u) : 1,
+      "T-Codes": u.conflictingTransactions || r.func,
+      "Status": "Active",
+      "Recommendation": u.recommendedAction || r.recommendations
+    };
+  }));
+  const wsRiskUsers = XLSX.utils.json_to_sheet(riskUserDetailsData);
 
   // 4. Severity Distribution
   const totalViols = kpis.totalViolations || 1;
@@ -159,11 +225,13 @@ window.exportGrcExcel = function(runId, filteredUsers, filteredRisks, userColSeq
     return 'May 19, 2026';
   }
 
-  // Create workbook and append all 9 worksheets
+  // Create workbook and append all worksheets
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws1, "Executive Summary");
   XLSX.utils.book_append_sheet(wb, ws2, "User Wise Violations");
+  XLSX.utils.book_append_sheet(wb, wsUserDetails, "User Violation Details");
   XLSX.utils.book_append_sheet(wb, ws3, "Risk Wise Violations");
+  XLSX.utils.book_append_sheet(wb, wsRiskUsers, "Risk User Details");
   XLSX.utils.book_append_sheet(wb, ws4, "Severity Distribution");
   XLSX.utils.book_append_sheet(wb, ws5, "Business Impact");
   XLSX.utils.book_append_sheet(wb, ws6, "Violation Scenarios");

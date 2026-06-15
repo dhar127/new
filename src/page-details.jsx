@@ -287,24 +287,43 @@ window.UserProfilePage = function({ userId, onNavigate, inline, onBack }) {
     // Find custom data in mock data if available
     const existing = (window.MOCK.ALL_USERS || []).find(u => u.userId === userId);
     if (existing) {
+      const roleByViolation = {
+        'V-1042': 'ZMM_BR_VENDOR_CREATE',
+        'V-1058': 'ZSD_BR_BILLING_CREATE',
+        'V-1071': 'ZBC_BR_SYSTEM_ADMIN',
+        'V-1090': 'ZBC_BR_FIREFIGHTER_ACCESS',
+        'V-1094': 'ZMM_BR_PO_RELEASE',
+        'V-1101': 'ZFI_BR_AP_PAYMENT',
+        'V-1124': 'ZBC_BR_RFC_BATCH',
+        'V-1131': 'ZMM_BR_INVOICE_VERIFY'
+      };
+      const primaryRole = existing.role && existing.role !== 'Display Access Role'
+        ? existing.role
+        : (roleByViolation[existing.violationId] || 'ZFI_BR_GL_POSTING');
+      const secondaryRole = existing.violationId === 'V-1042' ? 'ZFI_BR_AP_PAYMENT' : 'ZFI_BR_AUDIT_REVIEW';
+      const roles = Array.from(new Set([primaryRole, secondaryRole].filter(Boolean)));
+      const tcodes = (existing.conflictingTransactions && existing.conflictingTransactions !== 'N/A')
+        ? existing.conflictingTransactions.split(',').map(t => t.trim()).filter(Boolean)
+        : ['FK01', 'F110'];
+      const severity = existing.severity || 'Medium';
       return {
         userId: existing.userId,
         fullName: existing.fullName,
         dept: existing.processArea || existing.dept || 'Finance',
-        role: existing.role || 'Senior Analyst',
+        role: primaryRole,
         lastLogin: existing.lastActivity || '2026-05-19 14:10',
-        criticalCount: existing.severity === 'Critical' ? 1 : 0,
-        highCount: existing.severity === 'High' ? 1 : 0,
-        mediumCount: existing.severity === 'Medium' ? 1 : 0,
-        lowCount: existing.severity === 'Low' ? 1 : 0,
-        roles: [existing.role || 'ZFI_BR_GL_POSTING', 'ZFI_BR_AP_INVOICE'],
-        tcodes: (existing.conflictingTransactions && existing.conflictingTransactions !== 'N/A')
-          ? existing.conflictingTransactions.split(', ') 
-          : ['FB50', 'MIRO'],
+        criticalCount: severity === 'Critical' ? 1 : 0,
+        highCount: severity === 'High' ? 1 : 0,
+        mediumCount: severity === 'Medium' || severity === 'Low' ? 1 : 0,
+        lowCount: severity === 'Low' ? 1 : 0,
+        roles,
+        rolesTotal: Number(existing.rolesCount) > 0 ? Number(existing.rolesCount) : roles.length,
+        tcodes,
         action: existing.recommendedAction || 'Separate conflicting billing and invoice receipt roles.',
-        violations: existing.riskViolation === 'Yes' ? [
-          { id: existing.violationId, desc: existing.violationDesc, severity: existing.severity }
-        ] : []
+        compensatingMonitor: `Implement daily reviewer checklists on ${tcodes.join(', ')} transactions completed by this user under role ${primaryRole}.`,
+        violations: [
+          { id: existing.violationId, desc: existing.violationDesc, severity }
+        ]
       };
     }
 

@@ -24,6 +24,7 @@ window.SEV_DOT = {
 };
 
 window.STATUS_STYLE = {
+  Active:        'bg-emerald-50 text-emerald-700 ring-emerald-200',
   Open:          'bg-ink-100 text-ink-700 ring-ink-200',
   'In Progress': 'bg-blue-50 text-blue-700 ring-blue-200',
   Resolved:      'bg-emerald-50 text-emerald-700 ring-emerald-200',
@@ -861,7 +862,10 @@ window.InteractiveGRCTable = function({
   pageSize = 10,
   onRowClick,
   exportLabel,
-  onExport
+  onExport,
+  renderExpandedRow,
+  getRowId,
+  expandColumnId
 }) {
   const [colOrder, setColOrder] = useState([]);
   const [visibleCols, setVisibleCols] = useState({});
@@ -872,6 +876,7 @@ window.InteractiveGRCTable = function({
   const [page, setPage] = useState(1);
   const [openDropdown, setOpenDropdown] = useState(null);
   const [showColSettings, setShowColSettings] = useState(false);
+  const [expandedRows, setExpandedRows] = useState({});
 
   const dropdownRef = useRef(null);
 
@@ -989,6 +994,15 @@ window.InteractiveGRCTable = function({
     setFilters({});
     setSortCol(null);
     setPage(1);
+  };
+
+  const rowKeyFor = (row, idx) => {
+    if (getRowId) return getRowId(row, idx);
+    return row.userId || row.riskId || idx;
+  };
+
+  const toggleExpandedRow = (key) => {
+    setExpandedRows(prev => ({ ...prev, [key]: !prev[key] }));
   };
 
   const handleDragStart = (e, colId) => {
@@ -1182,51 +1196,74 @@ window.InteractiveGRCTable = function({
           </thead>
           <tbody className="divide-y divide-ink-150">
             {pagedData.map((row, idx) => {
+              const rowKey = rowKeyFor(row, idx);
+              const isExpanded = !!expandedRows[rowKey];
               const trClasses = `row-hover transition-colors select-none ${onRowClick ? 'cursor-pointer' : ''}`;
               return (
-                <tr
-                  key={row.userId ? row.userId + '_' + idx : idx}
-                  className={trClasses}
-                  onClick={() => onRowClick && onRowClick(row)}
-                >
-                  {orderedVisibleColumns.map(col => {
-                    const val = col.accessor(row);
-                    
-                    let content = String(val);
-                    if (col.renderCell) {
-                      content = col.renderCell(row);
-                    } else if (col.id === 'severity') {
-                      content = <window.SeverityBadge value={val} />;
-                    } else if (col.id === 'status') {
-                      content = <window.StatusBadge value={val} className="px-2 py-0.5 text-[10px]" />;
-                    } else if (col.isMono) {
-                      content = <code className="font-mono text-brand-600 font-bold">{val}</code>;
-                    } else if (col.id === 'viewAction') {
-                      content = (
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            if (onRowClick) onRowClick(row);
-                          }}
-                          className="px-2.5 py-1 bg-brand-50 hover:bg-brand-100 text-brand-700 font-bold text-[11px] rounded-lg transition-all inline-flex items-center gap-1 shadow-sm shrink-0"
+                <React.Fragment key={rowKey}>
+                  <tr
+                    className={trClasses}
+                    onClick={() => onRowClick && onRowClick(row)}
+                  >
+                    {orderedVisibleColumns.map(col => {
+                      const val = col.accessor(row);
+                      
+                      let content = String(val);
+                      if (renderExpandedRow && col.id === expandColumnId) {
+                        content = (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              toggleExpandedRow(rowKey);
+                            }}
+                            className="inline-flex items-center gap-1.5 rounded-lg bg-brand-50 px-2.5 py-1 text-[11px] font-black text-brand-700 ring-1 ring-brand-100 hover:bg-brand-100"
+                          >
+                            <window.Icon name="chevron" className={`w-3 h-3 transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
+                            <span>{col.id === 'userCount' ? `${String(val)} Users` : String(val)}</span>
+                          </button>
+                        );
+                      } else if (col.renderCell) {
+                        content = col.renderCell(row);
+                      } else if (col.id === 'severity' || col.id === 'level') {
+                        content = <window.SeverityBadge value={val} />;
+                      } else if (col.id === 'status') {
+                        content = <window.StatusBadge value={val} className="px-2 py-0.5 text-[10px]" />;
+                      } else if (col.isMono) {
+                        content = <code className="font-mono text-brand-600 font-bold">{val}</code>;
+                      } else if (col.id === 'viewAction') {
+                        content = (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (onRowClick) onRowClick(row);
+                            }}
+                            className="px-2.5 py-1 bg-brand-50 hover:bg-brand-100 text-brand-700 font-bold text-[11px] rounded-lg transition-all inline-flex items-center gap-1 shadow-sm shrink-0"
+                          >
+                            <span>View</span>
+                            <window.Icon name="arrow" className="w-3 h-3" />
+                          </button>
+                        );
+                      }
+                      
+                      return (
+                        <td
+                          key={col.id}
+                          className={`p-3 font-semibold text-ink-800 ${col.id === 'viewAction' ? 'w-28 min-w-[7rem] text-right whitespace-nowrap' : 'truncate max-w-xs'}`}
+                          title={String(val)}
                         >
-                          <span>View</span>
-                          <window.Icon name="arrow" className="w-3 h-3" />
-                        </button>
+                          {content}
+                        </td>
                       );
-                    }
-                    
-                    return (
-                      <td
-                        key={col.id}
-                        className={`p-3 font-semibold text-ink-800 ${col.id === 'viewAction' ? 'w-28 min-w-[7rem] text-right whitespace-nowrap' : 'truncate max-w-xs'}`}
-                        title={String(val)}
-                      >
-                        {content}
+                    })}
+                  </tr>
+                  {renderExpandedRow && isExpanded && (
+                    <tr className="bg-slate-50/70">
+                      <td colSpan={orderedVisibleColumns.length} className="p-0">
+                        {renderExpandedRow(row)}
                       </td>
-                    );
-                  })}
-                </tr>
+                    </tr>
+                  )}
+                </React.Fragment>
               );
             })}
             {filteredData.length === 0 && (
