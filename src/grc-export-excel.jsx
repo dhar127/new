@@ -40,26 +40,6 @@ window.exportGrcExcel = function(runId, filteredUsers, filteredRisks, userColSeq
     activeUsers = usersForRun.filter(u => getRiskViolations(u).some(v => activeRiskIds.has(v.riskId)));
   }
 
-  // 1. Executive Summary
-  const execSummaryData = [
-    { "Metric KPI Parameter": "Assessment Run ID", "Value": runIdClean },
-    { "Metric KPI Parameter": "Run Status", "Value": "Completed" },
-    { "Metric KPI Parameter": "Total SAP Users Scanned", "Value": kpis.totalUsers },
-    { "Metric KPI Parameter": "Total Access Violations", "Value": kpis.totalViolations },
-    { "Metric KPI Parameter": "Total SoD Risks", "Value": risksForRun.length },
-    { "Metric KPI Parameter": "System Risk Score (Average)", "Value": kpis.riskScore },
-    { "Metric KPI Parameter": "Risk Coverage Score (%)", "Value": kpis.complianceScore + "%" },
-    { "Metric KPI Parameter": "Audit Framework Scope", "Value": "SOX / K-SOX / ISO 27001" }
-  ];
-  if (exportSource) {
-    execSummaryData.push(
-      { "Metric KPI Parameter": "Export Context", "Value": exportSource === 'users' ? "Filtered Users Table" : "Filtered Risks Ruleset Catalog" },
-      { "Metric KPI Parameter": "Active SoD Stream Filter", "Value": activeFilterClean },
-      { "Metric KPI Parameter": "Exported Users Count", "Value": activeUsers.length },
-      { "Metric KPI Parameter": "Exported Risks Count", "Value": activeRisks.length }
-    );
-  }
-  const ws1 = XLSX.utils.json_to_sheet(execSummaryData);
 
   // 2. User Wise Violations
   let userWiseData;
@@ -185,25 +165,12 @@ window.exportGrcExcel = function(runId, filteredUsers, filteredRisks, userColSeq
     });
   });
   const wsRiskUsers = XLSX.utils.json_to_sheet(riskUserDetailsData);
-  // 8. Remediation Recommendations
-  const remediationData = [
-    { "Action Type": "Access Removal", "Action Item": "Remove conflicting transaction access from the user.", "Rationale": "Restores single-activity focus and removes access overlap.", "Expected SLA": "48 Hours" },
-    { "Action Type": "Role Splitting", "Action Item": "Split composite role into separate single roles.", "Rationale": "Divides incompatible responsibilities at the authorization profile level.", "Expected SLA": "1 Week" },
-    { "Action Type": "Mitigation Assignment", "Action Item": "Assign mitigating control approval.", "Rationale": "Applies a supervisory monitoring control where access must remain.", "Expected SLA": "3 Days" },
-    { "Action Type": "Access Restriction", "Action Item": "Restrict firefighter access duration.", "Rationale": "Limits firefighter ID assignment to a maximum of 30 days per policy.", "Expected SLA": "24 Hours" },
-    { "Action Type": "Privilege Cleanup", "Action Item": "Remove unused high-risk service account privileges.", "Rationale": "Limits service account capability to direct batch jobs only.", "Expected SLA": "48 Hours" },
-    { "Action Type": "System Redesign", "Action Item": "Redesign role to follow least privilege.", "Rationale": "Aligns the SAP custom role structure with corporate security policies.", "Expected SLA": "2 Weeks" }
-  ];
-  const ws8 = XLSX.utils.json_to_sheet(remediationData);
-
   // Create workbook and append all worksheets
   const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws1, "Executive Summary");
   XLSX.utils.book_append_sheet(wb, ws2, "User Wise Violations");
   XLSX.utils.book_append_sheet(wb, wsUserDetails, "User Violation Details");
   XLSX.utils.book_append_sheet(wb, ws3, "Risk Wise Violations");
   XLSX.utils.book_append_sheet(wb, wsRiskUsers, "Risk User Details");
-  XLSX.utils.book_append_sheet(wb, ws8, "Remediation Recommendations");
 
   // Trigger download file
   XLSX.writeFile(wb, `SoD_Audit_Report_${runIdClean}.xlsx`);
